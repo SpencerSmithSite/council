@@ -1,0 +1,33 @@
+{
+  "version": "2026-04-11",
+  "buildDate": "2026-04-11T03:14:47.752Z",
+  "sources": {
+    "total": 26,
+    "byTradition": {
+      "Early Church": 12,
+      "Reformed": 5,
+      "Ecumenical": 3,
+      "Universal": 2,
+      "Lutheran": 2,
+      "Baptist": 1,
+      "Catholic": 0,
+      "Eastern Orthodox": 0,
+      "Oriental Orthodox": 0,
+      "Anglican": 0,
+      "Methodist": 0
+    },
+    "byType": {
+      "Father": 12,
+      "Confession": 5,
+      "Creed": 3,
+      "Catechism": 3,
+      "Council": 3,
+      "Scripture": 0
+    }
+  },
+  "content": {
+    "total": 286,
+    "tagged": 274
+  },
+  "tags": 20
+}
