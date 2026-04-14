@@ -2,6 +2,24 @@
 
 All notable changes to Council will be documented in this file.
 
+## [5.2.0] - 2026-04-14
+
+### Added
+- Institutes of the Christian Religion (Calvin): 3 books on God, Man, Christ
+- On the Bondage of the Will (Luther): 3 chapters
+- On the Freedom of a Christian (Luther): 3 chapters
+- The Imitation of Christ (Thomas a Kempis): 3 books
+- The Interior Castle (Teresa of Avila): 3 mansions
+- Dark Night of the Soul (John of the Cross): 3 books
+- Spiritual Exercises (Ignatius of Loyola): 3 weeks
+- Pilgrims Progress (John Bunyan): 3 stages
+- On Being a Christian (Hans Kung): 3 chapters
+- The Cross of Christ (John Stott): 3 chapters
+
+### Stats
+- Database: 120 sources, 840 content units
+- Reformation and devotional corpus significantly expanded
+
 ## [5.1.0] - 2026-04-14
 
 ### Added
