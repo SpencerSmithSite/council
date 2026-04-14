@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [1.7.0] - 2026-04-14
+
+### Added
+- Small Catechism expanded: Confession, Office of the Keys
+- Lumen Gentium expanded: People of God, Hierarchical Structure continued
+- Database: 34 sources, 484 content units, 1,815 tag associations
+
 ## [1.6.0] - 2026-04-14
 
 ### Added
