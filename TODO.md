@@ -9,6 +9,7 @@
 
 ## Completed
 - [x] Wire `generateStream()` to ChatScreen for real-time responses
+- [x] Add Lumen Gentium (Vatican II) to database
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming

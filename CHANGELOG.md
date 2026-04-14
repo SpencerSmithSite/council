@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [0.3.0] - 2026-04-14
+
+### Added
+- Lumen Gentium (Vatican II document) added to database
+- 3 chapters: Mystery of the Church, People of God, Hierarchical Structure
+- Source ID 30, Catholic tradition
+
 ## [0.2.0] - 2026-04-14
 
 ### Added
