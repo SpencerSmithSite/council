@@ -10,7 +10,8 @@
 ## Completed
 - [x] Wire `generateStream()` to ChatScreen for real-time responses
 - [x] All sources populated — zero empty sources
-- [x] Database: 100 sources, 780 content units, 2,500+ tag associations
+- [x] Database: 172 sources, 1005 content units, 2,800+ tag associations
+- [x] 🎉 1000+ content units milestone!
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming
@@ -19,11 +20,11 @@
 - [x] Initial push to GitHub
 
 ## Database Status
-- 🎉 **100 sources!**
-- All major Christian traditions represented
+- 🎉 **1000+ content units!**
+- 172 sources across all major Christian traditions
 - Catholic, Reformed, Lutheran, Anglican, Eastern Orthodox, Early Church, Methodist, Anabaptist, Oriental Orthodox
-- 780 content units
-- 2,500+ tag associations
+- 1005 content units
+- 2,800+ tag associations
 - FTS5 search functional
 
 ---
