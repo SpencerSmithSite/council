@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [2.3.0] - 2026-04-14
+
+### Added
+- Tertullian Apology expanded: Freedom of Religion, Christians and the Empire, Witness of the Martyrs
+- On the Incarnation (Athanasius) expanded: Divine Dilemma, Divine Solution, Incarnation
+- Database: 34 sources, 520 content units, 2,160 tag associations
+
 ## [2.2.0] - 2026-04-14
 
 ### Added
