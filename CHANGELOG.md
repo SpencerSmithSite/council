@@ -2,6 +2,23 @@
 
 All notable changes to Council will be documented in this file.
 
+## [5.0.0] - 2026-04-14
+
+### 🎉 Major Milestone: 100 Sources!
+
+- On the Sacraments (Leo the Great): 3 sermons
+- On the Holy Spirit (Didymus the Blind): 3 chapters
+- On the Divine Names (Pseudo-Dionysius): 3 chapters on Good, Being, Trinity
+- On the Celestial Hierarchy (Pseudo-Dionysius): 3 chapters on angels
+- On the Holy Icons (Theodore the Studite): 3 chapters
+- On the Vision of God (Gregory Palamas): 3 chapters on theosis
+- Pastor Aeternus (Vatican I): 3 chapters on papal primacy and infallibility
+
+### Stats
+- Database: 100 sources, 780 content units, 2,500+ tag associations
+- All major Christian traditions represented
+- Comprehensive Early Church Fathers corpus
+
 ## [4.2.0] - 2026-04-14
 
 ### Added
