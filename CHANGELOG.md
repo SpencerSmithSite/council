@@ -2,6 +2,15 @@
 
 All notable changes to Council will be documented in this file.
 
+## [3.6.0] - 2026-04-14
+
+### 🎉 Milestone: 60 Sources!
+
+- First Council of Constantinople (381 AD): Niceno-Constantinopolitan Creed
+- Fourth Lateran Council (1215 AD): Trinity and Transubstantiation
+- All 7 ecumenical councils now represented
+- Database: 60 sources, 658 content units
+
 ## [3.5.0] - 2026-04-14
 
 ### Added
