@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [0.5.0] - 2026-04-14
+
+### Added
+- Westminster Shorter Catechism added to database
+- 19 key questions covering Reformed theology
+- Source ID 32, Reformed tradition
+
 ## [0.4.0] - 2026-04-14
 
 ### Added
