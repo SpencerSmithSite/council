@@ -25,18 +25,23 @@
 - [x] Add Dei Verbum (Vatican II)
 - [x] Expand Chalcedonian Definition
 - [x] Expand Augsburg Confession (articles 13-18)
+- [x] Add Articles of Religion (Methodist)
+- [x] Expand CCC, Heidelberg, Belgic, Small Catechism
+- [x] Expand Confessions (Augustine)
+- [x] Expand Great Catechism (Gregory of Nyssa)
+- [x] Expand Thirty-Nine Articles
+- [x] Expand Westminster Shorter Catechism
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming
 - [x] 5 screens (home, browse, search, chat, content detail)
 - [x] RAG integration
-- [x] Thirty-Nine Articles (Anglican) added to database
 - [x] Initial push to GitHub
 
 ## Database Status
-- 34 sources across traditions (Catholic, Reformed, Lutheran, Anglican, Ecumenical, Early Church)
-- 456 content units
-- 1,765+ tag associations
+- 34 sources across traditions (Catholic, Reformed, Lutheran, Anglican, Ecumenical, Early Church, Methodist)
+- 495 content units
+- 1,830 tag associations
 - FTS5 search functional
 
 ---
