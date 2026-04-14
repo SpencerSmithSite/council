@@ -4,7 +4,7 @@
 - [ ] Test streaming responses on device (needs Xcode)
 
 ## Next
-- [ ] Add more content sources (Lumen Gentium, Council of Trent Catechism)
+- [ ] Add more content sources (future expansion)
 - [ ] Semantic search with embeddings (future)
 
 ## Completed
@@ -13,13 +13,18 @@
 - [x] Add Catechism of the Catholic Church to database
 - [x] Add Westminster Shorter Catechism to database
 - [x] Add Augsburg Confession to database
-- [x] Add Athanasian Creed to database
-- [x] Add Nicene Creed to database
 - [x] Add Chalcedonian Definition to database
 - [x] Add Heidelberg Catechism content
 - [x] Add Belgic Confession content
 - [x] Add Small Catechism content
 - [x] Expand Lumen Gentium (chapters 4-8)
+- [x] Add Early Church Fathers content (Contra Celsum, Confessions, Great Catechism)
+- [x] Add Expositions on the Psalms (Augustine)
+- [x] Expand ecumenical creeds with historical context
+- [x] Add Against Heresies (Irenaeus)
+- [x] Add Dei Verbum (Vatican II)
+- [x] Expand Chalcedonian Definition
+- [x] Expand Augsburg Confession (articles 13-18)
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming
@@ -27,6 +32,12 @@
 - [x] RAG integration
 - [x] Thirty-Nine Articles (Anglican) added to database
 - [x] Initial push to GitHub
+
+## Database Status
+- 34 sources across traditions (Catholic, Reformed, Lutheran, Anglican, Ecumenical, Early Church)
+- 456 content units
+- 1,765+ tag associations
+- FTS5 search functional
 
 ---
 
