@@ -2,6 +2,14 @@
 
 All notable changes to Council will be documented in this file.
 
+## [3.4.0] - 2026-04-14
+
+### Added
+- Epistle of Barnabas (Early Church): 3 chapters on the Two Ways
+- Shepherd of Hermas (Early Church): 3 sections on Church, Faith, Repentance
+- Expanded: On the Incarnation (Cross, Resurrection), Psalms (Psalm 1, 51), Clement, Polycarp, Contra Celsum
+- Database: 53 sources, 643 content units
+
 ## [3.3.0] - 2026-04-14
 
 ### Added
