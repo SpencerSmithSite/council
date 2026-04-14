@@ -3,6 +3,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../services/database_service.dart';
 import '../services/ollama_service.dart';
 
+// ContextPassage is defined in ollama_service.dart
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
   
@@ -90,27 +92,85 @@ class _ChatScreenState extends State<ChatScreen> {
             date: p['date_composed'],
           )).toList();
           
-          // Generate response with Ollama
-          final result = await _ollamaService.generateWithContext(
-            query: text,
-            passages: contextPassages,
+          // Build the prompt with context
+          final systemPrompt = _ollamaService.buildSystemPrompt();
+          final contextBuilder = StringBuffer();
+          contextBuilder.writeln('Relevant sources:');
+          contextBuilder.writeln();
+          
+          for (int i = 0; i < contextPassages.length; i++) {
+            final passage = contextPassages[i];
+            contextBuilder.writeln('[${i + 1}] ${passage.source}');
+            contextBuilder.writeln(passage.content);
+            contextBuilder.writeln();
+          }
+          
+          final fullPrompt = '''
+$contextBuilder
+
+User question: $text
+
+Please answer the question using the provided sources. Include citations like [1], [2], etc. when referencing specific sources.
+''';
+          
+          // Add placeholder message for streaming
+          final messageIndex = _messages.length;
+          setState(() {
+            _messages.add(ChatMessage(
+              text: '',
+              isUser: false,
+              timestamp: DateTime.now(),
+              citations: contextPassages.map((p) => p.source).toList(),
+            ));
+          });
+          
+          // Stream the response
+          final stream = _ollamaService.generateStream(
+            prompt: fullPrompt,
+            system: systemPrompt,
             model: _selectedModel,
           );
           
-          response = result.response;
-          citations = result.sources;
+          final responseBuffer = StringBuffer();
+          await for (final chunk in stream) {
+            responseBuffer.write(chunk);
+            if (mounted) {
+              setState(() {
+                _messages[messageIndex] = ChatMessage(
+                  text: responseBuffer.toString(),
+                  isUser: false,
+                  timestamp: _messages[messageIndex].timestamp,
+                  citations: _messages[messageIndex].citations,
+                );
+              });
+              _scrollToBottom();
+            }
+          }
+          
+          response = responseBuffer.toString();
+          citations = contextPassages.map((p) => p.source).toList();
         } else {
           // No relevant passages found
           response = 'I couldn\'t find any relevant sources in the database for your question. Try rephrasing or asking about a different topic.';
           citations = [];
+          
+          setState(() {
+            _messages.add(ChatMessage(
+              text: response,
+              isUser: false,
+              timestamp: DateTime.now(),
+              citations: citations,
+            ));
+            _isLoading = false;
+          });
+          _scrollToBottom();
+          return;
         }
       } else {
         // Ollama not available
         response = _getOfflineResponse(text);
         citations = [];
-      }
-      
-      if (mounted) {
+        
         setState(() {
           _messages.add(ChatMessage(
             text: response,
@@ -120,7 +180,14 @@ class _ChatScreenState extends State<ChatScreen> {
           ));
           _isLoading = false;
         });
-        
+        _scrollToBottom();
+        return;
+      }
+      
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
         _scrollToBottom();
       }
     } catch (e) {
