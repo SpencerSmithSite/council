@@ -33,6 +33,9 @@
 - [x] Expand Westminster Shorter Catechism
 - [x] Expand Apostles and Athanasian Creeds
 - [x] Expand Contra Celsum (Origen)
+- [x] Expand Council of Ephesus, Ancyra, Nicaea
+- [x] Expand Ignatius epistles, Papias fragments
+- [x] Expand Tertullian Apology, On the Incarnation (Athanasius)
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming
@@ -41,10 +44,10 @@
 - [x] Initial push to GitHub
 
 ## Database Status
-- 🎉 **500+ content units milestone!**
+- 🎉 **520+ content units!**
 - 34 sources across traditions (Catholic, Reformed, Lutheran, Anglican, Ecumenical, Early Church, Methodist)
-- 501 content units
-- 1,840 tag associations
+- 520 content units
+- 2,160 tag associations
 - FTS5 search functional
 
 ---
