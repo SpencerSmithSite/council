@@ -2,6 +2,14 @@
 
 All notable changes to Council will be documented in this file.
 
+## [1.3.0] - 2026-04-14
+
+### Added
+- Against Heresies (Irenaeus): 4 books on Gnosticism, Unity of God, Incarnation, Tradition
+- Dei Verbum (Vatican II): 6 chapters on Divine Revelation and Scripture
+- Chalcedonian Definition expanded: historical context, four adverbs, ecumenical significance
+- Database milestone: 34 sources, 456 content units, 1,765 tag associations
+
 ## [1.2.0] - 2026-04-14
 
 ### Added
