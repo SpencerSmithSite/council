@@ -2,6 +2,14 @@
 
 All notable changes to Council will be documented in this file.
 
+## [2.1.0] - 2026-04-14
+
+### Added
+- Council of Ephesus expanded: 3 key canons (Theotokos, Two Natures, Unity of Person)
+- Council of Ancyra expanded: 2 canons on penitence
+- First Council of Nicaea expanded: Homoousios definition and anathema against Arianism
+- Database: 34 sources, 508 content units, 1,923 tag associations
+
 ## [2.0.0] - 2026-04-14
 
 ### 🎉 Major Milestone: 500+ Content Units
