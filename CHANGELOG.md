@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [1.5.0] - 2026-04-14
+
+### Added
+- Heidelberg Catechism expanded: 4 questions (Christian life, law, good works, prayer)
+- Belgic Confession expanded: 3 articles (Justification, Sanctification, Holy Supper)
+- Database milestone: 34 sources, 473 content units, 1,800 tag associations
+
 ## [1.4.0] - 2026-04-14
 
 ### Added
