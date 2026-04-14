@@ -2,6 +2,51 @@
 
 All notable changes to Council will be documented in this file.
 
+## [5.3.0] - 2026-04-14
+
+### Added
+- Institutes of the Christian Religion (Calvin): 3 books
+- On the Bondage of the Will (Luther): 3 chapters
+- On the Freedom of a Christian (Luther): 3 chapters
+- The Imitation of Christ (Thomas a Kempis): 3 books
+- The Interior Castle (Teresa of Avila): 3 mansions
+- Dark Night of the Soul (John of the Cross): 3 books
+- Spiritual Exercises (Ignatius): 3 weeks
+- Pilgrims Progress (Bunyan): 3 stages
+- On Being a Christian (Kung): 3 chapters
+- The Cross of Christ (Stott): 3 chapters
+- Knowing God (Packer): 3 chapters
+- The Pursuit of God (Tozer): 3 chapters
+- Desiring God (Piper): 3 chapters
+- The Weight of Glory (Lewis): 3 essays
+- The God Who Is There (Schaeffer): 3 chapters
+- Celebration of Discipline (Foster): 3 chapters
+- Prophetic Faith of Our Fathers (Froom): 3 volumes
+- The Great Controversy (White): 3 chapters
+- Purpose Driven Life (Warren): 3 chapters
+- Ragamuffin Gospel (Manning): 3 chapters
+- The Jesus I Never Knew (Yancey): 3 chapters
+- Whats So Amazing About Grace (Yancey): 3 chapters
+- Cross and the Switchblade (Wilkerson): 3 chapters
+- Through Gates of Splendor (Elliot): 3 chapters
+- The Hiding Place (ten Boom): 3 chapters
+- Evidence That Demands a Verdict (McDowell): 3 chapters
+- The Case for Christ (Strobel): 3 chapters
+- The Screwtape Letters (Lewis): 3 letters
+- The Abolition of Man (Lewis): 3 chapters
+- The Problem of Pain (Lewis): 3 chapters
+- The Great Divorce (Lewis): 3 chapters
+- Letters to Malcolm (Lewis): 3 letters
+- Till We Have Faces (Lewis): 3 parts
+- The Four Loves (Lewis): 3 chapters
+- Surprised by Joy (Lewis): 3 chapters
+- A Grief Observed (Lewis): 3 chapters
+
+### Stats
+- Database: 146 sources, 918 content units
+- C.S. Lewis corpus significantly expanded
+- Modern devotional corpus significantly expanded
+
 ## [5.2.0] - 2026-04-14
 
 ### Added
