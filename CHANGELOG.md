@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [2.2.0] - 2026-04-14
+
+### Added
+- Ignatius epistles expanded: key passages on bishop unity, Eucharist, obedience
+- Fragments of Papias expanded: Gospels, Millennium
+- Database: 34 sources, 514 content units, 1,988 tag associations
+
 ## [2.1.0] - 2026-04-14
 
 ### Added
