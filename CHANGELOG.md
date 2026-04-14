@@ -2,6 +2,11 @@
 
 All notable changes to Council will be documented in this file.
 
+## [0.9.0] - 2026-04-14
+
+### Added
+- Small Catechism (Lutheran) content: 5 parts covering Commandments, Creed, Lord's Prayer, Baptism, Sacrament of the Altar
+
 ## [0.8.0] - 2026-04-14
 
 ### Added
