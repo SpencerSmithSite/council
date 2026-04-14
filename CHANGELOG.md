@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [0.4.0] - 2026-04-14
+
+### Added
+- Catechism of the Catholic Church added to database
+- 13 key paragraphs covering core theology (Creed, Trinity, Creation, Incarnation, Christ's Passion, Resurrection, Holy Spirit, Church, Sacraments, Baptism, Eucharist, Human Dignity, Prayer)
+- Source ID 31, Catholic tradition
+
 ## [0.3.0] - 2026-04-14
 
 ### Added
