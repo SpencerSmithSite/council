@@ -31,6 +31,8 @@
 - [x] Expand Great Catechism (Gregory of Nyssa)
 - [x] Expand Thirty-Nine Articles
 - [x] Expand Westminster Shorter Catechism
+- [x] Expand Apostles and Athanasian Creeds
+- [x] Expand Contra Celsum (Origen)
 - [x] Flutter app scaffolding
 - [x] Database service (SQLite + FTS5)
 - [x] Ollama service with streaming
@@ -39,9 +41,10 @@
 - [x] Initial push to GitHub
 
 ## Database Status
+- 🎉 **500+ content units milestone!**
 - 34 sources across traditions (Catholic, Reformed, Lutheran, Anglican, Ecumenical, Early Church, Methodist)
-- 495 content units
-- 1,830 tag associations
+- 501 content units
+- 1,840 tag associations
 - FTS5 search functional
 
 ---
