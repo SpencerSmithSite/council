@@ -2,6 +2,20 @@
 
 All notable changes to Council will be documented in this file.
 
+## [3.3.0] - 2026-04-14
+
+### Added
+- Expanded 8 existing sources with more content
+- Gaudium et Spes: Marriage, Culture, Economic Life
+- Roman Catechism: Lords Prayer, Sacraments in Detail
+- Chicago-Lambeth Quadrilateral: Historical and Ecumenical Context
+- Philaret Catechism: Incarnation, Resurrection, Holy Spirit
+- Savoy Declaration: Creation, Providence
+- Wesleys Sermons: New Birth, Witness of Spirit, Means of Grace
+- 1689 LBC: Creation, Providence, Fall
+- Scots Confession: Incarnation, Resurrection
+- Database: 51 sources, 627 content units, 2,300+ tag associations
+
 ## [3.2.0] - 2026-04-14
 
 ### 🎉 Milestone: 600+ Content Units
