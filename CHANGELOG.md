@@ -5,10 +5,13 @@ All notable changes to Council will be documented in this file.
 ## [0.7.0] - 2026-04-14
 
 ### Added
+- Chalcedonian Definition added to database (Source ID 37)
 - Athanasian Creed added to database
 - Nicene Creed added to database
 - 7 sections covering ecumenical Trinitarian theology
-- Sources ID 34-35, Ecumenical tradition
+
+### Fixed
+- Removed duplicate creed entries (sources 1-3 already contained Nicene, Apostles', Athanasian Creeds)
 
 ## [0.6.0] - 2026-04-14
 
