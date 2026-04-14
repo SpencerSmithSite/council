@@ -2,6 +2,20 @@
 
 All notable changes to Council will be documented in this file.
 
+## [3.7.0] - 2026-04-14
+
+### Added
+- Unitatis Redintegratio (Vatican II on Ecumenism): 3 chapters
+- Nostra Aetate (Vatican II on Non-Christian Religions): 3 chapters
+- Apology of the Augsburg Confession (Lutheran): 3 articles on justification, good works, Church
+- Luthers Large Catechism (Lutheran): 3 chapters on Commandments, Creed, Lords Prayer
+
+### Fixed
+- Augsburg Confession source 33 tradition corrected to Lutheran
+
+### Stats
+- Database: 64 sources, 670 content units, 2,381 tag associations
+
 ## [3.6.0] - 2026-04-14
 
 ### 🎉 Milestone: 60 Sources!
