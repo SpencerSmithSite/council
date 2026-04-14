@@ -2,6 +2,13 @@
 
 All notable changes to Council will be documented in this file.
 
+## [1.4.0] - 2026-04-14
+
+### Added
+- Articles of Religion (Methodist): 5 articles on Trinity, Son of God, Resurrection, Holy Ghost, Scripture
+- Catechism of the Catholic Church expanded: 5 more paragraphs (Man/Woman, Incarnation, Ascension, Church, Hell)
+- Database: 34 sources, 466 content units, 1,800+ tag associations
+
 ## [1.3.0] - 2026-04-14
 
 ### Added
