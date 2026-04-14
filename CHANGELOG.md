@@ -2,6 +2,15 @@
 
 All notable changes to Council will be documented in this file.
 
+## [2.0.0] - 2026-04-14
+
+### 🎉 Major Milestone: 500+ Content Units
+
+- Database reached 501 content units across 34 sources
+- 1,840 tag associations for robust RAG retrieval
+- Apostles and Athanasian Creeds expanded with explanations
+- Contra Celsum (Origen) expanded with On Prayer, On Free Will
+
 ## [1.8.0] - 2026-04-14
 
 ### Added
