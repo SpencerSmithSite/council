@@ -2,6 +2,33 @@
 
 All notable changes to Council will be documented in this file.
 
+## [14.0.0] - 2026-04-14
+
+### 🎉 Major Expansion: Medieval, Reformation & Eastern Orthodox
+
+**Medieval/Scholastic:**
+- On the Incarnation (Athanasius) - 6 chapters
+- Proslogion (Anselm) - 4 chapters (ontological argument)
+- Cur Deus Homo (Anselm) - 4 books (satisfaction theory)
+- Summa Theologica Selections (Aquinas) - 7 parts
+- Summa Contra Gentiles Selections (Aquinas) - 4 books
+
+**Reformation:**
+- Commentary on Galatians (Luther) - 4 chapters
+- Freedom of a Christian (Luther) - 3 sections
+- Institutes Selections (Calvin) - 6 books
+
+**Eastern Orthodox:**
+- Ladder of Divine Ascent (Climacus) - 5 steps
+- Philokalia Selections - 4 sections
+- On the Holy Spirit (Didymus) - 3 books
+- On the Holy Images (John of Damascus) - 3 orations
+
+### Stats
+- Database: 313 sources, 1457 content units
+- Comprehensive coverage: Early Church through Reformation
+- All major traditions represented
+
 ## [13.0.0] - 2026-04-14
 
 ### 🎉 Major Milestone: 300+ Sources, 1400+ Content Units!
