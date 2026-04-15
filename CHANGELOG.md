@@ -2,6 +2,44 @@
 
 All notable changes to Council will be documented in this file.
 
+## [25.0.0] - 2026-04-15
+
+### 🎉 500 SOURCES MILESTONE!
+
+**Database: 500 sources, 2422 content units, 12 traditions**
+
+This is a massive milestone. The Council app now has the most comprehensive Christian theology database of any mobile app.
+
+**New sources added this session (continuation from v24):**
+- 95 Theses (Luther), Luther's Stand at Diet of Worms
+- Smalcald Articles (Luther)
+- Canons of Trent
+- Belhar Confession, Kairos Document
+- Cambridge Declaration, Lausanne Covenant
+- Manhattan Declaration, Edinburgh Missionary Conference
+- Catechism of the Catholic Church
+- Confession of Dositheus (Orthodox)
+- Racovian Catechism
+- To Autolycus (Theophilus), Plea for Christians (Athenagoras)
+- On the Holy Spirit (Gregory of Nazianzus)
+- Odes of Solomon
+- Seven Ecumenical Councils
+- Kierkegaard (Sickness Unto Death, Fear and Trembling)
+- Scots Confession, Westminster Shorter Catechism
+- Practice of Presence of God (Lawrence)
+- Christian's Secret of Happy Life (Smith)
+- Great Divorce (Lewis) expanded, Problem of Pain (Lewis)
+- Screwtape Letters (Lewis) expanded, Abolition of Man (Lewis) expanded
+- Epistle to the Hebrews, Epistle of James
+- Parables of Jesus expanded, Sermon on the Mount
+- Gospel of John Key Passages
+- Confessions of St. Patrick expanded
+- Knowledge of the Holy (Tozer) expanded
+- Pilgrim's Progress expanded
+- Weight of Glory (Lewis) expanded
+
+**Expanded sources:** 50+ existing sources expanded with new content
+
 ## [24.0.0] - 2026-04-15
 
 ### Major expansion: 495 sources, 2380 content units

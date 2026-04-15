@@ -11,7 +11,8 @@
 ## Completed
 - [x] Wire `generateStream()` to ChatScreen for real-time responses
 - [x] All sources populated — zero empty sources
-- [x] 🎉 **2380+ CONTENT UNITS!** 495 sources, 2380 content units
+- [x] 🎉 **2422+ CONTENT UNITS!** 500 sources, 2422 content units
+- [x] 🎉 **500 SOURCES MILESTONE!**
 - [x] 🎉 **2000+ CONTENT UNITS!** 433 sources, 2000+ content units
 - [x] 🎉 **400+ SOURCES MILESTONE!**
 - [x] 12 Christian traditions represented
@@ -28,7 +29,7 @@
 - [x] Apologetics (Lewis, Schaeffer, Pascal)
 - [x] Ecumenical Creeds (Nicene, Apostles, Athanasian)
 - [x] Liturgical texts (Liturgy of Chrysostom, BCP)
-- [x] Biblical foundations (Parables of Jesus)
+- [x] Biblical foundations (Parables of Jesus, Gospel of John, Hebrews, James, Sermon on the Mount)
 - [x] Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, Helvetic, Scots, London Baptist, Roman, Trent)
 - [x] Modern declarations (Belhar, Lausanne, Manhattan, Cambridge, Edinburgh)
 - [x] Philosophical theology (Kierkegaard, Boethius)
@@ -41,8 +42,9 @@
 - [x] Initial push to GitHub
 
 ## Database Status
-- 🎉 **2380+ content units!**
-- 495 sources across 12 Christian traditions
+- 🎉 **2422+ content units!**
+- 🎉 **500 sources!**
+- 12 Christian traditions
 - Catholic, Reformed, Lutheran, Anglican, Eastern Orthodox, Early Church, Methodist, Baptist, Pentecostal, Oriental Orthodox, Universal, Ecumenical
 - 5,000+ tag associations
 - FTS5 search functional
