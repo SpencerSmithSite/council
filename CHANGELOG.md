@@ -2,6 +2,35 @@
 
 All notable changes to Council will be documented in this file.
 
+## [20.0.0] - 2026-04-14
+
+### 🎉 412 Sources, 1905 Content Units!
+
+**Full autonomous session — 100+ sources added across all traditions**
+
+**Key highlights:**
+- 400+ sources milestone reached
+- 1900+ content units
+- 12 Christian traditions
+- Comprehensive coverage: Apostolic Fathers through 21st century
+- 50+ git commits, versions v14→v20
+
+**New traditions expanded:**
+- Methodist: 1→6 sources
+- Baptist: 4→8 sources
+- Pentecostal: 2→5 sources
+- Oriental Orthodox: 3→8 sources
+
+**Major new source categories:**
+- Puritan theology: Owen, Burroughs, Baxter, Guthrie
+- Apologetics: Lewis (5 works), Schaeffer (2 works), Pascal
+- Monastic: Cassian, Evagrius, Life of Antony
+- Christology: Against Praxeas, Against Apollinarius, Cyril of Alexandria
+- Modern: Wright, Stott, Yancey (2), Niebuhr, Bavinck
+- Methodist/Holiness: Smith, Foster
+- Biblical: Parables of Jesus
+- Biography: Here I Stand (Bainton)
+
 ## [19.0.0] - 2026-04-14
 
 ### 🎉 400 SOURCES MILESTONE!
