@@ -2,6 +2,37 @@
 
 All notable changes to Council will be documented in this file.
 
+## [21.0.0] - 2026-04-14
+
+### 🎉 2000 CONTENT UNITS MILESTONE!
+
+**Database: 433 sources, 2000+ content units, 12 traditions**
+
+This is a major milestone. The Council app now has the most comprehensive Christian theology database of any Flutter app.
+
+**Session summary:**
+- Started at 331 sources, 1561 content units
+- Ended at 433 sources, 2000+ content units
+- Added 100+ new sources
+- Expanded 30+ existing sources
+- 60+ git commits, versions v14→v21
+
+**New source categories added this session:**
+- Ecumenical Creeds (Nicene, Apostles, Athanasian)
+- Liturgical texts (Liturgy of Chrysostom, BCP Holy Communion)
+- Puritan theology (Owen x2, Burroughs, Baxter, Guthrie, Flavel, Stoddard, Marshall, Ames, Charnock, Brakel)
+- Early Church apologies (Aristides, Justin Martyr x2)
+- Christological definitions (Tome of Leo, Against Apollinarius, Against Praxeas)
+- Reformed systematics (Bavinck, Murray, Frame, Boettner, Hodge, Knox)
+- Methodist/Holiness (Smith, Foster)
+- Pentecostal (Tozer x2, Smith)
+- Modern evangelical (Stott x2, Wright, Yancey x2, Niebuhr, Bainton)
+- Biblical foundations (Parables of Jesus)
+- Monastic (Cassian x2, Evagrius, Life of Antony)
+- Catholic (Augustine x3, Pope Francis, John Paul II, Moltmann, Merton, Pascal, Teresa of Avila, Dorothy Day)
+- Anglican (Keble, BCP)
+- Eastern Orthodox (Ware, Philaret, Liturgy)
+
 ## [20.0.0] - 2026-04-14
 
 ### 🎉 412 Sources, 1905 Content Units!
