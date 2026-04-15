@@ -2,6 +2,44 @@
 
 All notable changes to Council will be documented in this file.
 
+## [16.0.0] - 2026-04-14
+
+### 🎉 Major Expansion: 338 Sources, 1596 Content Units!
+
+**Evening autonomous session added 38 new sources:**
+
+**Methodist (3→5 sources):**
+- Plain Account of Methodists (Wesley)
+- The New Birth (Wesley)
+
+**Baptist (5→7 sources):**
+- Baptist Faith and Message (SBC)
+- Pilgrims Progress Part 2 (Bunyan)
+
+**Pentecostal (2→3 sources):**
+- Azusa Street (Bartleman)
+
+**Oriental Orthodox (5→7 sources):**
+- Hymns on the Nativity (Ephrem)
+- On the Unity of Christ (Cyril of Alexandria)
+
+**Anglican:**
+- Holy Living and Holy Dying (Taylor)
+- BCP Principles (Cranmer)
+
+**Catholic/Monastic:**
+- Rule of St Benedict
+- Little Flowers of St Francis
+
+**Modern Reformed:**
+- Knowing God (Packer)
+- Holiness of God (Sproul)
+
+### Stats
+- Database: 338 sources, 1596 content units
+- 12 traditions
+- All traditions now have 3+ sources
+
 ## [15.0.0] - 2026-04-14
 
 ### 🎉 Major Expansion: Methodist, Baptist, Pentecostal & Modern
