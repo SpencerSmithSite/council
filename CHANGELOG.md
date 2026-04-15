@@ -2,6 +2,47 @@
 
 All notable changes to Council will be documented in this file.
 
+## [19.0.0] - 2026-04-14
+
+### 🎉 400 SOURCES MILESTONE!
+
+**Database: 400 sources, 1855 content units, 12 traditions**
+
+This session added 70+ new sources and expanded many existing ones:
+
+**New Sources:**
+- Against Praxeas (Tertullian) — Trinitarian classic
+- Against Apollinarius (Gregory of Nyssa) — Christology
+- Life of Antony (Athanasius) — Monasticism
+- Catechetical Lectures (Cyril of Jerusalem)
+- Conferences & Institutes (Cassian) — Monastic theology
+- Mortification of Sin & Glory of Christ (Owen) — Puritan
+- Rare Jewel of Contentment (Burroughs)
+- Reformed Doctrine of Predestination (Boettner)
+- Christian's Great Interest (Guthrie)
+- Reformed Pastor (Baxter)
+- Cross of Christ (Stott)
+- Resurrection of Son of God (Wright)
+- How Should We Then Live (Schaeffer)
+- Surprised by Joy, Miracles (Lewis)
+- A Severe Mercy (Vanauken)
+- Jesus I Never Knew, Amazing Grace (Yancey)
+- Expositions on Psalms (Augustine)
+- Homilies on Hebrews (Chrysostom)
+- On the Soul & Resurrection (Gregory of Nyssa)
+- On Prayer (Evagrius)
+- Life of Moses (Philo)
+
+**Expanded Sources:**
+- On the Trinity (Augustine): 3→6
+- On Christian Doctrine (Augustine): 3→5
+- On Free Choice of the Will (Augustine): 3→5
+- Bondage of the Will (Luther): 3→5
+- Pilgrim's Progress (Bunyan): 3→6
+- Holiness of God (Sproul): 3→5
+- Orthodoxy (Chesterton): 3→6
+- Cost of Discipleship (Bonhoeffer): 3→6
+
 ## [18.0.0] - 2026-04-14
 
 ### 🎉 Major Expansion: 375 Sources, 1767 Content Units!
