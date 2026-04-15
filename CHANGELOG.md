@@ -2,6 +2,30 @@
 
 All notable changes to Council will be documented in this file.
 
+## [15.0.0] - 2026-04-14
+
+### 🎉 Major Expansion: Methodist, Baptist, Pentecostal & Modern
+
+**Methodist:**
+- Plain Account of Christian Perfection (Wesley) - 3 sections
+- Sermons Selections (Wesley) - 4 sermons
+
+**Baptist:**
+- Baptist Confession of Faith (1689) - 4 chapters
+
+**Pentecostal (NEW tradition!):**
+- Baptism in the Holy Spirit (Smith) - 3 chapters
+- Cross and the Switchblade (Wilkerson) - 3 chapters
+
+**Modern Reformed:**
+- Knowing God (Packer) - 4 chapters
+- Holiness of God (Sproul) - 3 chapters
+
+### Stats
+- Database: 323 sources, 1528 content units
+- 12 traditions (added Pentecostal)
+- Full spectrum: Early Church through Modern
+
 ## [14.0.0] - 2026-04-14
 
 ### 🎉 Major Expansion: Medieval, Reformation & Eastern Orthodox
