@@ -2,6 +2,18 @@
 
 All notable changes to Council will be documented in this file.
 
+## [26.0.0] - 2026-04-15
+
+### 🎉 2,500 CONTENT UNITS MILESTONE!
+
+**Database: 523 sources, 2500 content units, 12 traditions**
+
+**New in this version:**
+- Biblical key passages added: Genesis, Exodus, Deuteronomy, Proverbs, Isaiah, Jeremiah, Ezekiel, Daniel
+- New Testament key passages: Philippians, Colossians, 1-2 Corinthians, 1 Thessalonians, 1-2 Timothy, 1 Peter, Ephesians expanded, Matthew expanded, John expanded, Psalms expanded
+- 30+ thin sources expanded from 3→5 units each
+- Total new content units this session: ~140
+
 ## [25.0.0] - 2026-04-15
 
 ### 🎉 500 SOURCES MILESTONE!
