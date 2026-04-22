@@ -1,7 +1,7 @@
 name: theology_app
 description: Christian Theology AI Research App - Offline-first theological content with AI-powered Q&A
 publish_to: 'none'
-version: 57.0.0+35
+version: 58.0.0+35
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
