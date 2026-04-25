@@ -5,6 +5,7 @@
 
 ## Next
 - [x] ~~Test on web~~ ✅ Web build works (tested Apr 24)
+- [x] ~~Bookmarks system~~ ✅ Added Apr 24
 - [ ] Test on macOS (needs Xcode)
 - [ ] Add more content to thin sources
 - [ ] Semantic search with embeddings
