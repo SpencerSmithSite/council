@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 
@@ -90,9 +91,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: () {
-              // TODO: Share content
-            },
+            onPressed: _shareContent,
           ),
         ],
       ),
@@ -284,6 +283,34 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
         SnackBar(
           content: Text(isNowBookmarked ? 'Added to bookmarks' : 'Removed from bookmarks'),
           duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+  
+  void _shareContent() {
+    if (_singleContent == null) return;
+    
+    final title = _singleContent!['title'] ?? '';
+    final text = _singleContent!['content'] ?? '';
+    final source = _singleContent!['source_title'] ?? 'Unknown Source';
+    
+    final shareText = '''$title
+
+$text
+
+— $source
+
+Shared from Council app'''.trim();
+    
+    // On web/mobile, copy to clipboard
+    Clipboard.setData(ClipboardData(text: shareText));
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Copied to clipboard'),
+          duration: Duration(seconds: 2),
         ),
       );
     }
