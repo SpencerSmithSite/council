@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
+import '../services/search_history_service.dart';
 import 'content_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -14,12 +15,41 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>>? _results;
+  List<SearchHistoryItem> _history = [];
   bool _isSearching = false;
+  bool _showHistory = true;
+  
+  final SearchHistoryService _historyService = SearchHistoryService();
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+    _searchController.addListener(_onSearchChanged);
+  }
   
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
+  }
+  
+  Future<void> _loadHistory() async {
+    final history = await _historyService.getHistory();
+    setState(() {
+      _history = history;
+    });
+  }
+  
+  void _onSearchChanged() {
+    final text = _searchController.text;
+    setState(() {
+      _showHistory = text.isEmpty;
+      if (text.isEmpty) {
+        _results = null;
+      }
+    });
   }
   
   Future<void> _performSearch(String query) async {
@@ -27,12 +57,14 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         _results = null;
         _isSearching = false;
+        _showHistory = true;
       });
       return;
     }
     
     setState(() {
       _isSearching = true;
+      _showHistory = false;
     });
     
     final dbService = context.read<DatabaseService>();
@@ -44,6 +76,22 @@ class _SearchScreenState extends State<SearchScreen> {
         _isSearching = false;
       });
     }
+    
+    // Save to history
+    await _historyService.addSearch(query.trim());
+    _loadHistory();
+  }
+  
+  Future<void> _clearHistory() async {
+    await _historyService.clearHistory();
+    setState(() {
+      _history = [];
+    });
+  }
+  
+  Future<void> _removeHistoryItem(String query) async {
+    await _historyService.removeSearch(query);
+    _loadHistory();
   }
   
   @override
@@ -69,6 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           _searchController.clear();
                           setState(() {
                             _results = null;
+                            _showHistory = true;
                           });
                         },
                       )
@@ -79,26 +128,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 filled: true,
               ),
               onSubmitted: _performSearch,
-              onChanged: (value) {
-                // Trigger rebuild to show/hide clear button
-                setState(() {});
-              },
             ),
           ),
           
-          // Results
+          // Results or History
           Expanded(
             child: _isSearching
                 ? const Center(child: CircularProgressIndicator())
-                : _buildResults(),
+                : _showHistory
+                    ? _buildHistory()
+                    : _buildResults(),
           ),
         ],
       ),
     );
   }
   
-  Widget _buildResults() {
-    if (_results == null) {
+  Widget _buildHistory() {
+    if (_history.isEmpty) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -113,6 +160,55 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         ),
       );
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Recent Searches',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              TextButton(
+                onPressed: _clearHistory,
+                child: const Text('Clear'),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _history.length,
+            itemBuilder: (context, index) {
+              final item = _history[index];
+              return ListTile(
+                leading: const Icon(Icons.history),
+                title: Text(item.query),
+                trailing: IconButton(
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: () => _removeHistoryItem(item.query),
+                ),
+                onTap: () {
+                  _searchController.text = item.query;
+                  _performSearch(item.query);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildResults() {
+    if (_results == null) {
+      return const SizedBox.shrink();
     }
     
     if (_results!.isEmpty) {
@@ -132,6 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: _results!.length,
       itemBuilder: (context, index) {
         final result = _results![index];
@@ -153,13 +250,12 @@ class _SearchResultTile extends StatelessWidget {
     final tradition = result['tradition'] ?? '';
     final content = result['content_plain'] ?? '';
     
-    // Truncate content for preview
     final preview = content.length > 150
         ? '${content.substring(0, 150)}...'
         : content;
     
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: const Icon(Icons.article),
         title: Text(
@@ -189,7 +285,6 @@ class _SearchResultTile extends StatelessWidget {
   }
   
   void _navigateToDetail(BuildContext context) {
-    // Navigate to content detail screen
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -200,4 +295,3 @@ class _SearchResultTile extends StatelessWidget {
     );
   }
 }
-
