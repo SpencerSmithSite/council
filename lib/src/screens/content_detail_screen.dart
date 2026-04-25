@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
 import '../services/bookmark_service.dart';
+import '../services/recently_viewed_service.dart';
 
 class ContentDetailScreen extends StatefulWidget {
   final int? sourceId;
@@ -28,11 +29,13 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
   bool _isBookmarked = false;
   
   late final BookmarkService _bookmarkService;
+  late final RecentlyViewedService _recentlyViewedService;
   
   @override
   void initState() {
     super.initState();
     _bookmarkService = BookmarkService();
+    _recentlyViewedService = RecentlyViewedService();
     _loadContent();
   }
   
@@ -61,6 +64,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
           _isLoading = false;
         });
         _checkBookmarkStatus();
+        _trackView();
       }
     } else if (widget.sourceId != null) {
       // Load all content for source
@@ -240,6 +244,20 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
       default:
         return type[0].toUpperCase() + type.substring(1);
     }
+  }
+  
+  void _trackView() async {
+    if (widget.contentId == null || _singleContent == null) return;
+    
+    final content = _singleContent!;
+    final title = content['title'] ?? 'Untitled';
+    final source = content['source_title'] ?? 'Unknown Source';
+    
+    await _recentlyViewedService.addViewed(
+      widget.contentId!,
+      title,
+      source,
+    );
   }
   
   void _toggleBookmark() async {
