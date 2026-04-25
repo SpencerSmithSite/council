@@ -6,7 +6,13 @@
 ## Next
 - [x] ~~Test on web~~ ✅ Web build works (tested Apr 24)
 - [x] ~~Bookmarks system~~ ✅ Added Apr 24
+- [x] ~~Random passage~~ ✅ Added Apr 24
+- [x] ~~Search history~~ ✅ Added Apr 24
+- [x] ~~Recently viewed tracking~~ ✅ Added Apr 24
+- [x] ~~Settings service~~ ✅ Added Apr 24
 - [ ] Test on macOS (needs Xcode)
+- [ ] Settings screen UI
+- [ ] Recently viewed screen UI
 - [ ] Add more content to thin sources
 - [ ] Semantic search with embeddings
 
