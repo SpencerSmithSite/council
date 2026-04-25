@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
+import 'random_passage_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -140,6 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.search,
             title: 'Search',
             subtitle: 'Find content across all sources',
+            onTap: () {
+              // Will navigate via DefaultTabController - but we removed it
+              // For now, this just shows the card - navigation is via bottom nav
+            },
           ),
           
           const SizedBox(height: 8),
@@ -148,6 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.chat,
             title: 'Ask AI',
             subtitle: 'Query theological content with AI',
+            onTap: () {
+              // Will navigate via bottom nav
+            },
           ),
           
           const SizedBox(height: 8),
@@ -156,6 +164,12 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.casino,
             title: 'Random Passage',
             subtitle: 'Discover something new',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RandomPassageScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -204,11 +218,13 @@ class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
   
   const _QuickActionCard({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
   
   @override
@@ -219,6 +235,7 @@ class _QuickActionCard extends StatelessWidget {
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }
