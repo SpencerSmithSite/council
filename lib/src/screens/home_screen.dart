@@ -153,9 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           
           _QuickActionCard(
-            icon: Icons.menu_book,
-            title: 'Browse',
-            subtitle: 'Explore by tradition or source type',
+            icon: Icons.casino,
+            title: 'Random Passage',
+            subtitle: 'Discover something new',
           ),
         ],
       ),
