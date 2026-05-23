@@ -389,7 +389,7 @@ The database has ${_messages.length} messages loaded, but AI responses require O
               ),
               if (_ollamaAvailable && _availableModels.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('Available models:'),
+                const Text('Available models:'),
                 ..._availableModels.map((m) => Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text('• $m'),

@@ -101,7 +101,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         // Theme
-        _SectionTitle('Appearance'),
+        const _SectionTitle('Appearance'),
         Card(
           child: Column(
             children: [
@@ -127,7 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 16),
         
         // Font Size
-        _SectionTitle('Reading'),
+        const _SectionTitle('Reading'),
         Card(
           child: Column(
             children: [
@@ -155,7 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 16),
         
         // Citations
-        _SectionTitle('AI Chat'),
+        const _SectionTitle('AI Chat'),
         Card(
           child: SwitchListTile(
             secondary: const Icon(Icons.format_quote),
