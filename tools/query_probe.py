@@ -103,6 +103,44 @@ def fuse(lex, sem, limit=6):
     return [(u, spans.get(u)) for u in ordered]
 
 
+def diversify(conn, ranked, limit=6, max_per_source=2, max_per_tradition=None):
+    """Mirror of HybridRanker.diversify — see that class for the rationale.
+
+    Kept in step with the Dart deliberately: a ranking change has to be
+    checkable against the real corpus, not only in unit tests.
+    """
+    cap = max_per_tradition or -(-limit // 2)
+    selected, deferred = [], []
+    per_source, per_tradition = {}, {}
+
+    for unit_id, span in ranked:
+        row = conn.execute(
+            """SELECT s.title, t.name FROM content_units cu
+               LEFT JOIN sources s ON cu.source_id = s.id
+               LEFT JOIN traditions t ON s.tradition_id = t.id
+               WHERE cu.id = ?""",
+            (unit_id,),
+        ).fetchone()
+        source, tradition = row if row else (None, None)
+
+        if (len(selected) >= limit
+                or per_source.get(source, 0) >= max_per_source
+                or per_tradition.get(tradition, 0) >= cap):
+            deferred.append((unit_id, span))
+            continue
+
+        selected.append((unit_id, span))
+        per_source[source] = per_source.get(source, 0) + 1
+        per_tradition[tradition] = per_tradition.get(tradition, 0) + 1
+
+    for item in deferred:
+        if len(selected) >= limit:
+            break
+        selected.append(item)
+
+    return selected
+
+
 def describe(conn, unit_id, span):
     row = conn.execute(
         """SELECT s.title, s.author, t.name, cu.title, cu.content
@@ -124,7 +162,7 @@ def run(conn, matrix, meta, tokenizer, session, question, label=None):
 
     lex = lexical(conn, question)
     sem = semantic(matrix, meta, tokenizer, session, question)
-    results = fuse(lex, sem)
+    results = diversify(conn, fuse(lex, sem, limit=40))
 
     traditions = set()
     for unit_id, span in results:

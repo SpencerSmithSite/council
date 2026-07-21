@@ -337,8 +337,21 @@ Ordered by value.
 
 ## Phase 6 — Goal-question verification (2026-07-21)
 
-Three questions the app is meant to answer well were tested end-to-end with
-`tools/query_probe.py`. **None of them work yet, for three different reasons.**
+The app must answer an open-ended stream of questions of this shape, not any
+fixed list. Three representative ones were tested end-to-end with
+`tools/query_probe.py`; each stands for a **class** of question, and the fix
+belongs at the class level rather than the example.
+
+| Class | Example tested | Needs |
+|---|---|---|
+| Comparative across traditions | Catholic vs Lutheran on baptism | broad coverage + diverse results |
+| Author-scoped | What did Aquinas say about Mary? | author recognition + author's works |
+| Source-scoped enumeration | Topics covered at Trent? | source recognition + that source |
+| Doctrinal / vocabulary mismatch | How is a person saved? | semantic search *(works today)* |
+| Tradition-scoped | What do Baptists teach about communion? | coverage + tradition filter |
+| Practice / liturgical | How was the Eucharist celebrated? | semantic search *(works today)* |
+
+**None of the first three work yet, for three different reasons.**
 The retrieval machinery is sound — two doctrinal control questions return
 excellent results — so what is missing is coverage and constraints, not ranking.
 
@@ -400,3 +413,68 @@ exist, nor filter on an author it has no concept of.
 - [ ] Wire the ONNX query encoder *(after the above)*
 - [ ] Retrieval evaluation set — extend the `query_probe.py` suite with
   expected sources per question so results are scored, not eyeballed.
+
+
+---
+
+## Phase 7 — Diversity-aware ranking (2026-07-21)
+
+Ingesting the Reformed confessions proved insufficient on its own: Heidelberg
+Q74, "Are infants also to be baptized?", is the **single best semantic match**
+for a Reformed infant-baptism question (0.687) and still does not appear in
+fused results.
+
+Reciprocal rank fusion rewards agreement between the lexical and semantic
+engines. With 398 Early Church sources against 3 Reformed, the lexical engine
+floods with patristic hits, so agreement becomes a proxy for *how much of a
+tradition the corpus happens to hold*:
+
+| | RRF score |
+|---|---:|
+| Heidelberg Q74 — semantic rank 1, absent from lexical | 0.0164 |
+| Any patristic unit present in both lists | 0.0292 |
+
+For an app whose purpose is comparing traditions this is a design flaw, not a
+tuning parameter. It will recur for **every** tradition added while the corpus
+stays lopsided, and it silently penalises exactly the small-tradition sources
+that make a comparative answer possible.
+
+- [x] **Cap results per source and per tradition** — `HybridRanker.diversify`,
+  wired into `searchForRAG`. Quotas are a *reservation, not a ceiling*: they
+  guarantee minority sources reach the result set, then the majority tops the
+  list up rather than returning a needlessly short one.
+- [x] **Mirror the algorithm in `query_probe.py`** — verified against the real
+  corpus, not only in unit tests. Measured effect:
+
+  | Question | Before | After |
+  |---|---|---|
+  | Reformed infant baptism | 1 tradition, Heidelberg Q74 absent | 3 traditions, **Q74 present** |
+  | Catholic vs Lutheran baptism | 1 tradition | **4 traditions** |
+  | Reformed predestination | — | Dordt, Belgic, Second Helvetic |
+
+### What diversity exposed
+
+Making minority traditions visible promotes exactly the sources that have no
+provenance. "Catechism of the Catholic Church", "Thirty-Nine Articles",
+"Westminster Shorter Catechism" and "Second Helvetic Confession" now appear
+prominently in results — and all four are unprovenanced legacy paraphrase.
+
+Diversity ranking did not create this problem; it made it visible and much
+more consequential. **Replacing those sources is now urgent rather than
+housekeeping**, because they are no longer buried.
+- [ ] **Surface the tradition on each citation** in the UI — a comparative
+  answer is only checkable if the reader can see which tradition each source
+  speaks for.
+
+### Still outstanding from Phase 6
+
+- [ ] **Lutheran corpus** — the last thing blocking the comparative class.
+  `bookofconcord.org` does not respond; a mirror does, but its Augsburg text
+  could not be confirmed as the public-domain 1921 Triglotta rather than a
+  modern copyrighted translation. Needs either a verified public-domain source
+  (archive.org scan of the Concordia Triglotta) or a licensing decision.
+- [ ] **Metadata-aware retrieval** — author, source and tradition recognition,
+  for the author-scoped and source-scoped classes.
+- [ ] **Corpus distribution** — now urgent rather than theoretical: GitHub
+  warns the 53 MB compressed corpus exceeds its 50 MB recommendation, and it
+  grows with every tradition added.
