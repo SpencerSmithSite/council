@@ -55,6 +55,17 @@ class EntityRecogniser {
   static const _minTokensNamingWork = 2;
   static const _minTitleFraction = 0.6;
 
+  /// A token appearing in at most this many works is distinctive enough that
+  /// matching it, *alongside at least one other token*, names the work even if
+  /// the title is long.
+  ///
+  /// Without this, renaming "Council of Trent" to "The Canons and Decrees of
+  /// the Council of Trent" silently broke scoping: the question supplies
+  /// "council" and "trent", which is two of four title tokens and falls under
+  /// the fraction. Requiring two tokens still holds, so this does not reopen
+  /// the single-rare-token false positives ("saved", "virgin", "topics").
+  static const _distinctiveWorkThreshold = 2;
+
   /// A question naming more works than this is naming a topic, not a work.
   static const _maxNamedWorks = 6;
 
@@ -212,9 +223,13 @@ class EntityRecogniser {
     // "trinity" in the title — except where a token is rare enough to identify
     // its work by itself.
     final hits = <int, int>{};
+    final withDistinctive = <int>{};
     for (final token in tokens) {
       final candidates = _sourceTokens[token];
       if (candidates == null) continue;
+      if (candidates.length <= _distinctiveWorkThreshold) {
+        withDistinctive.addAll(candidates);
+      }
       for (final id in candidates) {
         hits[id] = (hits[id] ?? 0) + 1;
       }
@@ -224,7 +239,9 @@ class EntityRecogniser {
     for (final entry in hits.entries) {
       final total = _sourceTokenCounts[entry.key] ?? 0;
       if (total == 0 || entry.value < _minTokensNamingWork) continue;
-      if (entry.value >= total || entry.value >= total * _minTitleFraction) {
+      if (entry.value >= total ||
+          entry.value >= total * _minTitleFraction ||
+          withDistinctive.contains(entry.key)) {
         namedWorks.add(entry.key);
       }
     }

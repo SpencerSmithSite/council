@@ -583,13 +583,56 @@ on one side only.
 
 ### Next
 
-- [ ] **Verified Catholic primary text** — Trent's actual decrees (Waterworth
-  translation, 1848) rather than the paraphrase, so the comparative answer is
-  genuine on both sides.
+- [x] **Verified Catholic primary text** — `tools/ingest_trent.py`. Waterworth's
+  1848 translation (archive.org scan of the 1888 reprint): **104 units** across
+  the ten doctrinal sessions, replacing the seven units of paraphrase.
+
+  This OCR was accepted where the 1851 Book of Concord scan was rejected, and
+  the difference was measured rather than assumed: a garble check over the body
+  found no obvious errors here, against roughly one per hundred characters
+  there. The one artifact is doubled spaces from column justification.
+
+  That artifact then caused the parser to find nothing at all — the doubled
+  spaces sit *inside* the headings, so the file reads "SESSION  THE  FOURTH"
+  and a pattern written against normal spacing matched zero sessions.
+  Whitespace is now collapsed before anchoring, not after.
 - [ ] **Re-ingest the remaining unprovenanced confessions** — Thirty-Nine
   Articles, Westminster Shorter and Larger, Second Helvetic, Scots. Genuine
-  text, no provenance. Not on Gutenberg or at the CCEL path tried; needs a
-  located source.
+  text, no provenance. Not on Gutenberg, and the CCEL path tried returned 404;
+  needs a located source. **23 sources still lack provenance.**
 - [ ] Surface tradition and provenance on citations in the UI.
 - [ ] Wire the ONNX query encoder; scored retrieval evaluation set.
 - [ ] Corpus distribution — now 54 MB compressed.
+
+
+---
+
+## Phase 10 — Trent's actual decrees (2026-07-21)
+
+The comparative class is now primary text on both sides. Asking how Catholic and
+Lutheran teaching on baptism differ returns Trent's decrees alongside the
+Smalcald Articles and Luther's Small Catechism — where a day ago the Catholic
+side was seven units of paraphrase and the Lutheran side did not exist.
+
+### A regression this caused, and the rule that fixes it
+
+Renaming the source from "Council of Trent" to its full title silently broke
+source scoping. The question supplies "council" and "trent" — two of four title
+tokens, under the 0.6 fraction threshold — so a question explicitly naming the
+council stopped being scoped to it.
+
+The fix is narrow on purpose: a token appearing in at most two works is
+distinctive enough to name that work **when matched alongside at least one
+other token**. The two-token requirement still holds, so this does not reopen
+the single-rare-token false positives ("saved", "virgin", "topics") that made
+the earlier rule untenable. Both behaviours are pinned by tests, and the rule
+is mirrored in `query_probe.py` and checked against the real corpus.
+
+### Known quality gap, not yet addressed
+
+Retrieval now finds the right *sources* for a comparative question but not
+always the right *passages* — a baptism question returned Trent's session on
+Penance and the Apology's article on God. Unit selection ranks whole units,
+some of which are large; chunk selection then picks within the chosen unit
+rather than choosing the best chunk corpus-wide. Worth revisiting when the
+query encoder lands, since semantic scoring at chunk level is what fixes it.
