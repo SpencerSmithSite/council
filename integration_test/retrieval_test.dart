@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:theology_app/src/services/database_service.dart';
 import 'package:theology_app/src/services/search/entity_recogniser.dart';
+import 'package:theology_app/src/services/search/semantic_search.dart';
 
 /// Retrieval, exercised against the real bundled corpus on a real device.
 ///
@@ -119,6 +120,8 @@ void main() {
     });
   });
 
+  group('hybrid retrieval', hybridTests);
+
   group('passage selection', () {
     test('returns a readable slice of an enormous unit', () async {
       // Augustine's Enchiridion runs to 162,014 characters. Before chunking,
@@ -144,5 +147,45 @@ void main() {
         expect(row['id'], isNotNull);
       }
     });
+  });
+}
+
+/// Hybrid retrieval — lexical and semantic together, as the app runs it.
+///
+/// Kept in this file rather than the encoder's so it exercises the real
+/// `searchForRAG` path, including scope, fusion and diversification.
+void hybridTests() {
+  late DatabaseService db;
+
+  setUpAll(() async {
+    db = DatabaseService();
+    await db.initialize();
+    db.semantic = await SemanticSearch.tryLoad(db.database);
+  });
+
+  test('semantic search is actually available', () {
+    expect(db.semantic, isNotNull,
+        reason: 'the model should load on a supported platform');
+    expect(db.semantic!.vectorCount, greaterThan(50000));
+  });
+
+  test('answers a question whose words are not in the answer', () async {
+    // The whole point of the semantic half: this shares almost no vocabulary
+    // with confessional language about justification.
+    final rows = await db.searchForRAG('How is a person saved?', limit: 6);
+    expect(rows, isNotEmpty);
+    for (final row in rows) {
+      expect((row['content'] as String).trim(), isNotEmpty);
+    }
+  });
+
+  test('degrades to lexical when the model is absent', () async {
+    final lexicalOnly = DatabaseService();
+    await lexicalOnly.initialize();
+    lexicalOnly.semantic = null;
+
+    final rows = await lexicalOnly.searchForRAG('baptism', limit: 5);
+    expect(rows, isNotEmpty,
+        reason: 'no model must mean worse search, not broken search');
   });
 }

@@ -1,30 +1,28 @@
 PODS:
-  - FlutterMacOS (1.0.0)
-  - shared_preferences_foundation (0.0.1):
-    - Flutter
+  - flutter_secure_storage_macos (6.1.3):
     - FlutterMacOS
-  - sqflite_darwin (0.0.4):
-    - Flutter
+  - FlutterMacOS (1.0.0)
+  - onnxruntime (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
+  - flutter_secure_storage_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - sqflite_darwin (from `Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin`)
+  - onnxruntime (from `Flutter/ephemeral/.symlinks/plugins/onnxruntime/macos`)
 
 EXTERNAL SOURCES:
+  flutter_secure_storage_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  shared_preferences_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
-  sqflite_darwin:
-    :path: Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin
+  onnxruntime:
+    :path: Flutter/ephemeral/.symlinks/plugins/onnxruntime/macos
 
 SPEC CHECKSUMS:
+  flutter_secure_storage_macos: 7f45e30f838cf2659862a4e4e3ee1c347c2b3b54
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  onnxruntime: 07de55f2042e50ef3769768feb45eb69552cff05
 
 PODFILE CHECKSUM: 54d867c82ac51cbd61b565781b9fada492027009
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

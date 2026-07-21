@@ -31,6 +31,11 @@ dependencies:
   # Secure storage for user-supplied API keys (Keychain / Keystore)
   flutter_secure_storage: ^9.2.2
 
+  # Runs the bundled embedding model so a query can be encoded on-device.
+  # Supports android, ios, linux, macos and windows — every platform targeted
+  # since web was dropped.
+  onnxruntime: ^1.4.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -45,3 +50,4 @@ flutter:
     - assets/theology.db.gz
     - assets/metadata.json
     - assets/model/vocab.txt
+    - assets/model/model_quantized.onnx

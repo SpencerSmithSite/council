@@ -6,8 +6,14 @@ import 'package:sqflite/sqflite.dart';
 
 import 'search/entity_recogniser.dart';
 import 'search/hybrid_ranker.dart';
+import 'search/semantic_search.dart';
 
 class DatabaseService {
+  /// Optional semantic retrieval. Injected rather than constructed here so the
+  /// unit suite never pulls in the native plugin, and so an app on a device
+  /// that cannot run the model degrades to lexical search instead of failing.
+  SemanticSearch? semantic;
+
   /// Lazily built on first scoped search — it reads every source row, which is
   /// wasted work for a session that never asks a scoped question.
   EntityRecogniser? _recogniser;
@@ -249,20 +255,46 @@ class DatabaseService {
       tagResults = await searchByTags(queryTags, limit: limit);
     }
     
-    // Merge and deduplicate by id, prioritizing FTS results
-    final seen = <int>{};
-    final combined = <Map<String, dynamic>>[];
-    
-    for (final r in ftsResults) {
-      final id = r['id'] as int;
-      if (seen.add(id)) combined.add(r);
+    // Semantic ranking, when the model is available. This is what lets a
+    // question be answered by passages that share its meaning but not its
+    // words — "how is a person saved?" against confessional language about
+    // justification, which lexical search structurally cannot reach.
+    List<int> semanticUnits = const [];
+    if (semantic != null) {
+      semanticUnits = await semantic!.rankedUnits(
+        query,
+        limit: limit * 4,
+        allowedUnitIds: scope.isNotEmpty ? await _unitsInScope(scope) : null,
+      );
     }
-    
-    for (final r in tagResults) {
-      final id = r['id'] as int;
-      if (seen.add(id)) combined.add(r);
+
+    // Fuse the two rankings by reciprocal rank. BM25 and cosine sit on
+    // incomparable scales, so rank position is what can be combined without
+    // calibrating either distribution.
+    final byId = <int, Map<String, dynamic>>{};
+    for (final row in [...ftsResults, ...tagResults]) {
+      byId.putIfAbsent(row['id'] as int, () => row);
     }
-    
+
+    final missing = semanticUnits.where((id) => !byId.containsKey(id)).toList();
+    for (final row in await _unitsByIds(missing)) {
+      byId[row['id'] as int] = row;
+    }
+
+    final fused = HybridRanker.fuse(
+      lexical: [
+        for (final row in ftsResults) row['id'] as int,
+        for (final row in tagResults) row['id'] as int,
+      ],
+      semantic: semanticUnits,
+      limit: limit * 4,
+    );
+
+    final combined = [
+      for (final id in fused)
+        if (byId[id] != null) byId[id]!,
+    ];
+
     // Spread the results across sources and traditions before truncating.
     // Relevance order alone fills every slot from whichever tradition the
     // corpus happens to hold most of, which for a comparative question is the
@@ -281,6 +313,42 @@ class DatabaseService {
       for (final row in selected)
         {...row, 'content': await _bestChunkText(row, query)},
     ];
+  }
+
+  /// The content unit ids a recognised scope admits.
+  Future<Set<int>> _unitsInScope(RecognisedEntities scope) async {
+    final clauses = <String>[];
+    final args = <Object?>[];
+    if (scope.sourceIds.isNotEmpty) {
+      clauses.add('s.id IN (${List.filled(scope.sourceIds.length, '?').join(',')})');
+      args.addAll(scope.sourceIds);
+    }
+    if (scope.traditionIds.isNotEmpty) {
+      clauses.add(
+          's.tradition_id IN (${List.filled(scope.traditionIds.length, '?').join(',')})');
+      args.addAll(scope.traditionIds);
+    }
+    if (clauses.isEmpty) return const {};
+
+    final rows = await database.rawQuery('''
+      SELECT cu.id FROM content_units cu
+      JOIN sources s ON cu.source_id = s.id
+      WHERE ${clauses.join(' OR ')}
+    ''', args);
+    return {for (final row in rows) row['id'] as int};
+  }
+
+  /// Fetch units the semantic ranking found that the lexical pass did not.
+  Future<List<Map<String, dynamic>>> _unitsByIds(List<int> ids) async {
+    if (ids.isEmpty) return const [];
+    return database.rawQuery('''
+      SELECT $_contentUnitColumns
+      FROM content_units cu
+      LEFT JOIN sources s ON cu.source_id = s.id
+      LEFT JOIN traditions t ON s.tradition_id = t.id
+      LEFT JOIN source_types st ON s.source_type_id = st.id
+      WHERE cu.id IN (${List.filled(ids.length, '?').join(',')})
+    ''', ids);
   }
 
   /// Text of the chunk within [row]'s unit that best matches [query].

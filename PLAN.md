@@ -688,3 +688,51 @@ immediately.
 - [ ] Generate `ios/`, `android/`, `windows/`, `linux/` targets and run there.
 - [ ] Remaining 23 unprovenanced sources.
 - [ ] Corpus distribution — 54 MB compressed, 120 MB installed.
+
+
+---
+
+## Phase 12 — Semantic search live; all platforms; web dropped (2026-07-21)
+
+Decisions taken: accept the native dependency, support every OS including
+mobile, drop web, and pursue downloadable data packs.
+
+- [x] **Query encoder wired.** `onnxruntime` 1.4.1 declares android, ios,
+  linux, macos and windows — every remaining target — which settles the risk
+  flagged before committing to it. The 54,854 vectors shipped since Phase 5
+  were dead weight until now; semantic search runs in the app for the first
+  time.
+- [x] **Semantic is optional by construction.** `SemanticSearch.tryLoad`
+  returns null on failure and retrieval stays lexical. A device that cannot run
+  the model gets a searchable library, not a failed launch — covered by a test
+  that runs retrieval with the model explicitly absent.
+- [x] **Kept out of the unit suite.** The encoder runs through a native plugin,
+  so anything importing it transitively cannot run under `flutter test`.
+  Injecting it into `DatabaseService` rather than constructing it there keeps
+  55 unit tests platform-free.
+- [x] **All five platforms generated** — android, ios, linux, macos, windows.
+- [x] **Web dropped.** It compiled but threw at runtime: `sqflite` has no web
+  implementation, so the database never opened. Removing it is honest rather
+  than costly. It is **not** needed for data packs — see below.
+
+### Hosting data packs — answered
+
+Packs need static file hosting, not a web app or a server. **GitHub Releases**
+covers it: free, CDN-backed, versioned, up to 2 GB per file, already where the
+code lives, and reachable by plain HTTP GET from the app. Dropping the Flutter
+web target has no bearing on it.
+
+- [ ] **Design the pack format** — a core corpus in the app, per-tradition
+  packs downloaded on demand. Needs a manifest (versions, sizes, checksums), a
+  download/verify/install path, and a schema that can attach a pack's units,
+  chunks and vectors to the existing database.
+
+### Next
+
+- [ ] Build and run on iOS and Android — generated, not yet exercised. Mobile
+  is where Ollama needs LAN/VPN reachability, which needs
+  `NSLocalNetworkUsageDescription` and an ATS exception on iOS, and a
+  cleartext-traffic policy on Android.
+- [ ] Surface tradition and provenance on citations in the UI.
+- [ ] Remaining 23 unprovenanced sources.
+- [ ] Scored retrieval evaluation set.
