@@ -91,7 +91,7 @@ def normalized_title_tokens(title):
 def load_units(conn):
     return conn.execute(
         """
-        SELECT cu.id, cu.source_id, cu.title, cu.content_plain, cu.unit_type,
+        SELECT cu.id, cu.source_id, cu.title, cu.content AS content_plain, cu.unit_type,
                s.title AS source_title
         FROM content_units cu
         LEFT JOIN sources s ON cu.source_id = s.id
