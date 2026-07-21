@@ -133,7 +133,7 @@ class OllamaService {
     for (int i = 0; i < passages.length; i++) {
       final passage = passages[i];
       contextBuilder.writeln('[${i + 1}] ${passage.source}');
-      contextBuilder.writeln(passage.content);
+      contextBuilder.writeln(passage.contextContent);
       contextBuilder.writeln();
     }
     
@@ -195,17 +195,36 @@ Guidelines:
 }
 
 class ContextPassage {
+  /// Per-passage character budget for RAG context.
+  ///
+  /// Passage lengths are wildly uneven — most are a few hundred characters but
+  /// the longest single unit is ~83 KB, which would blow a local model's
+  /// context window on its own.
+  static const int maxContextChars = 1500;
+
   final String source;
   final String content;
   final String? tradition;
   final String? date;
-  
+
   ContextPassage({
     required this.source,
     required this.content,
     this.tradition,
     this.date,
   });
+
+  /// [content] trimmed to [maxContextChars], cut at a word boundary so the
+  /// model doesn't receive a truncated word.
+  String get contextContent {
+    if (content.length <= maxContextChars) return content;
+
+    final clipped = content.substring(0, maxContextChars);
+    final lastSpace = clipped.lastIndexOf(RegExp(r'\s'));
+    final cut = lastSpace > maxContextChars ~/ 2 ? lastSpace : maxContextChars;
+
+    return '${content.substring(0, cut).trimRight()}… [passage truncated]';
+  }
 }
 
 class GenerateResult {

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -140,7 +141,7 @@ class DatabaseService {
     final ftsResults = await search(query, limit: limit * 2);
     
     // Extract potential tags from query
-    final queryTags = _extractTags(query);
+    final queryTags = extractTags(query);
     
     // Get tag-based results if we have tags
     List<Map<String, dynamic>> tagResults = [];
@@ -165,37 +166,104 @@ class DatabaseService {
     return combined.take(limit).toList();
   }
   
-  /// Extract potential tag slugs from a query
-  List<String> _extractTags(String query) {
-    // Map common theological terms to tag slugs
-    final tagMap = {
-      'trinity': 'trinity',
-      'incarnation': 'incarnation',
-      'christology': 'christology',
-      'salvation': 'soteriology',
-      'grace': 'grace',
-      'baptism': 'baptism',
-      'eucharist': 'eucharist',
-      'sin': 'sin',
-      'justification': 'justification',
-      'faith': 'faith',
-      'prayer': 'prayer',
-      'resurrection': 'resurrection',
-      'church': 'ecclesiology',
-      'scripture': 'scripture',
-      'creation': 'creation',
-      'atonement': 'atonement',
-      'holy spirit': 'pneumatology',
-      'sacrament': 'sacraments',
-      'predestination': 'predestination',
-      'free will': 'free-will',
-    };
-    
-    final lower = query.toLowerCase();
-    return tagMap.entries
-        .where((e) => lower.contains(e.key))
-        .map((e) => e.value)
-        .toList();
+  /// The complete tag vocabulary present in the bundled database.
+  ///
+  /// Every slug produced by [extractTags] must appear here — a mapping to a
+  /// slug outside this set matches nothing and silently degrades retrieval.
+  static const Set<String> tagSlugs = {
+    'angels',
+    'baptism',
+    'christology',
+    'church',
+    'creation',
+    'eschatology',
+    'eucharist',
+    'faith',
+    'grace',
+    'holy-spirit',
+    'incarnation',
+    'justification',
+    'last-judgment',
+    'prayer',
+    'sacraments',
+    'salvation',
+    'sanctification',
+    'scripture',
+    'sin',
+    'trinity',
+    'worship',
+  };
+
+  /// Query phrases mapped onto the tag vocabulary.
+  ///
+  /// Several phrases are technical names for a doctrine the database tags under
+  /// a plainer slug (soteriology → salvation, ecclesiology → church), so the
+  /// mapping is many-to-many rather than one-to-one.
+  static const Map<String, List<String>> _tagSynonyms = {
+    'angel': ['angels'],
+    'atonement': ['salvation', 'christology'],
+    'baptism': ['baptism'],
+    'christology': ['christology'],
+    'church': ['church'],
+    'communion': ['eucharist', 'sacraments'],
+    'creation': ['creation'],
+    'ecclesiology': ['church'],
+    'eschatology': ['eschatology'],
+    'eucharist': ['eucharist'],
+    'faith': ['faith'],
+    'free will': ['grace', 'salvation'],
+    'grace': ['grace'],
+    'heaven': ['eschatology'],
+    'hell': ['eschatology', 'last-judgment'],
+    'holiness': ['sanctification'],
+    'holy spirit': ['holy-spirit'],
+    'incarnation': ['incarnation'],
+    'judgment': ['last-judgment'],
+    'justification': ['justification'],
+    'liturgy': ['worship'],
+    'lord\'s supper': ['eucharist', 'sacraments'],
+    'mass': ['eucharist'],
+    'pneumatology': ['holy-spirit'],
+    'prayer': ['prayer'],
+    'predestination': ['salvation', 'grace'],
+    'resurrection': ['eschatology', 'christology'],
+    'sacrament': ['sacraments'],
+    'salvation': ['salvation'],
+    'sanctification': ['sanctification'],
+    'scripture': ['scripture'],
+    'second coming': ['eschatology'],
+    'sin': ['sin'],
+    'soteriology': ['salvation'],
+    'trinity': ['trinity'],
+    'worship': ['worship'],
+  };
+
+  /// [_tagSynonyms] compiled to whole-word patterns, built once.
+  ///
+  /// Plain substring matching produces nonsense hits — "hello" contains "hell",
+  /// "sincere" contains "sin", "evangelical" contains "angel" — so each phrase
+  /// is anchored on word boundaries, with an optional plural suffix so "sins"
+  /// and "sacraments" still match.
+  static final Map<RegExp, List<String>> _tagPatterns = {
+    for (final entry in _tagSynonyms.entries)
+      RegExp(
+        r'\b' + RegExp.escape(entry.key) + r'(s|es)?\b',
+        caseSensitive: false,
+      ): entry.value,
+  };
+
+  /// Extract tag slugs from a query, deduplicated.
+  @visibleForTesting
+  List<String> extractTags(String query) {
+    final matched = <String>{};
+
+    for (final entry in _tagPatterns.entries) {
+      if (entry.key.hasMatch(query)) {
+        matched.addAll(entry.value);
+      }
+    }
+
+    return matched.toList();
   }
   
   /// Get all traditions
@@ -238,14 +306,51 @@ class DatabaseService {
     );
   }
   
-  /// Get single content unit
+  /// Columns shared by every query that returns a content unit with its source.
+  ///
+  /// Callers rely on `source_title` being present — bookmarks, recently viewed,
+  /// and share text all record it.
+  static const String _contentUnitColumns = '''
+        cu.*,
+        s.title as source_title,
+        s.author as source_author,
+        s.date_composed,
+        t.name as tradition,
+        st.name as source_type
+  ''';
+
+  /// Get single content unit, joined to its source.
+  ///
+  /// LEFT JOIN deliberately: 71 units carry a `source_id` with no matching row
+  /// in `sources`, and an inner join would make those passages unopenable.
+  /// They surface with a null `source_title` instead.
   Future<Map<String, dynamic>?> getContentUnit(int id) async {
-    final results = await database.query(
-      'content_units',
-      where: 'id = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
+    final results = await database.rawQuery('''
+      SELECT $_contentUnitColumns
+      FROM content_units cu
+      LEFT JOIN sources s ON cu.source_id = s.id
+      LEFT JOIN traditions t ON s.tradition_id = t.id
+      LEFT JOIN source_types st ON s.source_type_id = st.id
+      WHERE cu.id = ?
+      LIMIT 1
+    ''', [id]);
+    return results.isNotEmpty ? results.first : null;
+  }
+
+  /// Get a uniformly random content unit, joined to its source.
+  ///
+  /// Selecting in SQL rather than guessing an id — content unit ids are sparse
+  /// (4918 rows spread over ids 1..4933), so a random id can miss.
+  Future<Map<String, dynamic>?> getRandomContentUnit() async {
+    final results = await database.rawQuery('''
+      SELECT $_contentUnitColumns
+      FROM content_units cu
+      JOIN sources s ON cu.source_id = s.id
+      LEFT JOIN traditions t ON s.tradition_id = t.id
+      LEFT JOIN source_types st ON s.source_type_id = st.id
+      ORDER BY RANDOM()
+      LIMIT 1
+    ''');
     return results.isNotEmpty ? results.first : null;
   }
   

@@ -15,5 +15,6 @@ flutter_*.log
 # OS
 .DS_Store
 
-# Tests (placeholder for now)
-test/
+# Migration backups (originals recoverable from git)
+*.db.bak
+__pycache__/
