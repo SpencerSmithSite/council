@@ -14,3 +14,6 @@ flutter_*.log
 
 # OS
 .DS_Store
+
+# Migration backups (originals recoverable from git)
+*.db.bak

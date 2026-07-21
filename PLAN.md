@@ -129,17 +129,41 @@ boilerplate (`title = "About this page"`, New Advent footers).
   Clergy (Ambrose) appears 3×; The Problem of Pain, The Weight of Glory,
   Theological Orations, The Pursuit of God each 2×.
 
+**Decision (2026-07-21): rebuild the corpus from real public-domain sources**
+rather than quarantining the generated material in place. The generated units
+are not salvageable as research content, so the end state is a smaller corpus
+of genuine primary text with real provenance URLs. Removal of the worst
+material happens first so the app stops shipping it; re-ingestion follows.
+
+- [x] **Remove generated text published under real authors' bylines** —
+  `tools/prune_bylined_sources.py` (dry-run by default, `--write` to apply).
+  Removed **93 sources / 812 units / 1,032 tag associations**: Lewis, Piper,
+  Bonhoeffer, Packer, Stott, Barth, Tozer, Schaeffer, Yancey and others.
+  Corpus 4,918 → 4,106 units; 523 → 430 sources; 8.0 MB → 6.9 MB.
+  Institutional documents without a personal byline (Lumen Gentium, Barmen,
+  the Catechism, Baptist Faith & Message) were deliberately left — they have a
+  licensing question but not an attribution one. FTS index rebuilt afterwards
+  (`content_fts` is external-content with no sync triggers, so deletes leave it
+  stale); `PRAGMA integrity_check` clean, zero orphaned FTS rows.
+
 - [ ] **Add a `provenance` column to `content_units`**
   Values: `primary_text` | `summary` | `boilerplate` | `unknown`.
-  Requires a DB rebuild step (the bundled DB opens read-only).
+  Still wanted during the rebuild so re-ingested text is distinguishable from
+  anything retained, and so RAG can filter on it.
 
 - [ ] **Delete scraper boilerplate** (18 units, incl. `title = "About this page"`)
 
 - [ ] **De-duplicate** the 187 duplicate `content_plain` values.
 
-- [ ] **Purge or quarantine generated filler**
-  Either drop the templated units or mark them `summary` and exclude them from
-  RAG retrieval.
+- [ ] **Build the re-ingestion pipeline** — the main remaining work. Fetch real
+  texts from public-domain archives (CCEL, New Advent, Christian Classics),
+  parse into content units, record `source_url` and translator, and rebuild the
+  database from a reproducible script rather than editing it in place.
+  Needs a decision on which archives and how many works to target first.
+
+- [ ] **Purge remaining generated filler** once replacements exist — still
+  **1,946 units (47.4%)** after the byline removal. Post-prune audit:
+  primary 1,979 (48.2%) / summary 1,946 (47.4%) / unknown 163 / boilerplate 18.
 
 - [ ] **Label provenance in the UI**
   A passage the model paraphrased must never look like the creed itself. Badge
