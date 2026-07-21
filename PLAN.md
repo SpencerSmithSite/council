@@ -636,3 +636,55 @@ Penance and the Apology's article on God. Unit selection ranks whole units,
 some of which are large; chunk selection then picks within the chosen unit
 rather than choosing the best chunk corpus-wide. Worth revisiting when the
 query encoder lands, since semantic scoring at chunk level is what fixes it.
+
+
+---
+
+## Phase 11 — The app actually runs (2026-07-21)
+
+`TODO.md` had recorded "Test on macOS (needs Xcode)" as blocked since April.
+Xcode 26.6 is installed, so it is not blocked. **The app had never been run.**
+Everything to this point was verified by unit tests against fixtures and by a
+Python mirror of the retrieval path — neither of which executes the shipped
+code against the shipped data.
+
+- [x] **Builds and launches on macOS.** Clean start, no exceptions.
+- [x] **The gzipped-asset path works for real** — 54 MB asset decompresses to a
+  120 MB database on first launch and the `corpusVersion` stamp is written.
+  Previously only asserted by a unit test that the bytes were valid gzip.
+- [x] **Integration tests against the real corpus** —
+  `integration_test/retrieval_test.dart`, 9 tests, run with
+  `flutter test integration_test/retrieval_test.dart -d macos`.
+
+### It found a serious bug on its first run
+
+FTS5 reads `"a b"` as an implicit AND. `search()` juxtaposed the words of the
+question, so a sentence required **every** word — "what", "did", "the"
+included — to appear in one passage:
+
+| Query form | Units matched |
+|---|---:|
+| Dart, juxtaposed (AND) | **0** |
+| Python probe, `OR` | 1,423 |
+
+Lexical retrieval had been returning nothing for natural-language questions,
+falling through to a `LIKE '%whole question%'` fallback that matches nothing
+either. Every Python-side verification in this plan was run against a mirror
+that was *more permissive than the code it mirrored*, so nothing caught it.
+
+This is the specific risk of verifying a Dart path through a Python
+reimplementation: the mirror is written to match, but nothing enforces the
+match. The integration test exists to enforce it, and earned its place
+immediately.
+
+- [x] Terms now joined with `OR`; words of three characters or fewer dropped.
+  Four unit tests pin the behaviour.
+
+### Next
+
+- [ ] Wire the ONNX query encoder — semantic search is still not live in the
+  app; only the lexical half runs. This is also what fixes passage selection
+  (right source, wrong passage).
+- [ ] Generate `ios/`, `android/`, `windows/`, `linux/` targets and run there.
+- [ ] Remaining 23 unprovenanced sources.
+- [ ] Corpus distribution — 54 MB compressed, 120 MB installed.
