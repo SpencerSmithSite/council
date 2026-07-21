@@ -4,9 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+import 'search/entity_recogniser.dart';
 import 'search/hybrid_ranker.dart';
 
 class DatabaseService {
+  /// Lazily built on first scoped search — it reads every source row, which is
+  /// wasted work for a session that never asks a scoped question.
+  EntityRecogniser? _recogniser;
+
+  Future<EntityRecogniser> get recogniser async =>
+      _recogniser ??= await EntityRecogniser.load(database);
+
   /// Bumped when the bundled corpus changes, so an installed copy of an older
   /// database is replaced rather than kept forever.
   static const int corpusVersion = 2;
@@ -149,10 +157,68 @@ class DatabaseService {
     return results;
   }
   
+  /// FTS5 search restricted to particular sources or traditions.
+  Future<List<Map<String, dynamic>>> _searchScoped(
+    String query,
+    RecognisedEntities scope, {
+    int limit = 20,
+  }) async {
+    final ftsQuery = query.replaceAll(RegExp(r'[^\w\s]'), '').trim();
+    final ftsTerms = ftsQuery.split(RegExp(r'\s+')).map((t) => '$t*').join(' ');
+
+    final clauses = <String>[];
+    final args = <Object?>[ftsTerms];
+
+    if (scope.sourceIds.isNotEmpty) {
+      final marks = List.filled(scope.sourceIds.length, '?').join(',');
+      clauses.add('s.id IN ($marks)');
+      args.addAll(scope.sourceIds);
+    }
+    if (scope.traditionIds.isNotEmpty) {
+      final marks = List.filled(scope.traditionIds.length, '?').join(',');
+      clauses.add('s.tradition_id IN ($marks)');
+      args.addAll(scope.traditionIds);
+    }
+    args.add(limit);
+
+    // Sources OR traditions: naming both ("what does the Belgic Confession
+    // say, and Reformed teaching generally") should widen the scope, not
+    // demand a passage satisfy both at once.
+    final scopeClause = clauses.join(' OR ');
+
+    return database.rawQuery('''
+      SELECT $_contentUnitColumns, fts.rank
+      FROM content_fts fts
+      JOIN content_units cu ON fts.rowid = cu.id
+      JOIN sources s ON cu.source_id = s.id
+      LEFT JOIN traditions t ON s.tradition_id = t.id
+      LEFT JOIN source_types st ON s.source_type_id = st.id
+      WHERE content_fts MATCH ?
+        AND ($scopeClause)
+      ORDER BY fts.rank
+      LIMIT ?
+    ''', args);
+  }
+
   /// Combined search: FTS5 + tag-based for best RAG results
   Future<List<Map<String, dynamic>>> searchForRAG(String query, {int limit = 5}) async {
-    // Get FTS5 results
-    final ftsResults = await search(query, limit: limit * 2);
+    // When a question names an author, work or tradition, that is a constraint
+    // rather than another term to match. Without this, "what did Aquinas say
+    // about Mary?" ranks passages about Mary by whoever wrote most about her,
+    // and a question about the Council of Trent returns Carthage and Nicaea.
+    final scope = (await recogniser).recognise(query);
+
+    List<Map<String, dynamic>> ftsResults;
+    if (scope.isNotEmpty) {
+      ftsResults = await _searchScoped(query, scope, limit: limit * 4);
+      // A scope the corpus can barely satisfy should narrow the answer, not
+      // empty it — fall back rather than returning nothing.
+      if (ftsResults.length < 2) {
+        ftsResults = await search(query, limit: limit * 2);
+      }
+    } else {
+      ftsResults = await search(query, limit: limit * 2);
+    }
     
     // Extract potential tags from query
     final queryTags = extractTags(query);

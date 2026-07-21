@@ -37,6 +37,18 @@ OVERLAP_CHARS = 200
 PARAGRAPH_RE = re.compile(r"\n\s*\n")
 SENTENCE_END_RE = re.compile(r"(?<=[.!?])\s+")
 
+# Chunk ids are derived from the parent unit rather than autoincremented.
+#
+# With autoincrement, deleting any unit shifts every id after it, and the
+# embeddings — which are keyed on chunk id — silently start pointing at
+# unrelated text. That happened: after removing 138 duplicate units, sampled
+# vectors matched their supposed chunk at cosine 0.33-0.49. Nothing errored;
+# semantic search would simply have returned nonsense.
+#
+# Deriving the id makes it stable across rebuilds, so deleting one unit only
+# invalidates that unit's chunks.
+CHUNKS_PER_UNIT = 1000
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS content_chunks (
     id INTEGER PRIMARY KEY,
@@ -109,13 +121,17 @@ def build(conn, write):
     for unit_id, content in units:
         text = content or ""
         for seq, (start, end) in enumerate(chunk_spans(text), 1):
-            rows.append((unit_id, seq, start, end))
+            if seq >= CHUNKS_PER_UNIT:
+                print(f"  WARNING: unit {unit_id} exceeds {CHUNKS_PER_UNIT} "
+                      f"chunks; ids would collide", file=sys.stderr)
+                break
+            rows.append((unit_id * CHUNKS_PER_UNIT + seq, unit_id, seq, start, end))
 
-    lengths = [end - start for _, _, start, end in rows]
+    lengths = [end - start for _, _, _, start, end in rows]
     print(f"{len(units)} units -> {len(rows)} chunks")
     print(f"  mean {sum(lengths) / len(lengths):.0f} chars, max {max(lengths)}")
     print(f"  units yielding >1 chunk: "
-          f"{len({u for u, s, _, _ in rows if s > 1})}")
+          f"{len({u for _, u, s, _, _ in rows if s > 1})}")
 
     over = [n for n in lengths if n > MAX_CHARS]
     if over:
@@ -128,10 +144,22 @@ def build(conn, write):
     conn.executescript(SCHEMA)
     conn.execute("DELETE FROM content_chunks")
     conn.executemany(
-        """INSERT INTO content_chunks (content_unit_id, sequence, char_start, char_end)
-           VALUES (?, ?, ?, ?)""",
+        """INSERT INTO content_chunks (id, content_unit_id, sequence, char_start, char_end)
+           VALUES (?, ?, ?, ?, ?)""",
         rows,
     )
+
+    # Embeddings outlive their chunk when a unit is removed. Drop the orphans
+    # rather than leaving rows that no longer describe anything.
+    orphaned = conn.execute(
+        """DELETE FROM chunk_embeddings WHERE chunk_id NOT IN
+           (SELECT id FROM content_chunks)"""
+    ).rowcount if conn.execute(
+        "SELECT count(*) FROM sqlite_master WHERE name='chunk_embeddings'"
+    ).fetchone()[0] else 0
+    if orphaned:
+        print(f"  removed {orphaned} orphaned embeddings")
+
     conn.commit()
     conn.execute("VACUUM")
     print(f"wrote {len(rows)} chunks")

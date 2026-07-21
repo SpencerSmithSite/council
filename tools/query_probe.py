@@ -41,19 +41,115 @@ SUITE = [
 ]
 
 
+STOP = set("""the of and on in to a an for from by with against concerning book books part
+volume vol saint st selections fragments epistle epistles letter letters homily homilies
+treatise works church holy christian god first second third new old""".split())
+
+
+def _ent_tokens(text):
+    return [t for t in re.split(r"[^a-z0-9']+", (text or "").lower())
+            if len(t) > 2 and t not in STOP]
+
+
+def build_recogniser(conn):
+    """Mirror of EntityRecogniser — kept in step so scoping is checkable
+    against the real corpus, not only against fixtures."""
+    rows = list(conn.execute("SELECT id, title, coalesce(author,'') FROM sources"))
+    tokens, names, counts = {}, {}, {}
+    for i, title, author in rows:
+        names[i] = title
+        tk = set(_ent_tokens(title)) | set(_ent_tokens(author))
+        counts[i] = len(tk)
+        for t in tk:
+            tokens.setdefault(t, set()).add(i)
+
+    author_sources = {}
+    for i, _title, author in rows:
+        author = author.strip()
+        if author and author not in ("Miscellaneous", "Apocrypha"):
+            author_sources.setdefault(author, set()).add(i)
+    token_authors = {}
+    for author in author_sources:
+        for t in _ent_tokens(author):
+            token_authors.setdefault(t, set()).add(author)
+    author_tokens = {t: next(iter(a)) for t, a in token_authors.items() if len(a) == 1}
+
+    trad, trad_names = {}, {}
+    for i, name in conn.execute("SELECT id, name FROM traditions"):
+        trad_names[i] = name
+        base = name.lower().split()[-1]
+        forms = {base, base + "s"}
+        if base == "orthodoxy":
+            forms.add("orthodox")
+        if base == "reformed":
+            forms.add("calvinist")
+        if base == "catholic":
+            forms.add("roman")
+        for f in forms | set(_ent_tokens(name)):
+            trad[f] = i
+
+    return tokens, names, counts, author_tokens, author_sources, trad, trad_names
+
+
+def recognise(index, question):
+    tokens, names, counts, author_tokens, author_sources, trad, trad_names = index
+    tk = set(_ent_tokens(question))
+    tids, labels, sids = set(), [], set()
+
+    for t in tk:
+        if t in trad and trad[t] not in tids:
+            tids.add(trad[t])
+            labels.append(trad_names[trad[t]])
+    for t in tk:
+        author = author_tokens.get(t)
+        if author and author not in labels:
+            sids |= author_sources[author]
+            labels.append(author)
+    named_author = bool(sids)
+
+    hits = {}
+    for t in tk:
+        for i in tokens.get(t, ()):
+            hits[i] = hits.get(i, 0) + 1
+    works = {i for i, n in hits.items()
+             if counts.get(i, 0) and n >= 2 and (n >= counts[i] or n >= counts[i] * 0.6)}
+
+    if len(works) > 6:
+        return tids, (sids if named_author else set()), labels
+    for i in works:
+        sids.add(i)
+        labels.append(names[i])
+    return tids, sids, labels
+
+
 def fts_query(text):
     cleaned = re.sub(r"[^\w\s]", " ", text)
     terms = [t for t in cleaned.split() if len(t) > 2]
     return " OR ".join(f"{t}*" for t in terms)
 
 
-def lexical(conn, question, limit=30):
+def lexical(conn, question, limit=30, scope=None):
+    clause, args = "", [fts_query(question)]
+    if scope:
+        tids, sids = scope
+        parts = []
+        if sids:
+            parts.append(f"s.id IN ({','.join('?' * len(sids))})")
+            args += list(sids)
+        if tids:
+            parts.append(f"s.tradition_id IN ({','.join('?' * len(tids))})")
+            args += list(tids)
+        if parts:
+            clause = f"AND ({' OR '.join(parts)})"
+    args.append(limit)
+
     try:
         rows = conn.execute(
-            """SELECT cu.id FROM content_fts f
-               JOIN content_units cu ON f.rowid = cu.id
-               WHERE content_fts MATCH ? ORDER BY f.rank LIMIT ?""",
-            (fts_query(question), limit),
+            f"""SELECT cu.id FROM content_fts f
+                JOIN content_units cu ON f.rowid = cu.id
+                JOIN sources s ON cu.source_id = s.id
+                WHERE content_fts MATCH ? {clause} ORDER BY f.rank LIMIT ?""",
+            args,
         ).fetchall()
         return [r[0] for r in rows]
     except sqlite3.OperationalError:
@@ -75,14 +171,20 @@ def load_index(conn):
     return matrix, meta
 
 
-def semantic(matrix, meta, tokenizer, session, question, limit=30):
+def semantic(matrix, meta, tokenizer, session, question, limit=30, allowed=None):
+    """`allowed` restricts to units within a recognised scope.
+
+    Both engines must honour a named source. Scoping only the lexical side lets
+    unscoped semantic hits back in through fusion, so a question about the
+    Council of Trent still returns Carthage and Nicaea.
+    """
     scores = matrix @ embed(tokenizer, session, [question])[0]
     order = np.argsort(-scores)
 
     best, seen = [], set()
     for i in order:
         unit_id, start, end = meta[i]
-        if unit_id in seen:
+        if unit_id in seen or (allowed is not None and unit_id not in allowed):
             continue
         seen.add(unit_id)
         best.append((unit_id, start, end, float(scores[i])))
@@ -155,13 +257,42 @@ def describe(conn, unit_id, span):
     return source, author, tradition, title, " ".join(text.split())
 
 
-def run(conn, matrix, meta, tokenizer, session, question, label=None):
+def run(conn, matrix, meta, tokenizer, session, index, question, label=None):
     print(f"\n{'=' * 78}\nQ: {question}")
     if label:
         print(f"   (tests: {label})")
 
-    lex = lexical(conn, question)
-    sem = semantic(matrix, meta, tokenizer, session, question)
+    tids, sids, labels = recognise(index, question)
+    if labels:
+        print(f"   scope: {', '.join(labels[:4])}"
+              + (f" (+{len(labels) - 4} more)" if len(labels) > 4 else ""))
+
+    scope = (tids, sids) if (tids or sids) else None
+    allowed = None
+    if scope:
+        parts, args = [], []
+        if sids:
+            parts.append(f"s.id IN ({','.join('?' * len(sids))})")
+            args += list(sids)
+        if tids:
+            parts.append(f"s.tradition_id IN ({','.join('?' * len(tids))})")
+            args += list(tids)
+        allowed = {
+            r[0] for r in conn.execute(
+                f"""SELECT cu.id FROM content_units cu
+                    JOIN sources s ON cu.source_id = s.id
+                    WHERE {' OR '.join(parts)}""", args)
+        }
+
+    lex = lexical(conn, question, scope=scope)
+    sem = semantic(matrix, meta, tokenizer, session, question, allowed=allowed)
+
+    # A scope the corpus can barely satisfy should narrow the answer, not empty
+    # it. Fall back to unscoped rather than returning nothing.
+    if scope and len(lex) + len(sem) < 3:
+        print("   (scope too narrow — falling back to the whole corpus)")
+        lex = lexical(conn, question)
+        sem = semantic(matrix, meta, tokenizer, session, question)
     results = diversify(conn, fuse(lex, sem, limit=40))
 
     traditions = set()
@@ -186,12 +317,13 @@ def main():
     conn = sqlite3.connect(f"file:{args.db}?mode=ro", uri=True)
     matrix, meta = load_index(conn)
     tokenizer, session = load_model()
+    index = build_recogniser(conn)
 
     if args.suite:
         for question, label in SUITE:
-            run(conn, matrix, meta, tokenizer, session, question, label)
+            run(conn, matrix, meta, tokenizer, session, index, question, label)
     elif args.question:
-        run(conn, matrix, meta, tokenizer, session, args.question)
+        run(conn, matrix, meta, tokenizer, session, index, args.question)
     else:
         parser.error("give a question or --suite")
 
