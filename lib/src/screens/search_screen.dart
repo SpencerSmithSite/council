@@ -248,7 +248,7 @@ class _SearchResultTile extends StatelessWidget {
     final title = result['title'] ?? 'Untitled';
     final sourceTitle = result['source_title'] ?? 'Unknown Source';
     final tradition = result['tradition'] ?? '';
-    final content = result['content_plain'] ?? '';
+    final content = result['content'] ?? '';
     
     final preview = content.length > 150
         ? '${content.substring(0, 150)}...'

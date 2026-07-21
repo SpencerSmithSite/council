@@ -27,6 +27,10 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "assets" / "theology.db"
 UNITS = ROOT / "tools" / "data" / "newadvent_units.json"
 
+# A legacy source with at least this fraction of generated units is discarded
+# whole: the generator produced it, so its unflagged units are suspect too.
+GENERATED_SOURCE_THRESHOLD = 0.25
+
 TRADITION_EARLY_CHURCH = 10
 TRADITION_ECUMENICAL = 11
 TYPE_COUNCIL = 4
@@ -170,6 +174,33 @@ def insert_works(conn, works, tag_ids):
     return inserted_sources, inserted_units, inserted_tags
 
 
+def collapse_content_columns(conn):
+    """Drop content_plain, keeping content as the single text column.
+
+    The two columns were byte-identical for 19,381 of 19,771 rows and differed
+    only by markdown punctuation in the rest, while costing 55 MB — a third of
+    the database. FTS is rebuilt against `content` instead.
+    """
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(content_units)")}
+    if "content_plain" not in cols:
+        return False
+
+    conn.execute("DROP TABLE IF EXISTS content_fts")
+    # Prefer whichever column actually holds text.
+    conn.execute(
+        """UPDATE content_units
+           SET content = content_plain
+           WHERE (content IS NULL OR content = '')
+             AND content_plain IS NOT NULL AND content_plain <> ''"""
+    )
+    conn.execute("ALTER TABLE content_units DROP COLUMN content_plain")
+    conn.execute(
+        """CREATE VIRTUAL TABLE content_fts USING fts5(
+               content, title, content='content_units', content_rowid='id')"""
+    )
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", type=Path, default=DB_PATH)
@@ -217,16 +248,48 @@ def main():
     print(f"inserted {s} sources, {u} units, {t} tag associations")
 
     if args.drop_generated:
-        marks = ",".join("?" * len(generated))
+        # Per-unit classification has false negatives — generated text still
+        # surfaces as the top FTS hit for "incarnation". Judge at source level
+        # too: a source that is a quarter generated was produced by the
+        # generator, and its remaining units are not trustworthy either.
+        doomed_units = set(generated)
+        by_source = {}
+        for uid, (verdict, _) in verdicts.items():
+            sid = conn.execute(
+                "SELECT source_id FROM content_units WHERE id = ?", (uid,)
+            ).fetchone()[0]
+            total, gen = by_source.get(sid, (0, 0))
+            by_source[sid] = (total + 1, gen + (verdict != PRIMARY))
+
+        doomed_sources = [
+            sid for sid, (total, gen) in by_source.items()
+            if total and gen / total >= GENERATED_SOURCE_THRESHOLD
+        ]
+        if doomed_sources:
+            marks = ",".join("?" * len(doomed_sources))
+            for (uid,) in conn.execute(
+                f"SELECT id FROM content_units WHERE source_id IN ({marks})",
+                doomed_sources,
+            ):
+                doomed_units.add(uid)
+
+        units_list = list(doomed_units)
+        marks = ",".join("?" * len(units_list))
         conn.execute(
-            f"DELETE FROM content_tags WHERE content_unit_id IN ({marks})", generated
+            f"DELETE FROM content_tags WHERE content_unit_id IN ({marks})", units_list
         )
-        conn.execute(f"DELETE FROM content_units WHERE id IN ({marks})", generated)
+        conn.execute(f"DELETE FROM content_units WHERE id IN ({marks})", units_list)
         conn.execute(
             """DELETE FROM sources WHERE id NOT IN
                (SELECT DISTINCT source_id FROM content_units)"""
         )
-        print(f"dropped {len(generated)} generated units and now-empty sources")
+        print(
+            f"dropped {len(units_list)} units "
+            f"({len(doomed_sources)} legacy sources judged generated wholesale)"
+        )
+
+    if collapse_content_columns(conn):
+        print("collapsed content_plain into content")
 
     conn.commit()
     conn.execute("INSERT INTO content_fts(content_fts) VALUES('rebuild')")

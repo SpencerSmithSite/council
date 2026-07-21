@@ -400,8 +400,7 @@ def parse_multipart(work, parts):
         path = CACHE / f"{part['id']}.html"
         if not path.exists():
             continue
-        record = parse_work({"title": part["title"], "url": part["url"]},
-                            path.read_text(encoding="utf-8"))
+        record = parse_work(part, path.read_text(encoding="utf-8"))
         if record is None:
             continue
         provenance = provenance or record["provenance"]

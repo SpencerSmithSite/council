@@ -19,3 +19,7 @@ flutter_*.log
 *.db.bak
 __pycache__/
 .cache/
+
+# Uncompressed corpus: built by tools/build_corpus.py, shipped as .gz
+assets/theology.db
+assets/theology.db.bak

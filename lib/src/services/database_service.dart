@@ -5,38 +5,53 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseService {
+  /// Bumped when the bundled corpus changes, so an installed copy of an older
+  /// database is replaced rather than kept forever.
+  static const int corpusVersion = 2;
+
   Database? _database;
-  
+
   /// Initialize database from bundled asset
   Future<void> initialize() async {
     final databasesPath = await getDatabasesPath();
     final dbPath = p.join(databasesPath, 'theology.db');
-    
-    // Check if database exists
-    final exists = await databaseExists(dbPath);
-    
-    if (!exists) {
-      // Copy from asset
+    final stampPath = p.join(databasesPath, 'theology.corpus-version');
+
+    // Reinstall when absent or stale. Without the version check, users who
+    // already ran the app would keep the old corpus forever.
+    final stamp = File(stampPath);
+    final installedVersion =
+        await stamp.exists() ? int.tryParse(await stamp.readAsString()) : null;
+
+    if (!await databaseExists(dbPath) || installedVersion != corpusVersion) {
       await _copyDatabaseFromAsset(dbPath);
+      await stamp.writeAsString('$corpusVersion');
     }
-    
+
     // Open database
     _database = await openDatabase(
       dbPath,
       readOnly: true, // Read-only for bundled database
     );
   }
-  
-  /// Copy database from asset to device storage
+
+  /// Unpack the bundled database into device storage.
+  ///
+  /// The asset ships gzipped: the corpus is ~95 MB of patristic text, which
+  /// compresses to ~39 MB. That keeps the download and the repository within
+  /// sane limits at the cost of a one-off decompression on first launch.
   Future<void> _copyDatabaseFromAsset(String dbPath) async {
     // Create parent directory if needed
     final parent = p.dirname(dbPath);
     await Directory(parent).create(recursive: true);
-    
-    // Copy asset to file
-    final data = await rootBundle.load('assets/theology.db');
-    final bytes = data.buffer.asUint8List();
-    await File(dbPath).writeAsBytes(bytes);
+
+    final data = await rootBundle.load('assets/theology.db.gz');
+    final compressed = data.buffer.asUint8List(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
+    final bytes = gzip.decode(compressed);
+    await File(dbPath).writeAsBytes(bytes, flush: true);
   }
   
   /// Get database instance
@@ -58,7 +73,6 @@ class DatabaseService {
         cu.id,
         cu.title,
         cu.content,
-        cu.content_plain,
         s.title as source_title,
         s.date_composed,
         t.name as tradition,
@@ -89,7 +103,6 @@ class DatabaseService {
         cu.id,
         cu.title,
         cu.content,
-        cu.content_plain,
         s.title as source_title,
         s.date_composed,
         t.name as tradition,
@@ -98,7 +111,7 @@ class DatabaseService {
       JOIN sources s ON cu.source_id = s.id
       LEFT JOIN traditions t ON s.tradition_id = t.id
       LEFT JOIN source_types st ON s.source_type_id = st.id
-      WHERE cu.content_plain LIKE ?
+      WHERE cu.content LIKE ?
       ORDER BY cu.sequence
       LIMIT ?
     ''', ['%$query%', limit]);
@@ -114,7 +127,6 @@ class DatabaseService {
         cu.id,
         cu.title,
         cu.content,
-        cu.content_plain,
         s.title as source_title,
         s.date_composed,
         t.name as tradition,

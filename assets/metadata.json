@@ -2,32 +2,30 @@
   "version": "2026-07-21",
   "buildDate": "2026-07-21T00:00:00.000Z",
   "sources": {
-    "total": 430,
+    "total": 437,
     "byTradition": {
-      "Early Church": 135,
-      "Catholic": 70,
-      "Eastern Orthodox": 53,
-      "Ecumenical": 52,
-      "Lutheran": 41,
-      "Reformed": 37,
-      "Universal": 13,
-      "Baptist": 7,
-      "Oriental Orthodox": 7,
-      "Anglican": 6,
-      "Methodist": 6,
-      "Pentecostal": 3
+      "Early Church": 398,
+      "Ecumenical": 19,
+      "Reformed": 7,
+      "Catholic": 4,
+      "Lutheran": 4,
+      "Anglican": 2,
+      "Universal": 2,
+      "Methodist": 1
     },
     "byType": {
-      "Confession": 407,
-      "Father": 12,
-      "Creed": 5,
-      "Council": 4,
-      "Catechism": 2
+      "Father": 396,
+      "Confession": 20,
+      "Council": 18,
+      "Creed": 2,
+      "Catechism": 1
     }
   },
   "content": {
-    "total": 4106,
-    "tagged": 3943
+    "total": 18231,
+    "tagged": 14179
   },
+  "authors": 69,
+  "withSourceUrl": 406,
   "tags": 21
 }
