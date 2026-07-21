@@ -91,9 +91,43 @@ variants ("On the Creed That Is the Nicene" / "On the Nicene That the Creed
 Professes"); 187 duplicate `content_plain` values; 18 units of scraper
 boilerplate (`title = "About this page"`, New Advent footers).
 
-- [ ] **Audit and classify the corpus**
-  Script a pass over `assets/theology.db` scoring each content unit; produce a
-  report of suspected generated vs primary units before changing anything.
+- [x] **Audit and classify the corpus** — `tools/audit_corpus.py` (read-only)
+
+  **Result: at least 49% of the corpus is auto-generated.**
+
+  | verdict | units | share |
+  |---|---:|---:|
+  | `primary_text` | 2,314 | 47.1% |
+  | `summary` (generated) | 2,412 | 49.0% |
+  | `unknown` | 174 | 3.5% |
+  | `boilerplate` | 18 | 0.4% |
+
+  Treat 49% as a **floor, not an estimate**: `primary_text` means "no signal
+  fired", not "verified genuine". Spot-checking found clearly generated units
+  still in that bucket (e.g. unit 3582, "The preparation for baptism is the
+  preparation that Cyril required — …"), and editorial summaries like the
+  Athanasian Creed's "Historical Context" / "Liturgical Use" score primary too.
+
+  The generator's tell is a recursive relative clause that restates the subject
+  instead of asserting anything — 1,259 units contain three or more of
+  `who/that/which is the`. The clearest specimen (unit 4371):
+
+  > "The creed that is the Nicene is the Nicene that the Council who is the
+  > Nicaea establishes — the Nicene that the Father who is the creator reveals…"
+
+- [ ] **Restore the Nicene Creed** — the source titled "The Nicene Creed"
+  contains **none of the Nicene Creed**. Its 9 units are scraped New Advent nav
+  chrome, two summary paragraphs each stored twice, and two word-salad units.
+  The genuine text does exist, under "First Council of Nicæa (A.D. 325)"
+  (unit 514). The app's namesake document is the worst-affected entry.
+
+- [ ] **Fix 5 sources with zero primary-text units** — The Problem of Pain
+  (Lewis, 18 units), The Nicene Creed, On the Sermon on the Mount (Augustine),
+  On the Holy Spirit (Basil the Great), The Martyrdom of Polycarp.
+
+- [ ] **De-duplicate 35 duplicated source rows** — e.g. On the Duties of the
+  Clergy (Ambrose) appears 3×; The Problem of Pain, The Weight of Glory,
+  Theological Orations, The Pursuit of God each 2×.
 
 - [ ] **Add a `provenance` column to `content_units`**
   Values: `primary_text` | `summary` | `boilerplate` | `unknown`.
@@ -125,6 +159,22 @@ boilerplate (`title = "About this page"`, New Advent footers).
 - [ ] **Populate `source_url`** (currently **0 of 523**)
   Needed for provenance and to substantiate the `public_domain` / `license`
   claims already in the schema.
+
+### Attribution and licensing — needs a decision before any public release
+
+- [ ] **43 sources are marked `public_domain = 1` but are not public domain** —
+  Lumen Gentium (1964), Dei Verbum (1965), Gaudium et Spes (1965), Catechism of
+  the Catholic Church (1992), Barmen Declaration (1934), Tozer's The Pursuit of
+  God (1948), Schaeffer's The God Who Is There (1968), and several C.S. Lewis
+  titles (1940–1945). The corpus does correctly mark 61 others as `copyright`,
+  so the flag is inconsistent rather than uniformly wrong.
+
+- [ ] **Generated text is attributed to named modern authors** — the more
+  serious version of the problem above. "The Problem of Pain (Lewis)" is 18
+  units, **none** of them classified primary: it is generated prose carrying
+  Lewis's name. Whatever is decided about the rest of the corpus, text a model
+  wrote must not sit under a real author's byline. Same pattern affects Piper,
+  Bonhoeffer, Packer, Yancey, Murray.
 
 - [ ] **Expand the tag vocabulary** — 21 tags over 7,526 associations is very
   coarse for topic-based retrieval.
