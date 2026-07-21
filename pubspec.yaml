@@ -28,6 +28,9 @@ dependencies:
   shared_preferences: ^2.2.2
   uuid: ^4.2.1
 
+  # Secure storage for user-supplied API keys (Keychain / Keystore)
+  flutter_secure_storage: ^9.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
