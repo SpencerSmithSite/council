@@ -72,12 +72,32 @@ class DatabaseService {
     return _database!;
   }
   
+  /// Build an FTS5 MATCH expression from natural-language input.
+  ///
+  /// Terms are joined with OR, not juxtaposed. FTS5 reads "a b" as an implicit
+  /// AND, so a question phrased as a sentence required *every* word — "what",
+  /// "did", "the" included — to appear in a single passage. Against the real
+  /// index that matched **zero** units for "What did the Council of Trent
+  /// decree about justification?", where the OR form matches 1,423. Ranking
+  /// already rewards passages containing more of the rarer terms, so OR gives
+  /// up nothing in precision.
+  ///
+  /// Short words are dropped for the same reason: noise in the match, nothing
+  /// in the ranking.
+  static String ftsMatchQuery(String query) {
+    final terms = query
+        .replaceAll(RegExp(r'[^\w\s]'), ' ')
+        .split(RegExp(r'\s+'))
+        .where((t) => t.length > 2)
+        .map((t) => '$t*');
+    return terms.join(' OR ');
+  }
+
   /// Search content with FTS5 full-text search
   Future<List<Map<String, dynamic>>> search(String query, {int limit = 20}) async {
-    // Use FTS5 for better relevance ranking
-    final ftsQuery = query.replaceAll(RegExp(r'[^\w\s]'), '').trim();
-    final ftsTerms = ftsQuery.split(RegExp(r'\s+')).map((t) => '$t*').join(' ');
-    
+    final ftsTerms = ftsMatchQuery(query);
+    if (ftsTerms.isEmpty) return _searchLike(query, limit: limit);
+
     final results = await database.rawQuery('''
       SELECT 
         cu.id,
@@ -163,8 +183,8 @@ class DatabaseService {
     RecognisedEntities scope, {
     int limit = 20,
   }) async {
-    final ftsQuery = query.replaceAll(RegExp(r'[^\w\s]'), '').trim();
-    final ftsTerms = ftsQuery.split(RegExp(r'\s+')).map((t) => '$t*').join(' ');
+    final ftsTerms = ftsMatchQuery(query);
+    if (ftsTerms.isEmpty) return const [];
 
     final clauses = <String>[];
     final args = <Object?>[ftsTerms];
