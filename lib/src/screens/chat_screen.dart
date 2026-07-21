@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/ollama_service.dart';
 import '../services/settings_provider.dart';
+import '../services/inference/inference_backend.dart';
+import '../services/inference/inference_provider.dart';
+import 'content_detail_screen.dart';
 
 // ContextPassage is defined in ollama_service.dart
 
@@ -19,12 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
-  bool _ollamaAvailable = false;
-  String _selectedModel = 'llama3.2';
-  List<String> _availableModels = [];
-  
+
+  /// Set by the stop button; the streaming loop checks it between chunks.
+  bool _cancelled = false;
+
   late final DatabaseService _databaseService;
-  late final OllamaService _ollamaService;
 
   @override
   void initState() {
@@ -33,28 +35,11 @@ class _ChatScreenState extends State<ChatScreen> {
     // constructing a second service here would re-run the asset copy and open
     // a duplicate handle.
     _databaseService = context.read<DatabaseService>();
-    _ollamaService = OllamaService();
-    _initializeServices();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context.read<InferenceProvider>().refreshStatus(),
+    );
   }
 
-  Future<void> _initializeServices() async {
-    try {
-      _ollamaAvailable = await _ollamaService.isAvailable();
-      if (_ollamaAvailable) {
-        _availableModels = await _ollamaService.getModels();
-        if (_availableModels.isNotEmpty) {
-          _selectedModel = _availableModels.first;
-        }
-      }
-      setState(() {});
-    } catch (e) {
-      // Services failed to initialize
-      setState(() {
-        _ollamaAvailable = false;
-      });
-    }
-  }
-  
   @override
   void dispose() {
     _messageController.dispose();
@@ -65,8 +50,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty || _isLoading) return;
-    
-    // Add user message
+
+    final backend = context.read<InferenceProvider>().backend;
+
     setState(() {
       _messages.add(ChatMessage(
         text: text,
@@ -74,153 +60,133 @@ class _ChatScreenState extends State<ChatScreen> {
         timestamp: DateTime.now(),
       ));
       _isLoading = true;
+      _cancelled = false;
     });
-    
+
     _messageController.clear();
     _scrollToBottom();
-    
+
     try {
-      String response;
-      List<String>? citations;
-      
-      if (_ollamaAvailable) {
-        // Use combined FTS5 + tag search for better RAG retrieval
-        final passages = await _databaseService.searchForRAG(text, limit: 5);
-        
-        if (passages.isNotEmpty) {
-          // Build context from search results
-          final contextPassages = passages.map((p) => ContextPassage(
-            source: p['source_title'] ?? 'Unknown',
-            content: p['content'] ?? '',
-            tradition: p['tradition'],
-            date: p['date_composed'],
-          )).toList();
-          
-          // Build the prompt with context
-          final systemPrompt = _ollamaService.buildSystemPrompt();
-          final contextBuilder = StringBuffer();
-          contextBuilder.writeln('Relevant sources:');
-          contextBuilder.writeln();
-          
-          for (int i = 0; i < contextPassages.length; i++) {
-            final passage = contextPassages[i];
-            contextBuilder.writeln('[${i + 1}] ${passage.source}');
-            contextBuilder.writeln(passage.contextContent);
-            contextBuilder.writeln();
-          }
-          
-          final fullPrompt = '''
-$contextBuilder
+      final passages = await _databaseService.searchForRAG(text, limit: 6);
 
-User question: $text
-
-Please answer the question using the provided sources. Include citations like [1], [2], etc. when referencing specific sources.
-''';
-          
-          // Add placeholder message for streaming
-          final messageIndex = _messages.length;
-          setState(() {
-            _messages.add(ChatMessage(
-              text: '',
-              isUser: false,
-              timestamp: DateTime.now(),
-              citations: contextPassages.map((p) => p.source).toList(),
-            ));
-          });
-          
-          // Stream the response
-          final stream = _ollamaService.generateStream(
-            prompt: fullPrompt,
-            system: systemPrompt,
-            model: _selectedModel,
-          );
-          
-          final responseBuffer = StringBuffer();
-          await for (final chunk in stream) {
-            responseBuffer.write(chunk);
-            if (mounted) {
-              setState(() {
-                _messages[messageIndex] = ChatMessage(
-                  text: responseBuffer.toString(),
-                  isUser: false,
-                  timestamp: _messages[messageIndex].timestamp,
-                  citations: _messages[messageIndex].citations,
-                );
-              });
-              _scrollToBottom();
-            }
-          }
-          
-          response = responseBuffer.toString();
-          citations = contextPassages.map((p) => p.source).toList();
-        } else {
-          // No relevant passages found
-          response = 'I couldn\'t find any relevant sources in the database for your question. Try rephrasing or asking about a different topic.';
-          citations = [];
-          
-          setState(() {
-            _messages.add(ChatMessage(
-              text: response,
-              isUser: false,
-              timestamp: DateTime.now(),
-              citations: citations,
-            ));
-            _isLoading = false;
-          });
-          _scrollToBottom();
-          return;
-        }
-      } else {
-        // Ollama not available
-        response = _getOfflineResponse(text);
-        citations = [];
-        
-        setState(() {
-          _messages.add(ChatMessage(
-            text: response,
-            isUser: false,
-            timestamp: DateTime.now(),
-            citations: citations,
-          ));
-          _isLoading = false;
-        });
-        _scrollToBottom();
+      if (passages.isEmpty) {
+        _addAssistantMessage(
+          "I couldn't find anything in the library for that. Try different "
+          'wording, or browse by tradition.',
+        );
         return;
       }
-      
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        _scrollToBottom();
+
+      final sources = passages
+          .map((p) => Citation(
+                contentId: p['id'] as int,
+                source: p['source_title'] as String? ?? 'Unknown source',
+              ))
+          .toList();
+
+      // Search-only mode: the retrieved passages *are* the answer.
+      if (backend is RetrievalOnlyBackend) {
+        _addAssistantMessage(
+          'Search-only mode is on, so no answer is generated. '
+          'These ${sources.length} passages matched your question:',
+          citations: sources,
+        );
+        return;
       }
+
+      final status = await backend.checkStatus();
+      if (!status.available) {
+        _addAssistantMessage(status.detail ?? 'That backend is unavailable.');
+        return;
+      }
+
+      await _streamAnswer(backend, text, passages, sources);
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _messages.add(ChatMessage(
-            text: 'Error: ${e.toString()}',
-            isUser: false,
-            timestamp: DateTime.now(),
-          ));
-          _isLoading = false;
-        });
-        _scrollToBottom();
-      }
+      if (mounted) _addAssistantMessage('Error: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-  
-  String _getOfflineResponse(String query) {
-    return '''Ollama is not available. To enable AI responses:
 
-1. Install Ollama: https://ollama.ai
-2. Pull a model: `ollama pull llama3.2`
-3. Restart the app
+  /// Build the RAG prompt and stream the answer into a placeholder message.
+  Future<void> _streamAnswer(
+    InferenceBackend backend,
+    String question,
+    List<Map<String, dynamic>> passages,
+    List<Citation> sources,
+  ) async {
+    // Spend the backend's context budget across the retrieved passages rather
+    // than using one fixed size for every backend — an on-device model and a
+    // cloud model differ by an order of magnitude here.
+    final perPassage =
+        (backend.contextBudgetChars / passages.length).floor().clamp(400, 8000);
 
-Your question: "$query"
+    final context = StringBuffer()..writeln('Relevant sources:\n');
+    for (var i = 0; i < passages.length; i++) {
+      final content = passages[i]['content'] as String? ?? '';
+      context
+        ..writeln('[${i + 1}] ${sources[i].source}')
+        ..writeln(content.length > perPassage
+            ? '${content.substring(0, perPassage).trimRight()}… [truncated]'
+            : content)
+        ..writeln();
+    }
 
-The database has ${_messages.length} messages loaded, but AI responses require Ollama running locally.''';
+    final prompt = '$context\nUser question: $question\n\n'
+        'Answer using the provided sources. Cite them as [1], [2] and so on.';
+
+    final index = _messages.length;
+    setState(() {
+      _messages.add(ChatMessage(
+        text: '',
+        isUser: false,
+        timestamp: DateTime.now(),
+        citations: sources,
+      ));
+    });
+
+    final buffer = StringBuffer();
+    await for (final chunk in backend.generate(
+      prompt: prompt,
+      system: OllamaService().buildSystemPrompt(),
+    )) {
+      if (_cancelled || !mounted) break;
+      buffer.write(chunk);
+      setState(() {
+        _messages[index] = ChatMessage(
+          text: buffer.toString(),
+          isUser: false,
+          timestamp: _messages[index].timestamp,
+          citations: sources,
+        );
+      });
+      _scrollToBottom();
+    }
+
+    if (_cancelled && mounted && buffer.isNotEmpty) {
+      setState(() {
+        _messages[index] = ChatMessage(
+          text: '${buffer.toString()}\n\n_(stopped)_',
+          isUser: false,
+          timestamp: _messages[index].timestamp,
+          citations: sources,
+        );
+      });
+    }
   }
-  
+
+  void _addAssistantMessage(String text, {List<Citation>? citations}) {
+    setState(() {
+      _messages.add(ChatMessage(
+        text: text,
+        isUser: false,
+        timestamp: DateTime.now(),
+        citations: citations,
+      ));
+    });
+    _scrollToBottom();
+  }
+
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -263,18 +229,26 @@ The database has ${_messages.length} messages loaded, but AI responses require O
           
           // Loading indicator
           if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  SizedBox(width: 12),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  SizedBox(width: 12),
-                  Text('Thinking...'),
+                  const SizedBox(width: 12),
+                  Text(_cancelled ? 'Stopping…' : 'Thinking…'),
+                  const Spacer(),
+                  // Local models can take a long time; let the user bail out.
+                  TextButton.icon(
+                    onPressed: _cancelled
+                        ? null
+                        : () => setState(() => _cancelled = true),
+                    icon: const Icon(Icons.stop_circle_outlined, size: 18),
+                    label: const Text('Stop'),
+                  ),
                 ],
               ),
             ),
@@ -369,10 +343,14 @@ The database has ${_messages.length} messages loaded, but AI responses require O
   }
   
   void _showInfo(BuildContext context) {
+    final inference = context.read<InferenceProvider>();
+    final backend = inference.backend;
+    final status = inference.status;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About AI Chat'),
+        title: const Text('AI backend'),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,36 +359,54 @@ The database has ${_messages.length} messages loaded, but AI responses require O
               Row(
                 children: [
                   Icon(
-                    _ollamaAvailable ? Icons.check_circle : Icons.error_outline,
-                    color: _ollamaAvailable ? Colors.green : Colors.orange,
+                    status?.available == true
+                        ? Icons.check_circle
+                        : Icons.error_outline,
+                    color: status?.available == true
+                        ? Colors.green
+                        : Colors.orange,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    _ollamaAvailable ? 'Ollama Connected' : 'Ollama Not Available',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Expanded(
+                    child: Text(
+                      backend.displayName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 ],
               ),
-              if (_ollamaAvailable && _availableModels.isNotEmpty) ...[
+              if (status?.detail != null) ...[
                 const SizedBox(height: 8),
-                const Text('Available models:'),
-                ..._availableModels.map((m) => Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Text('• $m'),
-                )),
+                Text(status!.detail!),
               ],
               const SizedBox(height: 16),
-              const Text('Setup:'),
-              const SizedBox(height: 8),
-              const Text('1. Install Ollama from ollama.ai'),
-              const Text('2. Pull a model: ollama pull llama3.2'),
-              const Text('3. Ollama runs automatically on port 11434'),
+              Text(backend.description),
               const SizedBox(height: 16),
-              const Text('Privacy:'),
-              const SizedBox(height: 8),
-              const Text('• All processing happens locally'),
-              const Text('• No data sent to cloud'),
-              const Text('• Conversation history stored on device only'),
+
+              // State the privacy position per backend rather than making a
+              // blanket claim: with a cloud key, data does leave the device.
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    backend.isPrivate ? Icons.lock_outline : Icons.cloud_upload,
+                    size: 18,
+                    color: backend.isPrivate
+                        ? Colors.green
+                        : Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      backend.isPrivate
+                          ? 'Your questions and the library stay on your device.'
+                          : 'Your question and the retrieved passages are sent '
+                              'to this provider.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -490,12 +486,33 @@ class _MessageBubble extends StatelessWidget {
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
-                children: message.citations!
-                    .map((c) => Chip(
-                          label: Text(c, style: const TextStyle(fontSize: 12)),
-                          visualDensity: VisualDensity.compact,
-                        ))
-                    .toList(),
+                runSpacing: 4,
+                children: message.citations!.asMap().entries.map((entry) {
+                  final citation = entry.value;
+                  return ActionChip(
+                    avatar: CircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
+                      child: Text(
+                        '${entry.key + 1}',
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                    ),
+                    label: Text(
+                      citation.source,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    visualDensity: VisualDensity.compact,
+                    // Open the exact passage the model was given.
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ContentDetailScreen(contentId: citation.contentId),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ],
@@ -505,11 +522,20 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
+/// A cited passage. Carries the content unit id so the citation can be opened
+/// — a citation the reader cannot follow is not much of a citation.
+class Citation {
+  final int contentId;
+  final String source;
+
+  const Citation({required this.contentId, required this.source});
+}
+
 class ChatMessage {
   final String text;
   final bool isUser;
   final DateTime timestamp;
-  final List<String>? citations;
+  final List<Citation>? citations;
   
   ChatMessage({
     required this.text,

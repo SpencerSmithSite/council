@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
+import 'src/services/inference/inference_provider.dart';
 import 'src/screens/home_screen.dart';
 import 'src/screens/search_screen.dart';
 import 'src/screens/browse_screen.dart';
@@ -21,17 +22,26 @@ void main() async {
   final settings = SettingsProvider();
   await settings.load();
 
-  runApp(TheologyApp(dbService: dbService, settings: settings));
+  final inference = InferenceProvider();
+  await inference.load();
+
+  runApp(TheologyApp(
+    dbService: dbService,
+    settings: settings,
+    inference: inference,
+  ));
 }
 
 class TheologyApp extends StatelessWidget {
   final DatabaseService dbService;
   final SettingsProvider settings;
+  final InferenceProvider inference;
 
   const TheologyApp({
     super.key,
     required this.dbService,
     required this.settings,
+    required this.inference,
   });
 
   @override
@@ -40,6 +50,7 @@ class TheologyApp extends StatelessWidget {
       providers: [
         Provider<DatabaseService>.value(value: dbService),
         ChangeNotifierProvider<SettingsProvider>.value(value: settings),
+        ChangeNotifierProvider<InferenceProvider>.value(value: inference),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) => MaterialApp(

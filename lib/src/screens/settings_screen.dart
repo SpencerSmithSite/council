@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
 import '../services/settings_provider.dart';
+import '../services/inference/inference_provider.dart';
+import 'ai_backend_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -99,8 +101,21 @@ class SettingsScreen extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Citations
+          // AI backend
           const _SectionTitle('AI Chat'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.psychology_outlined),
+              title: const Text('AI Backend'),
+              subtitle: Text(context.watch<InferenceProvider>().backend.displayName),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AiBackendScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Card(
             child: SwitchListTile(
               secondary: const Icon(Icons.format_quote),
