@@ -88,17 +88,24 @@ def main():
     parser.add_argument("--db", type=Path, default=DB_PATH)
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--limit", type=int, help="only process N chunks")
+    parser.add_argument("--incremental", action="store_true",
+                        help="only embed chunks that lack a vector")
     args = parser.parse_args()
 
     mode = "" if args.write else "?mode=ro"
     conn = sqlite3.connect(f"file:{args.db}{mode}", uri=True)
 
     # Chunks are stored as offsets; slice the parent unit to get the text.
+    missing_only = """
+        AND NOT EXISTS (SELECT 1 FROM chunk_embeddings e WHERE e.chunk_id = c.id)
+    """ if args.incremental else ""
+
     rows = conn.execute(
-        """SELECT c.id, substr(cu.content, c.char_start + 1, c.char_end - c.char_start)
-           FROM content_chunks c
-           JOIN content_units cu ON c.content_unit_id = cu.id
-           ORDER BY c.id"""
+        f"""SELECT c.id, substr(cu.content, c.char_start + 1, c.char_end - c.char_start)
+            FROM content_chunks c
+            JOIN content_units cu ON c.content_unit_id = cu.id
+            WHERE 1 = 1 {missing_only}
+            ORDER BY c.id"""
     ).fetchall()
     if args.limit:
         rows = rows[: args.limit]
@@ -112,7 +119,8 @@ def main():
 
     tokenizer, session = load_model()
     conn.executescript(SCHEMA)
-    conn.execute("DELETE FROM chunk_embeddings")
+    if not args.incremental:
+        conn.execute("DELETE FROM chunk_embeddings")
 
     started = time.monotonic()
     for offset in range(0, len(rows), BATCH):
