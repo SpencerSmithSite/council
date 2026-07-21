@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +15,7 @@ class _RandomPassageScreenState extends State<RandomPassageScreen> {
   Map<String, dynamic>? _passage;
   List<Map<String, dynamic>>? _tags;
   bool _isLoading = false;
-  final Random _random = Random();
-  
+
   @override
   void initState() {
     super.initState();
@@ -28,32 +26,28 @@ class _RandomPassageScreenState extends State<RandomPassageScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final dbService = context.read<DatabaseService>();
-      
-      // Get total content count
-      final stats = await dbService.getStats();
-      final total = stats['content_units'] as int;
-      
-      if (total > 0) {
-        // Pick random content unit
-        final randomId = _random.nextInt(total) + 1;
-        final content = await dbService.getContentUnit(randomId);
-        
-        if (content != null) {
-          final tags = await dbService.getTagsForContent(randomId);
-          setState(() {
-            _passage = content;
-            _tags = tags;
-            _isLoading = false;
-          });
-        }
+      final content = await dbService.getRandomContentUnit();
+
+      final tags = content == null
+          ? null
+          : await dbService.getTagsForContent(content['id'] as int);
+
+      if (mounted) {
+        setState(() {
+          _passage = content ?? _passage;
+          _tags = tags;
+          _isLoading = false;
+        });
       }
     } catch (_) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
   
@@ -81,7 +75,9 @@ class _RandomPassageScreenState extends State<RandomPassageScreen> {
   Widget _buildPassage() {
     final title = _passage!['title'] ?? 'Untitled';
     final content = _passage!['content'] ?? '';
-    
+    final source = _passage!['source_title'] ?? '';
+    final tradition = _passage!['tradition'] ?? '';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -93,8 +89,19 @@ class _RandomPassageScreenState extends State<RandomPassageScreen> {
               title,
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
           ],
+
+          // Attribution
+          if (source.isNotEmpty) ...[
+            Text(
+              '$source${tradition.isNotEmpty ? ' • $tradition' : ''}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
           
           // Content
           Card(
