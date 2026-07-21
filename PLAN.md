@@ -331,3 +331,72 @@ Ordered by value.
   (53 MB gzipped) plus a 22 MB model. Every rebuild commits another ~53 MB
   blob; `.git` is already ~84 MB. Options: Git LFS, GitHub release assets, or
   the downloadable per-tradition packs already planned in ARCHITECTURE.md.
+
+
+---
+
+## Phase 6 — Goal-question verification (2026-07-21)
+
+Three questions the app is meant to answer well were tested end-to-end with
+`tools/query_probe.py`. **None of them work yet, for three different reasons.**
+The retrieval machinery is sound — two doctrinal control questions return
+excellent results — so what is missing is coverage and constraints, not ranking.
+
+### "What are the differences between Catholic and Lutheran beliefs on baptism?"
+
+Five of six retrieved passages came from one work, Augustine's *On Baptism,
+Against the Donatists*; every result was Early Church. The corpus holds **zero**
+Luther, Augsburg Confession, or Book of Concord.
+
+It also actively misleads: it matched "Catholic" in Augustine's 4th-century
+sense — the universal church as against the Donatists — not the modern
+denomination. Confident-looking results answering a different question.
+
+### "What did Aquinas say about the Virgin Mary?"
+
+Topic right, author entirely absent. One hit surfaced "the most blessed Thomas"
+— the *apostle*, in the Assumption narrative. Retrieval has no concept of
+author, source, or tradition; "Aquinas" is just another query term.
+
+### "What topics were covered at the Council of Trent?"
+
+Returned Carthage, Nicaea and Athanasius' *De Synodis*. Same root cause: a named
+document is treated as search terms rather than as "enumerate this source".
+
+### The provenance hole this exposed
+
+A "Council of Trent" source and a "Summa Theologica Selections (Aquinas)" source
+do exist — **7 units each, the generated-template size**. Their text is
+substantively accurate (a faithful paraphrase of Trent's Canon 9, a correct
+summary of the Five Ways) but it is not the decree or the Summa, and it carries
+no `source_url`, author or translator. The classifier passes it as
+`primary_text` because its signals were tuned to catch word-salad, not
+competent summary.
+
+This generalises. **All 31 sources lacking provenance are the non-patristic
+ones** — Reformed 7/7, Lutheran 4/4, Catholic 4/4, Anglican 2/2, Methodist 1/1.
+Every source that could answer a cross-tradition question is unverified
+paraphrase. The patristic depth masked how much of the old corpus survives
+outside it.
+
+### Reordered next steps
+
+Wiring the ONNX query encoder was next, but it would make these questions fail
+*faster*, not succeed — semantic search cannot retrieve documents that do not
+exist, nor filter on an author it has no concept of.
+
+- [ ] **Ingest the confessional corpora** *(now first)* — Book of Concord,
+  Westminster/Heidelberg/Belgic/Dort, Trent, Thirty-Nine Articles. Unblocks the
+  comparative question and replaces the 31 unprovenanced sources with real text.
+  Schaff's *Creeds of Christendom* (1877, public domain) carries most of these
+  in one consistently structured work.
+- [ ] **Metadata-aware retrieval** — recognise when a question names an author,
+  source or tradition and constrain retrieval accordingly. Unblocks the
+  author-scoped and source-scoped questions. Mostly SQL plus a recogniser over
+  the `authors` and `sources` tables.
+- [ ] **Purge the unprovenanced legacy survivors** once replacements land — the
+  classifier will not catch them, so this is a provenance rule, not a text
+  check: a source with no `source_url` is not a source.
+- [ ] Wire the ONNX query encoder *(after the above)*
+- [ ] Retrieval evaluation set — extend the `query_probe.py` suite with
+  expected sources per question so results are scored, not eyeballed.
