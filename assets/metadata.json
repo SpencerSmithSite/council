@@ -1,42 +1,33 @@
 {
-  "version": "2026-04-24",
-  "buildDate": "2026-04-24T22:45:00.000Z",
+  "version": "2026-07-21",
+  "buildDate": "2026-07-21T00:00:00.000Z",
   "sources": {
-    "total": 523,
+    "total": 430,
     "byTradition": {
-      "Early Church": 45,
-      "Reformed": 52,
-      "Ecumenical": 18,
-      "Universal": 15,
-      "Lutheran": 38,
-      "Baptist": 12,
-      "Catholic": 48,
-      "Eastern Orthodox": 42,
-      "Oriental Orthodox": 15,
-      "Anglican": 22,
-      "Methodist": 8,
-      "Pentecostal": 6
+      "Early Church": 135,
+      "Catholic": 70,
+      "Eastern Orthodox": 53,
+      "Ecumenical": 52,
+      "Lutheran": 41,
+      "Reformed": 37,
+      "Universal": 13,
+      "Baptist": 7,
+      "Oriental Orthodox": 7,
+      "Anglican": 6,
+      "Methodist": 6,
+      "Pentecostal": 3
     },
     "byType": {
-      "Father": 85,
-      "Confession": 45,
-      "Creed": 12,
-      "Catechism": 28,
-      "Council": 18,
-      "Scripture": 35,
-      "Theologian": 120,
-      "Apologist": 25,
-      "Mystic": 15,
-      "Reformer": 35,
-      "Modern": 55,
-      "Declaration": 20,
-      "Liturgy": 8,
-      "Monastic": 12
+      "Confession": 407,
+      "Father": 12,
+      "Creed": 5,
+      "Council": 4,
+      "Catechism": 2
     }
   },
   "content": {
-    "total": 3014,
-    "tagged": 2900
+    "total": 4106,
+    "tagged": 3943
   },
-  "tags": 120
+  "tags": 21
 }
