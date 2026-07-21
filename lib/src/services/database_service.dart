@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+import 'search/hybrid_ranker.dart';
+
 class DatabaseService {
   /// Bumped when the bundled corpus changes, so an installed copy of an older
   /// database is replaced rather than kept forever.
@@ -175,7 +177,16 @@ class DatabaseService {
       if (seen.add(id)) combined.add(r);
     }
     
-    final selected = combined.take(limit).toList();
+    // Spread the results across sources and traditions before truncating.
+    // Relevance order alone fills every slot from whichever tradition the
+    // corpus happens to hold most of, which for a comparative question is the
+    // wrong answer even when each individual passage is relevant.
+    final selected = HybridRanker.diversify<Map<String, dynamic>>(
+      combined,
+      sourceOf: (row) => row['source_title'],
+      traditionOf: (row) => row['tradition'],
+      limit: limit,
+    );
 
     // Replace each unit's full text with the chunk that best matches the
     // query. A unit can be 162 KB; handing the model its first N characters
