@@ -107,12 +107,16 @@ def recognise(index, question):
             labels.append(author)
     named_author = bool(sids)
 
-    hits = {}
+    hits, with_distinctive = {}, set()
     for t in tk:
-        for i in tokens.get(t, ()):
+        cand = tokens.get(t, ())
+        if cand and len(cand) <= 2:
+            with_distinctive |= set(cand)
+        for i in cand:
             hits[i] = hits.get(i, 0) + 1
     works = {i for i, n in hits.items()
-             if counts.get(i, 0) and n >= 2 and (n >= counts[i] or n >= counts[i] * 0.6)}
+             if counts.get(i, 0) and n >= 2
+             and (n >= counts[i] or n >= counts[i] * 0.6 or i in with_distinctive)}
 
     if len(works) > 6:
         return tids, (sids if named_author else set()), labels

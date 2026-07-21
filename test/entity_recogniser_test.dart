@@ -75,6 +75,28 @@ void main() {
       expect(result.sourceIds, contains(10));
     });
 
+    test('recognises a long title from a distinctive token plus one more', () {
+      // Renaming "Council of Trent" to its full form broke scoping: two of
+      // four title tokens fell under the fraction threshold. "Trent" is
+      // distinctive, so two tokens including it is enough.
+      final long = EntityRecogniser.build(
+        sources: [
+          {'id': 30, 'title': 'The Canons and Decrees of the Council of Trent',
+           'author': null},
+          {'id': 31, 'title': 'Twelve Topics on the Faith', 'author': null},
+        ],
+        traditions: const [],
+      );
+
+      expect(
+        long.recognise('What did the Council of Trent decree about justification?')
+            .sourceIds,
+        contains(30),
+      );
+      // Still must not fire on one ordinary token.
+      expect(long.recognise('What topics matter most?').sourceIds, isEmpty);
+    });
+
     test('recognises a multi-word confession title', () {
       expect(
         recogniser.recognise('the Heidelberg Catechism on the sacraments').sourceIds,
