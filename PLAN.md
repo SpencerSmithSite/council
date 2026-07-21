@@ -155,11 +155,41 @@ material happens first so the app stops shipping it; re-ingestion follows.
 
 - [ ] **De-duplicate** the 187 duplicate `content_plain` values.
 
-- [ ] **Build the re-ingestion pipeline** — the main remaining work. Fetch real
-  texts from public-domain archives (CCEL, New Advent, Christian Classics),
-  parse into content units, record `source_url` and translator, and rebuild the
-  database from a reproducible script rather than editing it in place.
-  Needs a decision on which archives and how many works to target first.
+- [x] **Build the re-ingestion pipeline** — `tools/ingest_newadvent.py`
+  (manifest → fetch → parse) and `tools/build_corpus.py` (load into the DB with
+  provenance). Rate limited, disk cached, re-runnable.
+
+### Coverage target
+
+The app should hold the teachings, writings and council statements of every
+major branch of the Christian faith, plus the individual church fathers, so
+that an AI answer can cite several traditions at once. Ingestion is therefore
+organised by tradition, working down from highest value.
+
+- [x] **Early Church / Church Fathers** — newadvent.org (Schaff ANF/NPNF,
+  public domain). 420 works, 69 authors: Augustine 48, Chrysostom 36,
+  Tertullian 33, Athanasius 20, plus 18 council documents.
+- [ ] **Ecumenical councils & creeds** — partially covered by the New Advent
+  councils set; verify the seven councils and the creeds are complete and
+  genuine, since the current Nicene Creed entry is fabricated.
+- [ ] **Catholic** — papal encyclicals (vatican.va), Trent, Vatican I & II,
+  the Catechism. Note most post-1928 Vatican texts are in copyright.
+- [ ] **Eastern Orthodox** — Philokalia, Desert Fathers, Palamas, Cabasilas;
+  much is public domain in older translations.
+- [ ] **Lutheran** — Book of Concord (bookofconcord.org, public domain):
+  Augsburg Confession, Apology, Smalcald Articles, Formula of Concord.
+- [ ] **Reformed** — Calvin's Institutes, Westminster Standards, Heidelberg
+  Catechism, Belgic Confession, Canons of Dort (CCEL).
+- [ ] **Anglican** — Thirty-Nine Articles, Book of Common Prayer, Hooker.
+- [ ] **Baptist** — London Baptist Confessions 1644/1689, New Hampshire
+  Confession, Baptist Faith & Message (note: BF&M is in copyright).
+- [ ] **Methodist / Wesleyan** — Wesley's sermons and Notes (CCEL), Articles
+  of Religion.
+- [ ] **Nazarene** — Articles of Faith, Manual (check licensing).
+- [ ] **Pentecostal** — Statement of Fundamental Truths, Azusa Street
+  documents (check licensing).
+- [ ] **Oriental Orthodox** — Coptic, Armenian and Syriac sources; likely the
+  hardest to source in English translation.
 
 - [ ] **Purge remaining generated filler** once replacements exist — still
   **1,946 units (47.4%)** after the byline removal. Post-prune audit:

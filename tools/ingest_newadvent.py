@@ -28,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".cache" / "newadvent"
 MANIFEST = ROOT / "tools" / "data" / "newadvent_manifest.json"
+PARTS = ROOT / "tools" / "data" / "newadvent_parts.json"
 UNITS = ROOT / "tools" / "data" / "newadvent_units.json"
 
 BASE = "https://www.newadvent.org/fathers/"
@@ -149,11 +150,75 @@ def build_manifest():
 
 
 # --------------------------------------------------------------------------
+# stage 1b: expand multi-part works
+#
+# The largest works — Chrysostom's homily series, Augustine's sermons, Cyprian's
+# epistles — are not on one page. Their entry in the index is a hub linking to
+# one page per homily/epistle/book, keyed by the parent id plus a two-digit
+# part number (2001 -> 200101, 200102, …). Ingesting only the hubs would miss
+# most of the corpus by volume.
+
+
+def sub_links(body):
+    """Part links on a hub page, in document order, de-duplicated."""
+    start = body.find("</h1>")
+    end = body.find("About this page")
+    region = body[start if start >= 0 else 0 : end if end > 0 else len(body)]
+
+    seen, links = set(), []
+    for href, label in re.findall(
+        r'href="(?:\.\./)?fathers/(\d{5,})\.htm"[^>]*>(.*?)</a>', region, re.S
+    ):
+        if href in seen:
+            continue
+        seen.add(href)
+        links.append((href, clean_text(label)))
+    return links
+
+
+def is_hub(work, body):
+    """A hub has no text of its own but links to three or more parts."""
+    return parse_work(work, body) is None and len(sub_links(body)) >= 3
+
+
+def build_parts():
+    works = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    parts = []
+
+    for w in works:
+        path = CACHE / f"{w['id']}.html"
+        if not path.exists():
+            continue
+        body = path.read_text(encoding="utf-8")
+        if not is_hub(w, body):
+            continue
+        for order, (part_id, label) in enumerate(sub_links(body), 1):
+            parts.append(
+                {
+                    "id": part_id,
+                    "url": f"{BASE}{part_id}.htm",
+                    "title": label or f"Part {order}",
+                    "order": order,
+                    "parent_id": w["id"],
+                    "parent_title": w["title"],
+                    "author": w["author"],
+                    "author_dates": w.get("author_dates"),
+                }
+            )
+
+    PARTS.parent.mkdir(parents=True, exist_ok=True)
+    PARTS.write_text(json.dumps(parts, indent=2) + "\n", encoding="utf-8")
+    hubs = len({p["parent_id"] for p in parts})
+    print(f"{hubs} multi-part works -> {len(parts)} parts -> {PARTS}")
+
+
+# --------------------------------------------------------------------------
 # stage 2: fetch
 
 
-def fetch(limit=None, only=None):
-    works = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def fetch(limit=None, only=None, parts=False):
+    source = PARTS if parts else MANIFEST
+    works = json.loads(source.read_text(encoding="utf-8"))
     if only:
         works = [w for w in works if w["id"] in only]
     if limit:
@@ -327,15 +392,62 @@ def parse_work(work, body):
     }
 
 
+def parse_multipart(work, parts):
+    """Assemble a hub work from its fetched parts into one record."""
+    units, provenance = [], {}
+
+    for part in sorted(parts, key=lambda p: p["order"]):
+        path = CACHE / f"{part['id']}.html"
+        if not path.exists():
+            continue
+        record = parse_work({"title": part["title"], "url": part["url"]},
+                            path.read_text(encoding="utf-8"))
+        if record is None:
+            continue
+        provenance = provenance or record["provenance"]
+        for unit in record["units"]:
+            # Keep the part label so "Homily 12" stays distinguishable once the
+            # units are flattened into one source.
+            title = unit["title"]
+            if not title.startswith(part["title"]):
+                title = f"{part['title']} — {title}"
+            units.append({**unit, "title": title[:300], "part": part["title"]})
+
+    if not units:
+        return None
+
+    return {
+        "work_id": work["id"],
+        "url": work["url"],
+        "title": work["title"],
+        "author": work["author"],
+        "author_dates": work.get("author_dates"),
+        "provenance": provenance,
+        "units": units,
+    }
+
+
 def parse_all():
     works = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    parsed, skipped = [], 0
+
+    parts_by_parent = {}
+    if PARTS.exists():
+        for part in json.loads(PARTS.read_text(encoding="utf-8")):
+            parts_by_parent.setdefault(part["parent_id"], []).append(part)
+
+    parsed, skipped, multipart = [], 0, 0
 
     for w in works:
         path = CACHE / f"{w['id']}.html"
         if not path.exists():
             continue
-        record = parse_work(w, path.read_text(encoding="utf-8"))
+
+        if w["id"] in parts_by_parent:
+            record = parse_multipart(w, parts_by_parent[w["id"]])
+            multipart += record is not None
+        else:
+            record = parse_work(w, path.read_text(encoding="utf-8"))
+
         if record is None:
             skipped += 1
             continue
@@ -347,7 +459,7 @@ def parse_all():
     total_units = sum(len(r["units"]) for r in parsed)
     chars = sum(len(u["content"]) for r in parsed for u in r["units"])
     with_prov = sum(1 for r in parsed if r["provenance"].get("translator"))
-    print(f"parsed {len(parsed)} works, {skipped} unparseable")
+    print(f"parsed {len(parsed)} works ({multipart} multi-part), {skipped} unparseable")
     print(f"  {total_units} content units, {chars / 1e6:.1f}M chars")
     print(f"  {with_prov}/{len(parsed)} works have translator provenance")
     print(f"  -> {UNITS}")
@@ -357,16 +469,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("manifest")
+    sub.add_parser("expand")
     f = sub.add_parser("fetch")
     f.add_argument("--limit", type=int)
     f.add_argument("--only", nargs="*")
+    f.add_argument("--parts", action="store_true")
     sub.add_parser("parse")
 
     args = parser.parse_args()
     if args.command == "manifest":
         build_manifest()
+    elif args.command == "expand":
+        build_parts()
     elif args.command == "fetch":
-        fetch(limit=args.limit, only=args.only)
+        fetch(limit=args.limit, only=args.only, parts=args.parts)
     elif args.command == "parse":
         parse_all()
 
