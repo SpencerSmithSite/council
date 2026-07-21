@@ -473,8 +473,77 @@ housekeeping**, because they are no longer buried.
   could not be confirmed as the public-domain 1921 Triglotta rather than a
   modern copyrighted translation. Needs either a verified public-domain source
   (archive.org scan of the Concordia Triglotta) or a licensing decision.
-- [ ] **Metadata-aware retrieval** — author, source and tradition recognition,
-  for the author-scoped and source-scoped classes.
+- [x] **Metadata-aware retrieval** — `EntityRecogniser`, wired into
+  `searchForRAG`. Both engines honour a recognised scope; scoping only the
+  lexical side let unscoped semantic hits back in through fusion, so a
+  question about Trent still returned Carthage and Nicaea.
+
+  | Class | Result |
+  |---|---|
+  | Source-scoped — "topics covered at Trent?" | scopes to *Council of Trent*, returns its decrees |
+  | Author-scoped — "Augustine on grace?" | scopes to Augustine's 44 works |
+  | Comparative — "Catholic vs Lutheran" | scopes to both traditions |
+
+  **Rejected: identifying a work by a single rare token.** Tokens like
+  "virgin", "topics" and "saved" appear in one or two titles while being
+  ordinary vocabulary, so rarity scoped "how is a person saved?" to *Who is
+  the Rich Man That Shall Be Saved?*. Two matching tokens are now required,
+  which costs the ability to resolve a bare surname like "Aquinas" and buys
+  freedom from that entire class of false positive.
 - [ ] **Corpus distribution** — now urgent rather than theoretical: GitHub
   warns the 53 MB compressed corpus exceeds its 50 MB recommendation, and it
   grows with every tradition added.
+
+
+---
+
+## Phase 8 — What metadata scoping exposed (2026-07-21)
+
+### Tradition labels in the legacy corpus are fabricated
+
+Scoping is only as good as the column it scopes on. Every source labelled
+**Lutheran** was something else: the Didache, the Philokalia, Gregory of
+Nyssa's *Life of Moses*, and Peter Mogila's *Orthodox Confession* — two Eastern
+Orthodox, two patristic. Before scoping these were buried; afterwards the app
+answered "what do Lutherans teach" with Orthodox texts under a confident
+Lutheran heading, which is worse than returning nothing.
+
+- [x] **Correct the fabricated labels** — `tools/fix_legacy_metadata.py`.
+  7 relabelled, 7 duplicate sources / 138 units deleted. Lutheran is now
+  honestly **zero sources**.
+- [x] **Deliberately not a blanket purge.** Sampling showed some unprovenanced
+  sources carry genuine text — the Thirty-Nine Articles open with the real
+  Article I, Westminster Shorter with the real Question 1. Deleting those would
+  destroy exactly the confessional material the corpus lacks.
+
+### Chunk ids were unstable, and it silently corrupted every vector
+
+Deleting 138 units reassigned every chunk id after them, and embeddings are
+keyed on chunk id. Sampled vectors matched their supposed chunk at cosine
+0.33–0.49 — pointing at unrelated text. **Nothing errored.** Semantic search
+would have returned nonsense with no symptom.
+
+This fragility was noted two phases earlier, when the ids "happened to line up
+because new units append after existing ones — luck rather than design". The
+luck ran out the first time a deletion landed mid-corpus.
+
+- [x] **Derive chunk ids from the parent unit** (`unit_id * 1000 + sequence`),
+  so removing a unit invalidates only that unit's chunks.
+- [x] **Drop orphaned embeddings automatically** when chunks are rebuilt.
+- [x] **Verify alignment by re-embedding samples** rather than trusting counts,
+  which is what caught it.
+
+### Outstanding
+
+- [ ] **Lutheran corpus** — the last blocker for the comparative class.
+  Likeliest verified public-domain route is the archive.org scan of the
+  Concordia Triglotta (1921).
+- [ ] **Re-ingest the genuine-but-unprovenanced confessions** — Thirty-Nine
+  Articles, Westminster Shorter and Larger, Second Helvetic, Scots. Real text,
+  no provenance, and now prominent in results because of diversity ranking.
+- [ ] **Surface tradition and provenance on citations in the UI** — a
+  comparative answer is only checkable if the reader can see which tradition
+  each source speaks for and whether it is verified.
+- [ ] **Corpus distribution** — GitHub warns at 53 MB and it grows per
+  tradition.
+- [ ] Wire the ONNX query encoder; build a scored retrieval evaluation set.
