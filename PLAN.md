@@ -535,9 +535,22 @@ luck ran out the first time a deletion landed mid-corpus.
 
 ### Outstanding
 
-- [ ] **Lutheran corpus** — the last blocker for the comparative class.
-  Likeliest verified public-domain route is the archive.org scan of the
-  Concordia Triglotta (1921).
+- [x] **Lutheran corpus** — `tools/ingest_gutenberg.py`. Augsburg Confession
+  (31 units), Apology (102), Smalcald Articles (13), Luther's Small Catechism
+  (15) — **161 units**, the Bente/Dau translation prepared for the 1921
+  *Concordia Triglotta*.
+
+  **Rejected: the archive.org scans.** OCR renders Augsburg Article I as
+  "Gk)d the Father", "quail*ty" and "Manichs&ans" — roughly one error per
+  hundred characters. Tolerable in a search index, not in an app whose purpose
+  is quoting sources accurately. Gutenberg's texts are proofread
+  transcriptions of the same translation.
+
+  The rights check records what it actually verified: Gutenberg's statement is
+  collection-level ("nearly all the individual works…"), so it is evidence
+  rather than a per-work guarantee, and the per-work basis is the 1921
+  publication date. Both are stored against the source so a reader can check
+  the reasoning instead of trusting it.
 - [ ] **Re-ingest the genuine-but-unprovenanced confessions** — Thirty-Nine
   Articles, Westminster Shorter and Larger, Second Helvetic, Scots. Real text,
   no provenance, and now prominent in results because of diversity ranking.
@@ -547,3 +560,36 @@ luck ran out the first time a deletion landed mid-corpus.
 - [ ] **Corpus distribution** — GitHub warns at 53 MB and it grows per
   tradition.
 - [ ] Wire the ONNX query encoder; build a scored retrieval evaluation set.
+
+
+---
+
+## Phase 9 — Lutheran corpus (2026-07-21)
+
+The comparative class now works end to end. "What are the differences between
+Catholic and Lutheran beliefs about baptism?" returns Luther's Small Catechism
+on what baptism gives, alongside the Catholic material — genuine Lutheran
+primary text, where a week ago the four "Lutheran" sources were Eastern
+Orthodox and patristic.
+
+**Caveat worth stating:** the Lutheran side is now verified primary text while
+the Catholic side is still unprovenanced legacy paraphrase (Catechism of the
+Catholic Church, Council of Trent, Summa selections). The comparison is real
+on one side only.
+
+- [x] Stable chunk ids proved themselves: adding 161 units required embedding
+  **756 new chunks**, not all 54,322. Before the fix this would have been a
+  14-minute rebuild — or worse, a silent misalignment.
+
+### Next
+
+- [ ] **Verified Catholic primary text** — Trent's actual decrees (Waterworth
+  translation, 1848) rather than the paraphrase, so the comparative answer is
+  genuine on both sides.
+- [ ] **Re-ingest the remaining unprovenanced confessions** — Thirty-Nine
+  Articles, Westminster Shorter and Larger, Second Helvetic, Scots. Genuine
+  text, no provenance. Not on Gutenberg or at the CCEL path tried; needs a
+  located source.
+- [ ] Surface tradition and provenance on citations in the UI.
+- [ ] Wire the ONNX query encoder; scored retrieval evaluation set.
+- [ ] Corpus distribution — now 54 MB compressed.

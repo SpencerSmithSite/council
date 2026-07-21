@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Load ingested confessional documents into assets/theology.db.
 
+Takes any units file produced by an ingester (`ingest_ccel.py`,
+`ingest_gutenberg.py`) — they share a record shape deliberately, so adding a
+source does not mean adding a loader.
+
 Inserts each document as a source with real provenance — source_url, rights,
 and the collection it came from — and replaces the unprovenanced legacy entry
 of the same tradition where one exists.
@@ -90,11 +94,13 @@ def main():
             conn.execute("DELETE FROM sources WHERE id = ?", (source_id,))
             print(f"  replaced stale source {source_id} ({record['title']})")
 
+        origin = record["url"].split("/")[2] if "//" in record["url"] else "unknown"
         notes = " | ".join(x for x in (
             f"From {record['collection']}" if record.get("collection") else None,
+            f"Translated by {record['translator']}" if record.get("translator") else None,
             f"Edited by {record['editor']}" if record.get("editor") else None,
             f"Rights: {record['rights']}",
-            "Ingested from ccel.org",
+            f"Ingested from {origin}",
         ) if x)
 
         cursor = conn.execute(
