@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
 import 'src/services/inference/inference_provider.dart';
+import 'src/services/search/semantic_search.dart';
 import 'src/screens/home_screen.dart';
 import 'src/screens/search_screen.dart';
 import 'src/screens/browse_screen.dart';
@@ -24,6 +25,11 @@ void main() async {
 
   final inference = InferenceProvider();
   await inference.load();
+
+  // Semantic retrieval is loaded after the database and treated as optional:
+  // it costs ~20 MB and a moment of startup, and a device that cannot run the
+  // model should still get a searchable library rather than a failed launch.
+  dbService.semantic = await SemanticSearch.tryLoad(dbService.database);
 
   runApp(TheologyApp(
     dbService: dbService,
