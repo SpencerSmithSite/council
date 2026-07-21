@@ -23,3 +23,6 @@ __pycache__/
 # Uncompressed corpus: built by tools/build_corpus.py, shipped as .gz
 assets/theology.db
 assets/theology.db.bak
+
+# Embedding model weights: ~22MB, fetched by tools/fetch_model.sh
+assets/model/*.onnx

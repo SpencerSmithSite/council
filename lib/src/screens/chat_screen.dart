@@ -401,7 +401,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       backend.isPrivate
                           ? 'Your questions and the library stay on your device.'
                           : 'Your question and the retrieved passages are sent '
-                              'to this provider.',
+                              "to this provider, under that provider's privacy "
+                              'policy and retention terms rather than this '
+                              "app's. They may be retained or used for "
+                              'training — check their terms.',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),

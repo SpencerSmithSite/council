@@ -175,8 +175,67 @@ class DatabaseService {
       if (seen.add(id)) combined.add(r);
     }
     
-    return combined.take(limit).toList();
+    final selected = combined.take(limit).toList();
+
+    // Replace each unit's full text with the chunk that best matches the
+    // query. A unit can be 162 KB; handing the model its first N characters
+    // means the relevant passage is usually not in the window at all.
+    return [
+      for (final row in selected)
+        {...row, 'content': await _bestChunkText(row, query)},
+    ];
   }
+
+  /// Text of the chunk within [row]'s unit that best matches [query].
+  ///
+  /// Scoring is term overlap, which is crude but adequate: the unit has
+  /// already been selected by FTS, so this only has to choose between a
+  /// handful of slices of one document. Semantic scoring happens earlier, at
+  /// the point units are selected.
+  Future<String> _bestChunkText(Map<String, dynamic> row, String query) async {
+    final content = row['content'] as String? ?? '';
+    final chunks = await database.query(
+      'content_chunks',
+      columns: ['char_start', 'char_end'],
+      where: 'content_unit_id = ?',
+      whereArgs: [row['id']],
+      orderBy: 'sequence',
+    );
+
+    if (chunks.length <= 1) return content;
+
+    final terms = query
+        .toLowerCase()
+        .split(RegExp(r'[^a-z0-9]+'))
+        .where((t) => t.length > 2)
+        .toSet();
+    if (terms.isEmpty) return content;
+
+    String? best;
+    var bestScore = -1;
+
+    for (final chunk in chunks) {
+      final start = chunk['char_start'] as int;
+      final end = (chunk['char_end'] as int).clamp(0, content.length);
+      if (start >= end) continue;
+
+      final text = content.substring(start, end);
+      final lower = text.toLowerCase();
+
+      var score = 0;
+      for (final term in terms) {
+        if (lower.contains(term)) score++;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = text;
+      }
+    }
+
+    return best ?? content;
+  }
+
   
   /// The complete tag vocabulary present in the bundled database.
   ///
