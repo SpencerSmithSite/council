@@ -42,3 +42,4 @@ flutter:
   assets:
     - assets/theology.db.gz
     - assets/metadata.json
+    - assets/model/vocab.txt

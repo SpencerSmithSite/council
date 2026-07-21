@@ -307,7 +307,14 @@ class _CloudSettingsState extends State<_CloudSettings> {
                     child: Text(
                       'With a cloud key, your questions and the passages '
                       'retrieved for them are sent to that provider. Every '
-                      'other option keeps them on your device.',
+                      'other option keeps them on your device.\n\n'
+                      'What happens to them after that is governed by that '
+                      "provider's privacy policy and data-retention terms, "
+                      'not by this app. Depending on your account and their '
+                      'current terms, they may retain your questions, have '
+                      'staff review them, or use them to train models. '
+                      'Council cannot see, control, or undo any of that — '
+                      'check the terms of whichever provider you use.',
                     ),
                   ),
                 ],

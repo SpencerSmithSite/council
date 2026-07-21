@@ -87,7 +87,10 @@ class CloudBackend implements InferenceBackend {
   @override
   String get description =>
       'Uses your own ${provider.label} API key. Questions and the retrieved '
-      'passages are sent to ${Uri.parse(provider.endpoint).host}.';
+      'passages are sent to ${Uri.parse(provider.endpoint).host}, where '
+      "${provider.label}'s own privacy policy and data-retention terms apply — "
+      'not this app\'s. Council cannot control how long they keep your '
+      'questions or what they do with them.';
 
   /// Explicitly not private: this is the one backend that leaves the device.
   @override
