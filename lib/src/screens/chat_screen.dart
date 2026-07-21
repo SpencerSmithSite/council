@@ -91,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
           // Build context from search results
           final contextPassages = passages.map((p) => ContextPassage(
             source: p['source_title'] ?? 'Unknown',
-            content: p['content_plain'] ?? '',
+            content: p['content'] ?? '',
             tradition: p['tradition'],
             date: p['date_composed'],
           )).toList();

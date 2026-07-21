@@ -37,5 +37,5 @@ flutter:
   uses-material-design: true
   
   assets:
-    - assets/theology.db
+    - assets/theology.db.gz
     - assets/metadata.json

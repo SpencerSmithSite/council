@@ -146,24 +146,55 @@ material happens first so the app stops shipping it; re-ingestion follows.
   (`content_fts` is external-content with no sync triggers, so deletes leave it
   stale); `PRAGMA integrity_check` clean, zero orphaned FTS rows.
 
-- [ ] **Add a `provenance` column to `content_units`**
-  Values: `primary_text` | `summary` | `boilerplate` | `unknown`.
-  Still wanted during the rebuild so re-ingested text is distinguishable from
-  anything retained, and so RAG can filter on it.
+- [x] **Add a `provenance` column to `content_units`**
 
 - [ ] **Delete scraper boilerplate** (18 units, incl. `title = "About this page"`)
 
 - [ ] **De-duplicate** the 187 duplicate `content_plain` values.
 
-- [ ] **Build the re-ingestion pipeline** — the main remaining work. Fetch real
-  texts from public-domain archives (CCEL, New Advent, Christian Classics),
-  parse into content units, record `source_url` and translator, and rebuild the
-  database from a reproducible script rather than editing it in place.
-  Needs a decision on which archives and how many works to target first.
+- [x] **Build the re-ingestion pipeline** — `tools/ingest_newadvent.py`
+  (manifest → fetch → parse) and `tools/build_corpus.py` (load into the DB with
+  provenance). Rate limited, disk cached, re-runnable.
 
-- [ ] **Purge remaining generated filler** once replacements exist — still
-  **1,946 units (47.4%)** after the byline removal. Post-prune audit:
-  primary 1,979 (48.2%) / summary 1,946 (47.4%) / unknown 163 / boilerplate 18.
+### Coverage target
+
+The app should hold the teachings, writings and council statements of every
+major branch of the Christian faith, plus the individual church fathers, so
+that an AI answer can cite several traditions at once. Ingestion is therefore
+organised by tradition, working down from highest value.
+
+- [x] **Early Church / Church Fathers** — newadvent.org (Schaff ANF/NPNF,
+  public domain). **406 works, 17,792 units, 57M chars ingested**, 405 of 406
+  with translator provenance.
+- [ ] **Ecumenical councils & creeds** — partially covered by the New Advent
+  councils set; verify the seven councils and the creeds are complete and
+  genuine, since the current Nicene Creed entry is fabricated.
+- [ ] **Catholic** — papal encyclicals (vatican.va), Trent, Vatican I & II,
+  the Catechism. Note most post-1928 Vatican texts are in copyright.
+- [ ] **Eastern Orthodox** — Philokalia, Desert Fathers, Palamas, Cabasilas;
+  much is public domain in older translations.
+- [ ] **Lutheran** — Book of Concord (bookofconcord.org, public domain):
+  Augsburg Confession, Apology, Smalcald Articles, Formula of Concord.
+- [ ] **Reformed** — Calvin's Institutes, Westminster Standards, Heidelberg
+  Catechism, Belgic Confession, Canons of Dort (CCEL).
+- [ ] **Anglican** — Thirty-Nine Articles, Book of Common Prayer, Hooker.
+- [ ] **Baptist** — London Baptist Confessions 1644/1689, New Hampshire
+  Confession, Baptist Faith & Message (note: BF&M is in copyright).
+- [ ] **Methodist / Wesleyan** — Wesley's sermons and Notes (CCEL), Articles
+  of Religion.
+- [ ] **Nazarene** — Articles of Faith, Manual (check licensing).
+- [ ] **Pentecostal** — Statement of Fundamental Truths, Azusa Street
+  documents (check licensing).
+- [ ] **Oriental Orthodox** — Coptic, Armenian and Syriac sources; likely the
+  hardest to source in English translation.
+
+- [x] **Purge remaining generated filler** — done via `build_corpus.py
+  --drop-generated`. Per-unit classification alone was not enough (generated
+  text was still the top FTS hit for "incarnation"), so sources are judged
+  wholesale: a legacy source at least 25% generated is discarded entirely.
+  **405 of 452 legacy sources went**; the 47 survivors are the genuine ones —
+  Thirty-Nine Articles, Westminster Shorter Catechism, Heidelberg Catechism,
+  the Ignatius epistles. Every remaining unit is now `primary_text`.
 
 - [ ] **Label provenance in the UI**
   A passage the model paraphrased must never look like the creed itself. Badge
@@ -171,18 +202,17 @@ material happens first so the app stops shipping it; re-ingestion follows.
 
 - [ ] **Exclude non-primary units from RAG retrieval** — `searchForRAG`
 
-- [ ] **Populate `authors` and `works`** (both tables currently have **0 rows**)
-  Only 12 of 523 sources have an author at all. Blocks the README's headline use
-  case ("What did Augustine say about grace?").
+- [x] **Populate `authors`** — 69 patristic authors with birth/death years.
+  (`works` remains empty and may simply be redundant with `sources`.)
 
 - [ ] **Fix 71 orphaned content units** — their `source_id` matches no row in
   `sources`. They're already invisible to search (which inner-joins) and to
   random passage; `getContentUnit` left-joins so they at least still open.
   Either repair the FK or delete them.
 
-- [ ] **Populate `source_url`** (currently **0 of 523**)
-  Needed for provenance and to substantiate the `public_domain` / `license`
-  claims already in the schema.
+- [x] **Populate `source_url`** — 406 of 437 sources, up from 0 of 523, each
+  with translator and edition recorded in `notes`. The 31 without are the
+  retained legacy confessions, which still need real provenance.
 
 ### Attribution and licensing — needs a decision before any public release
 
