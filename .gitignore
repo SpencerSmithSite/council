@@ -17,3 +17,4 @@ flutter_*.log
 
 # Migration backups (originals recoverable from git)
 *.db.bak
+__pycache__/

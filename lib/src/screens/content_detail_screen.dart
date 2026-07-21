@@ -57,16 +57,24 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
     if (widget.contentId != null) {
       // Load single content unit
       final content = await dbService.getContentUnit(widget.contentId!);
-      if (content != null) {
-        final tags = await dbService.getTagsForContent(widget.contentId!);
-        setState(() {
-          _singleContent = content;
-          _tags = tags;
-          _isLoading = false;
-        });
-        _checkBookmarkStatus();
-        _trackView();
+
+      // A bookmark or recently-viewed entry can outlive the passage it points
+      // at — corpus pruning removes units. Fall through to the missing state
+      // rather than leaving the spinner up forever.
+      if (content == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
       }
+
+      final tags = await dbService.getTagsForContent(widget.contentId!);
+      if (!mounted) return;
+      setState(() {
+        _singleContent = content;
+        _tags = tags;
+        _isLoading = false;
+      });
+      _checkBookmarkStatus();
+      _trackView();
     } else if (widget.sourceId != null) {
       // Load all content for source
       final content = await dbService.getContentForSource(widget.sourceId!);
@@ -118,9 +126,40 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
     if (_contentUnits != null && _contentUnits!.isNotEmpty) {
       return _buildContentList();
     }
-    return const Center(child: Text('No content found'));
+    return _buildMissing();
   }
   
+  Widget _buildMissing() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'This passage is no longer available',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'It may have been removed from the library. '
+              'Saved links to it can be deleted.',
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSingleContent() {
     final content = _singleContent!;
     final title = content['title'] ?? '';
