@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/ollama_service.dart';
+import '../services/settings_provider.dart';
 
 // ContextPassage is defined in ollama_service.dart
 
@@ -23,18 +25,20 @@ class _ChatScreenState extends State<ChatScreen> {
   
   late final DatabaseService _databaseService;
   late final OllamaService _ollamaService;
-  
+
   @override
   void initState() {
     super.initState();
-    _databaseService = DatabaseService();
+    // The database is opened once at startup and shared via Provider —
+    // constructing a second service here would re-run the asset copy and open
+    // a duplicate handle.
+    _databaseService = context.read<DatabaseService>();
     _ollamaService = OllamaService();
     _initializeServices();
   }
-  
+
   Future<void> _initializeServices() async {
     try {
-      await _databaseService.initialize();
       _ollamaAvailable = await _ollamaService.isAvailable();
       if (_ollamaAvailable) {
         _availableModels = await _ollamaService.getModels();
@@ -101,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
           for (int i = 0; i < contextPassages.length; i++) {
             final passage = contextPassages[i];
             contextBuilder.writeln('[${i + 1}] ${passage.source}');
-            contextBuilder.writeln(passage.content);
+            contextBuilder.writeln(passage.contextContent);
             contextBuilder.writeln();
           }
           
@@ -389,7 +393,7 @@ The database has ${_messages.length} messages loaded, but AI responses require O
               ),
               if (_ollamaAvailable && _availableModels.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('Available models:'),
+                const Text('Available models:'),
                 ..._availableModels.map((m) => Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text('• $m'),
@@ -473,7 +477,9 @@ class _MessageBubble extends StatelessWidget {
                 data: message.text,
               ),
             
-            if (message.citations != null && message.citations!.isNotEmpty) ...[
+            if (context.watch<SettingsProvider>().showCitations &&
+                message.citations != null &&
+                message.citations!.isNotEmpty) ...[
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 8),
