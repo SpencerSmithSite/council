@@ -35,7 +35,7 @@ ollama pull llama3.2
 flutter run -d macos
 ```
 
-The app connects to Ollama at `http://localhost:11434` by default. You can change the host and model in the Settings screen.
+The app connects to Ollama at `http://localhost:11434` and uses the first model Ollama reports. Making the host and model configurable is tracked in [PLAN.md](PLAN.md).
 
 ## Tech stack
 
