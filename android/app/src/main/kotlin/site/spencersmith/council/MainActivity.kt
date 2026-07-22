@@ -1,4 +1,4 @@
-package com.example.theology_app
+package site.spencersmith.council
 
 import io.flutter.embedding.android.FlutterActivity
 

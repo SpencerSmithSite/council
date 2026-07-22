@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:theology_app/src/services/search/entity_recogniser.dart';
+import 'package:council/src/services/search/entity_recogniser.dart';
 
 /// Fixtures mirroring the shape of the real corpus: an author with many works,
 /// multi-word confession titles, and titles whose words are also ordinary
