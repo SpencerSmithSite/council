@@ -995,5 +995,33 @@ embeddings, zero orphans in any direction.
 ### Next
 
 - [x] Surface tradition and provenance on citations in the UI.
+
+---
+
+## Phase 18 — Source roadmap (2026-07-22)
+
+[SOURCES.md](SOURCES.md): every branch of Christianity the app aims to cover,
+the documents that define it, and where they can actually be obtained.
+
+The finding that shapes the rest of the project: **copyright, not availability,
+is the binding constraint, and it falls unevenly.** Traditions that formed
+before roughly 1929 can be shipped whole; those that formed after cannot. That
+maps almost exactly onto Pentecostalism and post-Vatican II Catholicism — so a
+freely-redistributable corpus will systematically under-represent the
+second-largest Christian movement in the world. That is a limitation to state,
+not a gap to quietly fill with summaries.
+
+Archives were checked rather than recalled. Seven resolve; four do not (EEBO
+needs institutional access, GAMEO blocks automation, two are simply dead).
+`newadvent.org/summa/` was checked for *article text* specifically, because two
+sources already in this corpus turned out to hold New Advent index pages.
+
+- [ ] **Aquinas from `newadvent.org/summa/`** — largest single gain available,
+  on an archive already trusted and already parsed.
+- [ ] **Second London Baptist Confession (1689)** — `baptist` is a defined
+  tradition with zero sources.
+- [ ] **Wesley's Standard Sermons** — `methodist` holds 0.001 M characters.
+- [ ] Re-ingest `Adversus haereses` and *The Harmony of the Gospels*.
+- [ ] A clean Westminster Confession.
 - [ ] Remaining 23 unprovenanced sources.
 - [ ] Scored retrieval evaluation set.
