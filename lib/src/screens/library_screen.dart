@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/glass.dart';
 import 'package:provider/provider.dart';
 
 import '../services/packs/pack_manifest.dart';
@@ -37,6 +38,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
       body: RefreshIndicator(
         onRefresh: packs.refresh,
         child: ListView(
+          // Clear the translucent tab bar the body runs behind on Apple.
+          padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
           children: [
             if (packs.error != null)
               Padding(

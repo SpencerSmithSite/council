@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
+import '../theme/app_theme.dart';
+import '../theme/glass.dart';
 import 'ai_backend_screen.dart';
 import 'library_screen.dart';
 import '../services/packs/pack_provider.dart';
@@ -37,6 +39,32 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _pickTheme(
+      BuildContext context, SettingsProvider settings) async {
+    final chosen = await showModalBottomSheet<AppThemeChoice>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: RadioGroup<AppThemeChoice>(
+          groupValue: settings.themeChoice,
+          onChanged: (value) => Navigator.pop(context, value),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final choice in AppThemeChoice.values)
+                RadioListTile<AppThemeChoice>(
+                  value: choice,
+                  title: Text(choice.label),
+                  subtitle: Text(choice.detail),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (chosen != null) await settings.setThemeChoice(chosen);
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
@@ -46,30 +74,21 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        // The bottom inset clears the translucent tab bar. `extendBody` runs
+        // the list behind the bar so the glass has something to blur; without
+        // this padding the last rows — here an accent-filled button — sit
+        // permanently underneath it rather than scrolling into the clear.
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + appleTabBarInset(context)),
         children: [
           // Theme
           const _SectionTitle('Appearance'),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.brightness_6),
-              title: const Text('Dark Mode'),
-              subtitle: const Text('Override system theme'),
-              trailing: DropdownButton<ThemeMode>(
-                value: settings.themeMode,
-                underline: const SizedBox.shrink(),
-                items: const [
-                  DropdownMenuItem(
-                    value: ThemeMode.system,
-                    child: Text('System'),
-                  ),
-                  DropdownMenuItem(value: ThemeMode.dark, child: Text('On')),
-                  DropdownMenuItem(value: ThemeMode.light, child: Text('Off')),
-                ],
-                onChanged: (mode) {
-                  if (mode != null) settings.setThemeMode(mode);
-                },
-              ),
+              leading: const Icon(Icons.palette_outlined),
+              title: const Text('Theme'),
+              subtitle: Text(settings.themeChoice.label),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _pickTheme(context, settings),
             ),
           ),
 

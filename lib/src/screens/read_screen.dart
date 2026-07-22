@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/glass.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
@@ -193,6 +194,8 @@ class _Shelf extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
+        // Clear the translucent tab bar the body runs behind on Apple.
+        padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
         children: [
           for (final entry in byTradition.entries) ...[
             Padding(
@@ -273,6 +276,7 @@ class _Results extends StatelessWidget {
     }
 
     return ListView.separated(
+      padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
       itemCount: rows.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {

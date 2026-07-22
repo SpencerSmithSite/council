@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
 import 'settings_service.dart';
 
 /// Reactive view over [SettingsService].
@@ -10,13 +11,21 @@ import 'settings_service.dart';
 class SettingsProvider extends ChangeNotifier {
   final SettingsService _settings = SettingsService();
 
-  ThemeMode _themeMode = ThemeMode.system;
+  AppThemeChoice _themeChoice = AppThemeChoice.system;
   double _fontScale = 1.0;
   bool _showCitations = true;
   bool _isLoaded = false;
   bool _hasOnboarded = false;
 
-  ThemeMode get themeMode => _themeMode;
+  /// The user's chosen theme — including the platform-following options and
+  /// Catppuccin Mocha. The screens read this; `MaterialApp` reads [themeMode]
+  /// together with the resolved light/dark themes.
+  AppThemeChoice get themeChoice => _themeChoice;
+
+  /// Derived so `MaterialApp` can switch light/dark. A named palette like
+  /// Catppuccin pins this to its own brightness.
+  ThemeMode get themeMode => _themeChoice.themeMode;
+
   double get fontScale => _fontScale;
   bool get showCitations => _showCitations;
 
@@ -27,7 +36,7 @@ class SettingsProvider extends ChangeNotifier {
   bool get isLoaded => _isLoaded;
 
   /// True when the theme follows the OS rather than an explicit override.
-  bool get followsSystemTheme => _themeMode == ThemeMode.system;
+  bool get followsSystemTheme => _themeChoice == AppThemeChoice.system;
 
   Future<void> completeOnboarding() async {
     _hasOnboarded = true;
@@ -36,8 +45,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    final darkMode = await _settings.getDarkMode();
-    _themeMode = _boolToThemeMode(darkMode);
+    _themeChoice = AppThemeChoice.fromName(await _settings.getThemeChoice());
     _fontScale = await _settings.getFontSize();
     _showCitations = await _settings.getShowCitations();
     _hasOnboarded = await _settings.getHasOnboarded();
@@ -45,10 +53,10 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setThemeMode(ThemeMode mode) async {
-    _themeMode = mode;
+  Future<void> setThemeChoice(AppThemeChoice choice) async {
+    _themeChoice = choice;
     notifyListeners();
-    await _settings.setDarkMode(_themeModeToBool(mode));
+    await _settings.setThemeChoice(choice.name);
   }
 
   Future<void> setFontScale(double scale) async {
@@ -68,21 +76,5 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> resetAll() async {
     await _settings.clearAll();
     await load();
-  }
-
-  ThemeMode _boolToThemeMode(bool? value) {
-    if (value == null) return ThemeMode.system;
-    return value ? ThemeMode.dark : ThemeMode.light;
-  }
-
-  bool? _themeModeToBool(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return false;
-      case ThemeMode.dark:
-        return true;
-      case ThemeMode.system:
-        return null;
-    }
   }
 }
