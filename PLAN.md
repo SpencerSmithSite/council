@@ -1475,8 +1475,16 @@ release is invisible to every user and to the entire test suite.
 
 ### Two gaps this turned up
 
-- [ ] **Subject coverage is measured by volume, so a small tradition-defining
-  document can never be surfaced by it.** The confession holds 8 passages
+- [x] **Subject coverage was measured by volume, so a small tradition-defining
+  document could never be surfaced by it.** Fixed 2026-07-22 (#35): fragments
+  and collections now carry their traditions, and a named tradition with
+  nothing installed is offered with no threshold, ranked above subject
+  coverage. Aliases are matched ("Presbyterian", "Episcopalian") because
+  nobody types the database's label; "Orthodox" is excluded because it is
+  more often an adjective. Verified in the app with the pack removed first.
+  The original diagnosis follows.
+
+  **Subject coverage is measured by volume.** The confession holds 8 passages
   tagged `baptism`; the fathers hold 1,063. `suggest()` names the collection
   holding the *most* of a tag, so a question about believer's baptism will
   always be answered by offering the fathers. That is correct arithmetic and
