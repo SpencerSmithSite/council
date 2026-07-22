@@ -278,6 +278,17 @@ One source, now that the Thirty-Nine Articles are properly sourced.
   appears — the 1647 Wikisource transcription would be ideal if it is ever
   finished.
 
+  **A punctuated edition was looked for afterwards and not found.** CCEL has
+  no other Westminster file (`westminster`, `4`, `5` all 404); Gutenberg has
+  none; and archive.org's most promising hit, `westminsterconf00unknuoft`,
+  is titled *The Westminster Confession of Faith*, has clean punctuated OCR
+  with no long-s damage — and does not contain the confession. It is
+  Macpherson's 1881 *commentary*, "with Introduction and Notes", scanned from
+  a 1958 impression. The phrase "Of the Holy Scripture" appears in it zero
+  times. Checking that before parsing is the only reason it was caught; it is
+  the third time in this corpus a title has promised a text and delivered
+  something else.
+
   Verified by asserting the **paragraph count of every chapter** against the
   original, not merely the chapter count. The transcription numbers some
   paragraphs in bold and some as bare digits, and numbers the opening paragraph
