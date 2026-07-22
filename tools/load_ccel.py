@@ -79,12 +79,23 @@ def main():
         tradition_id = lookup(conn, "traditions", record["tradition"])
         type_id = lookup(conn, "source_types", record["kind"])
 
-        # Drop any existing source with this title — the legacy entries are
+        # Drop any existing source this one replaces — the legacy entries are
         # unprovenanced paraphrase and this replaces them outright.
+        #
+        # Matching on title alone was not enough. It only works when a real
+        # edition happens to be filed under the same name the paraphrase used,
+        # and it usually is not: Wesley's sermons were here as "Wesleys
+        # Standard Sermons" (6 units, no author, no URL) while the actual
+        # collection is titled *Sermons on Several Occasions*. Loading it left
+        # both, and the corpus quietly gained a second Wesley that no longer
+        # had the excuse of being the only one. An ingester therefore names
+        # what it supersedes.
+        titles = [record["title"], *record.get("supersedes", [])]
+        marks = ",".join("?" * len(titles))
         stale = conn.execute(
-            "SELECT id FROM sources WHERE title = ?", (record["title"],)
+            f"SELECT id, title FROM sources WHERE title IN ({marks})", titles
         ).fetchall()
-        for (source_id,) in stale:
+        for source_id, stale_title in stale:
             conn.execute(
                 """DELETE FROM content_tags WHERE content_unit_id IN
                    (SELECT id FROM content_units WHERE source_id = ?)""",
@@ -92,7 +103,7 @@ def main():
             )
             conn.execute("DELETE FROM content_units WHERE source_id = ?", (source_id,))
             conn.execute("DELETE FROM sources WHERE id = ?", (source_id,))
-            print(f"  replaced stale source {source_id} ({record['title']})")
+            print(f"  replaced stale source {source_id} ({stale_title})")
 
         origin = record["url"].split("/")[2] if "//" in record["url"] else "unknown"
         notes = " | ".join(x for x in (

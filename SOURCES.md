@@ -159,8 +159,30 @@ largest Protestant families in the world.
 
 ### 2. Methodist and Wesleyan — two placeholder entries
 
-- **Wesley's Standard Sermons** (44 sermons) and **Explanatory Notes upon the
-  New Testament** — the doctrinal standards of Methodism. Public domain.
+- [x] **Wesley's sermons** — done, 2026-07-22. Not the 44 Standard Sermons but
+  all **141** of *Sermons on Several Occasions* (1771), 3.59 M chars, from
+  CCEL, which declares `Rights: Public Domain` in the export's own header. The
+  edition states its own standing on its title page: *"to which reference is
+  made in the trust-deeds of the Methodist Chapels, as constituting, with Mr.
+  Wesley's notes on the New Testament, the standard doctrines of the Methodist
+  connexion."* The 44 are the subset the trust-deeds bind and are its opening
+  run — Sermon 1 is *Salvation by Faith*, Standard Sermon 1 — so taking the
+  whole collection costs nothing and avoids this project deciding which of a
+  man's sermons count.
+
+  Needed no corroborating second edition, unlike the Baptist confession: the
+  defect there was Wikisource stating neither rights nor base edition, and
+  CCEL states both. `tools/ingest_wesley.py`.
+
+  This replaced a legacy stub — "Wesleys Standard Sermons", 6 units, no author,
+  no URL — and doing so exposed that the loader only displaced stale entries
+  matching the **new** source's exact title. A real edition rarely shares a
+  title with the paraphrase filed in its place, so the two would have coexisted
+  and the corpus would have gained a second Wesley. Ingesters now name what
+  they supersede.
+
+- **Explanatory Notes upon the New Testament** — the other half of the
+  doctrinal standard, and still missing. Public domain.
 - **Wesley's Journal**; **Charles Wesley's hymns**, which carry as much
   Methodist doctrine as the prose.
 - **John Fletcher**, *Checks to Antinomianism*.

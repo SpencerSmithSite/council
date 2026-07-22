@@ -266,6 +266,17 @@ void main() {
       );
     });
 
+    test('Wesley is reachable by name, not only by tradition', () {
+      // His sermons replaced a legacy stub that carried no author at all. An
+      // authorless work cannot be found by "what did Wesley say about..." and
+      // its citations cannot say who wrote it, so the author being populated
+      // is the part worth pinning.
+      final suggestions = suggest('What did Wesley teach about assurance?');
+      expect(suggestions.first.reason, SuggestionReason.namesAuthor);
+      expect(suggestions.first.detail, 'John Wesley');
+      expect(suggestions.first.packId, 'tradition-methodist');
+    });
+
     test('"orthodox" as an adjective is not read as a tradition', () {
       // "orthodox Christology" is not a question about the Eastern church, and
       // a notice that misreads the question teaches people to ignore notices.
