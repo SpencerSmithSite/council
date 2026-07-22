@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +17,7 @@ import 'src/screens/read_screen.dart';
 import 'src/screens/library_screen.dart';
 import 'src/screens/settings_screen.dart';
 import 'src/screens/onboarding_screen.dart';
+import 'src/theme/glass.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,20 +90,8 @@ class TheologyApp extends StatelessWidget {
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) => MaterialApp(
           title: 'Council',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
-              brightness: Brightness.light,
-            ),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
+          theme: _theme(Brightness.light),
+          darkTheme: _theme(Brightness.dark),
           themeMode: settings.themeMode,
           // Apply the font-size preference app-wide rather than per-screen.
           builder: (context, child) {
@@ -122,6 +113,55 @@ class TheologyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One theme, adapted where the platform expects something different.
+///
+/// The app was Material 3 everywhere, which on a Mac reads as an Android app
+/// in a Mac window. Two changes carry most of the difference without a second
+/// design system: Apple's system typography, and Apple's page transitions —
+/// the horizontal push with an interactive back-swipe, rather than Material's
+/// vertical fade.
+ThemeData _theme(Brightness brightness) {
+  final scheme = ColorScheme.fromSeed(
+    seedColor: Colors.deepPurple,
+    brightness: brightness,
+  );
+
+  return ThemeData(
+    colorScheme: scheme,
+    useMaterial3: true,
+    // Resolves to SF on Apple platforms and Roboto elsewhere, rather than
+    // shipping Roboto to a Mac.
+    typography: Typography.material2021(platform: defaultTargetPlatform),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+        TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+      },
+    ),
+    // Chrome carries the glass, so the widgets underneath must not paint their
+    // own opaque backgrounds over it.
+    appBarTheme: isApplePlatform
+        ? const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            centerTitle: true,
+          )
+        : null,
+    navigationBarTheme: isApplePlatform
+        ? const NavigationBarThemeData(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+          )
+        : null,
+  );
 }
 
 class MainScreen extends StatefulWidget {
@@ -152,8 +192,14 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // The body runs behind the navigation bar so there is something for the
+      // glass to blur. Without this the bar sits on dead space and the effect
+      // is a tint with extra steps.
+      extendBody: isApplePlatform,
       body: _screens[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: _glassChrome(
+        borderOnTop: true,
+        child: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           setState(() {
@@ -181,8 +227,16 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon: Icon(Icons.settings),
             label: 'Settings',
           ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  /// Wraps chrome in glass on Apple platforms and leaves it alone elsewhere,
+  /// so the widget tree does not fork per platform at every call site.
+  Widget _glassChrome({required Widget child, required bool borderOnTop}) {
+    if (!isApplePlatform) return child;
+    return GlassSurface(borderOnTop: borderOnTop, child: child);
   }
 }
