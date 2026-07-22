@@ -42,6 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "assets" / "theology.db"
 CORE_GZ = ROOT / "assets" / "theology.db.gz"
 CONFIG_PATH = ROOT / "tools" / "data" / "packs.json"
+CATALOGUE_PATH = ROOT / "assets" / "pack_catalogue.json"
 DIST = ROOT / "dist" / "packs"
 
 # Must match DatabaseService.corpusVersion. The app refuses a pack whose
@@ -226,10 +227,63 @@ def build_core(conn_path, keep_source_ids, out_path):
     db.close()
 
 
+def pack_catalogue(conn, source_ids):
+    """What a pack contains, described well enough to reason about it absent.
+
+    This is the whole point: without it the app cannot tell a reader that the
+    question they just asked is answered mainly by material they have not
+    installed. It can only search text it has, so a library missing the fathers
+    answers a question about the Eucharist confidently from confessions alone
+    and says nothing about the omission.
+
+    Authors and titles support naming a person the corpus cannot currently see;
+    tag counts support the vaguer case where nobody is named but the subject is
+    one a pack covers heavily.
+    """
+    marks = ",".join("?" * len(source_ids))
+
+    authors = [
+        row[0]
+        for row in conn.execute(
+            f"SELECT DISTINCT author FROM sources "
+            f"WHERE id IN ({marks}) AND author IS NOT NULL",
+            source_ids,
+        )
+    ]
+    titles = [
+        row[0]
+        for row in conn.execute(
+            f"SELECT title FROM sources WHERE id IN ({marks})", source_ids
+        )
+    ]
+    tags = {
+        slug: count
+        for slug, count in conn.execute(
+            f"""SELECT t.slug, COUNT(*) FROM content_tags ct
+                JOIN tags t ON ct.tag_id = t.id
+                JOIN content_units cu ON ct.content_unit_id = cu.id
+                WHERE cu.source_id IN ({marks})
+                GROUP BY t.slug""",
+            source_ids,
+        )
+    }
+    return {"authors": sorted(authors), "titles": sorted(titles), "tags": tags}
+
+
 def gzip_file(path):
+    """Compress reproducibly.
+
+    `mtime=0` matters more than it looks. gzip stamps the current time into its
+    header, so rebuilding unchanged content produces different bytes and a
+    different checksum — and checksums are what the app trusts to decide a
+    download is intact. Without this, "did the corpus actually change?" cannot
+    be answered by comparing manifests, and every rebuild forces a re-upload of
+    35 MB of identical data.
+    """
     out = path.with_suffix(path.suffix + ".gz")
-    with open(path, "rb") as raw, gzip.open(out, "wb", compresslevel=9) as gz:
-        shutil.copyfileobj(raw, gz)
+    with open(path, "rb") as raw, open(out, "wb") as handle:
+        with gzip.GzipFile(fileobj=handle, mode="wb", compresslevel=9, mtime=0) as gz:
+            shutil.copyfileobj(raw, gz)
     return out
 
 
@@ -320,6 +374,34 @@ def main():
     with open(DIST / "manifest.json", "w") as handle:
         json.dump(manifest, handle, indent=2)
         handle.write("\n")
+
+    # Bundled, not published: the app needs to know what it is missing before
+    # it has any network connection, and offline is the normal case here.
+    # Core's tag counts are included so the app can judge what a *missing* pack
+    # would add relative to everything that exists, rather than relative to the
+    # pack itself. Those are very different questions: the Eucharist is 0.2% of
+    # Augustine, which says nothing — but the packs hold most of the corpus's
+    # Eucharist material, which is exactly what a reader needs told.
+    catalogue = {
+        "corpusVersion": CORPUS_VERSION,
+        "core": pack_catalogue(conn, by_pack.get("core", []))["tags"],
+        "packs": {
+            pack["id"]: {
+                # Carried here, not only in the published manifest: the notice
+                # that names a collection has to render offline, before any
+                # manifest has been fetched.
+                "name": pack["name"],
+                **pack_catalogue(conn, by_pack[pack["id"]]),
+            }
+            for pack in packs
+            if by_pack.get(pack["id"])
+        },
+    }
+    with open(CATALOGUE_PATH, "w") as handle:
+        json.dump(catalogue, handle, indent=2)
+        handle.write("\n")
+    print(f"Wrote {CATALOGUE_PATH.name}  "
+          f"{CATALOGUE_PATH.stat().st_size / 1024:.0f} KB")
 
     print(f"\nWrote {DIST / 'manifest.json'}")
     print(f"Remember: DatabaseService.corpusVersion must be {CORPUS_VERSION}")
