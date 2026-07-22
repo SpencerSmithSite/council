@@ -13,11 +13,16 @@ class PackContents {
   final List<String> titles;
   final Map<String, int> tags;
 
+  /// Which fragments back this collection. Coverage arithmetic runs over these
+  /// rather than over collections, because collections overlap.
+  final List<String> fragments;
+
   const PackContents({
     required this.name,
     required this.authors,
     required this.titles,
     required this.tags,
+    this.fragments = const [],
   });
 
   factory PackContents.fromJson(Map<String, dynamic> json) => PackContents(
@@ -27,6 +32,7 @@ class PackContents {
         tags: (json['tags'] as Map? ?? {}).map(
           (key, value) => MapEntry(key as String, value as int),
         ),
+        fragments: (json['fragments'] as List? ?? []).cast<String>(),
       );
 }
 
@@ -84,7 +90,12 @@ class PackCatalogue {
   /// answered as a proportion of everything rather than in the abstract.
   final Map<String, int> core;
 
-  const PackCatalogue(this.packs, this.core);
+  /// Tag counts per fragment. The unit that actually holds text exactly once,
+  /// and therefore the only level at which "how much am I missing" can be
+  /// added up without counting the same works several times over.
+  final Map<String, Map<String, int>> fragments;
+
+  const PackCatalogue(this.packs, this.core, {this.fragments = const {}});
 
   static Future<PackCatalogue> load() async {
     final body = await rootBundle.loadString(_asset);
@@ -102,7 +113,13 @@ class PackCatalogue {
     final core = (json['core'] as Map? ?? {}).map(
       (key, value) => MapEntry(key as String, value as int),
     );
-    return PackCatalogue(packs, core);
+    final fragments = (json['fragments'] as Map? ?? {}).map(
+      (key, value) => MapEntry(
+        key as String,
+        (value as Map).map((k, v) => MapEntry(k as String, v as int)),
+      ),
+    );
+    return PackCatalogue(packs, core, fragments: fragments);
   }
 
   /// A name is only taken as naming a person or work when it appears as whole
@@ -135,16 +152,27 @@ class PackCatalogue {
   ///
   /// [queryTags] comes from the same tag extraction the retriever uses, so a
   /// suggestion is grounded in the question the retrieval actually ran.
+  /// [installedFragments] is what is physically present. A collection counts
+  /// as available when every fragment it needs is here, which is why this takes
+  /// fragments rather than a list of collections the reader tapped: installing
+  /// "Church Fathers" makes "Augustine of Hippo" available too, and suggesting
+  /// it afterwards would be nonsense.
   List<PackSuggestion> suggest({
     required String question,
     required List<String> queryTags,
-    required Set<String> installed,
+    required Set<String> installedFragments,
   }) {
     final suggestions = <PackSuggestion>[];
-    final missing = packs.keys.where((id) => !installed.contains(id)).toSet();
+
+    bool available(PackContents c) =>
+        c.fragments.isNotEmpty &&
+        c.fragments.every(installedFragments.contains);
+
+    final missingFragments =
+        fragments.keys.where((f) => !installedFragments.contains(f)).toSet();
 
     for (final entry in packs.entries) {
-      if (installed.contains(entry.key)) continue;
+      if (available(entry.value)) continue;
       final contents = entry.value;
 
       final author = contents.authors
@@ -181,15 +209,20 @@ class PackCatalogue {
         final everywhere = _totalFor(tag);
         if (everywhere == 0) continue;
 
-        final absent = missing.fold(
+        // Summed over fragments, each of which holds its text once.
+        final absent = missingFragments.fold(
           0,
-          (sum, id) => sum + (packs[id]!.tags[tag] ?? 0),
+          (sum, id) => sum + (fragments[id]?[tag] ?? 0),
         );
         if (absent / everywhere < _missingShare) continue;
 
-        final biggest = missing.reduce((a, b) =>
-            (packs[a]!.tags[tag] ?? 0) >= (packs[b]!.tags[tag] ?? 0) ? a : b);
-        if (biggest != entry.key) continue;
+        // Named on the collection that would close most of the gap, so the
+        // suggestion is worth acting on rather than technically correct.
+        final best = packs.entries
+            .where((e) => !available(e.value))
+            .reduce((a, b) =>
+                (a.value.tags[tag] ?? 0) >= (b.value.tags[tag] ?? 0) ? a : b);
+        if (best.key != entry.key) continue;
 
         suggestions.add(PackSuggestion(
           packId: entry.key,
@@ -200,16 +233,34 @@ class PackCatalogue {
       }
     }
 
-    // A question naming someone should not be buried under generic coverage.
-    suggestions.sort((a, b) => a.reason.index.compareTo(b.reason.index));
-    return suggestions;
+    // Collections overlap by design, so one question routinely matches
+    // several: asking about Chrysostom matches "John Chrysostom", "Nicene &
+    // Post-Nicene Writers" and "Church Fathers", all of which would answer it.
+    // Offering three is worse than offering one.
+    //
+    // The narrowest wins — measured by how many works it holds — because it is
+    // the cheapest way to get an answer, and anyone wanting more can take a
+    // broader collection afterwards. Suggesting the largest would be asking
+    // someone to download the complete fathers to read one letter.
+    suggestions.sort((a, b) {
+      final byReason = a.reason.index.compareTo(b.reason.index);
+      if (byReason != 0) return byReason;
+      return _worksIn(a.packId).compareTo(_worksIn(b.packId));
+    });
+
+    final seen = <String>{};
+    return suggestions
+        .where((s) => seen.add('${s.reason}|${s.detail}'))
+        .toList();
   }
+
+  int _worksIn(String packId) => packs[packId]?.titles.length ?? 0;
 
   /// How many tagged passages exist for [tag] across the whole library,
   /// installed or not.
   int _totalFor(String tag) =>
       (core[tag] ?? 0) +
-      packs.values.fold(0, (sum, p) => sum + (p.tags[tag] ?? 0));
+      fragments.values.fold(0, (sum, f) => sum + (f[tag] ?? 0));
 
   /// "Augustine of Hippo" should be found by "Augustine", and "John
   /// Chrysostom" by "Chrysostom" — but not by "John", which would match any

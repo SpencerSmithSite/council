@@ -1,36 +1,168 @@
 {
   "_comment": [
-    "Which sources ship in the app and which are downloaded on demand.",
+    "Two layers, deliberately separate.",
     "",
-    "Every source is assigned to exactly one pack. Anything no pack claims falls",
-    "into 'core', which is the bundled asset — so adding a source without",
-    "touching this file grows the app rather than silently disappearing.",
+    "FRAGMENTS are the physical unit: a disjoint partition of one corpus build.",
+    "Every source belongs to exactly one fragment, so no byte of text exists in",
+    "two downloadable files. This is what keeps row ids safe to merge without",
+    "renumbering, and it is what stops a reader who installs 'Church Fathers'",
+    "and then 'Augustine of Hippo' from downloading Augustine twice.",
     "",
-    "Boundaries are declared here rather than in code because the right split",
-    "depends on the corpus, and the corpus keeps changing. Re-splitting should",
-    "be an edit to this file and a rebuild, never a code change.",
+    "COLLECTIONS are what the reader chooses: named, overlapping groupings that",
+    "reference fragments. A source can appear in as many collections as make",
+    "sense — Augustine is in 'Augustine of Hippo', 'Church Fathers' and",
+    "'Patristic era' — because a collection owns no text, only a list of",
+    "fragments. Installing one fetches the fragments not already present;",
+    "removing one drops only the fragments no other installed collection needs.",
     "",
-    "Selection is by tradition slug and/or exact author name. A source matches a",
-    "pack if it matches any of that pack's criteria."
+    "Adding a way to browse the corpus therefore costs a few lines here and no",
+    "extra bytes anywhere.",
+    "",
+    "Fragment selection is by tradition slug and/or exact author name; first",
+    "match wins, in declaration order. Anything unclaimed falls into 'core'."
   ],
-  "packs": [
+
+  "fragments": [
+    { "id": "f-chrysostom", "authors": ["John Chrysostom"] },
+    { "id": "f-augustine", "authors": ["Augustine of Hippo"] },
+    { "id": "f-tertullian", "authors": ["Tertullian"] },
+    { "id": "f-origen", "authors": ["Origen"] },
+    { "id": "f-gregory-nyssa", "authors": ["Gregory of Nyssa"] },
+    { "id": "f-athanasius", "authors": ["Athanasius"] },
+    { "id": "f-clement-alexandria", "authors": ["Clement of Alexandria"] },
+    { "id": "f-ambrose", "authors": ["Ambrose"] },
+    { "id": "f-apocrypha", "authors": ["Apocrypha"] },
+    { "id": "f-fathers-rest", "traditions": ["early-church"] },
+
+    { "id": "f-lutheran", "traditions": ["lutheran"] },
+    { "id": "f-reformed", "traditions": ["reformed"] },
+    { "id": "f-catholic", "traditions": ["catholic"] },
+    { "id": "f-anglican", "traditions": ["anglican"] },
+    { "id": "f-methodist", "traditions": ["methodist"] },
+    { "id": "f-orthodox", "traditions": ["eastern-orthodox"] },
+    { "id": "f-ecumenical", "traditions": ["ecumenical"] }
+  ],
+
+  "collections": [
     {
-      "id": "fathers-augustine",
-      "name": "Augustine of Hippo",
-      "description": "The complete Augustine: the Confessions, City of God, the anti-Pelagian and anti-Donatist works, the homilies and letters.",
-      "authors": ["Augustine of Hippo"]
+      "id": "creeds-and-confessions",
+      "kind": "essential",
+      "name": "Creeds & Confessions",
+      "description": "What each tradition officially teaches: the ecumenical creeds, the canons of Trent, the Book of Concord, the Westminster standards, Heidelberg, Dordt, the Belgic Confession and the Thirty-Nine Articles. The smallest set that can answer a question comparing two traditions.",
+      "fragments": ["f-ecumenical", "f-lutheran", "f-reformed", "f-catholic",
+                    "f-anglican", "f-methodist", "f-orthodox"]
     },
     {
-      "id": "fathers-chrysostom",
-      "name": "John Chrysostom",
-      "description": "The homilies and treatises of Chrysostom, including the complete homily series on Matthew, John, Romans and the Pauline epistles.",
-      "authors": ["John Chrysostom"]
-    },
-    {
-      "id": "fathers",
+      "id": "church-fathers",
+      "kind": "era",
       "name": "Church Fathers",
-      "description": "The remaining ante-Nicene and post-Nicene fathers: Tertullian, Origen, Athanasius, the Cappadocians, Ambrose, Jerome, Cyprian, Irenaeus and many more.",
-      "traditions": ["early-church"]
+      "description": "The complete ante-Nicene and post-Nicene fathers — every patristic author in the library, from Clement of Rome to John of Damascus.",
+      "fragments": ["f-chrysostom", "f-augustine", "f-tertullian", "f-origen",
+                    "f-gregory-nyssa", "f-athanasius", "f-clement-alexandria",
+                    "f-ambrose", "f-apocrypha", "f-fathers-rest"]
+    },
+    {
+      "id": "ante-nicene",
+      "kind": "era",
+      "name": "Ante-Nicene Writers",
+      "description": "The fathers who wrote before the Council of Nicaea in 325: Tertullian, Origen, Clement of Alexandria and their contemporaries.",
+      "fragments": ["f-tertullian", "f-origen", "f-clement-alexandria",
+                    "f-apocrypha"]
+    },
+    {
+      "id": "nicene-fathers",
+      "kind": "era",
+      "name": "Nicene & Post-Nicene Writers",
+      "description": "The fathers of the fourth and fifth centuries, when the creeds took their final form: Athanasius, the Cappadocians, Ambrose, Chrysostom and Augustine.",
+      "fragments": ["f-athanasius", "f-gregory-nyssa", "f-ambrose",
+                    "f-chrysostom", "f-augustine"]
+    },
+
+    {
+      "id": "author-augustine",
+      "kind": "author",
+      "name": "Augustine of Hippo",
+      "description": "The Confessions, City of God, the anti-Pelagian and anti-Donatist works, the homilies and the letters.",
+      "fragments": ["f-augustine"]
+    },
+    {
+      "id": "author-chrysostom",
+      "kind": "author",
+      "name": "John Chrysostom",
+      "description": "The homilies and treatises, including the complete series on Matthew, John, Romans and the Pauline epistles.",
+      "fragments": ["f-chrysostom"]
+    },
+    {
+      "id": "author-tertullian",
+      "kind": "author",
+      "name": "Tertullian",
+      "description": "The apologetic, doctrinal and moral works of the first major Latin theologian.",
+      "fragments": ["f-tertullian"]
+    },
+    {
+      "id": "author-origen",
+      "kind": "author",
+      "name": "Origen",
+      "description": "Against Celsus, De Principiis and the commentaries on John and Matthew.",
+      "fragments": ["f-origen"]
+    },
+    {
+      "id": "author-athanasius",
+      "kind": "author",
+      "name": "Athanasius",
+      "description": "On the Incarnation, the discourses against the Arians, and the festal letters.",
+      "fragments": ["f-athanasius"]
+    },
+    {
+      "id": "author-gregory-nyssa",
+      "kind": "author",
+      "name": "Gregory of Nyssa",
+      "description": "Against Eunomius, On the Making of Man, and On the Soul and the Resurrection.",
+      "fragments": ["f-gregory-nyssa"]
+    },
+
+    {
+      "id": "tradition-catholic",
+      "kind": "tradition",
+      "name": "Catholic",
+      "description": "The Council of Trent and the Catholic sources in the library, together with the Latin fathers the tradition rests on.",
+      "fragments": ["f-catholic", "f-augustine", "f-ambrose", "f-tertullian"]
+    },
+    {
+      "id": "tradition-lutheran",
+      "kind": "tradition",
+      "name": "Lutheran",
+      "description": "The Book of Concord — the Augsburg Confession and its Apology, the Smalcald Articles and Luther's catechisms.",
+      "fragments": ["f-lutheran"]
+    },
+    {
+      "id": "tradition-reformed",
+      "kind": "tradition",
+      "name": "Reformed & Presbyterian",
+      "description": "The Westminster Confession and catechisms, the Heidelberg Catechism, the Canons of Dordt and the Belgic Confession.",
+      "fragments": ["f-reformed"]
+    },
+    {
+      "id": "tradition-anglican",
+      "kind": "tradition",
+      "name": "Anglican",
+      "description": "The Thirty-Nine Articles of Religion.",
+      "fragments": ["f-anglican"]
+    },
+    {
+      "id": "tradition-orthodox",
+      "kind": "tradition",
+      "name": "Eastern Orthodox",
+      "description": "Orthodox sources, together with the Greek fathers the tradition is grounded in.",
+      "fragments": ["f-orthodox", "f-chrysostom", "f-athanasius",
+                    "f-gregory-nyssa"]
+    },
+    {
+      "id": "tradition-methodist",
+      "kind": "tradition",
+      "name": "Methodist & Wesleyan",
+      "description": "Methodist sources in the library.",
+      "fragments": ["f-methodist"]
     }
   ]
 }

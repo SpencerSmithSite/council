@@ -6,7 +6,19 @@ corpus. Almost all of it is patristic: 56.3 of 58.8 million characters are
 early-church, so a reader who only wants the confessions of their own tradition
 currently downloads the complete works of Chrysostom to get them.
 
-**Packs are a partition of one corpus build, not separately-built databases.**
+Two layers. **Fragments** are the physical unit: a disjoint partition of one
+corpus build, one file each, no source in more than one. **Collections** are
+what the reader chooses — named, overlapping groupings that reference fragments
+and own no text of their own.
+
+That separation is what makes overlapping packs work at all. Augustine belongs
+to "Augustine of Hippo", "Church Fathers", "Nicene & Post-Nicene Writers" and
+"Catholic"; if those were each a file, his works would be published four times
+and a reader who installed two of them would download him twice. As fragment
+references they cost nothing, and installing a second overlapping collection
+fetches only what is genuinely new.
+
+**Fragments are a partition of one corpus build, not separately-built databases.**
 That is the whole reason this is safe. Every row keeps the id it already has,
 so ids are disjoint across packs by construction and nothing has to be
 renumbered on install. The alternative — building each pack independently and
@@ -48,7 +60,7 @@ DIST = ROOT / "dist" / "packs"
 # Must match DatabaseService.corpusVersion. The app refuses a pack whose
 # corpusVersion differs from its own, because ids are only guaranteed disjoint
 # within a single build.
-CORPUS_VERSION = 4
+CORPUS_VERSION = 5
 
 # Reference tables are small, shared, and copied whole into every pack, so that
 # installing a pack cannot leave a source pointing at a tradition the app has
@@ -67,15 +79,29 @@ CONTENT_TABLES = [
 
 def load_config():
     with open(CONFIG_PATH) as handle:
-        return json.load(handle)["packs"]
+        config = json.load(handle)
+    fragments = config["fragments"]
+    collections = config["collections"]
+
+    known = {f["id"] for f in fragments}
+    for collection in collections:
+        unknown = set(collection["fragments"]) - known
+        if unknown:
+            sys.exit(f"collection {collection['id']!r} references unknown "
+                     f"fragments {sorted(unknown)}")
+    return fragments, collections
 
 
 def assign_sources(conn, packs):
-    """Map every source id to a pack id, defaulting to core.
+    """Map every source id to exactly one fragment, defaulting to core.
 
-    First match wins, in declaration order, which is what lets a broad pack sit
-    after narrow ones: "fathers" claims all of early-church, but Augustine and
-    Chrysostom are pulled out ahead of it.
+    First match wins, in declaration order, which is what lets a broad fragment
+    sit after narrow ones: `f-fathers-rest` claims all of early-church, but
+    Augustine and Chrysostom are pulled out ahead of it.
+
+    Exactly one is the whole point. Overlap belongs to collections, which are
+    lists of fragment ids; if it leaked down to this layer the same text would
+    be published in several files.
     """
     rows = conn.execute(
         """SELECT s.id, s.author, COALESCE(t.slug, '')
@@ -270,6 +296,27 @@ def pack_catalogue(conn, source_ids):
     return {"authors": sorted(authors), "titles": sorted(titles), "tags": tags}
 
 
+def merge_catalogues(name, parts):
+    """Fold several fragments' catalogues into one collection's.
+
+    The coverage notice reasons about collections, because those are what a
+    reader can act on — being told that fragment `f-augustine` is missing is
+    not a useful thing to read.
+    """
+    authors, titles, tags = [], [], {}
+    for part in parts:
+        authors.extend(part["authors"])
+        titles.extend(part["titles"])
+        for slug, count in part["tags"].items():
+            tags[slug] = tags.get(slug, 0) + count
+    return {
+        "name": name,
+        "authors": sorted(set(authors)),
+        "titles": sorted(set(titles)),
+        "tags": tags,
+    }
+
+
 def gzip_file(path):
     """Compress reproducibly.
 
@@ -303,98 +350,137 @@ def main():
     if not DB_PATH.exists():
         sys.exit(f"No corpus at {DB_PATH}")
 
-    packs = load_config()
+    fragments, collections = load_config()
     conn = sqlite3.connect(DB_PATH)
-    assignment = assign_sources(conn, packs)
+    assignment = assign_sources(conn, fragments)
 
-    by_pack = {}
-    for source_id, pack_id in assignment.items():
-        by_pack.setdefault(pack_id, []).append(source_id)
+    by_fragment = {}
+    for source_id, fragment_id in assignment.items():
+        by_fragment.setdefault(fragment_id, []).append(source_id)
 
-    declared = {pack["id"] for pack in packs}
-    unknown = set(by_pack) - declared - {"core"}
+    declared = {f["id"] for f in fragments}
+    unknown = set(by_fragment) - declared - {"core"}
     if unknown:
-        sys.exit(f"Sources assigned to undeclared packs: {sorted(unknown)}")
+        sys.exit(f"Sources assigned to undeclared fragments: {sorted(unknown)}")
 
-    print(f"{'pack':22} {'sources':>8} {'units':>8} {'chunks':>8} {'chars':>10}")
-    order = ["core"] + [pack["id"] for pack in packs]
-    for pack_id in order:
-        stats = pack_stats(conn, by_pack.get(pack_id, []))
-        print(
-            f"{pack_id:22} {stats['sources']:8} {stats['units']:8} "
-            f"{stats['chunks']:8} {stats['chars'] / 1e6:9.1f}M"
-        )
+    print(f"{'fragment':24} {'sources':>8} {'units':>8} {'chunks':>8} {'chars':>10}")
+    for fragment_id in ["core"] + [f["id"] for f in fragments]:
+        stats = pack_stats(conn, by_fragment.get(fragment_id, []))
+        print(f"{fragment_id:24} {stats['sources']:8} {stats['units']:8} "
+              f"{stats['chunks']:8} {stats['chars'] / 1e6:9.1f}M")
+
+    print(f"\n{len(collections)} collections over "
+          f"{len(by_fragment) - 1} published fragments")
+    for collection in collections:
+        missing = [f for f in collection["fragments"]
+                   if not by_fragment.get(f)]
+        note = f"  (empty fragments: {missing})" if missing else ""
+        print(f"  {collection['id']:26} {collection['kind']:10} "
+              f"{len(collection['fragments'])} fragments{note}")
 
     if not args.write:
         print("\nDry run. Pass --write to build.")
         return
 
     DIST.mkdir(parents=True, exist_ok=True)
-    manifest = {"corpusVersion": CORPUS_VERSION, "packs": []}
+    built = {}
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
         print("\nBuilding core...")
-        core_db = tmp / "core.db"
-        build_core(DB_PATH, by_pack.get("core", []), core_db)
-        core_gz = gzip_file(core_db)
-        shutil.copyfile(core_gz, CORE_GZ)
+        build_core(DB_PATH, by_fragment.get("core", []), tmp / "core.db")
+        shutil.copyfile(gzip_file(tmp / "core.db"), CORE_GZ)
         print(f"  {CORE_GZ.name}  {CORE_GZ.stat().st_size / 1e6:.1f} MB")
 
-        for pack in packs:
-            source_ids = by_pack.get(pack["id"], [])
+        for fragment in fragments:
+            source_ids = by_fragment.get(fragment["id"], [])
             if not source_ids:
-                print(f"  skipping empty pack {pack['id']}")
+                print(f"  skipping empty fragment {fragment['id']}")
                 continue
 
-            print(f"Building {pack['id']}...")
-            pack_db = tmp / f"{pack['id']}.db"
-            build_pack(conn, pack["id"], source_ids, pack_db)
-            pack_gz = gzip_file(pack_db)
-            final = DIST / pack_gz.name
-            shutil.copyfile(pack_gz, final)
+            db_path = tmp / f"{fragment['id']}.db"
+            build_pack(conn, fragment["id"], source_ids, db_path)
+            final = DIST / f"{fragment['id']}.db.gz"
+            shutil.copyfile(gzip_file(db_path), final)
 
             stats = pack_stats(conn, source_ids)
-            manifest["packs"].append(
-                {
-                    "id": pack["id"],
-                    "name": pack["name"],
-                    "description": pack["description"],
-                    "file": final.name,
-                    "bytes": final.stat().st_size,
-                    "sha256": sha256(final),
-                    "sources": stats["sources"],
-                    "units": stats["units"],
-                    "chunks": stats["chunks"],
-                }
-            )
-            print(f"  {final.name}  {final.stat().st_size / 1e6:.1f} MB")
+            built[fragment["id"]] = {
+                "id": fragment["id"],
+                "file": final.name,
+                "bytes": final.stat().st_size,
+                "sha256": sha256(final),
+                "sources": stats["sources"],
+                "units": stats["units"],
+                "chunks": stats["chunks"],
+            }
+            print(f"  {final.name:28} {final.stat().st_size / 1e6:6.1f} MB")
+
+    # A collection lists fragment ids only. Its size is the sum of the
+    # fragments a reader does not already have, so it is computed in the app
+    # rather than fixed here — the same collection costs different amounts to
+    # different people.
+    manifest = {
+        "corpusVersion": CORPUS_VERSION,
+        "fragments": [built[f["id"]] for f in fragments if f["id"] in built],
+        "collections": [
+            {
+                "id": c["id"],
+                "kind": c["kind"],
+                "name": c["name"],
+                "description": c["description"],
+                "fragments": [f for f in c["fragments"] if f in built],
+            }
+            for c in collections
+            if any(f in built for f in c["fragments"])
+        ],
+    }
 
     with open(DIST / "manifest.json", "w") as handle:
         json.dump(manifest, handle, indent=2)
         handle.write("\n")
 
+    total = sum(f["bytes"] for f in manifest["fragments"])
+    naive = sum(
+        sum(built[f]["bytes"] for f in c["fragments"] if f in built)
+        for c in collections)
+    print(f"\npublished {len(manifest['fragments'])} fragments, "
+          f"{total / 1e6:.1f} MB total")
+    print(f"the same collections as standalone files would be "
+          f"{naive / 1e6:.1f} MB")
+
     # Bundled, not published: the app needs to know what it is missing before
     # it has any network connection, and offline is the normal case here.
-    # Core's tag counts are included so the app can judge what a *missing* pack
-    # would add relative to everything that exists, rather than relative to the
-    # pack itself. Those are very different questions: the Eucharist is 0.2% of
-    # Augustine, which says nothing — but the packs hold most of the corpus's
-    # Eucharist material, which is exactly what a reader needs told.
+    # Core's tag counts let the app judge what a *missing* collection would add
+    # relative to everything that exists, rather than relative to itself: the
+    # Eucharist is 0.2% of Augustine, which says nothing, while the fragments
+    # together hold most of the corpus's Eucharist material, which is exactly
+    # what a reader needs told.
+    # Tag counts are recorded per *fragment*, not per collection, because
+    # collections overlap. Summing them per collection counts Augustine once
+    # for "Augustine of Hippo", again for "Church Fathers", again for "Nicene &
+    # Post-Nicene Writers" and again for "Catholic" — which makes the library
+    # look several times larger than it is and every subject look almost
+    # entirely missing.
     catalogue = {
         "corpusVersion": CORPUS_VERSION,
-        "core": pack_catalogue(conn, by_pack.get("core", []))["tags"],
+        "core": pack_catalogue(conn, by_fragment.get("core", []))["tags"],
+        "fragments": {
+            f["id"]: pack_catalogue(conn, by_fragment[f["id"]])["tags"]
+            for f in fragments
+            if by_fragment.get(f["id"])
+        },
         "packs": {
-            pack["id"]: {
-                # Carried here, not only in the published manifest: the notice
-                # that names a collection has to render offline, before any
-                # manifest has been fetched.
-                "name": pack["name"],
-                **pack_catalogue(conn, by_pack[pack["id"]]),
+            c["id"]: {
+                **merge_catalogues(
+                    c["name"],
+                    [pack_catalogue(conn, by_fragment[f])
+                     for f in c["fragments"] if by_fragment.get(f)],
+                ),
+                "fragments": [f for f in c["fragments"] if by_fragment.get(f)],
             }
-            for pack in packs
-            if by_pack.get(pack["id"])
+            for c in collections
+            if any(by_fragment.get(f) for f in c["fragments"])
         },
     }
     with open(CATALOGUE_PATH, "w") as handle:

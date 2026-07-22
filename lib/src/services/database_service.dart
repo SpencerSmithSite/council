@@ -29,7 +29,7 @@ class DatabaseService {
   /// renumbering — so a pack from a different build can carry ids this app has
   /// already used for different text. Packs declare the version they were built
   /// from and are refused when it does not match this one.
-  static const int corpusVersion = 4;
+  static const int corpusVersion = 5;
 
   Database? _database;
 

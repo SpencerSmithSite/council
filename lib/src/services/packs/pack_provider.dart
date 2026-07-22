@@ -20,7 +20,8 @@ class PackProvider extends ChangeNotifier {
   /// Separate from [refresh] because it needs no network: the coverage notice
   /// has to work on first launch, offline, before anyone opens the Library.
   Future<void> loadInstalled() async {
-    _installed = await _service.installedIds();
+    _installed = await _service.installedCollections();
+    _fragments = await _service.installedFragments();
     notifyListeners();
   }
 
@@ -33,7 +34,7 @@ class PackProvider extends ChangeNotifier {
       catalogue.suggest(
         question: question,
         queryTags: tags,
-        installed: _installed,
+        installedFragments: _fragments,
       );
 
   /// The human-readable name of a pack, for a notice that names it.
@@ -45,6 +46,7 @@ class PackProvider extends ChangeNotifier {
 
   PackManifest? _manifest;
   Set<String> _installed = {};
+  Set<String> _fragments = {};
   String? _error;
   bool _loading = false;
 
@@ -54,6 +56,17 @@ class PackProvider extends ChangeNotifier {
 
   PackManifest? get manifest => _manifest;
   Set<String> get installed => _installed;
+
+  /// Fragments physically present, as opposed to collections the reader chose.
+  Set<String> get installedFragments => _fragments;
+
+  /// What this collection would actually cost to add now.
+  ///
+  /// Zero is a real and common answer: someone holding "Church Fathers"
+  /// already has every fragment "Augustine of Hippo" needs, and quoting a
+  /// download that will not happen would be a lie the library tells routinely.
+  int bytesToInstall(Collection collection) =>
+      _manifest?.bytesToInstall(collection, _fragments) ?? 0;
   String? get error => _error;
   bool get loading => _loading;
   String? get busyId => _busyId;
@@ -71,7 +84,8 @@ class PackProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    _installed = await _service.installedIds();
+    _installed = await _service.installedCollections();
+    _fragments = await _service.installedFragments();
     notifyListeners();
 
     try {
@@ -84,20 +98,20 @@ class PackProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> install(PackInfo pack) async {
+  Future<void> install(Collection collection) async {
     final manifest = _manifest;
     if (manifest == null || _busyId != null) return;
 
-    _busyId = pack.id;
+    _busyId = collection.id;
     _progress = 0;
     _error = null;
     notifyListeners();
 
     try {
       await _service.install(
-        pack,
+        collection,
+        manifest,
         corpusVersion: DatabaseService.corpusVersion,
-        manifestCorpusVersion: manifest.corpusVersion,
         onProgress: (received, total) {
           if (total <= 0) return;
           final next = received / total;
@@ -109,7 +123,8 @@ class PackProvider extends ChangeNotifier {
           }
         },
       );
-      _installed = await _service.installedIds();
+      _installed = await _service.installedCollections();
+      _fragments = await _service.installedFragments();
     } catch (error) {
       _error = '$error';
     } finally {
@@ -119,15 +134,16 @@ class PackProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> uninstall(PackInfo pack) async {
+  Future<void> uninstall(Collection collection) async {
     if (_busyId != null) return;
-    _busyId = pack.id;
+    _busyId = collection.id;
     _error = null;
     notifyListeners();
 
     try {
-      await _service.uninstall(pack.id);
-      _installed = await _service.installedIds();
+      await _service.uninstall(collection.id);
+      _installed = await _service.installedCollections();
+      _fragments = await _service.installedFragments();
     } catch (error) {
       _error = '$error';
     } finally {

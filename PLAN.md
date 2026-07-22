@@ -1025,3 +1025,74 @@ sources already in this corpus turned out to hold New Advent index pages.
 - [ ] A clean Westminster Confession.
 - [ ] Remaining 23 unprovenanced sources.
 - [ ] Scored retrieval evaluation set.
+
+
+---
+
+## Phase 19 — Tagging, and packs on two layers (2026-07-22)
+
+### The tagging bug
+
+Tagging only ever ran inside `build_corpus.py`, the New Advent path. Everything
+ingested since — every confessional document — arrived untagged. 832 units, and
+specifically *these*: Trent, the Augsburg Confession and its Apology, the
+Westminster catechisms, Heidelberg, Dordt, the Belgic, the Thirty-Nine
+Articles.
+
+Tag search is one of the three engines fused in `searchForRAG`, so comparative
+questions ran on two. It had also just got **worse**: the abridged legacy stubs
+were 98% tagged, so replacing them with sourced full texts moved confessional
+tag coverage from "works, via stubs" to "nothing at all" — an improvement in
+the corpus that was a regression in retrieval.
+
+| tradition | before | after |
+|---|---|---|
+| lutheran | 0/161 | **149/161** |
+| anglican | 0/39 | **32/39** |
+| reformed | 27/556 | **396/556** |
+| catholic | 22/126 | **111/126** |
+
+A question about baptism now draws on six traditions; justification on four.
+
+### Fragments and collections
+
+The old split mixed two axes with no principle — Augustine and Chrysostom were
+carved out because they were *large*, which is a size optimisation dressed as a
+taxonomy. Supporting era, tradition and author groupings at once means the same
+work belongs to several groups, and the obvious implementation publishes it
+several times.
+
+So there are two layers:
+
+- **Fragments** are the files: a disjoint partition of one corpus build, each
+  body of text published exactly once. Ids stay disjoint, so merging still
+  needs no renumbering.
+- **Collections** are what the reader picks: named, overlapping lists of
+  fragment ids that own no text.
+
+**17 fragments, 37.5 MB. The same 16 collections as standalone files: 95.3 MB.**
+Adding a new way to browse now costs a few lines of config and no bytes.
+
+- [x] Install fetches only fragments not already present; the library quotes
+  what a collection costs *now*, and "Already downloaded" is a common answer.
+- [x] Uninstall removes only fragments no other installed collection needs,
+  computed from a local record rather than the manifest so it works offline and
+  cannot change under the reader.
+- [x] Coverage arithmetic moved to the fragment level. Summed over collections
+  it counted Augustine four times, making every subject look almost entirely
+  missing.
+- [x] One notice per question, naming the **narrowest** collection that answers
+  it. Asking about Chrysostom matches three collections; suggesting the largest
+  would mean downloading the complete fathers to read one letter.
+
+### Still to do from this design
+
+- [ ] **Scripture collections** — freely licensed Bibles (KJV, ASV, WEB,
+  Douay-Rheims), and the default the app opens with.
+- [ ] **Onboarding** — first run should guide the choice rather than landing on
+  an empty library. Currently the confessional core is still bundled.
+- [ ] **Ask-and-install flow** — the coverage notice names a collection and
+  links to the library; it should offer the download inline and then answer the
+  question that prompted it.
+- [ ] Denominational collections for traditions with no content yet (Baptist,
+  Pentecostal, Oriental Orthodox) — blocked on the corpus, not the packaging.
