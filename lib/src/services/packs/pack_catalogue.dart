@@ -90,10 +90,12 @@ class PackCatalogue {
   /// answered as a proportion of everything rather than in the abstract.
   final Map<String, int> core;
 
-  /// Tag counts per fragment. The unit that actually holds text exactly once,
-  /// and therefore the only level at which "how much am I missing" can be
-  /// added up without counting the same works several times over.
-  final Map<String, Map<String, int>> fragments;
+  /// What each fragment holds. The unit that actually contains text exactly
+  /// once, and therefore the only level at which "do I have this?" can be
+  /// answered — collections overlap, so counting over them double-counts, and
+  /// asking whether a *collection* is complete answers a different question
+  /// entirely from whether an author's text is present.
+  final Map<String, PackContents> fragments;
 
   const PackCatalogue(this.packs, this.core, {this.fragments = const {}});
 
@@ -116,7 +118,7 @@ class PackCatalogue {
     final fragments = (json['fragments'] as Map? ?? {}).map(
       (key, value) => MapEntry(
         key as String,
-        (value as Map).map((k, v) => MapEntry(k as String, v as int)),
+        PackContents.fromJson((value as Map).cast<String, dynamic>()),
       ),
     );
     return PackCatalogue(packs, core, fragments: fragments);
@@ -171,11 +173,26 @@ class PackCatalogue {
     final missingFragments =
         fragments.keys.where((f) => !installedFragments.contains(f)).toSet();
 
+    // Whose writing is already on the device. Without this, a question about
+    // Augustine kept prompting to install him *after he had been installed*,
+    // because the Catholic collection also lists him and that collection was
+    // still incomplete. Being told to add what you already have is the fastest
+    // way to teach someone to ignore a notice.
+    final haveAuthors = <String>{};
+    final haveTitles = <String>{};
+    for (final id in installedFragments) {
+      final contents = fragments[id];
+      if (contents == null) continue;
+      haveAuthors.addAll(contents.authors);
+      haveTitles.addAll(contents.titles);
+    }
+
     for (final entry in packs.entries) {
       if (available(entry.value)) continue;
       final contents = entry.value;
 
       final author = contents.authors
+          .where((a) => !haveAuthors.contains(a))
           .where((a) => _namePartsOf(a).any((part) => _mentions(question, part)))
           .firstOrNull;
       if (author != null) {
@@ -188,6 +205,7 @@ class PackCatalogue {
       }
 
       final title = contents.titles
+          .where((t) => !haveTitles.contains(t))
           .where((t) => t.length > 12 && _mentions(question, t))
           .firstOrNull;
       if (title != null) {
@@ -212,7 +230,7 @@ class PackCatalogue {
         // Summed over fragments, each of which holds its text once.
         final absent = missingFragments.fold(
           0,
-          (sum, id) => sum + (fragments[id]?[tag] ?? 0),
+          (sum, id) => sum + (fragments[id]?.tags[tag] ?? 0),
         );
         if (absent / everywhere < _missingShare) continue;
 
@@ -260,7 +278,7 @@ class PackCatalogue {
   /// installed or not.
   int _totalFor(String tag) =>
       (core[tag] ?? 0) +
-      fragments.values.fold(0, (sum, f) => sum + (f[tag] ?? 0));
+      fragments.values.fold(0, (sum, f) => sum + (f.tags[tag] ?? 0));
 
   /// "Augustine of Hippo" should be found by "Augustine", and "John
   /// Chrysostom" by "Chrysostom" — but not by "John", which would match any

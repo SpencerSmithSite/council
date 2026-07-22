@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +47,11 @@ void main() async {
     await PackCatalogue.load(),
   );
   await packs.loadInstalled();
+  // Fetched at startup rather than when the Library is first opened. It is
+  // 1.4 KB, and without it the coverage notice can name a collection but not
+  // say what it costs — so the first time anyone sees the offer, it is the one
+  // time it cannot tell them the price.
+  unawaited(packs.refresh());
 
   runApp(TheologyApp(
     dbService: dbService,
