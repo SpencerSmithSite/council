@@ -50,6 +50,9 @@ SUPERSEDED = {
     "The Didache": "The Didache (c. 100)",
     "Contra Celsum": "Against Celsus",
     "Fragments of Papias": "Fragments",
+    # 1,996 characters of unsourced abridgement, against 14.1 million in the
+    # complete translation now present.
+    "Summa Theologica Selections (Aquinas)": "Summa Theologiae: Prima Pars",
 }
 
 # Not prose at all: chapter indexes captured instead of chapter text, so the

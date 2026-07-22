@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 6,
+  "corpusVersion": 7,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -749,6 +749,40 @@
         "worship": 785
       }
     },
+    "f-aquinas": {
+      "authors": [
+        "Thomas Aquinas"
+      ],
+      "titles": [
+        "Summa Theologiae: Prima Pars",
+        "Summa Theologiae: Prima Secundae",
+        "Summa Theologiae: Secunda Secundae",
+        "Summa Theologiae: Supplementum",
+        "Summa Theologiae: Tertia Pars"
+      ],
+      "tags": {
+        "angels": 372,
+        "baptism": 236,
+        "church": 440,
+        "creation": 99,
+        "eschatology": 139,
+        "eucharist": 81,
+        "faith": 523,
+        "grace": 543,
+        "holy-spirit": 22,
+        "incarnation": 78,
+        "justification": 66,
+        "last-judgment": 365,
+        "prayer": 131,
+        "sacraments": 422,
+        "salvation": 245,
+        "sanctification": 51,
+        "scripture": 168,
+        "sin": 1162,
+        "trinity": 89,
+        "worship": 134
+      }
+    },
     "f-lutheran": {
       "authors": [],
       "titles": [
@@ -816,7 +850,6 @@
     "f-catholic": {
       "authors": [],
       "titles": [
-        "Summa Theologica Selections (Aquinas)",
         "The Canons and Decrees of the Council of Trent",
         "The Interior Castle (Teresa of Avila)",
         "The Spiritual Exercises (Ignatius)"
@@ -824,14 +857,14 @@
       "tags": {
         "angels": 5,
         "baptism": 15,
-        "christology": 4,
-        "church": 79,
+        "christology": 3,
+        "church": 78,
         "creation": 1,
-        "eschatology": 4,
+        "eschatology": 3,
         "eucharist": 13,
         "faith": 37,
         "grace": 30,
-        "holy-spirit": 4,
+        "holy-spirit": 3,
         "incarnation": 3,
         "justification": 16,
         "last-judgment": 14,
@@ -841,7 +874,7 @@
         "sanctification": 1,
         "scripture": 17,
         "sin": 43,
-        "trinity": 10,
+        "trinity": 3,
         "worship": 9
       }
     },
@@ -978,7 +1011,6 @@
         "Sardica (344)",
         "Scots Confession",
         "Second Helvetic Confession",
-        "Summa Theologica Selections (Aquinas)",
         "The Apology of the Augsburg Confession",
         "The Augsburg Confession",
         "The Belgic Confession",
@@ -1000,14 +1032,14 @@
       "tags": {
         "angels": 33,
         "baptism": 66,
-        "christology": 25,
-        "church": 369,
+        "christology": 24,
+        "church": 368,
         "creation": 19,
-        "eschatology": 38,
+        "eschatology": 37,
         "eucharist": 23,
         "faith": 301,
         "grace": 239,
-        "holy-spirit": 54,
+        "holy-spirit": 53,
         "incarnation": 15,
         "last-judgment": 101,
         "prayer": 126,
@@ -1016,7 +1048,7 @@
         "sanctification": 20,
         "scripture": 141,
         "sin": 345,
-        "trinity": 31,
+        "trinity": 24,
         "worship": 73,
         "justification": 76
       },
@@ -1511,6 +1543,44 @@
         "f-fathers-rest"
       ]
     },
+    "medieval": {
+      "name": "Medieval Theology",
+      "authors": [
+        "Thomas Aquinas"
+      ],
+      "titles": [
+        "Summa Theologiae: Prima Pars",
+        "Summa Theologiae: Prima Secundae",
+        "Summa Theologiae: Secunda Secundae",
+        "Summa Theologiae: Supplementum",
+        "Summa Theologiae: Tertia Pars"
+      ],
+      "tags": {
+        "angels": 372,
+        "baptism": 236,
+        "church": 440,
+        "creation": 99,
+        "eschatology": 139,
+        "eucharist": 81,
+        "faith": 523,
+        "grace": 543,
+        "holy-spirit": 22,
+        "incarnation": 78,
+        "justification": 66,
+        "last-judgment": 365,
+        "prayer": 131,
+        "sacraments": 422,
+        "salvation": 245,
+        "sanctification": 51,
+        "scripture": 168,
+        "sin": 1162,
+        "trinity": 89,
+        "worship": 134
+      },
+      "fragments": [
+        "f-aquinas"
+      ]
+    },
     "ante-nicene": {
       "name": "Ante-Nicene Writers",
       "authors": [
@@ -1793,6 +1863,44 @@
         "f-ambrose",
         "f-chrysostom",
         "f-augustine"
+      ]
+    },
+    "author-aquinas": {
+      "name": "Thomas Aquinas",
+      "authors": [
+        "Thomas Aquinas"
+      ],
+      "titles": [
+        "Summa Theologiae: Prima Pars",
+        "Summa Theologiae: Prima Secundae",
+        "Summa Theologiae: Secunda Secundae",
+        "Summa Theologiae: Supplementum",
+        "Summa Theologiae: Tertia Pars"
+      ],
+      "tags": {
+        "angels": 372,
+        "baptism": 236,
+        "church": 440,
+        "creation": 99,
+        "eschatology": 139,
+        "eucharist": 81,
+        "faith": 523,
+        "grace": 543,
+        "holy-spirit": 22,
+        "incarnation": 78,
+        "justification": 66,
+        "last-judgment": 365,
+        "prayer": 131,
+        "sacraments": 422,
+        "salvation": 245,
+        "sanctification": 51,
+        "scripture": 168,
+        "sin": 1162,
+        "trinity": 89,
+        "worship": 134
+      },
+      "fragments": [
+        "f-aquinas"
       ]
     },
     "author-augustine": {
@@ -2150,7 +2258,8 @@
       "authors": [
         "Ambrose",
         "Augustine of Hippo",
-        "Tertullian"
+        "Tertullian",
+        "Thomas Aquinas"
       ],
       "titles": [
         "A Treatise on the Soul",
@@ -2226,7 +2335,11 @@
         "Scorpiace",
         "Sermon against Auxentius",
         "Sermons on Selected Lessons of the New Testament",
-        "Summa Theologica Selections (Aquinas)",
+        "Summa Theologiae: Prima Pars",
+        "Summa Theologiae: Prima Secundae",
+        "Summa Theologiae: Secunda Secundae",
+        "Summa Theologiae: Supplementum",
+        "Summa Theologiae: Tertia Pars",
         "The Apology",
         "The Canons and Decrees of the Council of Trent",
         "The Enarrations, or Expositions, on the Psalms",
@@ -2243,30 +2356,31 @@
         "Tractates on the Gospel of John"
       ],
       "tags": {
-        "angels": 426,
-        "baptism": 477,
-        "christology": 4,
-        "church": 958,
-        "creation": 160,
-        "eschatology": 289,
-        "eucharist": 29,
-        "faith": 1204,
-        "grace": 850,
-        "holy-spirit": 395,
-        "incarnation": 84,
-        "justification": 61,
-        "last-judgment": 555,
-        "prayer": 368,
-        "sacraments": 361,
-        "salvation": 409,
-        "sanctification": 47,
-        "scripture": 935,
-        "sin": 1212,
-        "trinity": 196,
-        "worship": 198
+        "angels": 798,
+        "baptism": 713,
+        "christology": 3,
+        "church": 1397,
+        "creation": 259,
+        "eschatology": 427,
+        "eucharist": 110,
+        "faith": 1727,
+        "grace": 1393,
+        "holy-spirit": 416,
+        "incarnation": 162,
+        "justification": 127,
+        "last-judgment": 920,
+        "prayer": 499,
+        "sacraments": 783,
+        "salvation": 654,
+        "sanctification": 98,
+        "scripture": 1103,
+        "sin": 2374,
+        "trinity": 278,
+        "worship": 332
       },
       "fragments": [
         "f-catholic",
+        "f-aquinas",
         "f-augustine",
         "f-ambrose",
         "f-tertullian"

@@ -29,7 +29,7 @@ class DatabaseService {
   /// renumbering — so a pack from a different build can carry ids this app has
   /// already used for different text. Packs declare the version they were built
   /// from and are refused when it does not match this one.
-  static const int corpusVersion = 6;
+  static const int corpusVersion = 7;
 
   Database? _database;
 
@@ -175,6 +175,65 @@ class DatabaseService {
     return results;
   }
   
+  /// Guarantee that every tradition the question named is actually present.
+  ///
+  /// Only acts when the question named more than one — a question about a
+  /// single tradition should be answered from it, and one that named none has
+  /// no comparison to balance.
+  Future<List<Map<String, dynamic>>> _ensureNamedTraditions(
+    String query,
+    RecognisedEntities scope,
+    List<Map<String, dynamic>> selected,
+    int limit,
+  ) async {
+    if (scope.traditionIds.length < 2) return selected;
+
+    final names = await _traditionNames(scope.traditionIds);
+    final present = selected.map((r) => r['tradition'] as String?).toSet();
+    final missing = names.entries.where((e) => !present.contains(e.value));
+    if (missing.isEmpty) return selected;
+
+    final result = [...selected];
+    for (final entry in missing) {
+      final rows = await _searchScoped(
+        query,
+        RecognisedEntities(traditionIds: {entry.key}),
+        limit: 2,
+      );
+      if (rows.isEmpty) continue;
+
+      // Displace the lowest-ranked passage from whichever tradition is most
+      // over-represented, so the comparison gains a voice without the answer
+      // growing or a thinly-represented tradition losing its only one.
+      final counts = <String?, int>{};
+      for (final row in result) {
+        final t = row['tradition'] as String?;
+        counts[t] = (counts[t] ?? 0) + 1;
+      }
+      final crowded = counts.entries
+          .reduce((a, b) => a.value >= b.value ? a : b)
+          .key;
+
+      final victim = result.lastIndexWhere((r) => r['tradition'] == crowded);
+      if (result.length >= limit && victim >= 0) {
+        result[victim] = rows.first;
+      } else if (result.length < limit) {
+        result.add(rows.first);
+      }
+    }
+    return result;
+  }
+
+  Future<Map<int, String>> _traditionNames(Set<int> ids) async {
+    if (ids.isEmpty) return const {};
+    final marks = List.filled(ids.length, '?').join(',');
+    final rows = await database.rawQuery(
+      'SELECT id, name FROM traditions WHERE id IN ($marks)', ids.toList());
+    return {
+      for (final row in rows) row['id'] as int: row['name'] as String,
+    };
+  }
+
   /// FTS5 search restricted to particular sources or traditions.
   Future<List<Map<String, dynamic>>> _searchScoped(
     String query,
@@ -298,11 +357,24 @@ class DatabaseService {
       limit: limit,
     );
 
+    // A question naming two traditions is asking for a comparison, and an
+    // answer drawn entirely from one of them does not answer it. Diversity
+    // quotas alone cannot guarantee this: they cap how many slots a tradition
+    // may take, but if the other tradition never reaches the candidate pool
+    // there is nothing to fill the remainder with, and the backfill hands the
+    // slots straight back.
+    //
+    // This became a live failure rather than a theoretical one when Aquinas
+    // was added: 14 million characters of Catholic material against 0.79
+    // million Lutheran meant "how do Catholics and Lutherans differ on
+    // baptism" returned six Catholic passages and no Lutheran ones.
+    final balanced = await _ensureNamedTraditions(query, scope, selected, limit);
+
     // Replace each unit's full text with the chunk that best matches the
     // query. A unit can be 162 KB; handing the model its first N characters
     // means the relevant passage is usually not in the window at all.
     return [
-      for (final row in selected)
+      for (final row in balanced)
         {...row, 'content': await _bestChunkText(row, query)},
     ];
   }

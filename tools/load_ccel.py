@@ -105,17 +105,23 @@ def main():
 
         cursor = conn.execute(
             """INSERT INTO sources
-               (source_type_id, tradition_id, title, slug, date_composed,
-                date_composed_approx, language_source, source_url, license,
-                public_domain, notes)
-               VALUES (?, ?, ?, ?, ?, 0, 'en', ?, 'public domain', 1, ?)""",
+               (source_type_id, tradition_id, title, slug, author,
+                date_composed, date_composed_approx, language_source,
+                source_url, license, public_domain, notes)
+               VALUES (?, ?, ?, ?, ?, ?, 0, 'en', ?, ?, 1, ?)""",
             (
                 type_id,
                 tradition_id,
                 record["title"],
                 slugify(record["title"], taken),
+                # Honoured when the ingester supplies it. Without an author a
+                # work is invisible to entity scoping — "what did Aquinas say
+                # about x" cannot be narrowed to his writing — and its
+                # citations cannot say who wrote it.
+                record.get("author") or None,
                 record["date"],
                 record["url"],
+                record.get("rights") or "public domain",
                 notes,
             ),
         )
