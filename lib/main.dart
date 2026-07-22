@@ -8,11 +8,11 @@ import 'src/services/search/semantic_search.dart';
 import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
 import 'src/services/packs/pack_service.dart';
-import 'src/screens/home_screen.dart';
-import 'src/screens/search_screen.dart';
-import 'src/screens/browse_screen.dart';
 import 'src/screens/chat_screen.dart';
-import 'src/screens/bookmarks_screen.dart';
+import 'src/screens/read_screen.dart';
+import 'src/screens/library_screen.dart';
+import 'src/screens/settings_screen.dart';
+import 'src/screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,7 +105,12 @@ class TheologyApp extends StatelessWidget {
               child: child ?? const SizedBox.shrink(),
             );
           },
-          home: const MainScreen(),
+          // First run goes to setup. Gated on a stored flag rather than on an
+          // empty library, so someone who deliberately removed everything is
+          // not walked through setup again on every launch.
+          home: settings.hasOnboarded
+              ? const MainScreen()
+              : const OnboardingScreen(),
         ),
       ),
     );
@@ -122,12 +127,19 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   
+  /// Four areas, in the order they matter.
+  ///
+  /// Chat is first because asking a question is what the app is for; it used
+  /// to be the fourth tab behind a statistics dashboard. Browse, Search and
+  /// Bookmarks have collapsed into Read — they were three routes into the same
+  /// act. Settings has come out of the bottom of a scrolling list, and the
+  /// Library out from behind it, which mattered more once the app began
+  /// shipping with only the Bible.
   final List<Widget> _screens = [
-    const HomeScreen(),
-    const BrowseScreen(),
-    const SearchScreen(),
     const ChatScreen(),
-    const BookmarksScreen(),
+    const ReadScreen(),
+    const LibraryScreen(),
+    const SettingsScreen(),
   ];
   
   @override
@@ -143,29 +155,24 @@ class _MainScreenState extends State<MainScreen> {
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.forum_outlined),
+            selectedIcon: Icon(Icons.forum),
+            label: 'Ask',
           ),
           NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
             selectedIcon: Icon(Icons.menu_book),
-            label: 'Browse',
+            label: 'Read',
           ),
           NavigationDestination(
-            icon: Icon(Icons.search_outlined),
-            selectedIcon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.library_books_outlined),
+            selectedIcon: Icon(Icons.library_books),
+            label: 'Library',
           ),
           NavigationDestination(
-            icon: Icon(Icons.chat_outlined),
-            selectedIcon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.bookmark_outline),
-            selectedIcon: Icon(Icons.bookmark),
-            label: 'Bookmarks',
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
       ),

@@ -37,6 +37,21 @@ class SettingsService {
   }
   
   /// Get show citations preference
+  /// Whether the reader has been through first-run setup.
+  ///
+  /// Stored rather than inferred from an empty library: someone who
+  /// deliberately removed every collection should not be walked through setup
+  /// again every time they open the app.
+  Future<bool> getHasOnboarded() async {
+    final prefs = await _prefs;
+    return prefs.getBool('has_onboarded') ?? false;
+  }
+
+  Future<void> setHasOnboarded(bool value) async {
+    final prefs = await _prefs;
+    await prefs.setBool('has_onboarded', value);
+  }
+
   Future<bool> getShowCitations() async {
     final prefs = await _prefs;
     return prefs.getBool(_showCitationsKey) ?? true;
