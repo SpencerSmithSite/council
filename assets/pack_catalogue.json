@@ -82,7 +82,10 @@
         "sin": 754,
         "trinity": 4,
         "worship": 83
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-augustine": {
       "authors": [
@@ -155,7 +158,10 @@
         "sin": 904,
         "trinity": 135,
         "worship": 108
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-tertullian": {
       "authors": [
@@ -216,7 +222,10 @@
         "sin": 160,
         "trinity": 11,
         "worship": 40
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-origen": {
       "authors": [
@@ -253,7 +262,10 @@
         "sin": 181,
         "trinity": 6,
         "worship": 132
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-gregory-nyssa": {
       "authors": [
@@ -297,7 +309,10 @@
         "sin": 41,
         "trinity": 20,
         "worship": 18
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-athanasius": {
       "authors": [
@@ -343,7 +358,10 @@
         "sin": 40,
         "trinity": 6,
         "worship": 39
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-clement-alexandria": {
       "authors": [
@@ -374,7 +392,10 @@
         "scripture": 88,
         "sin": 71,
         "worship": 40
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-ambrose": {
       "authors": [
@@ -412,7 +433,10 @@
         "sin": 105,
         "trinity": 40,
         "worship": 41
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-apocrypha": {
       "authors": [
@@ -478,7 +502,10 @@
         "sin": 79,
         "trinity": 2,
         "worship": 36
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-fathers-rest": {
       "authors": [
@@ -747,7 +774,10 @@
         "sin": 1276,
         "trinity": 207,
         "worship": 785
-      }
+      },
+      "traditions": [
+        "Early Church"
+      ]
     },
     "f-aquinas": {
       "authors": [
@@ -781,7 +811,10 @@
         "sin": 1162,
         "trinity": 89,
         "worship": 134
-      }
+      },
+      "traditions": [
+        "Catholic"
+      ]
     },
     "f-lutheran": {
       "authors": [],
@@ -810,7 +843,10 @@
         "scripture": 63,
         "sin": 119,
         "worship": 35
-      }
+      },
+      "traditions": [
+        "Lutheran"
+      ]
     },
     "f-reformed": {
       "authors": [],
@@ -845,7 +881,10 @@
         "sin": 156,
         "trinity": 7,
         "worship": 22
-      }
+      },
+      "traditions": [
+        "Reformed"
+      ]
     },
     "f-catholic": {
       "authors": [],
@@ -876,7 +915,10 @@
         "sin": 43,
         "trinity": 3,
         "worship": 9
-      }
+      },
+      "traditions": [
+        "Catholic"
+      ]
     },
     "f-anglican": {
       "authors": [],
@@ -897,7 +939,10 @@
         "scripture": 10,
         "sin": 8,
         "trinity": 1
-      }
+      },
+      "traditions": [
+        "Anglican"
+      ]
     },
     "f-baptist": {
       "authors": [],
@@ -923,7 +968,10 @@
         "sin": 38,
         "trinity": 4,
         "worship": 16
-      }
+      },
+      "traditions": [
+        "Baptist"
+      ]
     },
     "f-methodist": {
       "authors": [],
@@ -939,7 +987,10 @@
         "holy-spirit": 3,
         "sacraments": 1,
         "salvation": 16
-      }
+      },
+      "traditions": [
+        "Methodist"
+      ]
     },
     "f-orthodox": {
       "authors": [],
@@ -957,7 +1008,10 @@
         "sacraments": 1,
         "salvation": 1,
         "trinity": 1
-      }
+      },
+      "traditions": [
+        "Eastern Orthodox"
+      ]
     },
     "f-ecumenical": {
       "authors": [
@@ -1005,7 +1059,10 @@
         "sin": 19,
         "trinity": 12,
         "worship": 7
-      }
+      },
+      "traditions": [
+        "Ecumenical"
+      ]
     }
   },
   "packs": {
@@ -1079,6 +1136,16 @@
         "worship": 89,
         "justification": 83
       },
+      "traditions": [
+        "Anglican",
+        "Baptist",
+        "Catholic",
+        "Eastern Orthodox",
+        "Ecumenical",
+        "Lutheran",
+        "Methodist",
+        "Reformed"
+      ],
       "fragments": [
         "f-ecumenical",
         "f-lutheran",
@@ -1558,6 +1625,9 @@
         "trinity": 431,
         "worship": 1322
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-chrysostom",
         "f-augustine",
@@ -1605,6 +1675,9 @@
         "trinity": 89,
         "worship": 134
       },
+      "traditions": [
+        "Catholic"
+      ],
       "fragments": [
         "f-aquinas"
       ]
@@ -1725,6 +1798,9 @@
         "trinity": 19,
         "worship": 248
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-tertullian",
         "f-origen",
@@ -1885,6 +1961,9 @@
         "eucharist": 13,
         "sacraments": 276
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-athanasius",
         "f-gregory-nyssa",
@@ -1927,6 +2006,9 @@
         "trinity": 89,
         "worship": 134
       },
+      "traditions": [
+        "Catholic"
+      ],
       "fragments": [
         "f-aquinas"
       ]
@@ -2004,6 +2086,9 @@
         "trinity": 135,
         "worship": 108
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-augustine"
       ]
@@ -2073,6 +2158,9 @@
         "trinity": 4,
         "worship": 83
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-chrysostom"
       ]
@@ -2138,6 +2226,9 @@
         "trinity": 11,
         "worship": 40
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-tertullian"
       ]
@@ -2179,6 +2270,9 @@
         "trinity": 6,
         "worship": 132
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-origen"
       ]
@@ -2229,6 +2323,9 @@
         "trinity": 6,
         "worship": 39
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-athanasius"
       ]
@@ -2277,6 +2374,9 @@
         "trinity": 20,
         "worship": 18
       },
+      "traditions": [
+        "Early Church"
+      ],
       "fragments": [
         "f-gregory-nyssa"
       ]
@@ -2406,6 +2506,10 @@
         "trinity": 278,
         "worship": 332
       },
+      "traditions": [
+        "Catholic",
+        "Early Church"
+      ],
       "fragments": [
         "f-catholic",
         "f-aquinas",
@@ -2443,6 +2547,9 @@
         "sin": 119,
         "worship": 35
       },
+      "traditions": [
+        "Lutheran"
+      ],
       "fragments": [
         "f-lutheran"
       ]
@@ -2482,6 +2589,9 @@
         "trinity": 7,
         "worship": 22
       },
+      "traditions": [
+        "Reformed"
+      ],
       "fragments": [
         "f-reformed"
       ]
@@ -2507,6 +2617,9 @@
         "sin": 8,
         "trinity": 1
       },
+      "traditions": [
+        "Anglican"
+      ],
       "fragments": [
         "f-anglican"
       ]
@@ -2537,6 +2650,9 @@
         "trinity": 4,
         "worship": 16
       },
+      "traditions": [
+        "Baptist"
+      ],
       "fragments": [
         "f-baptist"
       ]
@@ -2644,6 +2760,10 @@
         "sin": 835,
         "worship": 140
       },
+      "traditions": [
+        "Early Church",
+        "Eastern Orthodox"
+      ],
       "fragments": [
         "f-orthodox",
         "f-chrysostom",
@@ -2667,6 +2787,9 @@
         "sacraments": 1,
         "salvation": 16
       },
+      "traditions": [
+        "Methodist"
+      ],
       "fragments": [
         "f-methodist"
       ]

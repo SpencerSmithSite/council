@@ -199,6 +199,83 @@ void main() {
       expect(ids, isNot(contains('tradition-baptist')));
     });
   });
+
+  /// Absence is not scarcity, and counting passages cannot tell them apart.
+  ///
+  /// The confession holds 8 passages tagged `baptism`; the fathers hold 1,063.
+  /// Ranking by volume therefore answers every question about believer's
+  /// baptism by offering the fathers — arithmetically correct, and the wrong
+  /// answer, because the reason to install the Baptist pack is not that it is
+  /// large but that without it the tradition has no voice at all.
+  group('a tradition with nothing installed', () {
+    test('is offered when the question names it', () {
+      final suggestions = suggest(
+        'What do Baptists believe about baptism?',
+        tags: ['baptism'],
+      );
+
+      expect(suggestions.first.reason, SuggestionReason.traditionAbsent);
+      expect(suggestions.first.detail, 'Baptist');
+      expect(suggestions.first.explanation, contains('none of it is'));
+      // The narrowest pack that fixes it, not the largest that contains it.
+      expect(suggestions.first.packId, 'tradition-baptist');
+    });
+
+    test('outranks a pack that merely holds more on the subject', () {
+      // Without this, the fathers win on volume and the tradition actually
+      // asked about is never mentioned.
+      final ids =
+          suggest('What do Baptists teach about baptism?', tags: ['baptism'])
+              .map((s) => s.packId)
+              .toList();
+
+      // Asserted present first. `indexOf` returns -1 for a missing entry,
+      // which is less than everything, so an ordering check alone passes
+      // most convincingly when the thing being ordered is absent.
+      expect(ids, contains('tradition-baptist'));
+      for (final bigger in ['church-fathers', 'nicene-fathers']) {
+        if (!ids.contains(bigger)) continue;
+        expect(ids.indexOf('tradition-baptist'), lessThan(ids.indexOf(bigger)));
+      }
+    });
+
+    test('common aliases count as naming it', () {
+      for (final phrasing in [
+        'what do Presbyterians say about the sacraments',
+        'the Lutheran view of justification',
+        'an Episcopalian understanding of orders',
+      ]) {
+        expect(
+          suggest(phrasing).where(
+              (s) => s.reason == SuggestionReason.traditionAbsent),
+          isNotEmpty,
+          reason: 'nothing matched in: $phrasing',
+        );
+      }
+    });
+
+    test('is silent once any of that tradition is installed', () {
+      final suggestions = suggest(
+        'What do Baptists believe about baptism?',
+        tags: ['baptism'],
+        installed: fragmentsOf(['tradition-baptist']),
+      );
+      expect(
+        suggestions.where((s) => s.reason == SuggestionReason.traditionAbsent),
+        isEmpty,
+      );
+    });
+
+    test('"orthodox" as an adjective is not read as a tradition', () {
+      // "orthodox Christology" is not a question about the Eastern church, and
+      // a notice that misreads the question teaches people to ignore notices.
+      expect(
+        suggest('is this an orthodox view of the incarnation?').where(
+            (s) => s.reason == SuggestionReason.traditionAbsent),
+        isEmpty,
+      );
+    });
+  });
 }
 
 /// Whether the notice earns its place, rather than firing on everything
