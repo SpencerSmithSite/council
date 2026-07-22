@@ -934,8 +934,66 @@ direction: **what share of everything written on this subject is missing?**
 - [x] Shown above the composer rather than inside the answer, so it reads as a
   note about the library and not as something the sources said.
 
+---
+
+## Phase 17 — Provenance: 23 unsourced legacy entries (2026-07-22)
+
+They were not one problem. Sorting them was most of the work.
+
+**Added as complete sourced texts** — Westminster Shorter Catechism (107
+questions), Westminster Larger Catechism (196), Thirty-Nine Articles (39). The
+stubs they replace held 23, 7 and 42 units of abridgement.
+
+**Removed, superseded** (8) — a fuller sourced edition was already present. The
+`Contra Celsum` stub held 2,015 characters; *Against Celsus* holds 1,325,124.
+
+**Removed, not ours to ship** (2) — the Catechism of the Catholic Church and
+Lumen Gentium are © Libreria Editrice Vaticana and were both recorded here as
+`public domain`. Age and free availability online do not make a text free to
+redistribute, and a licence field asserting otherwise is worse than an empty
+one.
+
+**Removed, not text** (1) — `Against Heresies` held chapter indexes: "Preface
+Chapter 1 Absurd ideas of the disciples of Valentinus... Chapter 2 The Propator
+was known to Monogenes alone..." It retrieves on every patristic keyword and
+says nothing.
+
+**Also removed** — 45 units whose source row no longer existed, left by an
+earlier phase that deleted sources without cascading. They predate this work,
+but with no source they have no title, tradition or origin, so the new citation
+UI would have shown them as "Unknown source, origin not recorded".
+
+**Remaining: 12**, marked in the app rather than hidden.
+
+### Three things this nearly got wrong
+
+- **`Against Heresies` was queued for deletion as superseded by the
+  provenanced `Adversus haereses`** — 29,580 characters replaced by 28,578,
+  which reads like a reasonable trade. Both are chapter indexes. The swap would
+  have been recorded as an improvement. A corpus-wide scan found the defect in
+  3 sources and 14 units, 0.07% — contained, but `Adversus haereses` and *The
+  Harmony of the Gospels* still need re-ingesting from their chapter pages.
+- **The Shorter Catechism parsed to a clean, plausible 100 questions.** It has
+  107. The file numbers most questions `Q1:` and seven of them `Q20.`, and the
+  parser matched only the first form — dropping the covenant of grace among
+  others. The parser now refuses any document with holes in its numbering.
+- **The Thirty-Nine Articles parsed to 36.** Three titles wrap onto a second
+  line, and a line-anchored pattern skipped exactly those three.
+
+### The Westminster Confession was rejected, not missed
+
+CCEL's edition is a critical apparatus carrying the PCUS and UPCUSA recensions
+in parallel with variant readings inline — `yet [PCUS are they] [UPCUSA they
+are] not sufficient`. That is the same defect that disqualified Schaff's
+*Creeds of Christendom*, and the standard holds in both cases. It is also the
+only one of the three CCEL files that declares no rights at all. It stays
+unsourced until a clean edition is found.
+
+Corpus is **v4**, published. 429 sources, 18,719 units, 55,037 chunks and
+embeddings, zero orphans in any direction.
+
 ### Next
 
-- [ ] Surface tradition and provenance on citations in the UI.
+- [x] Surface tradition and provenance on citations in the UI.
 - [ ] Remaining 23 unprovenanced sources.
 - [ ] Scored retrieval evaluation set.
