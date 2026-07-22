@@ -34,6 +34,8 @@
     { "id": "f-apocrypha", "authors": ["Apocrypha"] },
     { "id": "f-fathers-rest", "traditions": ["early-church"] },
 
+    { "id": "f-aquinas", "authors": ["Thomas Aquinas"] },
+
     { "id": "f-lutheran", "traditions": ["lutheran"] },
     { "id": "f-reformed", "traditions": ["reformed"] },
     { "id": "f-catholic", "traditions": ["catholic"] },
@@ -62,6 +64,13 @@
                     "f-ambrose", "f-apocrypha", "f-fathers-rest"]
     },
     {
+      "id": "medieval",
+      "kind": "era",
+      "name": "Medieval Theology",
+      "description": "The scholastic era: Aquinas's Summa Theologiae, the systematic work that shaped Catholic theology and the arguments the Reformers answered.",
+      "fragments": ["f-aquinas"]
+    },
+    {
       "id": "ante-nicene",
       "kind": "era",
       "name": "Ante-Nicene Writers",
@@ -78,6 +87,13 @@
                     "f-chrysostom", "f-augustine"]
     },
 
+    {
+      "id": "author-aquinas",
+      "kind": "author",
+      "name": "Thomas Aquinas",
+      "description": "The complete Summa Theologiae in English — all five parts, 611 questions and 3,115 articles, each with its objections, replies and the argument between them.",
+      "fragments": ["f-aquinas"]
+    },
     {
       "id": "author-augustine",
       "kind": "author",
@@ -126,7 +142,8 @@
       "kind": "tradition",
       "name": "Catholic",
       "description": "The Council of Trent and the Catholic sources in the library, together with the Latin fathers the tradition rests on.",
-      "fragments": ["f-catholic", "f-augustine", "f-ambrose", "f-tertullian"]
+      "fragments": ["f-catholic", "f-aquinas", "f-augustine", "f-ambrose",
+                    "f-tertullian"]
     },
     {
       "id": "tradition-lutheran",

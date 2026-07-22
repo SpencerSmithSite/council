@@ -100,6 +100,14 @@ void main() {
       expect(rows, isNotEmpty);
       expect(traditionsIn(rows).length, greaterThan(1),
           reason: 'a comparison needs more than one tradition');
+
+      // Named specifically, not merely "more than one". Adding Aquinas put
+      // 14 M characters of Catholic material against 0.79 M Lutheran, and the
+      // question started returning six Catholic passages and no Lutheran ones
+      // — technically several traditions once the fathers were counted, and
+      // still not an answer to what was asked.
+      expect(traditionsIn(rows), containsAll(['Catholic', 'Lutheran']),
+          reason: 'both traditions the question named must be represented');
     }, skip: needsPacks);
 
     test('draws on genuine Lutheran sources, not mislabelled ones', () async {

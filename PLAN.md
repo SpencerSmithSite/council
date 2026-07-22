@@ -1276,3 +1276,51 @@ keeping it: a test that passes either way is worse than none.
 - [ ] **Trent's OCR needs cleaning.** Page furniture is embedded in the text —
   "1 8 SESSION IV." mid-paragraph — which was invisible while passages were
   only ever seen as search snippets and is obvious when read continuously.
+
+
+---
+
+## Phase 22 — Aquinas (2026-07-22)
+
+The largest single gain available, and the corpus held none of him: the only
+entry under his name was a 1,996-character unsourced abridgement.
+
+**The complete Summa Theologiae** — all five parts, 611 questions, **3,115
+articles, 14.1 M characters** — from New Advent's `/summa/`, a section the
+existing ingester never walked. Benziger Bros. 1947 translation, public domain.
+
+Units are **articles**, not questions: an article is the atomic argument and
+the way Aquinas is cited (ST I, q.1, a.3), so it is both the right retrieval
+granularity and the right thing for a citation to name.
+
+- [x] New collections: **Thomas Aquinas** (author) and **Medieval Theology**
+  (era), plus folded into **Catholic**.
+- [x] The loader now honours an `author` field. Without one a work is invisible
+  to entity scoping — "what did Aquinas say about x" cannot be narrowed to his
+  writing — and its citations cannot say who wrote it.
+
+### Two things caught by refusing to trust the run
+
+**Three questions were silently dropped.** New Advent's `<title>` is malformed
+on any page whose question title contains double quotes: Q120 *"Epikeia"* ships
+as `<head><name=""Epikeia" or equity (...)">`, with no title element at all.
+608 of 611 parsed, so the run looked like a success. Identity now comes from
+the page's `<h1>`, which is well-formed and carries the question number — a
+stronger check than the part name, since it confirms the page is the question
+that was actually asked for.
+
+**Comparative retrieval broke.** 14 M characters of Catholic material against
+0.79 M Lutheran meant "how do Catholics and Lutherans differ on baptism"
+returned six Catholic passages and no Lutheran ones. The diversity quota could
+not prevent it: it caps how many slots a tradition may take, but when the other
+tradition never reaches the candidate pool there is nothing to fill the
+remainder with and the backfill hands the slots straight back.
+
+A question naming two traditions is asking for a comparison, so retrieval now
+guarantees each named tradition is present, displacing the lowest-ranked
+passage from whichever is most over-represented. The test asserts the traditions
+**by name** rather than counting them — with the fathers installed, "more than
+one" was satisfied by an answer that still had no Lutheran voice in it.
+
+Corpus is **v7**, published. 18 fragments, 45.4 MB; the same collections as
+standalone files would be 119.0 MB.
