@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../database_service.dart';
+import 'pack_catalogue.dart';
 import 'pack_manifest.dart';
 import 'pack_service.dart';
 
@@ -8,7 +9,39 @@ import 'pack_service.dart';
 class PackProvider extends ChangeNotifier {
   final PackService _service;
 
-  PackProvider(this._service);
+  /// Bundled description of what every pack holds, so the app can say what it
+  /// is missing without a network call.
+  final PackCatalogue catalogue;
+
+  PackProvider(this._service, this.catalogue);
+
+  /// Load what is already installed.
+  ///
+  /// Separate from [refresh] because it needs no network: the coverage notice
+  /// has to work on first launch, offline, before anyone opens the Library.
+  Future<void> loadInstalled() async {
+    _installed = await _service.installedIds();
+    notifyListeners();
+  }
+
+  /// Which uninstalled collections would have helped answer [question].
+  ///
+  /// The app can only search text it holds, so without this a library missing
+  /// the fathers answers a question about the Eucharist from confessions
+  /// alone — fluent, well-cited, and drawn from under a tenth of what exists.
+  List<PackSuggestion> coverageGapsFor(String question, List<String> tags) =>
+      catalogue.suggest(
+        question: question,
+        queryTags: tags,
+        installed: _installed,
+      );
+
+  /// The human-readable name of a pack, for a notice that names it.
+  String nameOf(String packId) {
+    final bundled = catalogue.packs[packId]?.name;
+    if (bundled != null && bundled.isNotEmpty) return bundled;
+    return packId;
+  }
 
   PackManifest? _manifest;
   Set<String> _installed = {};

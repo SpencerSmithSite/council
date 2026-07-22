@@ -5,6 +5,7 @@ import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
 import 'src/services/inference/inference_provider.dart';
 import 'src/services/search/semantic_search.dart';
+import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
 import 'src/services/packs/pack_service.dart';
 import 'src/screens/home_screen.dart';
@@ -41,7 +42,9 @@ void main() async {
       dbService.database,
       onContentChanged: () async => dbService.semantic?.reload(),
     ),
+    await PackCatalogue.load(),
   );
+  await packs.loadInstalled();
 
   runApp(TheologyApp(
     dbService: dbService,

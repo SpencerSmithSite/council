@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
+
+import '../services/packs/pack_catalogue.dart';
+import '../services/packs/pack_provider.dart';
+import 'library_screen.dart';
 import '../services/database_service.dart';
 import '../services/ollama_service.dart';
 import '../services/settings_provider.dart';
@@ -21,6 +25,12 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
+
+  /// Collections that would have helped with the most recent question but are
+  /// not installed. Shown above the composer rather than inside the answer, so
+  /// it reads as a note about the library rather than part of what the sources
+  /// say.
+  List<PackSuggestion> _gaps = const [];
   bool _isLoading = false;
 
   /// Set by the stop button; the streaming loop checks it between chunks.
@@ -65,6 +75,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _messageController.clear();
     _scrollToBottom();
+
+    // Worked out before retrieval runs, from the question rather than from
+    // its results: the whole point is to describe sources that are *absent*,
+    // which by definition cannot appear in what was retrieved.
+    _gaps = context.read<PackProvider>().coverageGapsFor(
+          text,
+          _databaseService.extractTags(text),
+        );
 
     try {
       final passages = await _databaseService.searchForRAG(text, limit: 6);
@@ -227,6 +245,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
           ),
           
+          if (_gaps.isNotEmpty && !_isLoading) _CoverageNotice(gaps: _gaps),
+
           // Loading indicator
           if (_isLoading)
             Padding(
@@ -417,6 +437,71 @@ class _ChatScreenState extends State<ChatScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tells the reader that the answer they just received was drawn from a
+/// fraction of the available sources.
+///
+/// This exists because splitting the corpus made a new failure reachable: the
+/// app can only search text it holds, so a library without the fathers answers
+/// a question about the Eucharist from confessions alone — fluent, cited, and
+/// drawn from under a tenth of what has been written. For an app whose purpose
+/// is showing what each tradition actually taught, omitting one silently is
+/// the worst thing it could do.
+class _CoverageNotice extends StatelessWidget {
+  final List<PackSuggestion> gaps;
+
+  const _CoverageNotice({required this.gaps});
+
+  @override
+  Widget build(BuildContext context) {
+    final packs = context.read<PackProvider>();
+    final scheme = Theme.of(context).colorScheme;
+    final gap = gaps.first;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 18, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  gap.explanation,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'This answer draws only on what you have installed.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LibraryScreen()),
+            ),
+            child: Text('Add ${packs.nameOf(gap.packId)}'),
           ),
         ],
       ),

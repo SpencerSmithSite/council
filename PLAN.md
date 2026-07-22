@@ -875,21 +875,64 @@ A pack declares the version it came from and is refused on mismatch.
   no unreachable index entries. The retrieval suite now runs both ways — over
   the core alone and over a pack-assembled library — and passes identically.
 
-### Hosting
+### Hosting — published
 
-Ready to publish; nothing is uploaded yet.
-
-- [ ] Cut a GitHub Release and attach `dist/packs/*` — the app already points
-  at `releases/latest/download/manifest.json`.
+- [x] **Release `corpus-v3` cut**, with the manifest and all three packs
+  attached. The pack suite now runs against the real
+  `releases/latest/download/` URL and passes: download, checksum, merge and
+  uninstall over the actual CDN.
+- [x] **Builds made reproducible.** gzip stamps the current time into its
+  header, so rebuilding identical content produced different bytes and
+  different checksums. Since checksums are what the app trusts to decide a
+  download is intact, that made "did the corpus change?" unanswerable by
+  comparing manifests and forced a 35 MB re-upload on every rebuild. `mtime=0`
+  fixes it; two consecutive builds are now byte-identical.
 
 ### Known gaps
 
-- [ ] **A partial library gives confidently incomplete answers.** Ask about the
-  Eucharist without the fathers installed and the answer is drawn from
-  confessions alone, with nothing saying so. Retrieval should tell the user
-  which uninstalled packs are relevant to what they just asked.
 - [ ] Packs cannot be updated in place — only removed and reinstalled.
 - [ ] Installing on mobile is untested; the merge is heavier there.
+
+---
+
+## Phase 16 — Telling the reader what is missing (2026-07-22)
+
+Splitting the corpus made a new failure reachable, and it is the worst one this
+app can have: **it can only search text it holds.** A library without the
+fathers answers a question about the Eucharist from confessions alone — fluent,
+cited, and drawn from 7 of the 83 passages that exist on the subject. For an app
+whose purpose is showing what each tradition actually taught, omitting one
+silently is worse than refusing to answer.
+
+### The measurement that made it work
+
+The first attempt asked *what share of a pack is about this subject*, and it
+found nothing — the Eucharist is 0.2% of Augustine. That number is real and
+completely irrelevant. The question a reader needs answered is the other
+direction: **what share of everything written on this subject is missing?**
+
+| tag | core | in packs | missing |
+|---|---|---|---|
+| eucharist | 7 | 76 | **91.6%** |
+| baptism | 14 | 1,064 | 98.7% |
+| justification | 13 | 92 | 87.6% |
+| trinity | 37 | 443 | 92.3% |
+
+- [x] `pack_catalogue.json` bundled, not fetched — the app has to describe what
+  it is missing while offline, which for an offline-first library is the normal
+  case. 19 KB, generated with the packs so it cannot drift.
+- [x] Three signals, in order: the question names an author, names a work, or
+  the subject is one where most material is uninstalled.
+- [x] **Restraint is tested, not assumed.** Whole-word matching so "original
+  sin" does not match Origen; common first names excluded so a question about
+  the gospel of John does not summon Chrysostom; one notice per question, not
+  one per missing pack; and installing the main collection quiets the warning
+  for nearly every subject, because it genuinely closes the gap. A notice that
+  is wrong once is a notice nobody reads again.
+- [x] `extractTags` made public: the notice reads the question the same way
+  retrieval did, so the two cannot disagree about what was asked.
+- [x] Shown above the composer rather than inside the answer, so it reads as a
+  note about the library and not as something the sources said.
 
 ### Next
 

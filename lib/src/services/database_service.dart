@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -505,7 +504,12 @@ class DatabaseService {
   };
 
   /// Extract tag slugs from a query, deduplicated.
-  @visibleForTesting
+  ///
+  /// Public rather than test-only because the coverage notice needs the same
+  /// reading of the question that retrieval used. Deriving the subject a second
+  /// way would let the two disagree — telling someone their Eucharist question
+  /// was under-covered while the retriever had decided the question was about
+  /// something else.
   List<String> extractTags(String query) {
     final matched = <String>{};
 

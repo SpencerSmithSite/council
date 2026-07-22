@@ -55,5 +55,6 @@ flutter:
   assets:
     - assets/theology.db.gz
     - assets/metadata.json
+    - assets/pack_catalogue.json
     - assets/model/vocab.txt
     - assets/model/model_quantized.onnx
