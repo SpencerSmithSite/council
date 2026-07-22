@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 8,
+  "corpusVersion": 9,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -974,19 +974,34 @@
       ]
     },
     "f-methodist": {
-      "authors": [],
+      "authors": [
+        "John Wesley"
+      ],
       "titles": [
         "A Plain Account of the People Called Methodists (Wesley)",
-        "Wesleys Standard Sermons"
+        "Sermons on Several Occasions"
       ],
       "tags": {
+        "angels": 25,
+        "baptism": 5,
         "christology": 7,
-        "church": 10,
-        "faith": 1,
-        "grace": 4,
-        "holy-spirit": 3,
-        "sacraments": 1,
-        "salvation": 16
+        "church": 45,
+        "creation": 18,
+        "eschatology": 5,
+        "faith": 53,
+        "grace": 30,
+        "holy-spirit": 9,
+        "incarnation": 1,
+        "justification": 9,
+        "last-judgment": 21,
+        "prayer": 10,
+        "sacraments": 3,
+        "salvation": 30,
+        "sanctification": 4,
+        "scripture": 39,
+        "sin": 64,
+        "trinity": 2,
+        "worship": 10
       },
       "traditions": [
         "Methodist"
@@ -1069,7 +1084,8 @@
     "creeds-and-confessions": {
       "name": "Creeds & Confessions",
       "authors": [
-        "Councils"
+        "Councils",
+        "John Wesley"
       ],
       "titles": [
         "A Plain Account of the People Called Methodists (Wesley)",
@@ -1094,6 +1110,7 @@
         "Sardica (344)",
         "Scots Confession",
         "Second Helvetic Confession",
+        "Sermons on Several Occasions",
         "The Apology of the Augsburg Confession",
         "The Augsburg Confession",
         "The Belgic Confession",
@@ -1110,31 +1127,30 @@
         "The Thirty-Nine Articles of Religion",
         "The Westminster Larger Catechism",
         "The Westminster Shorter Catechism",
-        "Wesleys Standard Sermons",
         "Westminster Confession of Faith"
       ],
       "tags": {
-        "angels": 40,
-        "baptism": 74,
+        "angels": 65,
+        "baptism": 79,
         "christology": 24,
-        "church": 396,
-        "creation": 25,
-        "eschatology": 44,
+        "church": 431,
+        "creation": 43,
+        "eschatology": 49,
         "eucharist": 23,
-        "faith": 332,
-        "grace": 282,
-        "holy-spirit": 71,
-        "incarnation": 16,
-        "last-judgment": 108,
-        "prayer": 133,
-        "sacraments": 151,
-        "salvation": 173,
-        "sanctification": 24,
-        "scripture": 157,
-        "sin": 383,
-        "trinity": 28,
-        "worship": 89,
-        "justification": 83
+        "faith": 384,
+        "grace": 308,
+        "holy-spirit": 77,
+        "incarnation": 17,
+        "last-judgment": 129,
+        "prayer": 143,
+        "sacraments": 153,
+        "salvation": 187,
+        "sanctification": 28,
+        "scripture": 196,
+        "sin": 447,
+        "trinity": 30,
+        "worship": 99,
+        "justification": 92
       },
       "traditions": [
         "Anglican",
@@ -2773,19 +2789,34 @@
     },
     "tradition-methodist": {
       "name": "Methodist & Wesleyan",
-      "authors": [],
+      "authors": [
+        "John Wesley"
+      ],
       "titles": [
         "A Plain Account of the People Called Methodists (Wesley)",
-        "Wesleys Standard Sermons"
+        "Sermons on Several Occasions"
       ],
       "tags": {
+        "angels": 25,
+        "baptism": 5,
         "christology": 7,
-        "church": 10,
-        "faith": 1,
-        "grace": 4,
-        "holy-spirit": 3,
-        "sacraments": 1,
-        "salvation": 16
+        "church": 45,
+        "creation": 18,
+        "eschatology": 5,
+        "faith": 53,
+        "grace": 30,
+        "holy-spirit": 9,
+        "incarnation": 1,
+        "justification": 9,
+        "last-judgment": 21,
+        "prayer": 10,
+        "sacraments": 3,
+        "salvation": 30,
+        "sanctification": 4,
+        "scripture": 39,
+        "sin": 64,
+        "trinity": 2,
+        "worship": 10
       },
       "traditions": [
         "Methodist"
