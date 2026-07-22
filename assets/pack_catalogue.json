@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 7,
+  "corpusVersion": 8,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -899,6 +899,32 @@
         "trinity": 1
       }
     },
+    "f-baptist": {
+      "authors": [],
+      "titles": [
+        "The Second London Baptist Confession of Faith"
+      ],
+      "tags": {
+        "angels": 7,
+        "baptism": 8,
+        "church": 28,
+        "creation": 6,
+        "eschatology": 7,
+        "faith": 31,
+        "grace": 43,
+        "holy-spirit": 18,
+        "incarnation": 1,
+        "justification": 7,
+        "last-judgment": 7,
+        "prayer": 7,
+        "salvation": 24,
+        "sanctification": 4,
+        "scripture": 16,
+        "sin": 38,
+        "trinity": 4,
+        "worship": 16
+      }
+    },
     "f-methodist": {
       "authors": [],
       "titles": [
@@ -1020,6 +1046,7 @@
         "The Interior Castle (Teresa of Avila)",
         "The Orthodox Confession of Faith (Peter Mogila)",
         "The Philokalia Selections",
+        "The Second London Baptist Confession of Faith",
         "The Seven Ecumenical Councils",
         "The Smalcald Articles",
         "The Spiritual Exercises (Ignatius)",
@@ -1030,27 +1057,27 @@
         "Westminster Confession of Faith"
       ],
       "tags": {
-        "angels": 33,
-        "baptism": 66,
+        "angels": 40,
+        "baptism": 74,
         "christology": 24,
-        "church": 368,
-        "creation": 19,
-        "eschatology": 37,
+        "church": 396,
+        "creation": 25,
+        "eschatology": 44,
         "eucharist": 23,
-        "faith": 301,
-        "grace": 239,
-        "holy-spirit": 53,
-        "incarnation": 15,
-        "last-judgment": 101,
-        "prayer": 126,
+        "faith": 332,
+        "grace": 282,
+        "holy-spirit": 71,
+        "incarnation": 16,
+        "last-judgment": 108,
+        "prayer": 133,
         "sacraments": 151,
-        "salvation": 149,
-        "sanctification": 20,
-        "scripture": 141,
-        "sin": 345,
-        "trinity": 24,
-        "worship": 73,
-        "justification": 76
+        "salvation": 173,
+        "sanctification": 24,
+        "scripture": 157,
+        "sin": 383,
+        "trinity": 28,
+        "worship": 89,
+        "justification": 83
       },
       "fragments": [
         "f-ecumenical",
@@ -1058,6 +1085,7 @@
         "f-reformed",
         "f-catholic",
         "f-anglican",
+        "f-baptist",
         "f-methodist",
         "f-orthodox"
       ]
@@ -2481,6 +2509,36 @@
       },
       "fragments": [
         "f-anglican"
+      ]
+    },
+    "tradition-baptist": {
+      "name": "Baptist",
+      "authors": [],
+      "titles": [
+        "The Second London Baptist Confession of Faith"
+      ],
+      "tags": {
+        "angels": 7,
+        "baptism": 8,
+        "church": 28,
+        "creation": 6,
+        "eschatology": 7,
+        "faith": 31,
+        "grace": 43,
+        "holy-spirit": 18,
+        "incarnation": 1,
+        "justification": 7,
+        "last-judgment": 7,
+        "prayer": 7,
+        "salvation": 24,
+        "sanctification": 4,
+        "scripture": 16,
+        "sin": 38,
+        "trinity": 4,
+        "worship": 16
+      },
+      "fragments": [
+        "f-baptist"
       ]
     },
     "tradition-orthodox": {

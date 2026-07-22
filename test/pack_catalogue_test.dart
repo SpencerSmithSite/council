@@ -148,6 +148,57 @@ void main() {
       expect(suggestions.first.packId, 'author-augustine');
     });
   });
+
+  /// The Baptist tradition had a database row and no text in it, so a question
+  /// about believer's baptism was answered — fluently, with citations — out of
+  /// traditions that reject the position. Nothing in the app could report that,
+  /// because the coverage notice can only offer a pack that exists.
+  ///
+  /// This asserts the pack exists and is reachable, which is the part a passing
+  /// build would otherwise say nothing about: a source in no fragment is
+  /// downloadable by nobody.
+  group('the Baptist tradition is reachable', () {
+    test('a Baptist pack is published and carries the confession', () {
+      final pack = catalogue.packs['tradition-baptist'];
+      expect(pack, isNotNull,
+          reason: 'a tradition with sources but no collection cannot be '
+              'installed by anyone');
+      expect(pack!.fragments, isNotEmpty);
+      expect(
+        pack.titles.any((t) => t.contains('Second London Baptist')),
+        isTrue,
+        reason: 'the pack should name what is actually in it: ${pack.titles}',
+      );
+    });
+
+    test('the confession is in the essential creeds pack too', () {
+      // Collections overlap on purpose. Someone taking the smallest set that
+      // can compare two traditions should not thereby get every tradition
+      // except this one.
+      expect(
+        catalogue.packs['creeds-and-confessions']!.titles
+            .any((t) => t.contains('Second London Baptist')),
+        isTrue,
+      );
+    });
+
+    test('asking about it with nothing installed offers the pack', () {
+      final ids = suggest('What does the Second London Baptist Confession '
+              'teach about baptism?')
+          .map((s) => s.packId);
+      expect(ids, contains(anyOf('tradition-baptist', 'creeds-and-confessions')),
+          reason: 'the question names a work that is not installed');
+    });
+
+    test('once it is installed, it is not offered again', () {
+      final installed = fragmentsOf(['tradition-baptist']);
+      final ids = suggest(
+        'What does the Second London Baptist Confession teach about baptism?',
+        installed: installed,
+      ).map((s) => s.packId);
+      expect(ids, isNot(contains('tradition-baptist')));
+    });
+  });
 }
 
 /// Whether the notice earns its place, rather than firing on everything
@@ -205,4 +256,5 @@ void _restraint(
       );
     }
   });
+
 }

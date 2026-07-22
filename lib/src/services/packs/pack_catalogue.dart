@@ -136,6 +136,51 @@ class PackCatalogue {
     return pattern.hasMatch(haystack);
   }
 
+  /// Words that carry no identifying weight in a title, and which nobody is
+  /// consistent about when naming one.
+  static const _filler = {
+    'the', 'of', 'a', 'an', 'and', 'on', 'in', 'to', 'for', 'upon',
+  };
+
+  static List<String> _significant(String text) => text
+      .toLowerCase()
+      .split(RegExp(r'[^a-z0-9]+'))
+      .where((w) => w.length > 2 && !_filler.contains(w))
+      .toList();
+
+  /// Whether [question] names [title], allowing for the fact that nobody says
+  /// a document's full name.
+  ///
+  /// Requiring the whole title verbatim looked strict-but-safe and was simply
+  /// broken: "the Second London Baptist Confession" does not contain "of
+  /// Faith", so the confession was never matched, and the same holds for every
+  /// anonymous confession in the corpus — which is most of them. Those are
+  /// precisely the works with no author to match on instead, so nothing
+  /// caught them.
+  ///
+  /// Three consecutive significant words is the bar. It is specific enough
+  /// that no ordinary question stumbles into it — "the doctrine of original
+  /// sin" shares no such run with any title here — and loose enough to catch
+  /// the short forms people actually use.
+  static bool _namesWork(String question, String title) {
+    final wanted = _significant(title);
+    if (wanted.length < 3) return false;
+    final asked = _significant(question);
+    if (asked.length < 3) return false;
+
+    for (var start = 0; start + 3 <= wanted.length; start++) {
+      final run = wanted.sublist(start, start + 3);
+      for (var at = 0; at + 3 <= asked.length; at++) {
+        if (asked[at] == run[0] &&
+            asked[at + 1] == run[1] &&
+            asked[at + 2] == run[2]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /// How much of everything written on a subject must be missing before the
   /// reader is told about it.
   ///
@@ -206,7 +251,7 @@ class PackCatalogue {
 
       final title = contents.titles
           .where((t) => !haveTitles.contains(t))
-          .where((t) => t.length > 12 && _mentions(question, t))
+          .where((t) => _namesWork(question, t))
           .firstOrNull;
       if (title != null) {
         suggestions.add(PackSuggestion(
