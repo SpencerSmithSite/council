@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/glass.dart';
 import 'package:provider/provider.dart';
 
 import '../services/packs/pack_manifest.dart';
@@ -37,6 +38,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
       body: RefreshIndicator(
         onRefresh: packs.refresh,
         child: ListView(
+          // Clear the translucent tab bar the body runs behind on Apple.
+          padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
           children: [
             if (packs.error != null)
               Padding(
@@ -213,9 +216,9 @@ class _PackTile extends StatelessWidget {
   /// Removing is destructive and re-downloading costs the user data, so it is
   /// confirmed rather than immediate.
   Future<void> _confirmRemove(BuildContext context, PackProvider packs) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAdaptiveDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: Text('Remove ${pack.name}?'),
         content: const Text(
           'Anything also included in another collection you have downloaded '
@@ -226,8 +229,11 @@ class _PackTile extends StatelessWidget {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Remove'),
           ),
         ],

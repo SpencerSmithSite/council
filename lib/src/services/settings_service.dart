@@ -1,27 +1,36 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
+  // The pre-theme-catalogue key. Read only for migration now — a user who had
+  // set Dark on/off before named themes existed keeps that preference.
   static const String _darkModeKey = 'dark_mode';
+  static const String _themeChoiceKey = 'theme_choice';
   static const String _fontSizeKey = 'font_size';
   static const String _showCitationsKey = 'show_citations';
-  
+
   Future<SharedPreferences> get _prefs async => await SharedPreferences.getInstance();
-  
-  /// Get dark mode preference (null = system default)
-  Future<bool?> getDarkMode() async {
+
+  /// The stored theme choice as its enum name, or null if never set.
+  ///
+  /// Falls back to the legacy `dark_mode` bool so existing installs keep the
+  /// appearance they chose: true → 'dark', false → 'light', absent → null
+  /// (which the provider reads as System).
+  Future<String?> getThemeChoice() async {
     final prefs = await _prefs;
-    if (!prefs.containsKey(_darkModeKey)) return null;
-    return prefs.getBool(_darkModeKey);
-  }
-  
-  /// Set dark mode preference
-  Future<void> setDarkMode(bool? enabled) async {
-    final prefs = await _prefs;
-    if (enabled == null) {
-      await prefs.remove(_darkModeKey);
-    } else {
-      await prefs.setBool(_darkModeKey, enabled);
+    final stored = prefs.getString(_themeChoiceKey);
+    if (stored != null) return stored;
+    if (prefs.containsKey(_darkModeKey)) {
+      return (prefs.getBool(_darkModeKey) ?? false) ? 'dark' : 'light';
     }
+    return null;
+  }
+
+  Future<void> setThemeChoice(String name) async {
+    final prefs = await _prefs;
+    await prefs.setString(_themeChoiceKey, name);
+    // The legacy key can only mislead a future migration now that the string
+    // key is authoritative.
+    await prefs.remove(_darkModeKey);
   }
   
   /// Get font size multiplier (1.0 = default)
@@ -83,6 +92,7 @@ class SettingsService {
   Future<void> clearAll() async {
     final prefs = await _prefs;
     await prefs.remove(_darkModeKey);
+    await prefs.remove(_themeChoiceKey);
     await prefs.remove(_fontSizeKey);
     await prefs.remove(_showCitationsKey);
   }

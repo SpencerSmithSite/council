@@ -1371,12 +1371,64 @@ text, where translucency costs legibility for nothing.
 
 ### Still to do
 
-- [ ] **The widgets themselves are still Material.** Typography, transitions
-  and chrome are adapted; `NavigationBar`, `ListTile`, `Card` and the rest are
-  not. Proper adoption means Cupertino equivalents on Apple targets, and is the
-  larger half of this job.
+- [x] **The widgets themselves are still Material.** Substantially addressed
+  2026-07-22 in Phase 25 (the theme catalogue). Apple targets now get system
+  colours, inset-grouped tables in place of stacked cards, hairline separators,
+  a tab bar with no Material selection pill, and adaptive controls that render
+  the real Cupertino switch, slider and alerts. Verified on the iOS 27 simulator
+  in light, dark and Catppuccin. What remains is genuinely optional polish —
+  large collapsing navigation titles, a back-chevron-plus-label nav bar, and an
+  iPad/macOS sidebar layout — none of which the current screens read as missing.
 - [ ] Revisit when Flutter's standalone Cupertino package ships with Liquid
   Glass support, and replace the approximation with whatever it provides.
+
+## Phase 25 — Theme catalogue and Apple-native chrome (2026-07-22)
+
+The app was Material 3 with a purple seed on every platform, which on an iPhone
+read as an Android app that happened to run on iOS. Two things changed together:
+a theme the user can choose, and a platform look the app commits to.
+
+### The theme model
+
+`AppThemeChoice` — System, Light, Dark, Catppuccin Mocha — is deliberately
+*not* one hard-coded scheme per name. The platform-following choices resolve to
+the device's own appearance: Apple system colours on iOS and macOS, Fluent on
+Windows and Linux, Material 3 baseline on Android. "Light" therefore means "the
+standard light look for this device", which is what makes it feel native rather
+than themed. Catppuccin Mocha is the one fixed palette, identical everywhere,
+because a named community palette is the reason to pick it.
+
+`palette.dart` holds the raw colours behind an `AppPalette`, which pairs a
+`ColorScheme` with the two things `ColorScheme` cannot express and Apple needs:
+a grouped page background distinct from the cell colour (Apple's
+`systemGroupedBackground` vs `secondarySystemGroupedBackground` — grey page,
+white cells in light; black page, `#1C1C1E` cells in dark), and a real hairline
+separator colour. Getting that pair backwards — white page, grey cells — is the
+single commonest way a cross-platform app looks not-quite-iOS.
+
+`app_theme.dart` turns a palette into a `ThemeData` and is where the
+Apple-native styling lives, so screens keep using `Card`, `ListTile` and
+`Scaffold` and still look native. `InsetGroup` joins settings rows into one
+rounded section with text-inset hairlines under a grey uppercase header;
+controls are adaptive so the Cupertino switch, slider and alerts appear on
+Apple.
+
+### Decisions worth keeping
+
+* **The iOS switch is green, not the accent colour.** That is native: iOS
+  switches are system green regardless of tint, including under Catppuccin.
+  Matching the platform beats matching the palette here.
+* **`extendBody` bit back.** The new accent colours made an old latent bug
+  loud: the tab screens paint behind the translucent bar and reserved no bottom
+  inset, so an accent-filled button sat permanently under the glass.
+  `MediaQuery.padding.bottom` reads zero through the nested Scaffold, so the
+  inset is computed from the window via `appleTabBarInset`.
+* **Windows/Fluent and Android/Material palettes are built but not visually
+  verified** — there is no Windows or Android target to run here. They are plain
+  `ColorScheme` mappings and compile; the risk is cosmetic, not structural.
+* **Dynamic colour on Android** (reading the wallpaper palette, the truly-native
+  step) is deliberately deferred: it needs a platform channel the app does not
+  yet have, and Apple was the stated priority.
 ### The adoption deadline, and why it is already handled
 
 Adoption is not required today: an app may build against the iOS 26 SDK and set

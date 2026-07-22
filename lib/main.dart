@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
-import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +15,7 @@ import 'src/screens/read_screen.dart';
 import 'src/screens/library_screen.dart';
 import 'src/screens/settings_screen.dart';
 import 'src/screens/onboarding_screen.dart';
+import 'src/theme/app_theme.dart';
 import 'src/theme/glass.dart';
 
 void main() async {
@@ -88,10 +87,12 @@ class TheologyApp extends StatelessWidget {
         ChangeNotifierProvider<PackProvider>.value(value: packs),
       ],
       child: Consumer<SettingsProvider>(
-        builder: (context, settings, _) => MaterialApp(
+        builder: (context, settings, _) {
+          final themes = resolveThemes(settings.themeChoice);
+          return MaterialApp(
           title: 'Council',
-          theme: _theme(Brightness.light),
-          darkTheme: _theme(Brightness.dark),
+          theme: themes.light,
+          darkTheme: themes.dark,
           themeMode: settings.themeMode,
           // Apply the font-size preference app-wide rather than per-screen.
           builder: (context, child) {
@@ -109,59 +110,11 @@ class TheologyApp extends StatelessWidget {
           home: settings.hasOnboarded
               ? const MainScreen()
               : const OnboardingScreen(),
-        ),
+          );
+        },
       ),
     );
   }
-}
-
-/// One theme, adapted where the platform expects something different.
-///
-/// The app was Material 3 everywhere, which on a Mac reads as an Android app
-/// in a Mac window. Two changes carry most of the difference without a second
-/// design system: Apple's system typography, and Apple's page transitions —
-/// the horizontal push with an interactive back-swipe, rather than Material's
-/// vertical fade.
-ThemeData _theme(Brightness brightness) {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: Colors.deepPurple,
-    brightness: brightness,
-  );
-
-  return ThemeData(
-    colorScheme: scheme,
-    useMaterial3: true,
-    // Resolves to SF on Apple platforms and Roboto elsewhere, rather than
-    // shipping Roboto to a Mac.
-    typography: Typography.material2021(platform: defaultTargetPlatform),
-    pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.android: ZoomPageTransitionsBuilder(),
-        TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-        TargetPlatform.linux: ZoomPageTransitionsBuilder(),
-      },
-    ),
-    // Chrome carries the glass, so the widgets underneath must not paint their
-    // own opaque backgrounds over it.
-    appBarTheme: isApplePlatform
-        ? const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            centerTitle: true,
-          )
-        : null,
-    navigationBarTheme: isApplePlatform
-        ? const NavigationBarThemeData(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-          )
-        : null,
-  );
 }
 
 class MainScreen extends StatefulWidget {

@@ -221,3 +221,26 @@ bool glassIsAppropriate(BuildContext context) {
 /// Apple platforms, resolved once. `Platform` is unavailable on web, which
 /// this app does not target.
 final bool isApplePlatform = Platform.isIOS || Platform.isMacOS;
+
+/// The default height of a Material [NavigationBar]'s content, before any
+/// safe-area inset.
+const double _navBarHeight = 80;
+
+/// How far the content of a tab screen must be inset at the bottom to clear the
+/// glass tab bar it runs behind.
+///
+/// On Apple the four tab screens set `extendBody`, so their scroll views paint
+/// behind the translucent bar — which is what gives the glass something to
+/// blur, and is wrong for the *last* row, which would otherwise sit under the
+/// bar permanently instead of scrolling into the clear.
+///
+/// The obvious `MediaQuery.of(context).padding.bottom` does not work here: each
+/// tab screen has its own [Scaffold], and the outer Scaffold's extended padding
+/// is consumed by the inner one before a screen's `build` can read it. Reading
+/// the window directly sidesteps the nesting and returns the true home-indicator
+/// inset, to which the bar's own height is added.
+double appleTabBarInset(BuildContext context) {
+  if (!isApplePlatform) return 0;
+  final safeBottom = MediaQueryData.fromView(View.of(context)).padding.bottom;
+  return _navBarHeight + safeBottom;
+}
