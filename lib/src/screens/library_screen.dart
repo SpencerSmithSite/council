@@ -6,10 +6,11 @@ import '../services/packs/pack_provider.dart';
 
 /// Add and remove bodies of source material.
 ///
-/// The app ships the creeds, councils and confessions — the material that
-/// answers "what does this tradition actually teach" — and everything else is
-/// downloaded on request. That keeps the install at 2.6 MB of content instead
-/// of 54 MB, most of which any given reader never opens.
+/// The app ships the King James Bible and nothing else. Scripture is what every
+/// tradition here is arguing about, so an app without it starts every
+/// conversation missing the text under discussion — and it is the one body of
+/// material that makes the app useful before anything has been downloaded.
+/// Everything else is chosen.
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
@@ -50,6 +51,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 padding: EdgeInsets.all(32),
                 child: Center(child: CircularProgressIndicator()),
               ),
+            const _BundledNotice(),
             if (manifest != null)
               for (final group in _grouped(manifest.collections)) ...[
                 Padding(
@@ -67,6 +69,42 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// What ships with the app.
+///
+/// Stated rather than assumed: a reader looking at a library of things to
+/// download should be able to see what they already have without working it
+/// out from the absence of a download button.
+class _BundledNotice extends StatelessWidget {
+  const _BundledNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.menu_book_outlined, size: 18,
+              color: scheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'The King James Bible is included with the app and is always '
+              'available offline.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
       ),
     );
   }

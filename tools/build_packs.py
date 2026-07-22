@@ -60,7 +60,7 @@ DIST = ROOT / "dist" / "packs"
 # Must match DatabaseService.corpusVersion. The app refuses a pack whose
 # corpusVersion differs from its own, because ids are only guaranteed disjoint
 # within a single build.
-CORPUS_VERSION = 5
+CORPUS_VERSION = 6
 
 # Reference tables are small, shared, and copied whole into every pack, so that
 # installing a pack cannot leave a source pointing at a tradition the app has
