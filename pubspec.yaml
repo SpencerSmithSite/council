@@ -41,6 +41,7 @@ dependencies:
   # Packs are stored outside the sqflite databases directory, which is not a
   # documented place to keep arbitrary files.
   path_provider: ^2.1.6
+  liquid_glass_widgets: ^0.22.1
 
 dev_dependencies:
   flutter_test:

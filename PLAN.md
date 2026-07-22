@@ -1406,3 +1406,51 @@ will look like a mistake rather than a choice.
 That is the same argument for adopting Cupertino properly that already exists
 above — with roughly 21 months of runway, and Flutter's standalone Cupertino
 package likely to land inside it.
+
+### Choosing a Liquid Glass implementation (2026-07-22)
+
+The requirement was stated precisely: look as native as possible now,
+**without** a second codebase, and be able to switch to Flutter's official
+solution the moment it ships. Those pull against each other, and the resolution
+is not the package choice — it is the seam.
+
+**The seam is the answer.** Every glass surface in the app goes through
+`GlassSurface` in `lib/src/theme/glass.dart`, and nothing else imports a glass
+package. Replacing the implementation — with Flutter's own, when the standalone
+Cupertino package ships support in late 2026 — is a change to one file. The
+`GlassBackend` enum makes that explicit rather than merely true: both
+implementations are kept compiling, so switching is a constant, and a
+performance problem on weak hardware is one edit away from being ruled out.
+
+**Native platform views were rejected**, despite being the only path to real
+fidelity. They are `UiKitView` — iOS-specific, requiring a per-platform
+fallback for everything else, which is the one thing the whole Flutter decision
+exists to avoid. They also have known z-order trouble with modals and sheets,
+which this app uses throughout.
+
+**Shader emulation was chosen**: `liquid_glass_widgets`. The research that
+prompted this recommended `cupertino_liquid_glass`; pub.dev says 10 likes and
+775 downloads, so the recommendation was checked rather than taken.
+
+| package | likes | downloads/30d | last published |
+|---|---|---|---|
+| `liquid_glass_widgets` | 193 | 37,032 | 5 days ago |
+| `liquid_glass_renderer` | 882 | 29,781 | Nov 2025 (stale) |
+| `adaptive_platform_ui` | 355 | 9,138 | 3 days ago |
+| `cupertino_native` | 340 | 3,745 | Sep 2025 (stale) |
+| `cupertino_liquid_glass` | 10 | 775 | — |
+
+**Decided on screen, not on paper.** The first tuning pass produced a nav bar
+indistinguishable from the plain `BackdropFilter` — which would have made the
+dependency pure cost, and nearly did. The cause was worth writing down: the
+package has two rendering paths, and on the Impeller path — which is every
+platform we draw glass on — `glowIntensity` is **ignored**, while `ambientRim`
+and `whitenStrength`, the two settings that actually produce an edge and a
+frost, both default to `0`. Turning down the obvious knob and leaving the
+effective ones at zero yields a blur with extra steps. Retuned, the bar has the
+Fresnel rim and vibrancy that distinguish glass from blur; verified in both
+light and dark mode, with content scrolled under the bar so there was something
+to refract.
+
+The general lesson is the one this project keeps relearning: the build passed,
+the tests passed, and the feature was doing nothing.
