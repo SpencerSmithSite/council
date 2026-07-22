@@ -99,6 +99,9 @@ class _ChatScreenState extends State<ChatScreen> {
           .map((p) => Citation(
                 contentId: p['id'] as int,
                 source: p['source_title'] as String? ?? 'Unknown source',
+                author: p['source_author'] as String?,
+                tradition: p['tradition'] as String?,
+                sourceUrl: p['source_url'] as String?,
               ))
           .toList();
 
@@ -143,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
     for (var i = 0; i < passages.length; i++) {
       final content = passages[i]['content'] as String? ?? '';
       context
-        ..writeln('[${i + 1}] ${sources[i].source}')
+        ..writeln('[${i + 1}] ${sources[i].promptLabel}')
         ..writeln(content.length > perPassage
             ? '${content.substring(0, perPassage).trimRight()}… [truncated]'
             : content)
@@ -444,6 +447,119 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
+/// One cited passage, showing which tradition it speaks for and whether its
+/// text can be traced to a published source.
+///
+/// Replaces a row of bare title chips. Those were honest about *what* was
+/// quoted and silent about everything that makes a quotation checkable — which
+/// tradition it represents, who wrote it, and whether anyone can go and read
+/// the original.
+class _CitationTile extends StatelessWidget {
+  final int index;
+  final Citation citation;
+
+  const _CitationTile({required this.index, required this.citation});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ContentDetailScreen(contentId: citation.contentId),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 22,
+              child: Text('[$index]',
+                  style: text.labelSmall?.copyWith(color: scheme.primary)),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(citation.source,
+                      style: text.bodySmall
+                          ?.copyWith(fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 2,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      if (citation.tradition != null &&
+                          citation.tradition!.isNotEmpty)
+                        _Badge(
+                          label: citation.tradition!,
+                          background: scheme.secondaryContainer,
+                          foreground: scheme.onSecondaryContainer,
+                        ),
+                      if (citation.author != null &&
+                          citation.author!.isNotEmpty)
+                        Text(citation.author!,
+                            style: text.labelSmall
+                                ?.copyWith(color: scheme.onSurfaceVariant)),
+                      if (!citation.isTraceable)
+                        // Said plainly rather than hidden. A reader comparing
+                        // traditions is entitled to know which quotations they
+                        // can go and check and which they cannot.
+                        _Badge(
+                          label: 'origin not recorded',
+                          background: scheme.errorContainer,
+                          foreground: scheme.onErrorContainer,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 16, color: scheme.outline),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String label;
+  final Color background;
+  final Color foreground;
+
+  const _Badge({
+    required this.label,
+    required this.background,
+    required this.foreground,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context)
+            .textTheme
+            .labelSmall
+            ?.copyWith(color: foreground, fontSize: 10),
+      ),
+    );
+  }
+}
+
 /// Tells the reader that the answer they just received was drawn from a
 /// fraction of the available sources.
 ///
@@ -572,35 +688,16 @@ class _MessageBubble extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelSmall,
               ),
               const SizedBox(height: 4),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: message.citations!.asMap().entries.map((entry) {
-                  final citation = entry.value;
-                  return ActionChip(
-                    avatar: CircleAvatar(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
-                      child: Text(
-                        '${entry.key + 1}',
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ),
-                    label: Text(
-                      citation.source,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    // Open the exact passage the model was given.
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            ContentDetailScreen(contentId: citation.contentId),
-                      ),
-                    ),
-                  );
-                }).toList(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: message.citations!
+                    .asMap()
+                    .entries
+                    .map((entry) => _CitationTile(
+                          index: entry.key + 1,
+                          citation: entry.value,
+                        ))
+                    .toList(),
               ),
             ],
           ],
@@ -612,11 +709,47 @@ class _MessageBubble extends StatelessWidget {
 
 /// A cited passage. Carries the content unit id so the citation can be opened
 /// — a citation the reader cannot follow is not much of a citation.
+/// A passage the answer was built from, described well enough to check.
+///
+/// Tradition is carried because it is the point of the app: an answer about
+/// baptism drawn entirely from Reformed confessions is a different claim from
+/// one spanning four traditions, and until now the citations looked identical
+/// either way.
+///
+/// [sourceUrl] is carried for the same reason in the other direction. The
+/// corpus holds both editions traced to a published text and legacy entries
+/// with no recorded origin, and showing them the same way asserts a confidence
+/// the second kind has not earned.
 class Citation {
   final int contentId;
   final String source;
+  final String? author;
+  final String? tradition;
+  final String? sourceUrl;
 
-  const Citation({required this.contentId, required this.source});
+  const Citation({
+    required this.contentId,
+    required this.source,
+    this.author,
+    this.tradition,
+    this.sourceUrl,
+  });
+
+  bool get isTraceable => sourceUrl != null && sourceUrl!.isNotEmpty;
+
+  /// How the passage is described to the model, as opposed to to the reader.
+  ///
+  /// The tradition is included deliberately: a comparative question is exactly
+  /// the case where the model needs to know which camp a passage speaks for,
+  /// and without it the answer attributes positions by guesswork.
+  String get promptLabel {
+    final parts = [
+      source,
+      if (author != null && author!.isNotEmpty) author!,
+      if (tradition != null && tradition!.isNotEmpty) '$tradition tradition',
+    ];
+    return parts.join(' — ');
+  }
 }
 
 class ChatMessage {
