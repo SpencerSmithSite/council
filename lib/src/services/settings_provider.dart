@@ -14,10 +14,14 @@ class SettingsProvider extends ChangeNotifier {
   double _fontScale = 1.0;
   bool _showCitations = true;
   bool _isLoaded = false;
+  bool _hasOnboarded = false;
 
   ThemeMode get themeMode => _themeMode;
   double get fontScale => _fontScale;
   bool get showCitations => _showCitations;
+
+  /// False on first launch, and only then.
+  bool get hasOnboarded => _hasOnboarded;
 
   /// False until the first load from disk completes.
   bool get isLoaded => _isLoaded;
@@ -25,11 +29,18 @@ class SettingsProvider extends ChangeNotifier {
   /// True when the theme follows the OS rather than an explicit override.
   bool get followsSystemTheme => _themeMode == ThemeMode.system;
 
+  Future<void> completeOnboarding() async {
+    _hasOnboarded = true;
+    await _settings.setHasOnboarded(true);
+    notifyListeners();
+  }
+
   Future<void> load() async {
     final darkMode = await _settings.getDarkMode();
     _themeMode = _boolToThemeMode(darkMode);
     _fontScale = await _settings.getFontSize();
     _showCitations = await _settings.getShowCitations();
+    _hasOnboarded = await _settings.getHasOnboarded();
     _isLoaded = true;
     notifyListeners();
   }

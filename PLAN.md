@@ -1153,3 +1153,69 @@ needs `LANG=en_US.UTF-8` on this machine.
   that prompted it.
 - [ ] More Bibles — ASV, WEB, Douay-Rheims — as downloadable Scripture
   collections alongside the bundled KJV.
+
+
+---
+
+## Phase 21 — Onboarding and a four-area app (2026-07-22)
+
+The navigation is left over from when the app shipped a full corpus and had no
+AI. It has five tabs — Home, Browse, Search, Chat, Bookmarks — where Home is a
+statistics dashboard, Chat is buried fourth, and Settings is at the bottom of
+Home's quick actions. The Library, which is now the screen a new user most
+needs, is three taps deep behind it.
+
+**The four areas.**
+
+1. **Chat** — the primary screen. Asking a question is what the app is for, and
+   it should be what opens.
+2. **Read** — the installed sources, read like an e-reader. A list of what you
+   have, open one, read it. This is where Browse, Search and Bookmarks belong;
+   they are three ways into the same act.
+3. **Library** — cards for each collection, searchable, with an overview of
+   what a pack contains before you spend the storage on it.
+4. **Settings** — theme, fonts, AI provider, everything else.
+
+### Done in this phase
+
+- [x] **Onboarding.** First run explains that the Bible is included and offers
+  the broad collections. Choices are collected before anything downloads, so
+  the total is visible up front rather than discovered one download at a time,
+  and the total sums the *union* of fragments — adding advertised collection
+  sizes would overstate it, often badly. Skipping is a real option: the app
+  works on Scripture alone.
+- [x] **Four-tab navigation** — Ask, Read, Library, Settings. Chat was the
+  fourth tab behind a statistics dashboard and is now what opens. Browse,
+  Search and Bookmarks have collapsed into Read.
+- [x] **A reader.** Sections open in sequence with next/previous and a contents
+  sheet, honouring the font-size setting. Previously a passage could only be
+  opened as an isolated card with no way to continue — wrong for any long work
+  and completely wrong for Scripture.
+- [x] Verified on the running app: first run → download → four tabs → shelf →
+  reading Trent at "1 of 104".
+
+### Still to do — recorded so it is not lost
+
+- [ ] **Chat as a real home.** Suggested questions, visible backend state, and
+  the coverage notice inline rather than as an afterthought.
+- [ ] **A genuine reading experience.** Continuous scroll within a work,
+  next/previous chapter, position memory, adjustable type. Today a passage
+  opens as an isolated card with no way to keep reading — for Scripture in
+  particular that is the wrong shape entirely.
+- [ ] **Scripture navigation.** 1,189 chapters need a book/chapter picker, not
+  a flat list.
+- [ ] **Library cards.** A pack overview worth reading before downloading:
+  authors, principal works, date range, what subjects it covers.
+- [ ] **Search inside the Read area**, scoped to what is installed, with
+  filters by tradition and author.
+- [ ] **Ask-and-install.** The coverage notice should offer the download inline
+  and then answer the question that prompted it, rather than linking away.
+- [ ] **Bookmarks and reading history** folded into Read rather than owning a
+  tab.
+- [ ] **Empty states** everywhere: with only Scripture installed, most screens
+  need to say what is missing and offer the fix.
+- [ ] **Reading position memory.** The reader always opens at section one; it
+  should reopen where you stopped.
+- [ ] **Trent's OCR needs cleaning.** Page furniture is embedded in the text —
+  "1 8 SESSION IV." mid-paragraph — which was invisible while passages were
+  only ever seen as search snippets and is obvious when read continuously.
