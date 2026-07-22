@@ -6,6 +6,7 @@ import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
 import '../theme/app_theme.dart';
 import '../theme/glass.dart';
+import '../theme/inset_group.dart';
 import 'ai_backend_screen.dart';
 import 'library_screen.dart';
 import '../services/packs/pack_provider.dart';
@@ -16,9 +17,9 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _resetAll(BuildContext context) async {
     final settings = context.read<SettingsProvider>();
 
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAdaptiveDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: const Text('Reset All Settings?'),
         content: const Text('This will reset all preferences to defaults.'),
         actions: [
@@ -26,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Reset'),
           ),
@@ -80,107 +81,114 @@ class SettingsScreen extends StatelessWidget {
         // permanently underneath it rather than scrolling into the clear.
         padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + appleTabBarInset(context)),
         children: [
-          // Theme
-          const _SectionTitle('Appearance'),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.palette_outlined),
-              title: const Text('Theme'),
-              subtitle: Text(settings.themeChoice.label),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _pickTheme(context, settings),
-            ),
+          InsetGroup(
+            header: 'Appearance',
+            children: [
+              ListTile(
+                leading: const Icon(Icons.palette_outlined),
+                title: const Text('Theme'),
+                trailing: _Value(settings.themeChoice.label),
+                onTap: () => _pickTheme(context, settings),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 22),
 
-          // Font Size
-          const _SectionTitle('Reading'),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.format_size),
-                  title: const Text('Font Size'),
-                  subtitle: Text('${settings.fontScale.toStringAsFixed(1)}x'),
+          InsetGroup(
+            header: 'Reading',
+            children: [
+              ListTile(
+                leading: const Icon(Icons.format_size),
+                title: const Text('Font Size'),
+                trailing: _Value('${settings.fontScale.toStringAsFixed(1)}x',
+                    chevron: false),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Slider.adaptive(
+                  value: settings.fontScale,
+                  min: 0.8,
+                  max: 1.5,
+                  divisions: 7,
+                  label: '${settings.fontScale.toStringAsFixed(1)}x',
+                  onChanged: settings.setFontScale,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Slider(
-                    value: settings.fontScale,
-                    min: 0.8,
-                    max: 1.5,
-                    divisions: 7,
-                    label: '${settings.fontScale.toStringAsFixed(1)}x',
-                    onChanged: settings.setFontScale,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 22),
+
+          InsetGroup(
+            header: 'Library',
+            children: [
+              ListTile(
+                leading: const Icon(Icons.library_books_outlined),
+                title: const Text('Manage content'),
+                subtitle: Text(
+                  context.watch<PackProvider>().installed.isEmpty
+                      ? 'Add the church fathers and other collections'
+                      : '${context.watch<PackProvider>().installed.length} '
+                          'collection(s) installed',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 22),
+
+          InsetGroup(
+            header: 'AI Chat',
+            footer: 'Citations name the source behind each answer, with its '
+                'tradition and provenance.',
+            children: [
+              ListTile(
+                leading: const Icon(Icons.psychology_outlined),
+                title: const Text('AI Backend'),
+                subtitle: Text(
+                    context.watch<InferenceProvider>().backend.displayName),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AiBackendScreen()),
+                ),
+              ),
+              SwitchListTile.adaptive(
+                secondary: const Icon(Icons.format_quote),
+                title: const Text('Show Citations'),
+                value: settings.showCitations,
+                onChanged: settings.setShowCitations,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 28),
+
+          // A destructive action, styled as iOS renders one: centred, in the
+          // error colour, on its own cell rather than as a filled button.
+          InsetGroup(
+            children: [
+              ListTile(
+                title: Text(
+                  'Reset All Settings',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Content packs
-          const _SectionTitle('Library'),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.library_books_outlined),
-              title: const Text('Manage content'),
-              subtitle: Text(
-                context.watch<PackProvider>().installed.isEmpty
-                    ? 'Add the church fathers and other collections'
-                    : '${context.watch<PackProvider>().installed.length} '
-                        'collection(s) installed',
+                onTap: () => _resetAll(context),
               ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const LibraryScreen()),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // AI backend
-          const _SectionTitle('AI Chat'),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.psychology_outlined),
-              title: const Text('AI Backend'),
-              subtitle: Text(context.watch<InferenceProvider>().backend.displayName),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AiBackendScreen()),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: SwitchListTile(
-              secondary: const Icon(Icons.format_quote),
-              title: const Text('Show Citations'),
-              subtitle: const Text('Display source citations in AI responses'),
-              value: settings.showCitations,
-              onChanged: settings.setShowCitations,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Reset
-          FilledButton.tonalIcon(
-            onPressed: () => _resetAll(context),
-            icon: const Icon(Icons.restart_alt),
-            label: const Text('Reset All Settings'),
+            ],
           ),
 
           const SizedBox(height: 32),
 
-          // About
           const Center(child: _AboutFooter()),
         ],
       ),
@@ -228,21 +236,33 @@ class _AboutFooter extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
+/// The trailing value on a settings row — a muted label, followed by a
+/// disclosure chevron when the row opens something. This is how iOS shows the
+/// current selection inline ("Theme … Dark ›") without a subtitle.
+class _Value extends StatelessWidget {
   final String text;
 
-  const _SectionTitle(this.text);
+  /// A disclosure chevron follows the value only when the row opens something.
+  final bool chevron;
+
+  const _Value(this.text, {this.chevron = true});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, bottom: 8),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-      ),
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(color: scheme.onSurfaceVariant),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (chevron)
+          Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant),
+      ],
     );
   }
 }
