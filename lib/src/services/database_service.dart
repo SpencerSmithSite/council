@@ -120,15 +120,7 @@ class DatabaseService {
     if (ftsTerms.isEmpty) return _searchLike(query, limit: limit);
 
     final results = await database.rawQuery('''
-      SELECT 
-        cu.id,
-        cu.title,
-        cu.content,
-        s.title as source_title,
-        s.date_composed,
-        t.name as tradition,
-        st.name as source_type,
-        fts.rank
+      SELECT $_contentUnitColumns, fts.rank
       FROM content_fts fts
       JOIN content_units cu ON fts.rowid = cu.id
       JOIN sources s ON cu.source_id = s.id
@@ -150,14 +142,7 @@ class DatabaseService {
   /// Fallback LIKE search
   Future<List<Map<String, dynamic>>> _searchLike(String query, {int limit = 20}) async {
     final results = await database.rawQuery('''
-      SELECT 
-        cu.id,
-        cu.title,
-        cu.content,
-        s.title as source_title,
-        s.date_composed,
-        t.name as tradition,
-        st.name as source_type
+      SELECT $_contentUnitColumns
       FROM content_units cu
       JOIN sources s ON cu.source_id = s.id
       LEFT JOIN traditions t ON s.tradition_id = t.id
@@ -174,15 +159,7 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> searchByTags(List<String> tags, {int limit = 20}) async {
     final placeholders = tags.map((_) => '?').join(',');
     final results = await database.rawQuery('''
-      SELECT 
-        cu.id,
-        cu.title,
-        cu.content,
-        s.title as source_title,
-        s.date_composed,
-        t.name as tradition,
-        st.name as source_type,
-        COUNT(ct.tag_id) as tag_matches
+      SELECT $_contentUnitColumns, COUNT(ct.tag_id) as tag_matches
       FROM content_units cu
       JOIN content_tags ct ON cu.id = ct.content_unit_id
       JOIN tags tg ON ct.tag_id = tg.id
@@ -566,11 +543,27 @@ class DatabaseService {
   ///
   /// Callers rely on `source_title` being present — bookmarks, recently viewed,
   /// and share text all record it.
+  /// Everything a citation needs to be checkable.
+  ///
+  /// Used by *every* retrieval path, which matters more than it looks.
+  /// `searchForRAG` fuses results from full-text search, tag search and the
+  /// vector index, and each of those used to hand-write its own column list.
+  /// The same passage therefore carried different metadata depending on how it
+  /// happened to be found — a citation showing its tradition or not according
+  /// to which engine surfaced it.
+  ///
+  /// `source_url` and `license` are here because a citation that names a work
+  /// without saying where the text came from cannot be verified — and this
+  /// corpus contains both properly-sourced editions and legacy stubs with no
+  /// recorded origin. Carrying the field is what lets the UI tell them apart
+  /// instead of presenting both with equal confidence.
   static const String _contentUnitColumns = '''
         cu.*,
         s.title as source_title,
         s.author as source_author,
         s.date_composed,
+        s.source_url,
+        s.license,
         t.name as tradition,
         st.name as source_type
   ''';

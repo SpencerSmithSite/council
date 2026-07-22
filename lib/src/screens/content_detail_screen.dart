@@ -186,6 +186,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
             ),
           ],
           
+          const SizedBox(height: 12),
+          _Provenance(content: content),
+
           const SizedBox(height: 16),
           
           // Content
@@ -360,6 +363,109 @@ Shared from Council app'''.trim();
       context,
       MaterialPageRoute(
         builder: (context) => ContentDetailScreen(contentId: contentId),
+      ),
+    );
+  }
+}
+
+/// Where this text came from.
+///
+/// The detail screen is where someone lands when they want to check a
+/// citation, so it is where the corpus has to be honest about what it knows.
+/// Most sources here name a published edition and a URL; a handful are legacy
+/// entries whose text is genuine but whose origin was never recorded, and
+/// those cannot be verified by anyone. Presenting both identically would
+/// quietly borrow the credibility of the first for the second.
+class _Provenance extends StatelessWidget {
+  final Map<String, dynamic> content;
+
+  const _Provenance({required this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
+    final source = content['source_title'] as String?;
+    final author = content['source_author'] as String?;
+    final tradition = content['tradition'] as String?;
+    final date = content['date_composed'] as String?;
+    final url = content['source_url'] as String?;
+    final licence = content['license'] as String?;
+    final traceable = url != null && url.isNotEmpty;
+
+    final facts = [
+      if (author != null && author.isNotEmpty) author,
+      if (date != null && date.isNotEmpty) date,
+      if (licence != null && licence.isNotEmpty) licence,
+    ].join(' · ');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (tradition != null && tradition.isNotEmpty) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(tradition,
+                      style: text.labelSmall
+                          ?.copyWith(color: scheme.onSecondaryContainer)),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Expanded(
+                child: Text(source ?? 'Unknown source',
+                    style:
+                        text.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+          if (facts.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(facts,
+                style:
+                    text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+          ],
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                traceable ? Icons.link : Icons.help_outline,
+                size: 14,
+                color: traceable ? scheme.onSurfaceVariant : scheme.error,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: traceable
+                    ? SelectableText(
+                        url,
+                        style: text.labelSmall
+                            ?.copyWith(color: scheme.onSurfaceVariant),
+                      )
+                    : Text(
+                        'The origin of this text was never recorded, so it '
+                        'cannot be checked against a published edition.',
+                        style:
+                            text.labelSmall?.copyWith(color: scheme.error),
+                      ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

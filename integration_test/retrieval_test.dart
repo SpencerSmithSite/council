@@ -116,6 +116,42 @@ void main() {
     });
   });
 
+  group('citations can be checked', () {
+    test('every result carries what a citation needs to show', () async {
+      final rows = await retrieve('What is baptism for?');
+      expect(rows, isNotEmpty);
+
+      for (final row in rows) {
+        expect(row['source_title'], isNotNull);
+        expect(row.containsKey('tradition'), isTrue);
+        // Present as a key even when null: the UI distinguishes "traced to a
+        // published edition" from "origin never recorded", and it can only do
+        // that if the column is selected at all. Dropping it from the query
+        // would silently turn every citation into an unverifiable one.
+        expect(row.containsKey('source_url'), isTrue);
+        expect(row.containsKey('license'), isTrue);
+      }
+    });
+
+    test('traceable and untraceable sources are distinguishable', () async {
+      final counts = await db.database.rawQuery('''
+        SELECT
+          SUM(CASE WHEN source_url IS NULL OR source_url = '' THEN 1 ELSE 0 END)
+            AS untraceable,
+          COUNT(*) AS total
+        FROM sources
+      ''');
+      final untraceable = counts.first['untraceable'] as int;
+      final total = counts.first['total'] as int;
+
+      expect(total, greaterThan(0));
+      // Not asserted to be zero: some legacy sources genuinely have no
+      // recorded origin, and the point of this work is that the app says so
+      // rather than hiding it. This guards the *ability to tell*.
+      expect(untraceable, lessThan(total));
+    });
+  });
+
   group('entity scoping', () {
     late EntityRecogniser recogniser;
 
