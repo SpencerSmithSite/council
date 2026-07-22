@@ -530,6 +530,21 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				/* Apple Silicon only.
+				 *
+				 * Flutter's framework-unpack step refuses the universal
+				 * FlutterMacOS binary under the macOS 27 / Xcode 26 beta
+				 * toolchain — it reports the binary "does not contain
+				 * architectures arm64 x86_64" while lipo on that same file
+				 * lists exactly those. Debug builds skip the check, which is
+				 * why only release was affected.
+				 *
+				 * Building a single slice sidesteps it. The cost is that
+				 * release artefacts no longer run on Intel Macs, which is an
+				 * accepted trade rather than an oversight.
+				 */
+				ARCHS = arm64;
+				EXCLUDED_ARCHS = x86_64;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -662,6 +677,21 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				/* Apple Silicon only.
+				 *
+				 * Flutter's framework-unpack step refuses the universal
+				 * FlutterMacOS binary under the macOS 27 / Xcode 26 beta
+				 * toolchain — it reports the binary "does not contain
+				 * architectures arm64 x86_64" while lipo on that same file
+				 * lists exactly those. Debug builds skip the check, which is
+				 * why only release was affected.
+				 *
+				 * Building a single slice sidesteps it. The cost is that
+				 * release artefacts no longer run on Intel Macs, which is an
+				 * accepted trade rather than an oversight.
+				 */
+				ARCHS = arm64;
+				EXCLUDED_ARCHS = x86_64;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;

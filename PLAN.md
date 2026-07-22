@@ -1194,6 +1194,22 @@ needs, is three taps deep behind it.
 - [x] Verified on the running app: first run → download → four tabs → shelf →
   reading Trent at "1 of 104".
 
+### Release builds fixed — Apple Silicon only
+
+Flutter's framework-unpack step refused the universal `FlutterMacOS` binary
+under the macOS 27 / Xcode 26 beta toolchain, reporting that it "does not
+contain architectures arm64 x86_64" while `lipo` on that same file listed
+exactly those. Debug builds skip the check, which is why only release was
+affected and why it went unnoticed for so long.
+
+`ARCHS = arm64` on the Release and Profile configurations sidesteps it.
+**Release artefacts no longer run on Intel Macs** — an accepted trade, decided
+rather than drifted into. Every framework in the built bundle is now a single
+arm64 slice; the app is 70 MB.
+
+Worth revisiting once the toolchain stabilises: the check is the bug, not the
+universal binary.
+
 ### Still to do — recorded so it is not lost
 
 - [ ] **Chat as a real home.** Suggested questions, visible backend state, and
