@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -30,6 +31,23 @@ class PackService {
   /// web target that was dropped.
   static const String defaultManifestUrl =
       'https://github.com/SpencerSmithSite/council/releases/latest/download/manifest.json';
+
+  /// How long to wait for the catalogue before calling it unreachable.
+  ///
+  /// Without this the request has no deadline at all, and a connection that
+  /// hangs rather than fails leaves the onboarding screen on a spinner
+  /// forever — no error, no retry, nothing but "Skip for now". Observed on the
+  /// iOS 27 simulator, where the request neither completed nor raised.
+  ///
+  /// The screen already knows how to say the catalogue is unreachable and
+  /// offer to try again. It simply never got the chance, because a hang is not
+  /// an error until something decides it is.
+  static const Duration networkTimeout = Duration(seconds: 20);
+
+  /// Longer, because this one covers a multi-megabyte body on a phone
+  /// connection. It bounds the *whole* transfer, so it has to accommodate the
+  /// largest fragment — 33.9 MB — over a slow link.
+  static const Duration downloadTimeout = Duration(minutes: 10);
 
   final Database db;
   final http.Client _client;
@@ -105,7 +123,15 @@ class PackService {
   }
 
   Future<PackManifest> fetchManifest() async {
-    final response = await _client.get(Uri.parse(manifestUrl));
+    final http.Response response;
+    try {
+      response = await _client
+          .get(Uri.parse(manifestUrl))
+          .timeout(networkTimeout);
+    } on TimeoutException {
+      throw const PackException(
+          'Could not reach the library catalogue: the connection timed out.');
+    }
     if (response.statusCode != 200) {
       throw PackException(
           'Could not reach the library catalogue (HTTP ${response.statusCode}).');
@@ -201,7 +227,16 @@ class PackService {
     void Function(int, int)? onProgress,
   ) async {
     final url = manifestUrl.replaceFirst('manifest.json', fragment.file);
-    final response = await _client.send(http.Request('GET', Uri.parse(url)));
+    final http.StreamedResponse response;
+    try {
+      response = await _client
+          .send(http.Request('GET', Uri.parse(url)))
+          .timeout(networkTimeout);
+    } on TimeoutException {
+      throw PackException(
+          'Could not start downloading ${fragment.id}: the connection '
+          'timed out.');
+    }
     if (response.statusCode != 200) {
       throw PackException('Download failed (HTTP ${response.statusCode}).');
     }
@@ -211,7 +246,10 @@ class PackService {
     final sink = destination.openWrite();
     var received = 0;
     try {
-      await for (final chunk in response.stream) {
+      // Bounded too. A connection that opens and then stalls mid-body would
+      // otherwise hang on "Downloading…" as indefinitely as the catalogue
+      // fetch used to hang on its spinner.
+      await for (final chunk in response.stream.timeout(downloadTimeout)) {
         sink.add(chunk);
         received += chunk.length;
         onProgress?.call(received, fragment.bytes);

@@ -469,7 +469,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				/* Flutter's framework-unpacking step refuses a binary that does
+				 * not contain "arm64 x86_64" while `lipo -info` on that same
+				 * binary reports exactly `x86_64 arm64`. The check disagrees with
+				 * the file it is reading, so no amount of rebuilding fixes it.
+				 *
+				 * Building a single slice sidesteps it, as it did for macOS. On
+				 * Apple Silicon the simulator is arm64 and every supported device
+				 * is arm64, so nothing reachable is lost — only the Intel
+				 * simulator, which this project already stopped supporting.
+				 */
+				ARCHS = arm64;
+				EXCLUDED_ARCHS = x86_64;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -599,7 +611,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				/* Flutter's framework-unpacking step refuses a binary that does
+				 * not contain "arm64 x86_64" while `lipo -info` on that same
+				 * binary reports exactly `x86_64 arm64`. The check disagrees with
+				 * the file it is reading, so no amount of rebuilding fixes it.
+				 *
+				 * Building a single slice sidesteps it, as it did for macOS. On
+				 * Apple Silicon the simulator is arm64 and every supported device
+				 * is arm64, so nothing reachable is lost — only the Intel
+				 * simulator, which this project already stopped supporting.
+				 */
+				ARCHS = arm64;
+				EXCLUDED_ARCHS = x86_64;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -650,7 +674,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				/* Flutter's framework-unpacking step refuses a binary that does
+				 * not contain "arm64 x86_64" while `lipo -info` on that same
+				 * binary reports exactly `x86_64 arm64`. The check disagrees with
+				 * the file it is reading, so no amount of rebuilding fixes it.
+				 *
+				 * Building a single slice sidesteps it, as it did for macOS. On
+				 * Apple Silicon the simulator is arm64 and every supported device
+				 * is arm64, so nothing reachable is lost — only the Intel
+				 * simulator, which this project already stopped supporting.
+				 */
+				ARCHS = arm64;
+				EXCLUDED_ARCHS = x86_64;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;

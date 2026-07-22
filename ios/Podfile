@@ -1,5 +1,7 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+# Xcode 27 builds for iOS 15.0 and up. Anything lower is rejected outright,
+# and the error names the pod rather than the cause, so this floor is set
+# explicitly rather than left to each plugin's own declaration.
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,5 +41,22 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # The same problem the macOS Podfile already solves, and it needs solving
+    # separately here. Plugins declare their own floors — the failing build
+    # reported targets of 9.0, 11.0 and 13.0 across the pods — and Xcode 27
+    # supports 15.0 upwards, so every one of them is an error. Setting
+    # `platform :ios` above fixes the pods CocoaPods generates from scratch;
+    # this fixes the ones that carry their own setting, including any added
+    # later.
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+
+      # Matched to the single-slice pin in Runner.xcodeproj. A pod that still
+      # built a fat binary would put back exactly the framework-unpacking
+      # failure that pin exists to avoid.
+      config.build_settings['ARCHS'] = 'arm64'
+      config.build_settings['EXCLUDED_ARCHS'] = 'x86_64'
+    end
   end
 end
