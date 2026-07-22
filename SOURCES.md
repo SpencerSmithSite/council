@@ -52,22 +52,26 @@ As of 2026-07-22:
 | early-church | 389 | 56.264 M |
 | catholic | 8 | 14.719 M |
 | scripture | 1 | 4.250 M |
+| methodist | 2 | 3.595 M |
 | ecumenical | 19 | 0.915 M |
 | lutheran | 4 | 0.792 M |
 | reformed | 8 | 0.284 M |
 | baptist | 1 | 0.083 M |
 | anglican | 1 | 0.040 M |
 | eastern-orthodox | 2 | 0.004 M |
-| methodist | 2 | 0.004 M |
 | oriental-orthodox | 0 | 0 |
 | pentecostal | 0 | 0 |
 
-**73% of the corpus is patristic**, down from 96% — Aquinas and the KJV are
-what moved it. Two traditions still have a database row and no content at all,
-and Eastern Orthodox and Methodist have entries small enough to be
-placeholders. Size is not the measure that matters here: Baptist is 0.1% of the
-corpus and closes a gap that would otherwise answer a question about baptism
-without a single Baptist voice in it.
+**70% of the corpus is patristic**, down from 96%. Aquinas, the KJV and Wesley
+are what moved it, and 80.9 M characters is not the interesting number in this
+table — the interesting one is that two traditions still have a row and nothing
+in it, and Eastern Orthodox is still a placeholder.
+
+Size is not the measure that matters. Baptist is 0.1% of the corpus and closes
+a gap that would otherwise answer a question about baptism without a single
+Baptist voice in it. Methodist went from 0.004 M to 3.595 M in one ingest, and
+what changed was not the volume but that the tradition now has its own
+doctrinal standard rather than a six-unit paraphrase of it.
 
 ## Archives
 
@@ -91,7 +95,7 @@ Checked and **not usable**:
 | quod.lib.umich.edu (EEBO) | 403 | Institutional access required |
 | gameo.org (Mennonite encyclopedia) | 403 | Blocks automated access; approach for permission |
 | anglican.net | no response | Dead or blocking |
-| wesley.nnu.edu | no response | Dead; the Wesley Center corpus has moved |
+| wesley.nnu.edu | no response | Dead. **Superseded by CCEL's Wesley shelf** — see the Methodist section |
 
 **Rights are verified per work, not per archive.** CCEL declares
 `Rights: Public Domain` in each text export's header, and checking it per file
@@ -183,6 +187,24 @@ largest Protestant families in the world.
 
 - **Explanatory Notes upon the New Testament** — the other half of the
   doctrinal standard, and still missing. Public domain.
+
+  **The replacement for the dead Wesley Center archive is CCEL**, whose Wesley
+  shelf was enumerated on 2026-07-22 rather than guessed at:
+
+  | path | work | status |
+  |---|---|---|
+  | `/ccel/wesley/sermons` | Sermons on Several Occasions | **ingested** |
+  | `/ccel/wesley/notes` | Explanatory Notes upon the New Testament | next |
+  | `/ccel/wesley/journal` | The Journal | |
+  | `/ccel/wesley/perfection` | A Plain Account of Christian Perfection | |
+  | `/ccel/wesley/hymn` | Hymns | |
+  | `/ccel/wesley/works` | Collected works | overlaps the above; check before use |
+
+  Note that `perfection` is *A Plain Account of Christian Perfection*, a
+  different work from the unprovenanced stub already in the corpus, which is
+  *A Plain Account of the People Called Methodists*. Ingesting one will not
+  replace the other, and assuming it would is how a corpus ends up with a
+  paraphrase sitting quietly beside a real edition.
 - **Wesley's Journal**; **Charles Wesley's hymns**, which carry as much
   Methodist doctrine as the prose.
 - **John Fletcher**, *Checks to Antinomianism*.
