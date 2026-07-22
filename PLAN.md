@@ -1096,3 +1096,60 @@ Adding a new way to browse now costs a few lines of config and no bytes.
   question that prompted it.
 - [ ] Denominational collections for traditions with no content yet (Baptist,
   Pentecostal, Oriental Orthodox) — blocked on the corpus, not the packaging.
+
+
+---
+
+## Phase 20 — Scripture, bundled (2026-07-22)
+
+The King James Version now ships **inside the app** rather than as a download:
+66 books, 1,189 chapters, 31,102 verses, 4.25 M characters. It is the text every
+tradition in this library is interpreting, and it is what makes the app useful
+on a plane before anything has been fetched.
+
+The bundled corpus is now **Scripture and nothing else** — 3.7 MB. Every
+tradition, era and author is a collection the reader chooses.
+
+- [x] Units are **chapters, not verses.** A verse averages 130 characters, too
+  small to embed meaningfully or to read as a citation; a chapter averages
+  3,600 and chunks like everything else. Verse numbers stay inline so a
+  citation remains locatable.
+- [x] Counts are **asserted, not reported** — 66/1189/31102. A parser that
+  drops a book still produces a plausible Bible, and plausible is the failure
+  this corpus keeps having to undo.
+- [x] Licence records the real position: public domain in the US, **perpetual
+  Crown copyright in the UK**. Shipping it is normal; unencumbered everywhere
+  it is not.
+- [x] The Library says what is already included, rather than leaving a reader
+  to infer it from a missing download button.
+
+### Three parser bugs, each of which produced a plausible Bible
+
+- **Verses do not reliably begin lines.** "…laid down to sleep; 3:4 That the
+  LORD called Samuel" — a line-anchored pattern found 24,995 of 31,102 verses
+  and folded the missing 6,107 into whichever verse preceded them. Every one
+  still readable, every one attributed wrongly.
+- **Samuel and Kings share heading text.** Each carries a two-line heading with
+  an older name, and "The First Book of the Kings" is *both* the subtitle of 1
+  Samuel and the title of 1 Kings. Name alone cannot disambiguate them;
+  position can.
+- **`Otherwise Called:` sits between those two lines**, which broke the
+  positional rule *and* was being swept into the text as scripture.
+
+### Also
+
+macOS builds had stopped working: plugins declare deployment targets of 10.14
+and 10.15 and current Xcode refuses anything below 12.0, failing at the Pods
+stage with an error naming the pod rather than the cause. Forced in the
+Podfile's `post_install`, which covers plugins added later too. CocoaPods also
+needs `LANG=en_US.UTF-8` on this machine.
+
+### Next
+
+- [ ] **Onboarding.** First run should guide the choice of collections. The app
+  now starts with Scripture alone, so this is what makes it useful.
+- [ ] **Ask-and-install.** The coverage notice names a collection and links to
+  the library; it should offer the download inline and then answer the question
+  that prompted it.
+- [ ] More Bibles — ASV, WEB, Douay-Rheims — as downloadable Scripture
+  collections alongside the bundled KJV.

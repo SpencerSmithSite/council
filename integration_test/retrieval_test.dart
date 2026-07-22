@@ -72,11 +72,11 @@ void main() {
   group('the corpus is what we think it is', () {
     test('opens and holds the expected shape', () async {
       final stats = await db.getStats();
-      // The core corpus is the creeds, councils and confessions; the fathers
-      // arrive as packs, so what "the expected shape" means now depends on
+      // The app now bundles Scripture and nothing else; every other tradition
+      // arrives as a collection. So "the expected shape" depends entirely on
       // whether they were installed.
-      expect(stats['sources'], greaterThan(fullCorpus ? 400 : 40));
-      expect(stats['content_units'], greaterThan(fullCorpus ? 18000 : 800));
+      expect(stats['sources'], greaterThan(fullCorpus ? 400 : 0));
+      expect(stats['content_units'], greaterThan(fullCorpus ? 18000 : 1000));
       expect(stats['traditions'], greaterThan(6));
     });
 
@@ -100,7 +100,7 @@ void main() {
       expect(rows, isNotEmpty);
       expect(traditionsIn(rows).length, greaterThan(1),
           reason: 'a comparison needs more than one tradition');
-    });
+    }, skip: needsPacks);
 
     test('draws on genuine Lutheran sources, not mislabelled ones', () async {
       // Every source previously labelled Lutheran was Eastern Orthodox or
@@ -115,7 +115,7 @@ void main() {
       expect(titles, contains('The Augsburg Confession'));
       expect(titles, isNot(contains('The Didache')));
       expect(titles, isNot(contains('The Philokalia Selections')));
-    });
+    }, skip: needsPacks);
   });
 
   group('citations can be checked', () {
@@ -173,7 +173,7 @@ void main() {
         isTrue,
         reason: 'a question naming Trent must return Trent',
       );
-    });
+    }, skip: needsPacks);
 
     test('scopes a question naming an author to their works', () async {
       final scope =

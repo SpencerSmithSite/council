@@ -1,6 +1,23 @@
 {
-  "corpusVersion": 5,
-  "core": {},
+  "corpusVersion": 6,
+  "core": {
+    "angels": 119,
+    "baptism": 17,
+    "church": 51,
+    "creation": 6,
+    "eschatology": 21,
+    "faith": 103,
+    "grace": 100,
+    "holy-spirit": 6,
+    "justification": 2,
+    "last-judgment": 246,
+    "prayer": 85,
+    "salvation": 109,
+    "sanctification": 4,
+    "scripture": 34,
+    "sin": 245,
+    "worship": 71
+  },
   "fragments": {
     "f-chrysostom": {
       "angels": 359,
