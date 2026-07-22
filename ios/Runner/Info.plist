@@ -7,7 +7,39 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Theology App</string>
+	<string>Council</string>
+	<!-- Shown in the system prompt the first time the app touches the local
+	     network. iOS asks once; if the user declines, connections fail with an
+	     ordinary timeout and no indication why, so the wording has to explain
+	     the trade rather than just request the permission. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Council needs local network access to reach Ollama running on another computer on your network, so your questions are answered without leaving your network. It is only used for the address you enter yourself.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Ollama serves plain HTTP. NSAllowsLocalNetworking permits cleartext
+		     to .local names and private addresses (10/8, 172.16/12, 192.168/16)
+		     without the blanket NSAllowsArbitraryLoads, which App Review treats
+		     as something to justify. -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<!-- Tailscale is not "local" by that definition: MagicDNS names end in
+		     .ts.net and its addresses sit in the 100.64/10 carrier-grade NAT
+		     range, neither of which NSAllowsLocalNetworking covers. Naming the
+		     domain keeps the exception to Tailscale rather than to everything.
+		     A raw 100.x address over http is still blocked — ATS exceptions
+		     match domains, not IP literals — so on iOS the MagicDNS name is
+		     the address that works. -->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>ts.net</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

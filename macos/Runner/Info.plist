@@ -24,6 +24,27 @@
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
+	<!-- macOS 15 applies the same local-network privacy prompt as iOS, so a
+	     Mac reaching an Ollama on another machine needs this too. Reaching one
+	     on *this* machine does not, which is why the omission went unnoticed:
+	     the developer's own setup is the one case that works without it. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Council needs local network access to reach Ollama running on another computer on your network, so your questions are answered without leaving your network. It is only used for the address you enter yourself.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>ts.net</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

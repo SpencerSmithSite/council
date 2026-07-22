@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Ollama serves plain HTTP, and Android has blocked cleartext by default
+    since API 28. The user supplies the host themselves — a LAN address, a
+    Tailscale name, a machine on a VPN — so there is no fixed domain list to
+    permit and the exception has to be a general one.
+
+    This is narrower than it looks. It permits cleartext; it does not cause it.
+    Every cloud provider URL in the app is a literal https:// constant, so
+    those connections are unaffected by this file. The only requests that can
+    travel in cleartext are ones to a host the user typed in themselves.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
