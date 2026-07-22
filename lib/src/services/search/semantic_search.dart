@@ -13,11 +13,22 @@ import 'vector_index.dart';
 /// load, search stays lexical rather than the app failing to start.
 class SemanticSearch {
   final QueryEncoder _encoder;
-  final VectorIndex _index;
+  final Database _db;
+  VectorIndex _index;
 
-  SemanticSearch._(this._encoder, this._index);
+  SemanticSearch._(this._encoder, this._db, this._index);
 
   int get vectorCount => _index.length;
+
+  /// Rebuild the in-memory index from the database.
+  ///
+  /// The index is a resident snapshot taken at startup, so content installed
+  /// afterwards is invisible to semantic search until this is called. That
+  /// failure is quiet in the worst way: lexical search finds the new text, so
+  /// the pack looks installed, while half of retrieval silently ignores it.
+  Future<void> reload() async {
+    _index = await VectorIndex.load(_db);
+  }
 
   /// Load the model and vector index, or return null if either fails.
   ///
@@ -28,7 +39,7 @@ class SemanticSearch {
     try {
       final encoder = await QueryEncoder.load();
       final index = await VectorIndex.load(db);
-      return SemanticSearch._(encoder, index);
+      return SemanticSearch._(encoder, db, index);
     } catch (error, stack) {
       debugPrint('Semantic search unavailable, falling back to lexical: $error');
       debugPrintStack(stackTrace: stack);

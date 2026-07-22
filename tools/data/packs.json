@@ -1,0 +1,36 @@
+{
+  "_comment": [
+    "Which sources ship in the app and which are downloaded on demand.",
+    "",
+    "Every source is assigned to exactly one pack. Anything no pack claims falls",
+    "into 'core', which is the bundled asset — so adding a source without",
+    "touching this file grows the app rather than silently disappearing.",
+    "",
+    "Boundaries are declared here rather than in code because the right split",
+    "depends on the corpus, and the corpus keeps changing. Re-splitting should",
+    "be an edit to this file and a rebuild, never a code change.",
+    "",
+    "Selection is by tradition slug and/or exact author name. A source matches a",
+    "pack if it matches any of that pack's criteria."
+  ],
+  "packs": [
+    {
+      "id": "fathers-augustine",
+      "name": "Augustine of Hippo",
+      "description": "The complete Augustine: the Confessions, City of God, the anti-Pelagian and anti-Donatist works, the homilies and letters.",
+      "authors": ["Augustine of Hippo"]
+    },
+    {
+      "id": "fathers-chrysostom",
+      "name": "John Chrysostom",
+      "description": "The homilies and treatises of Chrysostom, including the complete homily series on Matthew, John, Romans and the Pauline epistles.",
+      "authors": ["John Chrysostom"]
+    },
+    {
+      "id": "fathers",
+      "name": "Church Fathers",
+      "description": "The remaining ante-Nicene and post-Nicene fathers: Tertullian, Origen, Athanasius, the Cappadocians, Ambrose, Jerome, Cyprian, Irenaeus and many more.",
+      "traditions": ["early-church"]
+    }
+  ]
+}

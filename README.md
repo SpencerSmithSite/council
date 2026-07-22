@@ -6,7 +6,23 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with a bundled SQLite database of **523 sources** and **4,918 content units** spanning 12 Christian traditions:
+Council ships with the creeds, councils, catechisms and confessions — **44 works, 902 passages** — and everything else is downloaded on request. That keeps the install small while the full library runs to 437 works and 58.8 million characters.
+
+Bundled:
+
+- Ecumenical creeds and councils (Nicaea, Chalcedon, the Seven Councils, Trent)
+- Confessions and catechisms (Augsburg, Westminster, Heidelberg, Dort, the Thirty-Nine Articles)
+- Lutheran, Reformed, Catholic, Anglican, Orthodox and Methodist standards
+
+Downloadable from **Settings → Library**:
+
+| Collection | Works | Download |
+|---|---|---|
+| Augustine of Hippo | 44 | 4.6 MB |
+| John Chrysostom | 36 | 6.3 MB |
+| Church Fathers | 313 | 22.8 MB |
+
+The full library spans:
 
 - Early Church Fathers (Athanasius, Augustine, Chrysostom, Origen, and more)
 - Medieval scholastics (Aquinas, Anselm, Boethius)
@@ -19,7 +35,7 @@ Council ships with a bundled SQLite database of **523 sources** and **4,918 cont
 - Modern theology (Barth, C.S. Lewis, Schaeffer, Tozer, Packer, Sproul)
 - Biblical texts (Sermon on the Mount, Gospel of John, Hebrews, James, the Parables)
 
-The **Chat** screen uses RAG (retrieval-augmented generation): your question is matched against the database with FTS5 full-text search, the most relevant passages are retrieved, and a local Ollama model generates an answer with citations.
+The **Chat** screen uses RAG (retrieval-augmented generation): your question is matched against the library by full-text search *and* semantic search over on-device embeddings, the results are fused, and the passages are passed to whichever model you have configured — or shown on their own, if you would rather not use AI at all.
 
 ## Running the app
 

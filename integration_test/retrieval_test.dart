@@ -3,6 +3,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:council/src/services/database_service.dart';
 import 'package:council/src/services/search/entity_recogniser.dart';
 import 'package:council/src/services/search/semantic_search.dart';
+import 'package:council/src/services/packs/pack_service.dart';
 
 /// Retrieval, exercised against the real bundled corpus on a real device.
 ///
@@ -12,18 +13,49 @@ import 'package:council/src/services/search/semantic_search.dart';
 /// so a Dart-side regression could pass every test and every probe while the
 /// shipped app returned the wrong passages.
 ///
-/// These tests close that gap. They are slow (first run decompresses ~120 MB)
-/// and need a device, so they live outside the unit suite:
+/// These tests close that gap. They are slow and need a device, so they live
+/// outside the unit suite.
 ///
-///     flutter test integration_test/retrieval_test.dart -d macos
+/// Since the corpus was split into a bundled core and downloadable packs, most
+/// of the patristic material is no longer present by default — so this suite
+/// installs the packs first when told where to find them. Without them it
+/// still runs, over the core corpus, and the tests that need the fathers say
+/// plainly that they were skipped rather than quietly passing:
+///
+///     python3 tools/build_packs.py --write
+///     (cd dist/packs && python3 -m http.server 8765 &)
+///     flutter test integration_test/retrieval_test.dart -d macos \
+///       --dart-define=PACKS_URL=http://127.0.0.1:8765/manifest.json
+/// Where to fetch content packs from, if this run should exercise the full
+/// library rather than the bundled core. Empty means core only.
+const _packsUrl = String.fromEnvironment('PACKS_URL', defaultValue: '');
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   late DatabaseService db;
 
+  final fullCorpus = _packsUrl.isNotEmpty;
+  final needsPacks = fullCorpus
+      ? null
+      : 'needs the content packs — see the note at the top of this file';
+
   setUpAll(() async {
     db = DatabaseService();
     await db.initialize();
+    if (!fullCorpus) return;
+
+    final packs = PackService(db.database, manifestUrl: _packsUrl);
+    final manifest = await packs.fetchManifest();
+    for (final pack in manifest.packs) {
+      await packs.install(
+        pack,
+        corpusVersion: DatabaseService.corpusVersion,
+        manifestCorpusVersion: manifest.corpusVersion,
+      );
+    }
+    await db.semantic?.reload();
+    packs.dispose();
   });
 
   Future<List<Map<String, dynamic>>> retrieve(String question) =>
@@ -38,8 +70,11 @@ void main() {
   group('the corpus is what we think it is', () {
     test('opens and holds the expected shape', () async {
       final stats = await db.getStats();
-      expect(stats['sources'], greaterThan(400));
-      expect(stats['content_units'], greaterThan(18000));
+      // The core corpus is the creeds, councils and confessions; the fathers
+      // arrive as packs, so what "the expected shape" means now depends on
+      // whether they were installed.
+      expect(stats['sources'], greaterThan(fullCorpus ? 400 : 40));
+      expect(stats['content_units'], greaterThan(fullCorpus ? 18000 : 800));
       expect(stats['traditions'], greaterThan(6));
     });
 
@@ -110,7 +145,7 @@ void main() {
 
       final rows = await retrieve('What did Augustine say about grace?');
       expect(rows, isNotEmpty);
-    });
+    }, skip: needsPacks);
 
     test('leaves an ordinary question unscoped', () {
       // The false positives that made a rare-token rule untenable.
@@ -166,7 +201,9 @@ void hybridTests() {
   test('semantic search is actually available', () {
     expect(db.semantic, isNotNull,
         reason: 'the model should load on a supported platform');
-    expect(db.semantic!.vectorCount, greaterThan(50000));
+    // The core corpus carries 2,683 vectors; the full library carries 54,854.
+    expect(db.semantic!.vectorCount,
+        greaterThan(_packsUrl.isEmpty ? 2000 : 50000));
   });
 
   test('answers a question whose words are not in the answer', () async {

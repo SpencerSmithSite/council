@@ -36,6 +36,12 @@ dependencies:
   # since web was dropped.
   onnxruntime: ^1.4.1
 
+  # Verifies the checksum of a downloaded content pack before installing it.
+  crypto: ^3.0.7
+  # Packs are stored outside the sqflite databases directory, which is not a
+  # documented place to keep arbitrary files.
+  path_provider: ^2.1.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
