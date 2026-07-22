@@ -5,6 +5,8 @@ import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
 import 'src/services/inference/inference_provider.dart';
 import 'src/services/search/semantic_search.dart';
+import 'src/services/packs/pack_provider.dart';
+import 'src/services/packs/pack_service.dart';
 import 'src/screens/home_screen.dart';
 import 'src/screens/search_screen.dart';
 import 'src/screens/browse_screen.dart';
@@ -31,8 +33,19 @@ void main() async {
   // model should still get a searchable library rather than a failed launch.
   dbService.semantic = await SemanticSearch.tryLoad(dbService.database);
 
+  // Reloading the vector index after a pack changes is not optional: it is a
+  // snapshot taken at startup, so without it newly installed text is found by
+  // lexical search and ignored by semantic search.
+  final packs = PackProvider(
+    PackService(
+      dbService.database,
+      onContentChanged: () async => dbService.semantic?.reload(),
+    ),
+  );
+
   runApp(TheologyApp(
     dbService: dbService,
+    packs: packs,
     settings: settings,
     inference: inference,
   ));
@@ -40,12 +53,14 @@ void main() async {
 
 class TheologyApp extends StatelessWidget {
   final DatabaseService dbService;
+  final PackProvider packs;
   final SettingsProvider settings;
   final InferenceProvider inference;
 
   const TheologyApp({
     super.key,
     required this.dbService,
+    required this.packs,
     required this.settings,
     required this.inference,
   });
@@ -57,6 +72,7 @@ class TheologyApp extends StatelessWidget {
         Provider<DatabaseService>.value(value: dbService),
         ChangeNotifierProvider<SettingsProvider>.value(value: settings),
         ChangeNotifierProvider<InferenceProvider>.value(value: inference),
+        ChangeNotifierProvider<PackProvider>.value(value: packs),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) => MaterialApp(

@@ -722,10 +722,7 @@ covers it: free, CDN-backed, versioned, up to 2 GB per file, already where the
 code lives, and reachable by plain HTTP GET from the app. Dropping the Flutter
 web target has no bearing on it.
 
-- [ ] **Design the pack format** — a core corpus in the app, per-tradition
-  packs downloaded on demand. Needs a manifest (versions, sizes, checksums), a
-  download/verify/install path, and a schema that can attach a pack's units,
-  chunks and vectors to the existing database.
+- [x] **Pack format designed and built** — see Phase 15.
 
 ---
 
@@ -815,6 +812,84 @@ permanent.
 
 Linux and Windows are edited but unverified — neither can be built from this
 machine.
+
+---
+
+## Phase 15 — Content packs (2026-07-21)
+
+The app was 101 MB on Android and 119 MB on iOS, and 54 MB of that was corpus.
+Of 58.8 million characters, 56.3 million are patristic — so a reader who wanted
+their own tradition's confessions was downloading the complete works of
+Chrysostom to get them.
+
+**Android arm64 is now 50 MB.** The bundled corpus went from 54 MB to 2.6 MB.
+
+| pack | sources | units | download |
+|---|---|---|---|
+| core (bundled) | 44 | 902 | — |
+| Augustine of Hippo | 44 | 2,496 | 4.6 MB |
+| John Chrysostom | 36 | 2,932 | 6.3 MB |
+| Church Fathers | 313 | 12,201 | 22.8 MB |
+
+### The decision that makes it safe
+
+**Packs are a partition of one corpus build, not separately-built databases.**
+Every row keeps the id it already had, so ids are disjoint by construction and
+nothing is renumbered on install.
+
+The alternative — building each pack independently and offsetting ids into
+reserved ranges — is a rerun of the failure this project already had once:
+chunk ids are derived from unit ids, embeddings are keyed on chunk ids, and a
+renumbering that goes wrong does not raise an error. It silently points vectors
+at unrelated text. Choosing a design with no renumbering step removes the
+possibility rather than guarding against it.
+
+The corollary is a rule the builder states and the app enforces: **packs and
+core are always built together, and `corpusVersion` is bumped when they are.**
+A pack declares the version it came from and is refused on mismatch.
+
+- [x] `tools/build_packs.py`, driven by `tools/data/packs.json` — boundaries
+  are declared in data because the right split depends on a corpus that keeps
+  changing. Re-splitting is an edit and a rebuild, never a code change.
+- [x] Every source is assigned exactly once; anything unclaimed falls into
+  core, so adding a source without editing the config grows the app rather
+  than vanishing.
+- [x] Packs carry no FTS index — the app's index is appended to on install.
+  That is why the three packs total 34 MB where the corpus they came from was
+  54 MB.
+- [x] `PackService` — download, checksum, merge, uninstall. Content rows are
+  inserted *without* `OR IGNORE`: ids are disjoint by construction, so a
+  collision means pack and app disagree and should fail loudly rather than
+  drop half the pack and report success.
+- [x] Uninstall rebuilds the FTS index rather than issuing `'delete'` commands,
+  which require passing the exact original column values back and corrupt the
+  index silently when they do not match.
+- [x] Vector index reloaded on install. It is a snapshot taken at startup, so
+  without this the new text is found by lexical search and ignored by semantic
+  search — a successful-looking install with quietly worse answers.
+- [x] Library screen under Settings; downloads show progress, removal is
+  confirmed.
+- [x] **Verified end to end against the real corpus**, with the packs served
+  over real HTTP: install adds retrievable content, a second install is a
+  no-op, a corrupted download is refused and not merged, and uninstall leaves
+  no unreachable index entries. The retrieval suite now runs both ways — over
+  the core alone and over a pack-assembled library — and passes identically.
+
+### Hosting
+
+Ready to publish; nothing is uploaded yet.
+
+- [ ] Cut a GitHub Release and attach `dist/packs/*` — the app already points
+  at `releases/latest/download/manifest.json`.
+
+### Known gaps
+
+- [ ] **A partial library gives confidently incomplete answers.** Ask about the
+  Eucharist without the fathers installed and the answer is drawn from
+  confessions alone, with nothing saying so. Retrieval should tell the user
+  which uninstalled packs are relevant to what they just asked.
+- [ ] Packs cannot be updated in place — only removed and reinstalled.
+- [ ] Installing on mobile is untested; the merge is heavier there.
 
 ### Next
 

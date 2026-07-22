@@ -26,3 +26,7 @@ assets/theology.db.bak
 
 # Embedding model weights: ~22MB, fetched by tools/fetch_model.sh
 assets/model/*.onnx
+
+# Built content packs. Published as GitHub Release assets, not committed:
+# the largest is 24 MB and they are reproducible from the corpus.
+dist/

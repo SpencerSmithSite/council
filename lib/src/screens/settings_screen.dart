@@ -5,6 +5,8 @@ import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
 import 'ai_backend_screen.dart';
+import 'library_screen.dart';
+import '../services/packs/pack_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -96,6 +98,28 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
               ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Content packs
+          const _SectionTitle('Library'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.library_books_outlined),
+              title: const Text('Manage content'),
+              subtitle: Text(
+                context.watch<PackProvider>().installed.isEmpty
+                    ? 'Add the church fathers and other collections'
+                    : '${context.watch<PackProvider>().installed.length} '
+                        'collection(s) installed',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LibraryScreen()),
+              ),
             ),
           ),
 

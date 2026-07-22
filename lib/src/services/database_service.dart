@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'search/entity_recogniser.dart';
 import 'search/hybrid_ranker.dart';
 import 'search/semantic_search.dart';
+import 'packs/pack_service.dart';
 
 class DatabaseService {
   /// Optional semantic retrieval. Injected rather than constructed here so the
@@ -23,7 +24,13 @@ class DatabaseService {
 
   /// Bumped when the bundled corpus changes, so an installed copy of an older
   /// database is replaced rather than kept forever.
-  static const int corpusVersion = 2;
+  ///
+  /// It also gates content packs. A pack keeps the row ids it was given in the
+  /// corpus build it was split from — that is what lets it be merged without
+  /// renumbering — so a pack from a different build can carry ids this app has
+  /// already used for different text. Packs declare the version they were built
+  /// from and are refused when it does not match this one.
+  static const int corpusVersion = 3;
 
   Database? _database;
 
@@ -40,15 +47,24 @@ class DatabaseService {
         await stamp.exists() ? int.tryParse(await stamp.readAsString()) : null;
 
     if (!await databaseExists(dbPath) || installedVersion != corpusVersion) {
-      await _copyDatabaseFromAsset(dbPath);
-      await stamp.writeAsString('$corpusVersion');
+      await _reinstall(dbPath, stamp);
     }
 
-    // Open database
-    _database = await openDatabase(
-      dbPath,
-      readOnly: true, // Read-only for bundled database
-    );
+    // Writable, unlike every earlier version of this app. Content packs merge
+    // downloaded sources into these same tables, so the corpus is no longer
+    // purely a read-only shipped artefact.
+    _database = await openDatabase(dbPath);
+    await PackService.createTables(_database!);
+  }
+
+  /// Reinstalling the bundled corpus discards any packs the user downloaded.
+  ///
+  /// The stamp is written *after* the copy so that a crash midway leaves the
+  /// app looking un-installed and retrying, rather than looking current while
+  /// holding a half-written database.
+  Future<void> _reinstall(String dbPath, File stamp) async {
+    await _copyDatabaseFromAsset(dbPath);
+    await stamp.writeAsString('$corpusVersion');
   }
 
   /// Unpack the bundled database into device storage.
