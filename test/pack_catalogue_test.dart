@@ -200,6 +200,19 @@ void main() {
     });
   });
 
+  test('the Westminster Confession is the document, not a paraphrase of it', () {
+    // It was in the corpus as "Westminster Confession of Faith": thirteen
+    // units, 4,157 characters, no author, no URL, no stated rights, for a
+    // document that runs to some 35,000 words. The real edition is titled
+    // differently, so the two can be told apart by name — which is the only
+    // handle a test at this layer has, and enough to catch the paraphrase
+    // coming back.
+    final reformed = catalogue.packs['tradition-reformed']!;
+    expect(reformed.titles, contains('The Westminster Confession of Faith'));
+    expect(reformed.titles, isNot(contains('Westminster Confession of Faith')),
+        reason: 'the unprovenanced stub is back');
+  });
+
   /// Absence is not scarcity, and counting passages cannot tell them apart.
   ///
   /// The confession holds 8 passages tagged `baptism`; the fathers hold 1,063.
