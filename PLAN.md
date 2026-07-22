@@ -1377,6 +1377,32 @@ text, where translucency costs legibility for nothing.
   larger half of this job.
 - [ ] Revisit when Flutter's standalone Cupertino package ships with Liquid
   Glass support, and replace the approximation with whatever it provides.
-- [ ] Confirm against Apple's own documentation that adoption is not required
-  for App Store acceptance for apps that draw their own UI. The page is
-  JavaScript-rendered and could not be read directly.
+### The adoption deadline, and why it is already handled
+
+Adoption is not required today: an app may build against the iOS 26 SDK and set
+`UIDesignRequiresCompatibility` to keep the legacy appearance. **Xcode 27
+ignores that flag**, and Xcode 27 becomes the minimum for App Store submission
+around **April 2027**, after which every app renders with Liquid Glass whether
+or not it asked to.
+
+For this app that is already true and already tested. We build with **Xcode
+27.0 against the 27.0 SDKs**, and the flag is set on neither platform — so the
+configuration that becomes mandatory is the one every build this session has
+used. It compiles, launches and runs.
+
+**And the flag should stay unset**, for a reason beyond it being ignored:
+setting it would make the *system* chrome render legacy while our own chrome
+approximates glass, which is the worst available combination. Unset, our
+approximation sits beside the real material, which is what it should be judged
+against.
+
+What the deadline actually forces is coherence, not compliance. The mechanism
+restyles **system controls**, and this app has none — Flutter draws its own
+canvas. What becomes glass is everything *around* it: the macOS window chrome
+and title bar, the iOS status bar and home indicator, share sheets, pickers,
+keyboards. By April 2027 the frame will be glass, and a flat Material interior
+will look like a mistake rather than a choice.
+
+That is the same argument for adopting Cupertino properly that already exists
+above — with roughly 21 months of runway, and Flutter's standalone Cupertino
+package likely to land inside it.
