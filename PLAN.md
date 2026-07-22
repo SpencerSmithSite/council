@@ -727,12 +727,71 @@ web target has no bearing on it.
   download/verify/install path, and a schema that can attach a pack's units,
   chunks and vectors to the existing database.
 
+---
+
+## Phase 13 — Mobile builds and network reachability (2026-07-21)
+
+Building the generated iOS and Android targets for the first time, which is
+where the platform config that Ollama-over-LAN depends on had to be written.
+
+- [x] **Android release had no network at all.** Flutter declares `INTERNET`
+  only in the debug and profile manifests, for hot reload. Nothing in this repo
+  had ever built a release APK, so the omission was invisible: Ollama, cloud
+  keys and pack downloads would each have failed on exactly the builds users
+  install, and worked for every developer.
+- [x] **Cleartext permitted, via a network security config** rather than the
+  `usesCleartextTraffic` boolean, so the reasoning sits next to the setting.
+  The exception is general because the user types the host; it is narrow in
+  effect because every cloud provider URL in the app is a literal `https://`
+  constant and is unaffected.
+- [x] **iOS/macOS local network access.** `NSLocalNetworkUsageDescription` plus
+  `NSAllowsLocalNetworking` — deliberately not `NSAllowsArbitraryLoads`, which
+  App Review treats as needing justification. macOS 15 applies the same prompt,
+  and the omission was hidden there because a local Ollama does not trigger it:
+  the developer's own setup is the one case that works without the key.
+- [x] **Tailscale needed its own exception.** MagicDNS names end in `.ts.net`
+  and its addresses sit in 100.64/10, neither of which counts as "local" to
+  ATS. A `ts.net` exception domain covers it. Raw 100.x addresses are still
+  refused on iOS — ATS matches domains, not IP literals — and refused as a
+  plain connection failure that reads as "Ollama is down", so the host field
+  says so on iOS rather than leaving the user to debug it.
+- [x] **Android would not build.** `onnxruntime` pins `compileSdkVersion 33`
+  while the AndroidX libraries the engine pulls in require 34+. The pin is in
+  the published package, so it is overridden in the root Gradle file. Raising
+  compileSdk changes only which APIs the plugin compiles against — minSdk and
+  targetSdk are untouched, so no device loses support.
+- [x] **App named Council** on Android and iOS; it was still "theology_app".
+- [x] **Verified against the built artefacts, not the source.** The merged APK
+  manifest carries `INTERNET`, the label and the network security config
+  reference; the built `Runner.app` plist carries the ATS keys. Config that is
+  correct in the repo and dropped during merge is the failure worth catching.
+
+### Size — the argument for packs, measured
+
+| | |
+|---|---|
+| Android, per-ABI (arm64) | **101 MB** |
+| Android, universal APK | 145 MB |
+| iOS `Runner.app` | 119 MB |
+
+Of that, 54 MB is the compressed corpus and 22 MB the embedding model. Splitting
+per ABI is worth doing on its own — the universal APK ships three architectures
+so every device carries two it cannot run — but the corpus is the single
+largest item and the reason packs matter.
+
+- [ ] Ship Android as an App Bundle so Play does the ABI split.
+- [ ] Replace `com.example.theology_app` before any store submission. It is
+  still the template identifier, and it cannot be changed after first release.
+
+### Not yet verified
+
+- [ ] **Run** on a physical iPhone/Android device. Both *build*; neither has
+  been launched, and the local-network prompt in particular cannot be exercised
+  by a build.
+- [ ] Linux and Windows builds — cannot be produced from this machine.
+
 ### Next
 
-- [ ] Build and run on iOS and Android — generated, not yet exercised. Mobile
-  is where Ollama needs LAN/VPN reachability, which needs
-  `NSLocalNetworkUsageDescription` and an ATS exception on iOS, and a
-  cleartext-traffic policy on Android.
 - [ ] Surface tradition and provenance on citations in the UI.
 - [ ] Remaining 23 unprovenanced sources.
 - [ ] Scored retrieval evaluation set.

@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -148,6 +150,25 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
     super.dispose();
   }
 
+  /// Guidance for the host field, which differs by platform for a reason the
+  /// user cannot be expected to infer.
+  ///
+  /// Apple's transport security permits cleartext HTTP to the local network and
+  /// to domains named in the app's exception list, but exceptions match domain
+  /// names, not IP literals. So a Tailscale MagicDNS name works on iOS while
+  /// the same machine's 100.x address is refused — and refused as a plain
+  /// connection failure, which reads as "Ollama is down" rather than "use the
+  /// other address". Saying so here is cheaper than the user debugging it.
+  String get _hostHelp {
+    const base = 'e.g. http://localhost:11434, or a machine on your network '
+        'or VPN.';
+    if (Platform.isIOS) {
+      return '$base On iPhone and iPad, use a Tailscale name like '
+          'http://desktop.tailnet.ts.net:11434 rather than a 100.x address.';
+    }
+    return base;
+  }
+
   @override
   Widget build(BuildContext context) {
     final inference = context.read<InferenceProvider>();
@@ -159,11 +180,11 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
         children: [
           TextField(
             controller: _host,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Host',
-              helperText: 'e.g. http://localhost:11434, or a machine on your '
-                  'network or VPN',
-              border: OutlineInputBorder(),
+              helperText: _hostHelp,
+              helperMaxLines: 4,
+              border: const OutlineInputBorder(),
             ),
             onSubmitted: (value) => inference.setOllama(host: value),
           ),
