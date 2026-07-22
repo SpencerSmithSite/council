@@ -53,6 +53,25 @@ class _ReadScreenState extends State<ReadScreen> {
     if (mounted) setState(() => _sources = rows);
   }
 
+  /// The shelf, narrowed by whatever is in the box.
+  ///
+  /// Matches title, author and tradition, because a reader hunting for
+  /// Augustine may type any of the three.
+  List<Map<String, dynamic>>? get _filtered {
+    final all = _sources;
+    final query = _query.text.trim().toLowerCase();
+    if (all == null || query.isEmpty) return all;
+
+    return all.where((source) {
+      final haystack = [
+        source['title'],
+        source['author'],
+        source['tradition'],
+      ].whereType<String>().join(' ').toLowerCase();
+      return haystack.contains(query);
+    }).toList();
+  }
+
   Future<void> _search(String text) async {
     if (text.trim().isEmpty) {
       setState(() => _results = null);
@@ -92,7 +111,7 @@ class _ReadScreenState extends State<ReadScreen> {
             child: TextField(
               controller: _query,
               decoration: InputDecoration(
-                hintText: 'Search everything you have installed',
+                hintText: 'Filter your shelf, or press return to search text',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _query.text.isEmpty
                     ? null
@@ -106,7 +125,11 @@ class _ReadScreenState extends State<ReadScreen> {
                 border: const OutlineInputBorder(),
                 isDense: true,
               ),
-              onChanged: (_) => setState(() {}),
+              // Typing filters the shelf; return searches inside the texts.
+              // With 380 works installed, a reader looking for the Bible was
+              // scrolling past every apocryphal Acts to reach it — the box was
+              // the only search on screen and it searched the wrong thing.
+              onChanged: (_) => setState(() => _results = null),
               onSubmitted: _search,
             ),
           ),
@@ -115,7 +138,11 @@ class _ReadScreenState extends State<ReadScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _results != null
                     ? _Results(rows: _results!)
-                    : _Shelf(sources: _sources, onRefresh: _loadShelf),
+                    : _Shelf(
+                        sources: _filtered,
+                        onRefresh: _loadShelf,
+                        filtered: _query.text.trim().isNotEmpty,
+                      ),
           ),
         ],
       ),
@@ -127,13 +154,33 @@ class _ReadScreenState extends State<ReadScreen> {
 class _Shelf extends StatelessWidget {
   final List<Map<String, dynamic>>? sources;
   final Future<void> Function() onRefresh;
+  final bool filtered;
 
-  const _Shelf({required this.sources, required this.onRefresh});
+  const _Shelf({
+    required this.sources,
+    required this.onRefresh,
+    this.filtered = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (sources == null) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (sources!.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text(
+            filtered
+                ? 'Nothing on your shelf matches. Press return to search '
+                    'inside the texts instead.'
+                : 'Nothing installed yet.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
 
     final byTradition = <String, List<Map<String, dynamic>>>{};

@@ -25,6 +25,22 @@ class SettingsService {
   }
   
   /// Get font size multiplier (1.0 = default)
+  /// Where the reader stopped in a given work.
+  ///
+  /// Per source rather than one global position: someone reading Genesis and
+  /// dipping into Trent should find both where they left them. Stored as a
+  /// section index because ids are stable within a corpus build but sections
+  /// are what the reader is actually navigating.
+  Future<int> getReadingPosition(int sourceId) async {
+    final prefs = await _prefs;
+    return prefs.getInt('reading_position_$sourceId') ?? 0;
+  }
+
+  Future<void> setReadingPosition(int sourceId, int index) async {
+    final prefs = await _prefs;
+    await prefs.setInt('reading_position_$sourceId', index);
+  }
+
   Future<double> getFontSize() async {
     final prefs = await _prefs;
     return prefs.getDouble(_fontSizeKey) ?? 1.0;

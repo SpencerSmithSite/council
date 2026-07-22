@@ -1207,8 +1207,29 @@ affected and why it went unnoticed for so long.
 rather than drifted into. Every framework in the built bundle is now a single
 arm64 slice; the app is 70 MB.
 
-Worth revisiting once the toolchain stabilises: the check is the bug, not the
-universal binary.
+**Revisit in September 2025**, when macOS 27 and Xcode 27 ship properly. The
+beta is required for testing until then. The check is the bug, not the
+universal binary, so restoring Intel support should be a two-line revert once
+the toolchain is stable — not a re-architecture.
+
+### Reading, made usable (2026-07-22)
+
+- [x] **Resume where you stopped**, per work rather than globally — someone
+  reading Genesis and dipping into Trent should find both where they left them.
+- [x] **A contents sheet that scales.** A flat list is fine for forty articles
+  and useless for 1,189 chapters: reaching Habakkuk meant scrolling past
+  everything before it. Now filterable, and grouped into books with chapter
+  chips — 66 rows instead of 1,189, opened at the book you are in.
+
+  The grouping derives from the titles rather than knowing what a Bible is:
+  "Genesis 1" and "Genesis 2" share a stem, and so do "Session 4" and "Session
+  5". It only groups when that collapses the list by half or more, so a
+  catechism of 196 distinct questions stays flat rather than gaining 196
+  headings.
+- [x] **The shelf is filterable.** With 380 works installed, a reader looking
+  for the Bible was scrolling past every apocryphal Acts to reach it — and the
+  only search box on the screen searched passage text, not the shelf. Typing
+  now filters the shelf; return still searches inside the texts.
 
 ### Still to do — recorded so it is not lost
 
@@ -1218,8 +1239,7 @@ universal binary.
   next/previous chapter, position memory, adjustable type. Today a passage
   opens as an isolated card with no way to keep reading — for Scripture in
   particular that is the wrong shape entirely.
-- [ ] **Scripture navigation.** 1,189 chapters need a book/chapter picker, not
-  a flat list.
+- [x] **Scripture navigation.** Done — see below.
 - [ ] **Library cards.** A pack overview worth reading before downloading:
   authors, principal works, date range, what subjects it covers.
 - [ ] **Search inside the Read area**, scoped to what is installed, with
@@ -1230,8 +1250,7 @@ universal binary.
   tab.
 - [ ] **Empty states** everywhere: with only Scripture installed, most screens
   need to say what is missing and offer the fix.
-- [ ] **Reading position memory.** The reader always opens at section one; it
-  should reopen where you stopped.
+- [x] **Reading position memory.** Done — see below.
 - [ ] **Trent's OCR needs cleaning.** Page furniture is embedded in the text —
   "1 8 SESSION IV." mid-paragraph — which was invisible while passages were
   only ever seen as search snippets and is obvious when read continuously.
