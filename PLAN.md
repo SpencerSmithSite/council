@@ -1324,3 +1324,59 @@ one" was satisfied by an answer that still had no Lutheran voice in it.
 
 Corpus is **v7**, published. 18 fragments, 45.4 MB; the same collections as
 standalone files would be 119.0 MB.
+
+
+---
+
+## Phase 23 — Apple platform appearance (2026-07-22)
+
+The app was Material 3 on every platform, which on a Mac reads as an Android
+app in a Mac window. It used **zero** Cupertino widgets.
+
+### What Liquid Glass can and cannot be here
+
+Flutter draws every pixel through its own engine and never instantiates UIKit
+or AppKit views, so an app built with it has no system controls for the OS to
+restyle. A SwiftUI app inherits Liquid Glass by linking the new SDK; a Flutter
+app inherits nothing. Flutter's own team
+[paused this work in June 2025](https://github.com/flutter/flutter/issues/170310)
+and is moving Cupertino into standalone packages, so first-party support is
+coming — but its ceiling is still "drawn by Flutter".
+
+`GlassSurface` is therefore an approximation, and the two ways it differs are
+documented in the file rather than left to be discovered:
+
+* `BackdropFilter` samples only what Flutter painted behind it. The real
+  material samples the *window's* backdrop, so on a Mac it picks up the desktop
+  and the windows underneath.
+* Real glass refracts and casts specular highlights that track the pointer and
+  the content moving beneath. Ours are static.
+
+Used for chrome only — which is also where Apple uses it, and never behind body
+text, where translucency costs legibility for nothing.
+
+- [x] `GlassSurface` on the navigation bar, with `extendBody` so there is
+  something to blur. Without that the bar sits on dead space and the effect is
+  a tint with extra steps.
+- [x] **Apple typography** — `Typography.material2021(platform:)` resolves to SF
+  on Apple and Roboto elsewhere, rather than shipping Roboto to a Mac.
+- [x] **Cupertino page transitions** on iOS and macOS: the horizontal push with
+  an interactive back-swipe, not Material's vertical fade.
+- [x] **Opaque fallback** when the system asks for higher contrast. Flutter
+  exposes no "Reduce Transparency" flag, so `highContrast` is the closest
+  proxy and a partial one — someone who has enabled Reduce Transparency alone
+  still sees glass. Worth revisiting if Flutter surfaces the real setting.
+- [x] Glass is Apple-only. On Android and desktop Linux/Windows it would be
+  borrowing another platform's visual language.
+
+### Still to do
+
+- [ ] **The widgets themselves are still Material.** Typography, transitions
+  and chrome are adapted; `NavigationBar`, `ListTile`, `Card` and the rest are
+  not. Proper adoption means Cupertino equivalents on Apple targets, and is the
+  larger half of this job.
+- [ ] Revisit when Flutter's standalone Cupertino package ships with Liquid
+  Glass support, and replace the approximation with whatever it provides.
+- [ ] Confirm against Apple's own documentation that adoption is not required
+  for App Store acceptance for apps that draw their own UI. The page is
+  JavaScript-rendered and could not be read directly.
