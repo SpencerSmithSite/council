@@ -13,6 +13,12 @@ class PackContents {
   final List<String> titles;
   final Map<String, int> tags;
 
+  /// Which traditions have any text at all in here. Kept separately from
+  /// [tags] because absence and scarcity are different questions: tags answer
+  /// "how much of this subject am I missing", and only this answers "is this
+  /// tradition represented on the device at all".
+  final List<String> traditions;
+
   /// Which fragments back this collection. Coverage arithmetic runs over these
   /// rather than over collections, because collections overlap.
   final List<String> fragments;
@@ -22,6 +28,7 @@ class PackContents {
     required this.authors,
     required this.titles,
     required this.tags,
+    this.traditions = const [],
     this.fragments = const [],
   });
 
@@ -32,6 +39,7 @@ class PackContents {
         tags: (json['tags'] as Map? ?? {}).map(
           (key, value) => MapEntry(key as String, value as int),
         ),
+        traditions: (json['traditions'] as List? ?? []).cast<String>(),
         fragments: (json['fragments'] as List? ?? []).cast<String>(),
       );
 }
@@ -43,6 +51,15 @@ enum SuggestionReason {
 
   /// The question names a work in this pack.
   namesWork,
+
+  /// The question names a tradition with nothing installed from it.
+  ///
+  /// Ranked above [coversSubject] because it is a stronger claim. Subject
+  /// coverage says an answer would be better; this says an answer would be
+  /// given *without the tradition that was asked about* — which, for an app
+  /// whose purpose is showing what each tradition taught, is not a shortfall
+  /// but a wrong answer.
+  traditionAbsent,
 
   /// Nobody is named, but the pack covers this subject heavily.
   coversSubject,
@@ -67,6 +84,9 @@ class PackSuggestion {
           'You asked about $detail, whose writings are not installed.',
         SuggestionReason.namesWork =>
           '$detail is not installed.',
+        SuggestionReason.traditionAbsent =>
+          'You asked about the $detail tradition, and none of it is '
+              'installed.',
         SuggestionReason.coversSubject =>
           'This collection covers $detail extensively and is not installed.',
       };
@@ -134,6 +154,40 @@ class PackCatalogue {
       caseSensitive: false,
     );
     return pattern.hasMatch(haystack);
+  }
+
+  /// How a tradition gets named in a question, as against how it is labelled
+  /// in the database.
+  ///
+  /// Nobody types "Reformed" when they mean Presbyterians, or the database's
+  /// "Anglican" when they are American and say Episcopalian. Matching the
+  /// stored label alone would make this fire almost never, which is the same
+  /// as not building it.
+  ///
+  /// Deliberately conservative: only words that name a tradition and little
+  /// else. "Orthodox" is absent because it is far more often an adjective —
+  /// "orthodox Christology" is not a question about the Eastern church — and
+  /// a notice that misreads the question is worse than no notice.
+  static const Map<String, List<String>> _traditionNames = {
+    'Baptist': ['baptist', 'baptists'],
+    'Lutheran': ['lutheran', 'lutherans'],
+    'Reformed': ['reformed', 'presbyterian', 'presbyterians', 'calvinist',
+                 'calvinists', 'calvinism'],
+    'Anglican': ['anglican', 'anglicans', 'episcopalian', 'episcopalians'],
+    'Methodist': ['methodist', 'methodists', 'wesleyan', 'wesleyans'],
+    'Catholic': ['catholic', 'catholics', 'catholicism'],
+    'Eastern Orthodox': ['eastern orthodox', 'orthodoxy'],
+  };
+
+  /// Which traditions [question] names.
+  static Set<String> _traditionsNamedIn(String question) {
+    final named = <String>{};
+    for (final entry in _traditionNames.entries) {
+      if (entry.value.any((alias) => _mentions(question, alias))) {
+        named.add(entry.key);
+      }
+    }
+    return named;
   }
 
   /// Words that carry no identifying weight in a title, and which nobody is
@@ -225,12 +279,21 @@ class PackCatalogue {
     // way to teach someone to ignore a notice.
     final haveAuthors = <String>{};
     final haveTitles = <String>{};
+    final haveTraditions = <String>{};
     for (final id in installedFragments) {
       final contents = fragments[id];
       if (contents == null) continue;
       haveAuthors.addAll(contents.authors);
       haveTitles.addAll(contents.titles);
+      haveTraditions.addAll(contents.traditions);
     }
+
+    // Which traditions the reader asked about and has nothing from. Computed
+    // once, because it depends on the question and the device, not on the pack
+    // being considered.
+    final absentTraditions = _traditionsNamedIn(question)
+        .where((t) => !haveTraditions.contains(t))
+        .toSet();
 
     for (final entry in packs.entries) {
       if (available(entry.value)) continue;
@@ -258,6 +321,21 @@ class PackCatalogue {
           packId: entry.key,
           reason: SuggestionReason.namesWork,
           detail: title,
+        ));
+        continue;
+      }
+
+      // A tradition the reader asked about and holds nothing from. Checked
+      // before subject coverage, and without any threshold: there is no
+      // "enough" here, because the tradition is simply not on the device.
+      final tradition = contents.traditions
+          .where(absentTraditions.contains)
+          .firstOrNull;
+      if (tradition != null) {
+        suggestions.add(PackSuggestion(
+          packId: entry.key,
+          reason: SuggestionReason.traditionAbsent,
+          detail: tradition,
         ));
         continue;
       }

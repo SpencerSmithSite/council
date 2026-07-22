@@ -265,6 +265,14 @@ def pack_catalogue(conn, source_ids):
     Authors and titles support naming a person the corpus cannot currently see;
     tag counts support the vaguer case where nobody is named but the subject is
     one a pack covers heavily.
+
+    Traditions are carried for a case neither of those can reach. Tag counts
+    measure volume, and volume says a question about believer's baptism is best
+    served by the fathers, who have 1,063 passages tagged `baptism` against the
+    Baptist confession's 8. That is true and useless: the reason to install the
+    Baptist pack is not that it is large, it is that without it the tradition
+    has no voice at all. Absence is a different question from scarcity and
+    needs its own evidence.
     """
     marks = ",".join("?" * len(source_ids))
 
@@ -293,7 +301,21 @@ def pack_catalogue(conn, source_ids):
             source_ids,
         )
     }
-    return {"authors": sorted(authors), "titles": sorted(titles), "tags": tags}
+    traditions = [
+        row[0]
+        for row in conn.execute(
+            f"""SELECT DISTINCT t.name FROM sources s
+                JOIN traditions t ON s.tradition_id = t.id
+                WHERE s.id IN ({marks})""",
+            source_ids,
+        )
+    ]
+    return {
+        "authors": sorted(authors),
+        "titles": sorted(titles),
+        "tags": tags,
+        "traditions": sorted(traditions),
+    }
 
 
 def merge_catalogues(name, parts):
@@ -303,10 +325,11 @@ def merge_catalogues(name, parts):
     reader can act on — being told that fragment `f-augustine` is missing is
     not a useful thing to read.
     """
-    authors, titles, tags = [], [], {}
+    authors, titles, tags, traditions = [], [], {}, []
     for part in parts:
         authors.extend(part["authors"])
         titles.extend(part["titles"])
+        traditions.extend(part["traditions"])
         for slug, count in part["tags"].items():
             tags[slug] = tags.get(slug, 0) + count
     return {
@@ -314,6 +337,7 @@ def merge_catalogues(name, parts):
         "authors": sorted(set(authors)),
         "titles": sorted(set(titles)),
         "tags": tags,
+        "traditions": sorted(set(traditions)),
     }
 
 
