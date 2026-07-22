@@ -45,21 +45,29 @@ free of.
 
 ## Where the corpus stands
 
+As of 2026-07-22:
+
 | tradition | sources | volume |
 |---|---:|---:|
-| early-church | 389 | 56.26 M |
-| ecumenical | 19 | 0.91 M |
-| lutheran | 4 | 0.79 M |
-| catholic | 4 | 0.58 M |
-| reformed | 8 | 0.28 M |
-| anglican | 1 | 0.04 M |
+| early-church | 389 | 56.264 M |
+| catholic | 8 | 14.719 M |
+| scripture | 1 | 4.250 M |
+| ecumenical | 19 | 0.915 M |
+| lutheran | 4 | 0.792 M |
+| reformed | 8 | 0.284 M |
+| baptist | 1 | 0.083 M |
+| anglican | 1 | 0.040 M |
 | eastern-orthodox | 2 | 0.004 M |
-| methodist | 2 | 0.001 M |
+| methodist | 2 | 0.004 M |
+| oriental-orthodox | 0 | 0 |
+| pentecostal | 0 | 0 |
 
-**96% of the corpus is patristic.** Eight traditions have a database row;
-Baptist, Pentecostal and Oriental Orthodox have a row and no content at all.
-Eastern Orthodox and Methodist have entries so small they are effectively
-placeholders.
+**73% of the corpus is patristic**, down from 96% — Aquinas and the KJV are
+what moved it. Two traditions still have a database row and no content at all,
+and Eastern Orthodox and Methodist have entries small enough to be
+placeholders. Size is not the measure that matters here: Baptist is 0.1% of the
+corpus and closes a gap that would otherwise answer a question about baptism
+without a single Baptist voice in it.
 
 ## Archives
 
@@ -111,11 +119,39 @@ purpose, whether its texts can actually be shipped, and how large the gap is.
 
 ### 1. Baptist — a defined tradition with nothing in it
 
-The database has a `baptist` row and zero sources, while Baptists are among the
+The database had a `baptist` row and zero sources, while Baptists are among the
 largest Protestant families in the world.
 
-- **Second London Baptist Confession (1689)** — the central document. Public
-  domain. Source to confirm.
+- [x] **Second London Baptist Confession (1689)** — done, 2026-07-22. 32
+  chapters, 160 paragraphs, 0.083 M chars. `tools/ingest_baptist.py`.
+
+  Four editions were examined and three rejected, which is the part worth
+  keeping:
+
+  | edition | verdict |
+  |---|---|
+  | Internet Archive `confeo00phil`, 1765 Philadelphia printing | **OCR destroyed.** Long-s read as `f`: `Chrift` ×48, `Christ` ×0 |
+  | `founders.org` | **Wrong text.** The confession *in Modern English* — a paraphrase Founders Press sells |
+  | `ccel.org` | has no edition of it |
+  | Wikisource | clean original wording, all 32 chapters — but its own first line is `{{no source}}` |
+
+  Wikisource's text is right and its provenance is not stated, so **every
+  paragraph is verified against a second, independent edition that does state
+  its terms**: Chapel Library's 2016 typesetting, whose notice reads *"©
+  Copyright 2016 Chapel Library: compilation, annotations. Original texts are
+  in the public domain."* Their compilation is theirs; the 1689 text is not.
+  Two independent transcriptions agreeing is a stronger claim than one
+  asserting an edition.
+
+  The verification earned its keep twice. It caught the last chapter running
+  past its own end and swallowing the closing list of signatories into the
+  paragraph on the last judgment — well-formed prose that no structural check
+  would question. And it forced the metric to be right: the first attempt
+  matched word *order*, which failed a paragraph whose every word was present
+  because Chapel prints a running header across the middle of it. The gate is
+  vocabulary, because vocabulary is what the two real risks move — destroyed
+  OCR and modernisation both collapse it.
+
 - **New Hampshire Confession (1833)**; **Philadelphia Confession (1742)**.
 - **Bunyan** — *Pilgrim's Progress* (131) and *Grace Abounding*.
 - **Spurgeon** — sermons, enormous in volume; on CCEL rather than Gutenberg.
@@ -223,8 +259,7 @@ should be scoped honestly before being promised.
 1. **Aquinas from `newadvent.org/summa/`** — largest single gain, an archive
    already trusted and already parsed by existing tooling, and verified to
    serve article text rather than indexes.
-2. **Second London Baptist Confession (1689)** — fills an empty tradition with
-   one short document.
+2. ~~**Second London Baptist Confession (1689)**~~ — done 2026-07-22.
 3. **Wesley's Standard Sermons** — fills a placeholder tradition with its actual
    doctrinal standard.
 4. **Re-ingest `Adversus haereses` and *The Harmony of the Gospels***, which
