@@ -99,7 +99,16 @@ Checked and **not usable**:
 
 **Rights are verified per work, not per archive.** CCEL declares
 `Rights: Public Domain` in each text export's header, and checking it per file
-is what caught its Westminster Confession edition, which declares nothing.
+is what caught its Westminster Confession edition, which declares nothing —
+and which turned out to have a second, worse problem besides: its paragraph
+numbering is taken from *The Constitution of the Presbyterian Church (U.S.A.)*,
+a modern denominational publication, and it prints the PCUS and UPCUSA
+recensions in parallel with the variants inline.
+
+**Wikisource states its terms per page, and the terms differ per page.** The
+1689 Baptist confession's page declares `{{no source}}` and had to be
+corroborated against a second edition; the 1690 Westminster page carries
+`{{PD-UKGov}}` and needed no such thing. Reading the banner is the check.
 
 ## Verified specific texts
 
@@ -245,11 +254,36 @@ One source, now that the Thirty-Nine Articles are properly sourced.
 
 ### 6. Reformed — finish what is started
 
-- **Westminster Confession of Faith** — still unsourced. CCEL's edition was
-  rejected: it interleaves the PCUS and UPCUSA recensions with variant readings
-  inline (`yet [PCUS are they] [UPCUSA they are] not sufficient`), the same
-  defect that disqualified Schaff's *Creeds of Christendom*. A clean edition is
-  needed.
+- [x] **Westminster Confession of Faith** — done, 2026-07-22. 33 chapters,
+  172 paragraphs, 0.065 M chars, replacing a 13-unit 4,157-character paraphrase
+  that had been sitting under the name of the most important Reformed document
+  in the corpus. `tools/ingest_westminster.py`.
+
+  Four editions examined, three rejected:
+
+  | edition | verdict |
+  |---|---|
+  | CCEL `anonymous/westminster3` | PCUS and UPCUSA recensions interleaved with variants inline; declares no rights; numbering taken from a modern PCUSA publication |
+  | Wikisource, *Humble Advice* (1647) | Scan-backed and proofread — the best provenance available — but **9 of 33 chapters exist**. Its `{{incomplete}}` banner was checked, not believed |
+  | Wikisource, Carruthers 1946 | container page, no subpages, nothing there |
+  | Wikisource, **Ratification Act 1690** | complete, tagged `{{PD-UKGov}}`, still the subordinate standard of the Church of Scotland |
+
+  **The cost is orthography.** The 1690 text is the parliamentary record, so it
+  is seventeenth-century spelling and almost unpunctuated — seven commas in
+  seventy-five thousand characters, "Gods eternall Decree", "Christs sake". That
+  is a real cost to reading it and it is accepted rather than hidden, because
+  the alternative on offer was a paraphrase wearing the document's name. An
+  authentic text with awkward spelling beats a fluent text that is not the
+  document. Worth revisiting if a complete, punctuated, clearly-licensed edition
+  appears — the 1647 Wikisource transcription would be ideal if it is ever
+  finished.
+
+  Verified by asserting the **paragraph count of every chapter** against the
+  original, not merely the chapter count. The transcription numbers some
+  paragraphs in bold and some as bare digits, and numbers the opening paragraph
+  of some chapters and not others; matching one form silently absorbed 1.5 and
+  1.8 into their neighbours. Chapter 31 having five paragraphs rather than four
+  is what distinguishes the original from the American revision of 1788.
 - **Scots Confession (1560)**, **Second Helvetic (1566)** — both still stubs.
 - **Calvin's *Institutes*** (45001) — the single largest Reformed work absent.
 - **Owen**, **Turretin**, **Bavinck** (Dutch, translations vary in status).
@@ -308,8 +342,7 @@ should be scoped honestly before being promised.
    doctrinal standard.
 4. **Re-ingest `Adversus haereses` and *The Harmony of the Gospels***, which
    currently hold chapter indexes rather than chapter text.
-5. **A clean Westminster Confession**, the last high-value document still
-   unsourced.
+5. ~~**A clean Westminster Confession**~~ — done 2026-07-22.
 
 Once two or three of these land, the pack split should be revisited: the
 boundaries live in `tools/data/packs.json` and re-splitting is an edit and a

@@ -295,7 +295,7 @@
    "id": "tradition-reformed",
    "kind": "tradition",
    "name": "Reformed & Presbyterian",
-   "description": "The Westminster Confession and catechisms, the Heidelberg Catechism, the Canons of Dordt and the Belgic Confession.",
+   "description": "The Westminster Confession as ratified by the Scottish Parliament in 1690, the Westminster catechisms, the Heidelberg Catechism, the Canons of Dordt and the Belgic Confession.",
    "fragments": [
     "f-reformed"
    ]
