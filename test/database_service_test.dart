@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:theology_app/src/services/database_service.dart';
+import 'package:council/src/services/database_service.dart';
 
 void main() {
   final db = DatabaseService();

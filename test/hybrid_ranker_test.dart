@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:theology_app/src/services/search/hybrid_ranker.dart';
-import 'package:theology_app/src/services/search/vector_index.dart';
+import 'package:council/src/services/search/hybrid_ranker.dart';
+import 'package:council/src/services/search/vector_index.dart';
 
 ChunkMatch _match(int chunkId, int unitId, double score) => ChunkMatch(
       chunkId: chunkId,

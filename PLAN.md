@@ -780,8 +780,7 @@ so every device carries two it cannot run — but the corpus is the single
 largest item and the reason packs matter.
 
 - [ ] Ship Android as an App Bundle so Play does the ABI split.
-- [ ] Replace `com.example.theology_app` before any store submission. It is
-  still the template identifier, and it cannot be changed after first release.
+- [x] **Identifier settled: `site.spencersmith.council`** — see Phase 14.
 
 ### Not yet verified
 
@@ -789,6 +788,33 @@ largest item and the reason packs matter.
   been launched, and the local-network prompt in particular cannot be exercised
   by a build.
 - [ ] Linux and Windows builds — cannot be produced from this machine.
+
+---
+
+## Phase 14 — The app is called Council (2026-07-21)
+
+Done now rather than later because a bundle identifier is the one thing here
+that cannot be changed after the fact: both stores refuse to reassign an app's
+identifier once it has been published, so `com.example.*` would have been
+permanent.
+
+- [x] **`com.example.theologyApp` → `site.spencersmith.council`** across
+  Android, iOS, macOS and Linux, with the Kotlin source moved to the matching
+  package directory.
+- [x] **Dart package renamed** `theology_app` → `council`, so the repo stops
+  calling itself by the old name internally. Low risk and easy to revert,
+  unlike the identifier.
+- [x] **Product names and window titles** on every platform; macOS now builds
+  `Council.app` rather than `theology_app.app`, and the stale `TEST_HOST` path
+  that still pointed at the old bundle was fixed with it.
+- [x] **Copyright strings** no longer read "com.example".
+- [x] **Verified by rebuilding all three buildable platforms** and reading the
+  identifier back out of each built bundle, not out of the source. A rename
+  that is right in the project file and wrong in the artefact is the failure
+  worth catching; all three report `site.spencersmith.council`.
+
+Linux and Windows are edited but unverified — neither can be built from this
+machine.
 
 ### Next
 

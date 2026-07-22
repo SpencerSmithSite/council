@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:theology_app/src/services/database_service.dart';
-import 'package:theology_app/src/services/search/entity_recogniser.dart';
-import 'package:theology_app/src/services/search/semantic_search.dart';
+import 'package:council/src/services/database_service.dart';
+import 'package:council/src/services/search/entity_recogniser.dart';
+import 'package:council/src/services/search/semantic_search.dart';
 
 /// Retrieval, exercised against the real bundled corpus on a real device.
 ///

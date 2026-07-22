@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:theology_app/src/services/search/wordpiece_tokenizer.dart';
+import 'package:council/src/services/search/wordpiece_tokenizer.dart';
 
 /// The Dart tokenizer must produce byte-identical token ids to the Python
 /// tokenizer used at build time. If it does not, query vectors land in a

@@ -8,7 +8,7 @@
 PRODUCT_NAME = Council
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.theologyApp
+PRODUCT_BUNDLE_IDENTIFIER = site.spencersmith.council
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Spencer Smith. All rights reserved.

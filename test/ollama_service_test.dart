@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:theology_app/src/services/ollama_service.dart';
+import 'package:council/src/services/ollama_service.dart';
 
 void main() {
   group('ContextPassage.contextContent', () {
