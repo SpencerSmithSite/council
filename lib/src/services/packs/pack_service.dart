@@ -9,43 +9,41 @@ import 'package:sqflite/sqflite.dart';
 
 import 'pack_manifest.dart';
 
-/// Downloads content packs and merges them into the app's database.
+/// Downloads content and merges it into the app's database.
 ///
-/// Packs exist because the corpus dwarfs the app: of the 58.8 million
-/// characters shipped, 56.3 million are patristic, so a reader who only wants
-/// their own tradition's confessions was downloading the complete works of
-/// Chrysostom to get them. Splitting the corpus takes the bundled database
-/// from 54 MB to 2.6 MB.
+/// Two layers, because the reader and the file system want different things.
+/// The reader wants overlapping ways to find text — by author, by era, by
+/// tradition — and the same work belongs to several of them. The file system
+/// wants each body of text published and stored exactly once.
 ///
-/// Installing is a merge, not a swap: a pack's rows keep the ids they were
-/// assigned in the corpus build they were split from, so they can be inserted
-/// straight into the app's tables without renumbering. That is only sound
-/// while pack and app come from the same build, which is what [corpusVersion]
-/// is checked against.
+/// So **fragments** are the unit that is downloaded, stored and reference
+/// counted, and **collections** are lists of fragment ids. Installing a
+/// collection fetches the fragments not already present; removing one drops
+/// only the fragments no other installed collection still needs. Nothing is
+/// ever downloaded or deleted twice, and adding a new way to browse costs no
+/// bytes at all.
 class PackService {
-  /// Where the published packs live.
+  /// Where the published manifest and fragments live.
   ///
-  /// GitHub Releases, because packs need static file hosting rather than a
-  /// backend: it is free, CDN-backed, versioned, and needs no server to
-  /// operate. Nothing here requires the Flutter web target that was dropped.
+  /// GitHub Releases: static file hosting, free, CDN-backed and versioned,
+  /// which is all this needs. No backend, and nothing requiring the Flutter
+  /// web target that was dropped.
   static const String defaultManifestUrl =
       'https://github.com/SpencerSmithSite/council/releases/latest/download/manifest.json';
 
   final Database db;
   final http.Client _client;
 
-  /// Overridable so tests can serve real pack files from a local server and
-  /// exercise download, checksum and merge together. A merge tested in
-  /// isolation would not catch a pack that downloads correctly and is indexed
-  /// wrongly, which is the failure that matters here.
+  /// Overridable so tests can serve real fragments from a local server and
+  /// exercise download, checksum and merge together.
   final String manifestUrl;
 
   /// Invoked after content is added or removed.
   ///
   /// Semantic search holds the vectors in memory as a snapshot taken at
-  /// startup, so without this a newly installed pack is found by lexical
-  /// search and ignored by semantic search — which looks like a successful
-  /// install with quietly worse answers, the hardest kind of bug to notice.
+  /// startup, so without this newly installed text is found by lexical search
+  /// and ignored by semantic search — an install that looks successful with
+  /// quietly worse answers.
   final Future<void> Function()? onContentChanged;
 
   PackService(
@@ -55,127 +53,185 @@ class PackService {
     this.onContentChanged,
   }) : _client = client ?? http.Client();
 
-  /// Bookkeeping for installed packs, kept in the app's database so it cannot
-  /// drift from the content it describes.
+  /// Bookkeeping, kept in the app's database so it cannot drift from the
+  /// content it describes.
   ///
-  /// [packSources] records which sources arrived with which pack. Without it,
-  /// uninstalling means guessing — and the obvious guess, "everything in this
-  /// tradition", would delete core content that happens to share a tradition.
+  /// [collectionFragments] records what each installed collection required, at
+  /// the time it was installed. It duplicates the manifest deliberately:
+  /// removing a collection has to work out which fragments are still needed by
+  /// the others, and that must not depend on being online — nor on the
+  /// published manifest still saying what it said last month.
   static Future<void> createTables(Database db) async {
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS installed_packs (
+      CREATE TABLE IF NOT EXISTS installed_collections (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         corpus_version INTEGER NOT NULL,
+        installed_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS collection_fragments (
+        collection_id TEXT NOT NULL,
+        fragment_id TEXT NOT NULL,
+        PRIMARY KEY (collection_id, fragment_id)
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS installed_fragments (
+        id TEXT PRIMARY KEY,
         bytes INTEGER NOT NULL,
         units INTEGER NOT NULL,
         installed_at TEXT NOT NULL
       )
     ''');
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS pack_sources (
-        pack_id TEXT NOT NULL,
+      CREATE TABLE IF NOT EXISTS fragment_sources (
+        fragment_id TEXT NOT NULL,
         source_id INTEGER NOT NULL,
-        PRIMARY KEY (pack_id, source_id)
+        PRIMARY KEY (fragment_id, source_id)
       )
     ''');
   }
 
-  Future<Set<String>> installedIds() async {
-    final rows = await db.query('installed_packs', columns: ['id']);
+  Future<Set<String>> installedCollections() async {
+    final rows = await db.query('installed_collections', columns: ['id']);
     return rows.map((r) => r['id'] as String).toSet();
   }
 
-  /// Fetch the published manifest.
+  Future<Set<String>> installedFragments() async {
+    final rows = await db.query('installed_fragments', columns: ['id']);
+    return rows.map((r) => r['id'] as String).toSet();
+  }
+
   Future<PackManifest> fetchManifest() async {
     final response = await _client.get(Uri.parse(manifestUrl));
     if (response.statusCode != 200) {
       throw PackException(
-          'Could not reach the pack list (HTTP ${response.statusCode}).');
+          'Could not reach the library catalogue (HTTP ${response.statusCode}).');
     }
     return PackManifest.parse(utf8.decode(response.bodyBytes));
   }
 
-  /// Download, verify and install [pack].
+  /// Install every fragment [collection] needs that is not already present.
   ///
-  /// [onProgress] reports bytes received against [PackInfo.bytes]; a 24 MB
-  /// download with no feedback reads as a hang.
+  /// [onProgress] reports across the whole operation rather than per fragment,
+  /// since the reader chose a collection and does not know fragments exist.
   Future<void> install(
-    PackInfo pack, {
+    Collection collection,
+    PackManifest manifest, {
     required int corpusVersion,
-    required int manifestCorpusVersion,
     void Function(int received, int total)? onProgress,
   }) async {
-    if (manifestCorpusVersion != corpusVersion) {
+    if (manifest.corpusVersion != corpusVersion) {
       throw const PackException(
-        'This pack was built for a different version of the library. Update '
+        'This content was built for a different version of the app. Update '
         'the app and try again.',
       );
     }
-    if ((await installedIds()).contains(pack.id)) return;
 
+    final present = await installedFragments();
+    final wanted = collection.fragments
+        .where((id) => !present.contains(id))
+        .map((id) => manifest.fragment(id))
+        .whereType<Fragment>()
+        .toList();
+
+    final total = wanted.fold(0, (sum, f) => sum + f.bytes);
+    var done = 0;
+
+    for (final fragment in wanted) {
+      await _installFragment(
+        fragment,
+        onProgress: (received, _) => onProgress?.call(done + received, total),
+      );
+      done += fragment.bytes;
+    }
+
+    // Recorded even when every fragment was already present: the collection is
+    // what the reader chose, and it has to be removable later.
+    await db.insert(
+      'installed_collections',
+      {
+        'id': collection.id,
+        'name': collection.name,
+        'corpus_version': corpusVersion,
+        'installed_at': DateTime.now().toIso8601String(),
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    for (final id in collection.fragments) {
+      await db.insert(
+        'collection_fragments',
+        {'collection_id': collection.id, 'fragment_id': id},
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+
+    if (wanted.isNotEmpty) await onContentChanged?.call();
+  }
+
+  Future<void> _installFragment(
+    Fragment fragment, {
+    void Function(int, int)? onProgress,
+  }) async {
     final dir = await getApplicationSupportDirectory();
     final workspace = Directory(p.join(dir.path, 'packs'));
     await workspace.create(recursive: true);
 
-    final archive = File(p.join(workspace.path, pack.file));
-    final expanded = File(p.join(workspace.path, '${pack.id}.db'));
+    final archive = File(p.join(workspace.path, fragment.file));
+    final expanded = File(p.join(workspace.path, '${fragment.id}.db'));
 
     try {
-      await _download(pack, archive, onProgress);
-      await _verify(pack, archive);
+      await _download(fragment, archive, onProgress);
+      await _verify(fragment, archive);
       await _expand(archive, expanded);
-      await _merge(pack, expanded, corpusVersion);
-      await onContentChanged?.call();
+      await _merge(fragment, expanded);
     } finally {
-      // Whether or not it worked: these are large, and a failed install that
-      // leaves 100 MB of temporary files behind is its own bug.
+      // Whether or not it worked: a failed install that leaves 100 MB of
+      // temporary files behind is its own bug.
       if (await archive.exists()) await archive.delete();
       if (await expanded.exists()) await expanded.delete();
     }
   }
 
   Future<void> _download(
-    PackInfo pack,
+    Fragment fragment,
     File destination,
     void Function(int, int)? onProgress,
   ) async {
-    final request = http.Request('GET', Uri.parse(_urlFor(pack)));
-    final response = await _client.send(request);
+    final url = manifestUrl.replaceFirst('manifest.json', fragment.file);
+    final response = await _client.send(http.Request('GET', Uri.parse(url)));
     if (response.statusCode != 200) {
       throw PackException('Download failed (HTTP ${response.statusCode}).');
     }
 
-    // Streamed to disk rather than buffered: the largest pack is 24 MB
-    // compressed, and holding it in memory on a phone to then hold the
-    // expanded copy as well is avoidable.
+    // Streamed to disk rather than buffered: holding a fragment in memory and
+    // then its expanded copy as well is avoidable on a phone.
     final sink = destination.openWrite();
     var received = 0;
     try {
       await for (final chunk in response.stream) {
         sink.add(chunk);
         received += chunk.length;
-        onProgress?.call(received, pack.bytes);
+        onProgress?.call(received, fragment.bytes);
       }
     } finally {
       await sink.close();
     }
   }
 
-  String _urlFor(PackInfo pack) =>
-      manifestUrl.replaceFirst('manifest.json', pack.file);
-
   /// Reject anything whose bytes do not match the manifest.
   ///
-  /// A pack is a database that will be merged into the user's library, so a
-  /// truncated download is not merely useless — it is a partially-valid
-  /// SQLite file that could be merged and leave the library subtly wrong.
-  Future<void> _verify(PackInfo pack, File archive) async {
+  /// A fragment is a database about to be merged into the reader's library, so
+  /// a truncated download is not merely useless — it is a partially valid
+  /// SQLite file that could merge and leave the library subtly wrong.
+  Future<void> _verify(Fragment fragment, File archive) async {
     final digest = await sha256.bind(archive.openRead()).first;
-    if (digest.toString() != pack.sha256) {
+    if (digest.toString() != fragment.sha256) {
       throw const PackException(
-        'The download did not match its checksum and was discarded. Check '
-        'your connection and try again.',
+        'A download did not match its checksum and was discarded. Check your '
+        'connection and try again.',
       );
     }
   }
@@ -189,15 +245,14 @@ class PackService {
     }
   }
 
-  /// Copy the pack's rows into the app's database and index its text.
-  Future<void> _merge(PackInfo pack, File expanded, int corpusVersion) async {
+  Future<void> _merge(Fragment fragment, File expanded) async {
     // ATTACH cannot run inside a transaction, so it brackets one.
     await db.execute("ATTACH DATABASE ? AS pack", [expanded.path]);
     try {
       await db.transaction((txn) async {
-        // Reference rows legitimately overlap with what is already installed —
-        // every pack carries the full tradition and tag vocabulary so that no
-        // source can arrive pointing at a tradition the app has never seen.
+        // Reference rows legitimately overlap — every fragment carries the
+        // full tradition and tag vocabulary, so no source can arrive pointing
+        // at a tradition the app has never seen.
         for (final table in const [
           'traditions',
           'source_types',
@@ -209,10 +264,10 @@ class PackService {
               'INSERT OR IGNORE INTO $table SELECT * FROM pack.$table');
         }
 
-        // Content rows deliberately do *not* use OR IGNORE. Ids are disjoint
-        // by construction, so a collision means the pack and the app disagree
-        // about the corpus — which should fail loudly here rather than
-        // silently drop half the pack and report success.
+        // Content rows deliberately do *not* use OR IGNORE. Fragments are a
+        // partition, so their ids are disjoint and a collision means the
+        // fragment and the app disagree about the corpus — which should fail
+        // loudly rather than silently drop half of it and report success.
         for (final table in const [
           'sources',
           'content_units',
@@ -223,7 +278,7 @@ class PackService {
           await txn.execute('INSERT INTO $table SELECT * FROM pack.$table');
         }
 
-        // Append to the existing index rather than rebuilding it. The column
+        // Appended to the existing index rather than rebuilding it. The column
         // list must match the FTS declaration order (content, title).
         await txn.execute('''
           INSERT INTO content_fts(rowid, content, title)
@@ -231,16 +286,14 @@ class PackService {
         ''');
 
         await txn.execute('''
-          INSERT INTO pack_sources(pack_id, source_id)
+          INSERT INTO fragment_sources(fragment_id, source_id)
           SELECT ?, id FROM pack.sources
-        ''', [pack.id]);
+        ''', [fragment.id]);
 
-        await txn.insert('installed_packs', {
-          'id': pack.id,
-          'name': pack.name,
-          'corpus_version': corpusVersion,
-          'bytes': pack.bytes,
-          'units': pack.units,
+        await txn.insert('installed_fragments', {
+          'id': fragment.id,
+          'bytes': fragment.bytes,
+          'units': fragment.units,
           'installed_at': DateTime.now().toIso8601String(),
         });
       });
@@ -249,41 +302,87 @@ class PackService {
     }
   }
 
-  /// Remove an installed pack's content.
-  Future<void> uninstall(String packId) async {
+  /// Remove a collection, keeping any fragment another collection still needs.
+  ///
+  /// This is the whole reason fragments exist as a separate layer. Someone with
+  /// both "Church Fathers" and "Augustine of Hippo" who removes the former must
+  /// keep Augustine; someone who removes the latter must keep everything, since
+  /// Church Fathers needs it too.
+  Future<void> uninstall(String collectionId) async {
+    final ownFragments = (await db.query(
+      'collection_fragments',
+      columns: ['fragment_id'],
+      where: 'collection_id = ?',
+      whereArgs: [collectionId],
+    ))
+        .map((r) => r['fragment_id'] as String)
+        .toSet();
+
+    // What the *other* installed collections still require. Read from the
+    // local record rather than the manifest, so this works offline and cannot
+    // be changed underneath the reader by a new publication.
+    final stillNeeded = (await db.rawQuery('''
+      SELECT DISTINCT cf.fragment_id FROM collection_fragments cf
+      JOIN installed_collections ic ON ic.id = cf.collection_id
+      WHERE cf.collection_id != ?
+    ''', [collectionId]))
+        .map((r) => r['fragment_id'] as String)
+        .toSet();
+
+    final doomed = ownFragments.difference(stillNeeded);
+    final present = await installedFragments();
+
     await db.transaction((txn) async {
-      const scope = '(SELECT source_id FROM pack_sources WHERE pack_id = ?)';
+      for (final fragment in doomed) {
+        if (!present.contains(fragment)) continue;
+        await _deleteFragment(txn, fragment);
+      }
 
-      await txn.execute('''
-        DELETE FROM chunk_embeddings WHERE chunk_id IN (
-          SELECT c.id FROM content_chunks c
-          JOIN content_units u ON c.content_unit_id = u.id
-          WHERE u.source_id IN $scope)
-      ''', [packId]);
-      await txn.execute('''
-        DELETE FROM content_chunks WHERE content_unit_id IN (
-          SELECT id FROM content_units WHERE source_id IN $scope)
-      ''', [packId]);
-      await txn.execute('''
-        DELETE FROM content_tags WHERE content_unit_id IN (
-          SELECT id FROM content_units WHERE source_id IN $scope)
-      ''', [packId]);
-      await txn.execute(
-          'DELETE FROM content_units WHERE source_id IN $scope', [packId]);
-      await txn.execute('DELETE FROM sources WHERE id IN $scope', [packId]);
+      if (doomed.isNotEmpty) {
+        // External-content FTS5 has no sync triggers, so deleting the rows
+        // leaves the index pointing at text that is gone and searches return
+        // matches that cannot be opened. The index is rebuilt rather than
+        // patched with 'delete' commands, which require passing the exact
+        // original column values back and corrupt the index silently when
+        // they do not match.
+        await txn.execute(
+            "INSERT INTO content_fts(content_fts) VALUES('rebuild')");
+      }
 
-      // External-content FTS5 has no sync triggers, so deleting the underlying
-      // rows leaves the index pointing at text that is gone: searches return
-      // matches that cannot be opened. The index is rebuilt rather than
-      // patched with 'delete' commands, because those require passing the
-      // exact original column values back and corrupt the index silently if
-      // they do not match.
-      await txn.execute("INSERT INTO content_fts(content_fts) VALUES('rebuild')");
-
-      await txn.delete('pack_sources', where: 'pack_id = ?', whereArgs: [packId]);
-      await txn.delete('installed_packs', where: 'id = ?', whereArgs: [packId]);
+      await txn.delete('collection_fragments',
+          where: 'collection_id = ?', whereArgs: [collectionId]);
+      await txn.delete('installed_collections',
+          where: 'id = ?', whereArgs: [collectionId]);
     });
-    await onContentChanged?.call();
+
+    if (doomed.isNotEmpty) await onContentChanged?.call();
+  }
+
+  Future<void> _deleteFragment(Transaction txn, String fragmentId) async {
+    const scope = '(SELECT source_id FROM fragment_sources WHERE fragment_id = ?)';
+
+    await txn.execute('''
+      DELETE FROM chunk_embeddings WHERE chunk_id IN (
+        SELECT c.id FROM content_chunks c
+        JOIN content_units u ON c.content_unit_id = u.id
+        WHERE u.source_id IN $scope)
+    ''', [fragmentId]);
+    await txn.execute('''
+      DELETE FROM content_chunks WHERE content_unit_id IN (
+        SELECT id FROM content_units WHERE source_id IN $scope)
+    ''', [fragmentId]);
+    await txn.execute('''
+      DELETE FROM content_tags WHERE content_unit_id IN (
+        SELECT id FROM content_units WHERE source_id IN $scope)
+    ''', [fragmentId]);
+    await txn.execute(
+        'DELETE FROM content_units WHERE source_id IN $scope', [fragmentId]);
+    await txn.execute('DELETE FROM sources WHERE id IN $scope', [fragmentId]);
+
+    await txn.delete('fragment_sources',
+        where: 'fragment_id = ?', whereArgs: [fragmentId]);
+    await txn.delete('installed_fragments',
+        where: 'id = ?', whereArgs: [fragmentId]);
   }
 
   void dispose() => _client.close();

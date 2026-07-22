@@ -47,11 +47,13 @@ void main() {
 
     final packs = PackService(db.database, manifestUrl: _packsUrl);
     final manifest = await packs.fetchManifest();
-    for (final pack in manifest.packs) {
+    // Every collection, so the suite runs against the whole library. They
+    // overlap heavily; installing them all still fetches each fragment once.
+    for (final collection in manifest.collections) {
       await packs.install(
-        pack,
+        collection,
+        manifest,
         corpusVersion: DatabaseService.corpusVersion,
-        manifestCorpusVersion: manifest.corpusVersion,
       );
     }
     await db.semantic?.reload();

@@ -17,6 +17,15 @@ void main() {
 
   const nothingInstalled = <String>{};
 
+  /// Every fragment, for the "nothing is missing" cases.
+  final everything = catalogue.fragments.keys.toSet();
+
+  /// The fragments a named collection needs — the test speaks in collections
+  /// because that is what a reader installs, while the code counts fragments.
+  Set<String> fragmentsOf(Iterable<String> collections) => {
+        for (final id in collections) ...catalogue.packs[id]!.fragments,
+      };
+
   List<PackSuggestion> suggest(
     String question, {
     List<String> tags = const [],
@@ -25,13 +34,14 @@ void main() {
       catalogue.suggest(
         question: question,
         queryTags: tags,
-        installed: installed,
+        installedFragments: installed,
       );
 
   test('the catalogue describes the published packs', () {
     expect(catalogue.packs.keys,
-        containsAll(['fathers-augustine', 'fathers-chrysostom', 'fathers']));
-    expect(catalogue.packs['fathers']!.authors.length, greaterThan(50));
+        containsAll(['creeds-and-confessions', 'church-fathers',
+                     'author-augustine', 'tradition-lutheran']));
+    expect(catalogue.packs['church-fathers']!.authors.length, greaterThan(50));
   });
 
   group('naming an author', () {
@@ -39,20 +49,24 @@ void main() {
       final suggestions = suggest('What did Augustine say about grace?');
 
       expect(suggestions, isNotEmpty);
-      expect(suggestions.first.packId, 'fathers-augustine');
+      // The narrowest match, not the largest: "Church Fathers" would also
+      // answer it, at ten times the download.
+      expect(suggestions.first.packId, 'author-augustine');
       expect(suggestions.first.reason, SuggestionReason.namesAuthor);
       expect(suggestions.first.explanation, contains('Augustine'));
+      expect(suggestions, hasLength(1),
+          reason: 'overlapping collections must not each produce a notice');
     });
 
     test('a surname alone is enough', () {
       final suggestions = suggest('Chrysostom on almsgiving');
-      expect(suggestions.map((s) => s.packId), contains('fathers-chrysostom'));
+      expect(suggestions.first.packId, 'author-chrysostom');
     });
 
     test('nothing is suggested once the pack is installed', () {
       final suggestions = suggest(
         'What did Augustine say about grace?',
-        installed: {'fathers-augustine', 'fathers-chrysostom', 'fathers'},
+        installed: everything,
       );
       expect(suggestions, isEmpty);
     });
@@ -84,15 +98,14 @@ void main() {
     });
 
     test('an installed library is never nagged', () {
-      final all = catalogue.packs.keys.toSet();
       expect(
-        suggest('the Eucharist', tags: ['eucharist'], installed: all),
+        suggest('the Eucharist', tags: ['eucharist'], installed: everything),
         isEmpty,
       );
     });
   });
 
-  group('restraint', () => _restraint(catalogue));
+  group('restraint', () => _restraint(catalogue, everything, fragmentsOf));
 
   group('covering a subject', () {
     test('a subject a pack covers heavily is surfaced', () {
@@ -114,7 +127,7 @@ void main() {
       );
 
       expect(suggestions.first.reason, SuggestionReason.namesAuthor);
-      expect(suggestions.first.packId, 'fathers-augustine');
+      expect(suggestions.first.packId, 'author-augustine');
     });
   });
 }
@@ -122,7 +135,11 @@ void main() {
 /// Whether the notice earns its place, rather than firing on everything
 /// forever. This is the difference between a useful signal and one users learn
 /// to dismiss without reading.
-void _restraint(PackCatalogue catalogue) {
+void _restraint(
+  PackCatalogue catalogue,
+  Set<String> everything,
+  Set<String> Function(Iterable<String>) fragmentsOf,
+) {
   const everyTag = [
     'baptism', 'eucharist', 'grace', 'justification', 'trinity',
     'salvation', 'sin', 'church', 'scripture', 'prayer',
@@ -134,7 +151,7 @@ void _restraint(PackCatalogue catalogue) {
     final suggestions = catalogue.suggest(
       question: 'what happens in communion',
       queryTags: const ['eucharist'],
-      installed: const {},
+      installedFragments: const {},
     );
     expect(suggestions, hasLength(1),
         reason: 'one notice per question, not one per missing pack');
@@ -149,7 +166,7 @@ void _restraint(PackCatalogue catalogue) {
       final suggestions = catalogue.suggest(
         question: 'a question with no names in it',
         queryTags: [tag],
-        installed: const {'fathers'},
+        installedFragments: fragmentsOf(const ['church-fathers']),
       );
       if (suggestions.isNotEmpty) warned++;
     }
@@ -163,7 +180,7 @@ void _restraint(PackCatalogue catalogue) {
         catalogue.suggest(
           question: 'anything at all',
           queryTags: [tag],
-          installed: catalogue.packs.keys.toSet(),
+          installedFragments: everything,
         ),
         isEmpty,
         reason: 'nothing is missing, so nothing should be claimed missing',

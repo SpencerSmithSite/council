@@ -51,8 +51,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: Center(child: CircularProgressIndicator()),
               ),
             if (manifest != null)
-              for (final pack in manifest.packs) _PackTile(pack: pack),
-            if (manifest != null && manifest.packs.isEmpty)
+              for (final group in _grouped(manifest.collections)) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: Text(group.key,
+                      style: Theme.of(context).textTheme.titleSmall),
+                ),
+                for (final collection in group.value)
+                  _PackTile(pack: collection),
+              ],
+            if (manifest != null && manifest.collections.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(32),
                 child: Text('No additional content is published yet.'),
@@ -64,8 +72,29 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 }
 
+/// Collections in a deliberate order: the comparative baseline first, then
+/// broad periods, then traditions, then individual authors. Someone opening
+/// this for the first time should meet "Creeds & Confessions" before a list of
+/// twenty patristic writers.
+List<MapEntry<String, List<Collection>>> _grouped(List<Collection> all) {
+  const order = {
+    CollectionKind.essential: 'Start here',
+    CollectionKind.scripture: 'Scripture',
+    CollectionKind.era: 'By period',
+    CollectionKind.tradition: 'By tradition',
+    CollectionKind.author: 'By author',
+    CollectionKind.other: 'More',
+  };
+  final groups = <MapEntry<String, List<Collection>>>[];
+  for (final entry in order.entries) {
+    final members = all.where((c) => c.kind == entry.key).toList();
+    if (members.isNotEmpty) groups.add(MapEntry(entry.value, members));
+  }
+  return groups;
+}
+
 class _PackTile extends StatelessWidget {
-  final PackInfo pack;
+  final Collection pack;
 
   const _PackTile({required this.pack});
 
@@ -94,16 +123,23 @@ class _PackTile extends StatelessWidget {
                 if (installed)
                   const Icon(Icons.check_circle, size: 20)
                 else
-                  Text(pack.sizeLabel,
-                      style: Theme.of(context).textTheme.labelMedium),
+                  Text(
+                    // What it costs *now*. Zero is common and honest: someone
+                    // holding Church Fathers already has everything Augustine
+                    // needs, and quoting a download that will not happen would
+                    // be a routine small lie.
+                    packs.bytesToInstall(pack) == 0
+                        ? 'Already downloaded'
+                        : formatBytes(packs.bytesToInstall(pack)),
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
               ],
             ),
             const SizedBox(height: 6),
             Text(pack.description,
                 style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 6),
-            Text('${pack.sources} works · ${pack.units} passages',
-                style: Theme.of(context).textTheme.labelSmall),
+
             if (busy && !installed) ...[
               const SizedBox(height: 12),
               LinearProgressIndicator(
@@ -143,9 +179,9 @@ class _PackTile extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Remove ${pack.name}?'),
-        content: Text(
-          'This deletes ${pack.units} passages from your library. You can '
-          'download it again later (${pack.sizeLabel}).',
+        content: const Text(
+          'Anything also included in another collection you have downloaded '
+          'will be kept.',
         ),
         actions: [
           TextButton(
