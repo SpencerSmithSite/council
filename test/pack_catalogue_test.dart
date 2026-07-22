@@ -63,6 +63,24 @@ void main() {
       expect(suggestions.first.packId, 'author-chrysostom');
     });
 
+    test('an author already on the device is never suggested again', () {
+      // The regression this locks in: installing "Augustine of Hippo" leaves
+      // the *Catholic* collection incomplete, and that collection also lists
+      // Augustine among its authors. Asking about him afterwards therefore
+      // kept offering to install him — observed in the running app, right
+      // after the download that was supposed to fix it.
+      final suggestions = suggest(
+        'What did Augustine say about grace?',
+        installed: fragmentsOf(const ['author-augustine']),
+      );
+
+      expect(
+        suggestions.where((s) => s.reason == SuggestionReason.namesAuthor),
+        isEmpty,
+        reason: 'his writings are installed; only a collection is incomplete',
+      );
+    });
+
     test('nothing is suggested once the pack is installed', () {
       final suggestions = suggest(
         'What did Augustine say about grace?',

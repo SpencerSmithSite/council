@@ -465,8 +465,12 @@ def main():
     catalogue = {
         "corpusVersion": CORPUS_VERSION,
         "core": pack_catalogue(conn, by_fragment.get("core", []))["tags"],
+        # Authors and titles per fragment, not only tags. A suggestion needs
+        # to know whether *this author's text* is present, which is a property
+        # of fragments; asking whether a collection is complete answers a
+        # different question and answers it wrongly.
         "fragments": {
-            f["id"]: pack_catalogue(conn, by_fragment[f["id"]])["tags"]
+            f["id"]: pack_catalogue(conn, by_fragment[f["id"]])
             for f in fragments
             if by_fragment.get(f["id"])
         },

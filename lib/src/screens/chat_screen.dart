@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 
 import '../services/packs/pack_catalogue.dart';
+import '../services/packs/pack_manifest.dart';
 import '../services/packs/pack_provider.dart';
 import 'library_screen.dart';
 import '../services/database_service.dart';
@@ -31,6 +32,9 @@ class _ChatScreenState extends State<ChatScreen> {
   /// it reads as a note about the library rather than part of what the sources
   /// say.
   List<PackSuggestion> _gaps = const [];
+
+  /// The question the current gap relates to, so it can be re-answered.
+  String? _gapQuestion;
   bool _isLoading = false;
 
   /// Set by the stop button; the streaming loop checks it between chunks.
@@ -57,8 +61,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
   
-  Future<void> _sendMessage() async {
-    final text = _messageController.text.trim();
+  Future<void> _sendMessage({String? question}) async {
+    final text = question ?? _messageController.text.trim();
     if (text.isEmpty || _isLoading) return;
 
     final backend = context.read<InferenceProvider>().backend;
@@ -83,6 +87,10 @@ class _ChatScreenState extends State<ChatScreen> {
           text,
           _databaseService.extractTags(text),
         );
+    // Kept so the question can be asked again once the missing collection
+    // arrives. Telling someone their answer was incomplete and then making
+    // them retype the question is most of a feature.
+    _gapQuestion = _gaps.isEmpty ? null : text;
 
     try {
       final passages = await _databaseService.searchForRAG(text, limit: 6);
@@ -248,7 +256,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
           ),
           
-          if (_gaps.isNotEmpty && !_isLoading) _CoverageNotice(gaps: _gaps),
+          if (_gaps.isNotEmpty && !_isLoading)
+            _CoverageNotice(
+              gaps: _gaps,
+              onInstalled: () {
+                final question = _gapQuestion;
+                setState(() {
+                  _gaps = const [];
+                  _gapQuestion = null;
+                });
+                if (question != null) _sendMessage(question: question);
+              },
+            ),
 
           // Loading indicator
           if (_isLoading)
@@ -561,24 +580,92 @@ class _Badge extends StatelessWidget {
 }
 
 /// Tells the reader that the answer they just received was drawn from a
-/// fraction of the available sources.
+/// fraction of the available sources — and closes the gap in place.
 ///
 /// This exists because splitting the corpus made a new failure reachable: the
 /// app can only search text it holds, so a library without the fathers answers
 /// a question about the Eucharist from confessions alone — fluent, cited, and
-/// drawn from under a tenth of what has been written. For an app whose purpose
-/// is showing what each tradition actually taught, omitting one silently is
-/// the worst thing it could do.
-class _CoverageNotice extends StatelessWidget {
+/// drawn from under a tenth of what has been written on it.
+///
+/// It downloads here rather than linking to the Library. Sending someone to
+/// another screen to fix a problem they did not know they had, and expecting
+/// them to come back and retype the question, is most of a feature: the answer
+/// is the point, and it should arrive on its own once the collection lands.
+class _CoverageNotice extends StatefulWidget {
   final List<PackSuggestion> gaps;
 
-  const _CoverageNotice({required this.gaps});
+  /// Called once the missing collection is installed, so the question that
+  /// prompted the notice can be answered again.
+  final VoidCallback onInstalled;
+
+  const _CoverageNotice({required this.gaps, required this.onInstalled});
+
+  @override
+  State<_CoverageNotice> createState() => _CoverageNoticeState();
+}
+
+class _CoverageNoticeState extends State<_CoverageNotice> {
+  bool _busy = false;
+  String? _error;
+
+  PackSuggestion get _gap => widget.gaps.first;
+
+  /// The collection to install, if the catalogue has been fetched.
+  ///
+  /// It may not have been. The notice is built from a catalogue bundled with
+  /// the app precisely so it works offline, while the manifest is a separate
+  /// network call — so the gap can always be described even when the fix
+  /// cannot yet be offered.
+  Collection? _collection(PackProvider packs) {
+    final manifest = packs.manifest;
+    if (manifest == null) return null;
+    for (final collection in manifest.collections) {
+      if (collection.id == _gap.packId) return collection;
+    }
+    return null;
+  }
+
+  Future<void> _install() async {
+    final packs = context.read<PackProvider>();
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    // Fetch the catalogue if this is the first time it has been needed.
+    if (packs.manifest == null) await packs.refresh();
+    if (!mounted) return;
+
+    final collection = _collection(packs);
+    if (collection == null) {
+      setState(() {
+        _busy = false;
+        _error = 'That collection could not be reached.';
+      });
+      return;
+    }
+
+    await packs.install(collection);
+    if (!mounted) return;
+
+    if (packs.error != null) {
+      setState(() {
+        _busy = false;
+        _error = packs.error;
+      });
+      return;
+    }
+    widget.onInstalled();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final packs = context.read<PackProvider>();
+    final packs = context.watch<PackProvider>();
     final scheme = Theme.of(context).colorScheme;
-    final gap = gaps.first;
+    final text = Theme.of(context).textTheme;
+
+    final collection = _collection(packs);
+    final size = collection == null ? null : packs.bytesToInstall(collection);
 
     return Container(
       width: double.infinity,
@@ -588,37 +675,74 @@ class _CoverageNotice extends StatelessWidget {
         color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, size: 18, color: scheme.onSurfaceVariant),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  gap.explanation,
-                  style: Theme.of(context).textTheme.bodySmall,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline, size: 18, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_gap.explanation, style: text.bodySmall),
+                    const SizedBox(height: 2),
+                    Text(
+                      'This answer draws only on what you have installed.',
+                      style: text.bodySmall
+                          ?.copyWith(color: scheme.onSurfaceVariant),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 4),
+                      Text(_error!,
+                          style: text.bodySmall?.copyWith(color: scheme.error)),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'This answer draws only on what you have installed.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const LibraryScreen()),
+          if (_busy) ...[
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: packs.progress > 0 ? packs.progress : null,
             ),
-            child: Text('Add ${packs.nameOf(gap.packId)}'),
-          ),
+            const SizedBox(height: 6),
+            Text(
+              'Downloading — your question will be answered again '
+              'automatically.',
+              style: text.labelSmall,
+            ),
+          ] else
+            Align(
+              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                    ),
+                    child: const Text('Browse library'),
+                  ),
+                  const SizedBox(width: 4),
+                  FilledButton.tonal(
+                    onPressed: _install,
+                    // The size is shown on the button because this is an
+                    // unsolicited suggestion to spend someone's data.
+                    child: Text(
+                      size == null
+                          ? 'Add ${packs.nameOf(_gap.packId)}'
+                          : 'Add ${packs.nameOf(_gap.packId)} · '
+                              '${formatBytes(size)}',
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

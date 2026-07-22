@@ -1231,6 +1231,28 @@ the toolchain is stable — not a re-architecture.
   only search box on the screen searched passage text, not the shelf. Typing
   now filters the shelf; return still searches inside the texts.
 
+### Ask-and-install (2026-07-22)
+
+- [x] The coverage notice downloads the collection **in place**, shows progress,
+  and then re-asks the question that prompted it. Sending someone to another
+  screen to fix a problem they did not know they had, and expecting them to
+  come back and retype the question, was most of a feature.
+- [x] The size is on the button, because this is an unsolicited suggestion to
+  spend someone's data. The manifest is now fetched at startup — 1.4 KB — since
+  otherwise the first time anyone saw the offer was the one time it could not
+  quote a price.
+
+**A bug the app itself exposed.** Installing "Augustine of Hippo" and asking
+again produced *"You asked about Augustine of Hippo, whose writings are not
+installed"* — immediately after the download that was supposed to fix it. The
+Catholic collection also lists Augustine among its authors and was still
+incomplete, and the check asked whether a *collection* was complete rather than
+whether the *author's text* was present. Those are different questions.
+
+Fragments now carry authors and titles, not just tag counts, so the notice can
+ask the right one. Verified the regression test fails without the fix before
+keeping it: a test that passes either way is worse than none.
+
 ### Still to do — recorded so it is not lost
 
 - [ ] **Chat as a real home.** Suggested questions, visible backend state, and
@@ -1244,8 +1266,8 @@ the toolchain is stable — not a re-architecture.
   authors, principal works, date range, what subjects it covers.
 - [ ] **Search inside the Read area**, scoped to what is installed, with
   filters by tradition and author.
-- [ ] **Ask-and-install.** The coverage notice should offer the download inline
-  and then answer the question that prompted it, rather than linking away.
+- [x] **Ask-and-install.** Done — the notice downloads in place and re-answers
+  the question on its own.
 - [ ] **Bookmarks and reading history** folded into Read rather than owning a
   tab.
 - [ ] **Empty states** everywhere: with only Scripture installed, most screens
