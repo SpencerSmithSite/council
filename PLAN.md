@@ -1454,3 +1454,53 @@ to refract.
 
 The general lesson is the one this project keeps relearning: the build passed,
 the tests passed, and the feature was doing nothing.
+
+## Phase 24 — Filling empty traditions (2026-07-22)
+
+### The Second London Baptist Confession (1689)
+
+Done. 32 chapters, 160 paragraphs, corpus v8, published as `f-baptist`.
+Sourcing and the rejected editions are recorded in `SOURCES.md`; the short
+version is that three of four candidate editions were rejected — one for
+destroyed OCR, one for being a modern-English paraphrase under live copyright,
+one for not existing — and the surviving text is corroborated paragraph by
+paragraph against a second edition because its own transcription declares no
+base edition.
+
+Verified in the running app, not only in tests: the pack appears in the Library
+at 98 KB, installs, and the confession reads correctly from the shelf. That
+last step is not ceremony — the Library reads its manifest from the published
+GitHub Release, so a pack that is correct in `dist/` and absent from the
+release is invisible to every user and to the entire test suite.
+
+### Two gaps this turned up
+
+- [ ] **Subject coverage is measured by volume, so a small tradition-defining
+  document can never be surfaced by it.** The confession holds 8 passages
+  tagged `baptism`; the fathers hold 1,063. `suggest()` names the collection
+  holding the *most* of a tag, so a question about believer's baptism will
+  always be answered by offering the fathers. That is correct arithmetic and
+  the wrong answer: the reason to install the Baptist pack is not that it is
+  large but that without it the tradition is unrepresented. Coverage should
+  weigh *whether a named tradition is absent entirely*, not only how many
+  passages are missing.
+
+- [x] **Works were matched by their full title verbatim.** "The Second London
+  Baptist Confession" omits "of Faith" and so matched nothing — and the same
+  held for every anonymous confession in the corpus, which is most of them and
+  which have no author to fall back on. Now matched on three consecutive
+  significant words, which is specific enough that the existing restraint
+  tests all still pass.
+
+### Next in this phase
+
+1. **Wesley's Standard Sermons** — `methodist` holds 16 units. The Wesley
+   Center corpus has moved; the archive needs finding before anything else.
+2. **A clean Westminster Confession** — still unprovenanced, and now clearly
+   tractable: the same corroboration method that worked here applies directly,
+   and CCEL's critical apparatus is no longer the only option considered.
+3. **Anabaptist, Mennonite, Quaker** — absent entirely. Gutenberg has Penn and
+   Woolman with confirmed ids.
+
+`poppler` is now a build-host dependency of the ingest tooling (`brew install
+poppler`). Several of the remaining confessions exist only as PDFs.
