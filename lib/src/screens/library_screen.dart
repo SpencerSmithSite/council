@@ -20,6 +20,8 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
+  final _query = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -29,50 +31,104 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
+
+  /// The collections matching the search box, by name and description.
+  ///
+  /// A reader looking for the Westminster standards should find the pack that
+  /// contains them without knowing it is called "Reformed & Presbyterian", so
+  /// the description is searched as well as the title — the description is where
+  /// the individual works are named.
+  List<Collection> _matching(List<Collection> all) {
+    final query = _query.text.trim().toLowerCase();
+    if (query.isEmpty) return all;
+    return all.where((c) {
+      return c.name.toLowerCase().contains(query) ||
+          c.description.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final packs = context.watch<PackProvider>();
     final manifest = packs.manifest;
+    final searching = _query.text.trim().isNotEmpty;
+
+    final visible =
+        manifest == null ? const <Collection>[] : _matching(manifest.collections);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: RefreshIndicator(
-        onRefresh: packs.refresh,
-        child: ListView(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 8),
-          children: [
-            const LargeTitle('Library'),
-            if (packs.error != null)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  packs.error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
+      body: Column(
+        children: [
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: packs.refresh,
+              child: ListView(
+                padding: const EdgeInsets.only(bottom: 8),
+                children: [
+                  const LargeTitle('Library'),
+                  if (packs.error != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        packs.error!,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
+                      ),
+                    ),
+                  if (packs.loading && manifest == null)
+                    const Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  // The bundled-Bible notice is about the whole library, not a
+                  // search result, so it steps aside while searching.
+                  if (!searching) const _BundledNotice(),
+                  if (manifest != null)
+                    for (final group in _grouped(visible)) ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                        child: Text(group.key,
+                            style: Theme.of(context).textTheme.titleSmall),
+                      ),
+                      for (final collection in group.value)
+                        _PackTile(pack: collection),
+                    ],
+                  if (manifest != null &&
+                      manifest.collections.isEmpty &&
+                      !searching)
+                    const Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Text('No additional content is published yet.'),
+                    ),
+                  if (searching && visible.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(
+                        'No packs match "${_query.text.trim()}".',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                ],
               ),
-            if (packs.loading && manifest == null)
-              const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            const _BundledNotice(),
-            if (manifest != null)
-              for (final group in _grouped(manifest.collections)) ...[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                  child: Text(group.key,
-                      style: Theme.of(context).textTheme.titleSmall),
-                ),
-                for (final collection in group.value)
-                  _PackTile(pack: collection),
-              ],
-            if (manifest != null && manifest.collections.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(32),
-                child: Text('No additional content is published yet.'),
-              ),
-          ],
-        ),
+            ),
+          ),
+          GlassComposer(
+            controller: _query,
+            hintText: 'Search packs',
+            leadingIcon: AppIcons.search,
+            onChanged: (_) => setState(() {}),
+            onClear: () {
+              _query.clear();
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
