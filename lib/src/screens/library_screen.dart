@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/glass.dart';
+import '../theme/glass_controls.dart';
 import 'package:provider/provider.dart';
 
 import '../services/packs/pack_manifest.dart';
@@ -34,13 +34,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final manifest = packs.manifest;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Library')),
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: packs.refresh,
         child: ListView(
-          // Clear the translucent tab bar the body runs behind on Apple.
-          padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 8),
           children: [
+            const LargeTitle('Library'),
             if (packs.error != null)
               Padding(
                 padding: const EdgeInsets.all(16),

@@ -12,6 +12,7 @@ import '../services/settings_provider.dart';
 import '../services/inference/inference_backend.dart';
 import '../services/inference/inference_provider.dart';
 import 'content_detail_screen.dart';
+import '../theme/glass_controls.dart';
 
 // ContextPassage is defined in ollama_service.dart
 
@@ -230,32 +231,27 @@ class _ChatScreenState extends State<ChatScreen> {
   
   @override
   Widget build(BuildContext context) {
+    // Full-bleed content, with the top inset clearing the floating menu and
+    // settings bubbles the chrome hovers over it.
+    final topInset = MediaQuery.of(context).padding.top + 56;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ask AI'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () => _showInfo(context),
-          ),
-        ],
-      ),
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          // Messages list
           Expanded(
             child: _messages.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.fromLTRB(16, topInset, 16, 12),
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       return _MessageBubble(message: _messages[index]);
                     },
                   ),
           ),
-          
+
           if (_gaps.isNotEmpty && !_isLoading)
             _CoverageNotice(
               gaps: _gaps,
@@ -269,10 +265,9 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
 
-          // Loading indicator
           if (_isLoading)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Row(
                 children: [
                   const SizedBox(
@@ -283,60 +278,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(width: 12),
                   Text(_cancelled ? 'Stopping…' : 'Thinking…'),
                   const Spacer(),
-                  // Local models can take a long time; let the user bail out.
-                  TextButton.icon(
+                  TextButton(
                     onPressed: _cancelled
                         ? null
                         : () => setState(() => _cancelled = true),
-                    icon: const Icon(Icons.stop_circle_outlined, size: 18),
-                    label: const Text('Stop'),
+                    child: const Text('Stop'),
                   ),
                 ],
               ),
             ),
-          
-          // Input area
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Ask a theological question...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendMessage(),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
-                    icon: const Icon(Icons.send),
-                    onPressed: _isLoading ? null : _sendMessage,
-                  ),
-                ],
-              ),
-            ),
+
+          GlassComposer(
+            controller: _messageController,
+            hintText: 'Ask a theological question…',
+            enabled: !_isLoading,
+            trailingIcon: AppIcons.send,
+            onSubmit: () => _sendMessage(),
           ),
         ],
       ),
@@ -384,86 +341,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _sendMessage();
   }
   
-  void _showInfo(BuildContext context) {
-    final inference = context.read<InferenceProvider>();
-    final backend = inference.backend;
-    final status = inference.status;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('AI backend'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    status?.available == true
-                        ? Icons.check_circle
-                        : Icons.error_outline,
-                    color: status?.available == true
-                        ? Colors.green
-                        : Colors.orange,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      backend.displayName,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                ],
-              ),
-              if (status?.detail != null) ...[
-                const SizedBox(height: 8),
-                Text(status!.detail!),
-              ],
-              const SizedBox(height: 16),
-              Text(backend.description),
-              const SizedBox(height: 16),
-
-              // State the privacy position per backend rather than making a
-              // blanket claim: with a cloud key, data does leave the device.
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    backend.isPrivate ? Icons.lock_outline : Icons.cloud_upload,
-                    size: 18,
-                    color: backend.isPrivate
-                        ? Colors.green
-                        : Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      backend.isPrivate
-                          ? 'Your questions and the library stay on your device.'
-                          : 'Your question and the retrieved passages are sent '
-                              "to this provider, under that provider's privacy "
-                              'policy and retention terms rather than this '
-                              "app's. They may be retained or used for "
-                              'training — check their terms.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 /// One cited passage, showing which tradition it speaks for and whether its

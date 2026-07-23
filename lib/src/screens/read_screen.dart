@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/glass.dart';
+import '../theme/glass_controls.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
@@ -92,48 +93,9 @@ class _ReadScreenState extends State<ReadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Read'),
-        actions: [
-          IconButton(
-            tooltip: 'Bookmarks',
-            icon: const Icon(Icons.bookmark_outline),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BookmarksScreen()),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _query,
-              decoration: InputDecoration(
-                hintText: 'Filter your shelf, or press return to search text',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () {
-                          _query.clear();
-                          _search('');
-                        },
-                      ),
-                border: const OutlineInputBorder(),
-                isDense: true,
-              ),
-              // Typing filters the shelf; return searches inside the texts.
-              // With 380 works installed, a reader looking for the Bible was
-              // scrolling past every apocryphal Acts to reach it — the box was
-              // the only search on screen and it searched the wrong thing.
-              onChanged: (_) => setState(() => _results = null),
-              onSubmitted: _search,
-            ),
-          ),
           Expanded(
             child: _searching
                 ? const Center(child: CircularProgressIndicator())
@@ -143,7 +105,26 @@ class _ReadScreenState extends State<ReadScreen> {
                         sources: _filtered,
                         onRefresh: _loadShelf,
                         filtered: _query.text.trim().isNotEmpty,
+                        onOpenBookmarks: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const BookmarksScreen()),
+                        ),
                       ),
+          ),
+          // Search lives in the floating bottom bubble now: typing filters the
+          // shelf live, return runs a full-text search inside the passages.
+          GlassComposer(
+            controller: _query,
+            hintText: 'Search the library',
+            leadingIcon: AppIcons.search,
+            onChanged: (_) => setState(() => _results = null),
+            onSubmit: () => _search(_query.text),
+            onClear: () {
+              _query.clear();
+              _search('');
+              setState(() {});
+            },
           ),
         ],
       ),
@@ -156,10 +137,12 @@ class _Shelf extends StatelessWidget {
   final List<Map<String, dynamic>>? sources;
   final Future<void> Function() onRefresh;
   final bool filtered;
+  final VoidCallback onOpenBookmarks;
 
   const _Shelf({
     required this.sources,
     required this.onRefresh,
+    required this.onOpenBookmarks,
     this.filtered = false,
   });
 
@@ -169,18 +152,30 @@ class _Shelf extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final header = LargeTitle(
+      'Read',
+      trailing: IconButton(
+        tooltip: 'Bookmarks',
+        icon: Icon(AppIcons.bookmark),
+        onPressed: onOpenBookmarks,
+      ),
+    );
+
     if (sources!.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            filtered
-                ? 'Nothing on your shelf matches. Press return to search '
-                    'inside the texts instead.'
-                : 'Nothing installed yet.',
-            textAlign: TextAlign.center,
+      return ListView(
+        children: [
+          header,
+          Padding(
+            padding: const EdgeInsets.all(32),
+            child: Text(
+              filtered
+                  ? 'Nothing on your shelf matches. Press return to search '
+                      'inside the texts instead.'
+                  : 'Nothing installed yet.',
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
+        ],
       );
     }
 
@@ -194,9 +189,9 @@ class _Shelf extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
-        // Clear the translucent tab bar the body runs behind on Apple.
-        padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
+        padding: const EdgeInsets.only(bottom: 8),
         children: [
+          header,
           for (final entry in byTradition.entries) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -213,7 +208,7 @@ class _Shelf extends StatelessWidget {
                     source['date_composed'] as String,
                   '${source['units']} sections',
                 ].join(' · ')),
-                trailing: const Icon(Icons.chevron_right, size: 18),
+                trailing: Icon(AppIcons.chevronRight, size: 18),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -276,7 +271,7 @@ class _Results extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding: EdgeInsets.only(bottom: appleTabBarInset(context)),
+      padding: EdgeInsets.only(top: floatingTopInset(context), bottom: 8),
       itemCount: rows.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {

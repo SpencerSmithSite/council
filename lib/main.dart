@@ -17,6 +17,7 @@ import 'src/screens/settings_screen.dart';
 import 'src/screens/onboarding_screen.dart';
 import 'src/theme/app_theme.dart';
 import 'src/theme/glass.dart';
+import 'src/theme/glass_controls.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,72 +125,185 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
+/// The three primary areas.
+///
+/// Asking is what the app is for, so Ask is first. Browse, Search and Bookmarks
+/// collapsed into Read — three routes into one act. Settings is no longer one
+/// of these: on Apple it belongs in the top-right corner, not in the primary
+/// navigation, so it is reached by the floating gear rather than listed here.
+enum _Area {
+  ask('Ask'),
+  read('Read'),
+  library('Library');
+
+  const _Area(this.title);
+  final String title;
+
+  IconData get icon => switch (this) {
+        _Area.ask => AppIcons.ask,
+        _Area.read => AppIcons.read,
+        _Area.library => AppIcons.library,
+      };
+}
+
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-  
-  /// Four areas, in the order they matter.
-  ///
-  /// Chat is first because asking a question is what the app is for; it used
-  /// to be the fourth tab behind a statistics dashboard. Browse, Search and
-  /// Bookmarks have collapsed into Read — they were three routes into the same
-  /// act. Settings has come out of the bottom of a scrolling list, and the
-  /// Library out from behind it, which mattered more once the app began
-  /// shipping with only the Bible.
-  final List<Widget> _screens = [
-    const ChatScreen(),
-    const ReadScreen(),
-    const LibraryScreen(),
-    const SettingsScreen(),
-  ];
-  
+  _Area _area = _Area.ask;
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Widget _screenFor(_Area area) => switch (area) {
+        _Area.ask => const ChatScreen(),
+        _Area.read => const ReadScreen(),
+        _Area.library => const LibraryScreen(),
+      };
+
   @override
   Widget build(BuildContext context) {
+    // On Apple the navigation is a left drawer opened from a floating bubble,
+    // with settings floating top-right and the content full-bleed behind both —
+    // the iOS 26 pattern where chrome hovers over content as detached glass
+    // rather than sitting in solid bars. Elsewhere the same drawer serves, with
+    // plain circular buttons.
+    final top = MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      // The body runs behind the navigation bar so there is something for the
-      // glass to blur. Without this the bar sits on dead space and the effect
-      // is a tint with extra steps.
-      extendBody: isApplePlatform,
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: _glassChrome(
-        borderOnTop: true,
-        child: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+      key: _scaffoldKey,
+      drawer: _NavigationDrawer(
+        current: _area,
+        onSelect: (area) {
+          setState(() => _area = area);
+          Navigator.pop(context);
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.forum_outlined),
-            selectedIcon: Icon(Icons.forum),
-            label: 'Ask',
+      ),
+      // Full-bleed: the content paints edge to edge so the glass controls have
+      // something to refract, and so a list scrolls under them rather than
+      // stopping at a bar.
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: IndexedStack(
+              index: _area.index,
+              children: [for (final a in _Area.values) _screenFor(a)],
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Read',
+
+          // Top-left: open the navigation drawer.
+          Positioned(
+            top: top + 8,
+            left: AppleMetrics.edgeInset,
+            child: GlassBubble(
+              icon: AppIcons.menu,
+              tooltip: 'Menu',
+              onTap: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.library_books_outlined),
-            selectedIcon: Icon(Icons.library_books),
-            label: 'Library',
+
+          // Top-right: settings.
+          Positioned(
+            top: top + 8,
+            right: AppleMetrics.edgeInset,
+            child: GlassBubble(
+              icon: AppIcons.settings,
+              tooltip: 'Settings',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The navigation sidebar, listing the primary areas.
+class _NavigationDrawer extends StatelessWidget {
+  final _Area current;
+  final ValueChanged<_Area> onSelect;
+
+  const _NavigationDrawer({required this.current, required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Drawer(
+      backgroundColor: scheme.surface,
+      shape: isApplePlatform
+          ? const RoundedRectangleBorder(
+              borderRadius: BorderRadius.horizontal(right: Radius.circular(0)))
+          : null,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Text('Council',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      )),
+            ),
+            const SizedBox(height: 8),
+            for (final area in _Area.values)
+              _DrawerRow(
+                area: area,
+                selected: area == current,
+                onTap: () => onSelect(area),
+              ),
           ],
         ),
       ),
     );
   }
+}
 
-  /// Wraps chrome in glass on Apple platforms and leaves it alone elsewhere,
-  /// so the widget tree does not fork per platform at every call site.
-  Widget _glassChrome({required Widget child, required bool borderOnTop}) {
-    if (!isApplePlatform) return child;
-    return GlassSurface(borderOnTop: borderOnTop, child: child);
+class _DrawerRow extends StatelessWidget {
+  final _Area area;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DrawerRow({
+    required this.area,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final color = selected ? scheme.primary : scheme.onSurface;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      child: Material(
+        color: selected
+            ? scheme.primary.withValues(alpha: 0.12)
+            : Colors.transparent,
+        shape: squircle(12),
+        child: InkWell(
+          customBorder: squircle(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            child: Row(
+              children: [
+                Icon(area.icon, color: color, size: 22),
+                const SizedBox(width: 14),
+                Text(
+                  area.title,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 17,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -222,25 +222,14 @@ bool glassIsAppropriate(BuildContext context) {
 /// this app does not target.
 final bool isApplePlatform = Platform.isIOS || Platform.isMacOS;
 
-/// The default height of a Material [NavigationBar]'s content, before any
-/// safe-area inset.
-const double _navBarHeight = 80;
-
-/// How far the content of a tab screen must be inset at the bottom to clear the
-/// glass tab bar it runs behind.
+/// How far the content of a full-bleed screen must be inset at the top to clear
+/// the floating menu and settings bubbles the chrome hovers over it.
 ///
-/// On Apple the four tab screens set `extendBody`, so their scroll views paint
-/// behind the translucent bar — which is what gives the glass something to
-/// blur, and is wrong for the *last* row, which would otherwise sit under the
-/// bar permanently instead of scrolling into the clear.
-///
-/// The obvious `MediaQuery.of(context).padding.bottom` does not work here: each
-/// tab screen has its own [Scaffold], and the outer Scaffold's extended padding
-/// is consumed by the inner one before a screen's `build` can read it. Reading
-/// the window directly sidesteps the nesting and returns the true home-indicator
-/// inset, to which the bar's own height is added.
-double appleTabBarInset(BuildContext context) {
-  if (!isApplePlatform) return 0;
-  final safeBottom = MediaQueryData.fromView(View.of(context)).padding.bottom;
-  return _navBarHeight + safeBottom;
+/// The bubbles sit at `safeTop + 8` and are 44pt tall, so content wants to start
+/// below that. On non-Apple platforms the bubbles are still used, so the inset
+/// applies everywhere.
+double floatingTopInset(BuildContext context) {
+  final safeTop = MediaQuery.of(context).padding.top;
+  // 44pt bubble + its 8pt top offset + a little breathing room.
+  return safeTop + 60;
 }
