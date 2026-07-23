@@ -1621,6 +1621,40 @@ here — only the chrome layout moved.
 * Pushed detail views (source reader, AI backend, bookmarks) keep standard nav
   bars with a back button — correct iOS for a pushed view, and left as is.
 
+## Phase 27 — Theme catalogue (2026-07-23)
+
+Split the single theme setting into the two axes it was really conflating: a
+**brightness mode** (System / Light / Dark) and a **named theme**. Every named
+theme carries a full light *and* dark palette, so the mode switch always has
+somewhere to go — even for schemes that ship dark-only upstream, which get a
+tasteful light counterpart built from the same accent.
+
+* `themes.dart` — a `NamedTheme` catalogue of 24 community palettes (Tokyo
+  Night, Everforest, Ayu, Catppuccin + Macchiato, Gruvbox, Kanagawa, Nord,
+  Matrix, One Dark, Dracula, Solarized dark/light, Monokai, GitHub dark/light,
+  Material Palenight, Night Owl, Rosé Pine, Nightfox, Horizon, Cobalt2, Darcula,
+  High Contrast). A `_palette()` helper expands a handful of identifying colours
+  (bg / surface / text / accent …) into a full `ColorScheme`, so each theme is a
+  compact, readable block rather than a hand-filled scheme.
+* "Default" stays platform-adaptive (Apple / Fluent / Material) and sits at the
+  top of the picker; it isn't in the catalogue because it has no fixed palette.
+* Two axes persist independently (`theme_mode` + `theme_id`), replacing the old
+  `theme_choice` enum. Migration: `catppuccinMocha` → dark + `catppuccin`; plain
+  `light`/`dark` → that mode on Default; the pre-theme `dark_mode` bool still
+  maps too.
+* Named palettes are the same on every platform but keep the platform *shapes*
+  (Apple's grouped glass, Fluent cards) — colour changes, layout doesn't. This
+  reuses the existing `_build(palette, family)` path, the same one Catppuccin
+  used before.
+* Picker screen (`theme_screen.dart`): a segmented mode control over a list of
+  themes, each with a **live swatch** rendered in the mode currently selected,
+  so the whole list restyles the instant the mode flips.
+
+Verified on the Android emulator: mode toggle and theme selection both restyle
+the whole app live; swatches show the correct light/dark variant per theme; the
+legacy Catppuccin choice migrated cleanly. 89 tests pass (2 new migration
+tests); `flutter analyze` clean.
+
 ---
 
 # Forward-looking plans (not yet scheduled)

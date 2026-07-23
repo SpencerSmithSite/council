@@ -99,7 +99,7 @@ class TheologyApp extends StatelessWidget {
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
-          final themes = resolveThemes(settings.themeChoice);
+          final themes = resolveThemes(settings.themeId);
           return MaterialApp(
           title: 'Council',
           theme: themes.light,

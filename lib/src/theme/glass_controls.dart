@@ -27,6 +27,8 @@ class AppIcons {
       isApplePlatform ? CupertinoIcons.xmark : Icons.close;
   static IconData get chevronRight =>
       isApplePlatform ? CupertinoIcons.chevron_right : Icons.chevron_right;
+  static IconData get check =>
+      isApplePlatform ? CupertinoIcons.checkmark : Icons.check;
   static IconData get back =>
       isApplePlatform ? CupertinoIcons.back : Icons.arrow_back;
 

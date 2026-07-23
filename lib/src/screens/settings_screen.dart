@@ -4,10 +4,11 @@ import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
-import '../theme/app_theme.dart';
 import '../theme/glass_controls.dart';
 import '../theme/inset_group.dart';
+import '../theme/themes.dart';
 import 'ai_backend_screen.dart';
+import 'theme_screen.dart';
 import 'library_screen.dart';
 import '../services/packs/pack_provider.dart';
 
@@ -40,31 +41,10 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _pickTheme(
-      BuildContext context, SettingsProvider settings) async {
-    final chosen = await showModalBottomSheet<AppThemeChoice>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: RadioGroup<AppThemeChoice>(
-          groupValue: settings.themeChoice,
-          onChanged: (value) => Navigator.pop(context, value),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final choice in AppThemeChoice.values)
-                RadioListTile<AppThemeChoice>(
-                  value: choice,
-                  title: Text(choice.label),
-                  subtitle: Text(choice.detail),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (chosen != null) await settings.setThemeChoice(chosen);
-  }
+  /// The name shown on the Theme row: "Default" for the platform-adaptive theme,
+  /// otherwise the chosen palette's name.
+  static String _themeLabel(String id) =>
+      id == kDefaultThemeId ? 'Default' : (namedThemeById(id)?.label ?? 'Default');
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +66,10 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: Icon(AppIcons.theme),
                 title: const Text('Theme'),
-                trailing: _Value(settings.themeChoice.label),
-                onTap: () => _pickTheme(context, settings),
+                trailing: _Value(_themeLabel(settings.themeId)),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ThemeScreen()),
+                ),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../theme/themes.dart';
 import 'settings_service.dart';
 
 /// Reactive view over [SettingsService].
@@ -11,20 +12,23 @@ import 'settings_service.dart';
 class SettingsProvider extends ChangeNotifier {
   final SettingsService _settings = SettingsService();
 
-  AppThemeChoice _themeChoice = AppThemeChoice.system;
+  AppThemeMode _themeMode = AppThemeMode.system;
+  String _themeId = kDefaultThemeId;
   double _fontScale = 1.0;
   bool _showCitations = true;
   bool _isLoaded = false;
   bool _hasOnboarded = false;
 
-  /// The user's chosen theme — including the platform-following options and
-  /// Catppuccin Mocha. The screens read this; `MaterialApp` reads [themeMode]
-  /// together with the resolved light/dark themes.
-  AppThemeChoice get themeChoice => _themeChoice;
+  /// The brightness mode (System / Light / Dark). Paired with [themeId] it fully
+  /// describes the appearance. Screens read this; `MaterialApp` reads [themeMode].
+  AppThemeMode get appThemeMode => _themeMode;
 
-  /// Derived so `MaterialApp` can switch light/dark. A named palette like
-  /// Catppuccin pins this to its own brightness.
-  ThemeMode get themeMode => _themeChoice.themeMode;
+  /// Derived so `MaterialApp` can switch its `theme`/`darkTheme`.
+  ThemeMode get themeMode => _themeMode.themeMode;
+
+  /// The chosen named theme, or [kDefaultThemeId] for the platform-adaptive
+  /// Default. `MaterialApp` passes this to `resolveThemes`.
+  String get themeId => _themeId;
 
   double get fontScale => _fontScale;
   bool get showCitations => _showCitations;
@@ -35,8 +39,8 @@ class SettingsProvider extends ChangeNotifier {
   /// False until the first load from disk completes.
   bool get isLoaded => _isLoaded;
 
-  /// True when the theme follows the OS rather than an explicit override.
-  bool get followsSystemTheme => _themeChoice == AppThemeChoice.system;
+  /// True when the theme follows the OS brightness rather than an override.
+  bool get followsSystemTheme => _themeMode == AppThemeMode.system;
 
   Future<void> completeOnboarding() async {
     _hasOnboarded = true;
@@ -45,7 +49,8 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    _themeChoice = AppThemeChoice.fromName(await _settings.getThemeChoice());
+    _themeMode = AppThemeMode.fromName(await _settings.getThemeMode());
+    _themeId = await _settings.getThemeId() ?? kDefaultThemeId;
     _fontScale = await _settings.getFontSize();
     _showCitations = await _settings.getShowCitations();
     _hasOnboarded = await _settings.getHasOnboarded();
@@ -53,10 +58,16 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setThemeChoice(AppThemeChoice choice) async {
-    _themeChoice = choice;
+  Future<void> setThemeMode(AppThemeMode mode) async {
+    _themeMode = mode;
     notifyListeners();
-    await _settings.setThemeChoice(choice.name);
+    await _settings.setThemeMode(mode.name);
+  }
+
+  Future<void> setThemeId(String id) async {
+    _themeId = id;
+    notifyListeners();
+    await _settings.setThemeId(id);
   }
 
   Future<void> setFontScale(double scale) async {
