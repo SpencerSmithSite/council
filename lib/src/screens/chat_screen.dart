@@ -132,10 +132,32 @@ class _ChatScreenState extends State<ChatScreen> {
 
       await _streamAnswer(backend, text, passages, sources);
     } catch (e) {
-      if (mounted) _addAssistantMessage('Error: $e');
+      if (mounted) _addAssistantMessage(_friendlyError(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  /// Turn a raw exception into something a reader can act on. A dropped
+  /// connection almost always means the model was still loading when the
+  /// request went out (the retry inside the backend has already been exhausted
+  /// by this point), so say that rather than surfacing a socket error.
+  String _friendlyError(Object e) {
+    final s = e.toString().toLowerCase();
+    const connectionSignals = [
+      'connection abort',
+      'connection reset',
+      'connection closed',
+      'connection terminated',
+      'software caused',
+      'socketexception',
+      'connection refused',
+    ];
+    if (connectionSignals.any(s.contains)) {
+      return "The model didn't respond in time — it may still be loading. "
+          'Give it a moment and ask again.';
+    }
+    return 'Error: $e';
   }
 
   /// Build the RAG prompt and stream the answer into a placeholder message.

@@ -1,15 +1,59 @@
 import 'dart:convert';
+import 'dart:io' show SocketException;
 import 'package:http/http.dart' as http;
 
 class OllamaService {
   final String baseUrl;
   final String defaultModel;
-  
+
   OllamaService({
     this.baseUrl = 'http://localhost:11434',
     this.defaultModel = 'llama3.2',
   });
-  
+
+  /// Load the model into memory ahead of the first question.
+  ///
+  /// The first `/api/generate` after selecting Ollama can take tens of seconds
+  /// while the server loads a multi-gigabyte model, and during that silent gap
+  /// the connection is liable to be reset (notably by the Android emulator's
+  /// NAT). Sending an empty-prompt request with a `keep_alive` makes *this*
+  /// throwaway call pay the cold start, so the real question streams from a warm
+  /// model. Best-effort: any failure here is swallowed because the real request
+  /// will still run (and surface its own error if something is genuinely wrong).
+  Future<void> preload({String? model}) async {
+    try {
+      await http
+          .post(
+            Uri.parse('$baseUrl/api/generate'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'model': model ?? defaultModel,
+              'prompt': '',
+              'stream': false,
+              // Keep the model resident long enough to cover a session's first
+              // few questions without reloading.
+              'keep_alive': '30m',
+            }),
+          )
+          .timeout(const Duration(minutes: 5));
+    } catch (_) {
+      // Warming is best-effort; the real request handles real failures.
+    }
+  }
+
+  /// Whether an error looks like a connection dropped mid-handshake — the
+  /// signature of a cold model load resetting the socket before any token is
+  /// sent, rather than a genuine "server is down" failure.
+  static bool _looksLikeColdStart(Object e) {
+    if (e is SocketException) return true;
+    final s = e.toString().toLowerCase();
+    return s.contains('connection abort') ||
+        s.contains('connection reset') ||
+        s.contains('connection closed') ||
+        s.contains('software caused') ||
+        s.contains('connection terminated');
+  }
+
   /// Check if Ollama is running
   Future<bool> isAvailable() async {
     try {
@@ -77,41 +121,62 @@ class OllamaService {
     String? model,
     double temperature = 0.7,
   }) async* {
-    final request = http.Request(
-      'POST',
-      Uri.parse('$baseUrl/api/generate'),
-    );
-    request.headers['Content-Type'] = 'application/json';
-    request.body = jsonEncode({
+    final body = jsonEncode({
       'model': model ?? defaultModel,
       'prompt': prompt,
       'system': system,
       'stream': true,
+      'keep_alive': '30m',
       'options': {
         'temperature': temperature,
       },
     });
-    
-    final client = http.Client();
-    try {
-      final response = await client.send(request);
-      
-      await for (final chunk in response.stream.transform(utf8.decoder)) {
-        for (final line in chunk.split('\n')) {
-          if (line.trim().isEmpty) continue;
-          try {
-            final data = jsonDecode(line);
-            if (data['response'] != null) {
-              yield data['response'] as String;
+
+    // A cold model load can reset the connection before the first token — the
+    // failure a user hits when they ask before the model is resident. Retry a
+    // few times, but only while nothing has been streamed yet, so a mid-answer
+    // drop is never replayed as a duplicated response. Once the model is loaded
+    // the next attempt streams immediately.
+    const maxAttempts = 3;
+    for (var attempt = 1;; attempt++) {
+      final client = http.Client();
+      var streamedAnything = false;
+      try {
+        final request = http.Request('POST', Uri.parse('$baseUrl/api/generate'))
+          ..headers['Content-Type'] = 'application/json'
+          ..body = body;
+        final response = await client.send(request);
+        if (response.statusCode != 200) {
+          throw OllamaException('Failed to generate: ${response.statusCode}');
+        }
+
+        await for (final chunk in response.stream.transform(utf8.decoder)) {
+          for (final line in chunk.split('\n')) {
+            if (line.trim().isEmpty) continue;
+            try {
+              final data = jsonDecode(line);
+              final piece = data['response'];
+              if (piece is String && piece.isNotEmpty) {
+                streamedAnything = true;
+                yield piece;
+              }
+              if (data['done'] == true) return;
+            } catch (_) {
+              // Skip malformed JSON lines.
             }
-            if (data['done'] == true) break;
-          } catch (_) {
-            // Skip malformed JSON lines
           }
         }
+        return; // Stream ended without an explicit done flag.
+      } catch (e) {
+        final retriable = attempt < maxAttempts &&
+            !streamedAnything &&
+            _looksLikeColdStart(e);
+        if (!retriable) rethrow;
+        // Back off a little, then try again against a now-warmer model.
+        await Future.delayed(Duration(seconds: 2 * attempt));
+      } finally {
+        client.close();
       }
-    } finally {
-      client.close();
     }
   }
   

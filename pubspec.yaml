@@ -57,6 +57,23 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   flutter_lints: ^3.0.1
+  # Generates the app icon for every platform from one master, replacing the
+  # default Flutter logo. Dev-only: the generated icons are committed, so the
+  # tool isn't needed at build time.
+  flutter_launcher_icons: ^0.14.1
+
+# App icon: an open book (scripture and the writings) under a cross, on the
+# app's indigo. Regenerate with: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
+  android: "ic_launcher"
+  adaptive_icon_background: "#3B2E6B"
+  adaptive_icon_foreground: "assets/icon/adaptive_foreground.png"
 
 flutter:
   uses-material-design: true
@@ -67,3 +84,4 @@ flutter:
     - assets/pack_catalogue.json
     - assets/model/vocab.txt
     - assets/model/model_quantized.onnx
+    - assets/icon/icon.png

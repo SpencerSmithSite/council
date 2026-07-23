@@ -143,7 +143,18 @@ class InferenceProvider extends ChangeNotifier {
   }
 
   Future<void> refreshStatus() async {
-    _status = await backend.checkStatus();
+    // Construct the backend once so the status check and the warm-up act on the
+    // same instance/config.
+    final active = backend;
+    _status = await active.checkStatus();
     notifyListeners();
+
+    // When Ollama is the reachable backend, warm its model now — on app start,
+    // on selecting Ollama, and after editing host/model — so the user's first
+    // question streams from a loaded model instead of triggering the cold-start
+    // connection drop. Fire-and-forget; it must never block the UI.
+    if (active is OllamaBackend && (_status?.available ?? false)) {
+      unawaited(active.warmUp());
+    }
   }
 }
