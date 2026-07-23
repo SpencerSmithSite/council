@@ -5,7 +5,7 @@ import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
 import '../theme/app_theme.dart';
-import '../theme/glass.dart';
+import '../theme/glass_controls.dart';
 import '../theme/inset_group.dart';
 import 'ai_backend_screen.dart';
 import 'library_screen.dart';
@@ -75,17 +75,16 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
       ),
       body: ListView(
-        // The bottom inset clears the translucent tab bar. `extendBody` runs
-        // the list behind the bar so the glass has something to blur; without
-        // this padding the last rows — here an accent-filled button — sit
-        // permanently underneath it rather than scrolling into the clear.
-        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + appleTabBarInset(context)),
+        // A normal pushed route with its own nav bar, so a plain bottom inset
+        // for the home indicator is all it needs.
+        padding: EdgeInsets.fromLTRB(
+            16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
         children: [
           InsetGroup(
             header: 'Appearance',
             children: [
               ListTile(
-                leading: const Icon(Icons.palette_outlined),
+                leading: Icon(AppIcons.theme),
                 title: const Text('Theme'),
                 trailing: _Value(settings.themeChoice.label),
                 onTap: () => _pickTheme(context, settings),
@@ -99,7 +98,7 @@ class SettingsScreen extends StatelessWidget {
             header: 'Reading',
             children: [
               ListTile(
-                leading: const Icon(Icons.format_size),
+                leading: Icon(AppIcons.fontSize),
                 title: const Text('Font Size'),
                 trailing: _Value('${settings.fontScale.toStringAsFixed(1)}x',
                     chevron: false),
@@ -124,7 +123,7 @@ class SettingsScreen extends StatelessWidget {
             header: 'Library',
             children: [
               ListTile(
-                leading: const Icon(Icons.library_books_outlined),
+                leading: Icon(AppIcons.manageContent),
                 title: const Text('Manage content'),
                 subtitle: Text(
                   context.watch<PackProvider>().installed.isEmpty
@@ -132,7 +131,7 @@ class SettingsScreen extends StatelessWidget {
                       : '${context.watch<PackProvider>().installed.length} '
                           'collection(s) installed',
                 ),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: Icon(AppIcons.chevronRight),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const LibraryScreen()),
@@ -149,18 +148,18 @@ class SettingsScreen extends StatelessWidget {
                 'tradition and provenance.',
             children: [
               ListTile(
-                leading: const Icon(Icons.psychology_outlined),
+                leading: Icon(AppIcons.aiBackend),
                 title: const Text('AI Backend'),
                 subtitle: Text(
                     context.watch<InferenceProvider>().backend.displayName),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: Icon(AppIcons.chevronRight),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const AiBackendScreen()),
                 ),
               ),
               SwitchListTile.adaptive(
-                secondary: const Icon(Icons.format_quote),
+                secondary: Icon(AppIcons.citations),
                 title: const Text('Show Citations'),
                 value: settings.showCitations,
                 onChanged: settings.setShowCitations,
@@ -261,7 +260,7 @@ class _Value extends StatelessWidget {
           ),
         ),
         if (chevron)
-          Icon(Icons.chevron_right, size: 20, color: scheme.onSurfaceVariant),
+          Icon(AppIcons.chevronRight, size: 20, color: scheme.onSurfaceVariant),
       ],
     );
   }

@@ -1564,3 +1564,59 @@ release is invisible to every user and to the entire test suite.
 
 `poppler` is now a build-host dependency of the ingest tooling (`brew install
 poppler`). Several of the remaining confessions exist only as PDFs.
+
+## Phase 26 — iOS 26 Liquid Glass redesign (2026-07-22)
+
+The Apple build still read as Android-with-Apple-colours: a solid bottom tab
+bar, solid app bars, Material text fields. iOS 26's Liquid Glass language moved
+chrome *off* the edges — floating translucent controls that hover over
+full-bleed content — and this restructures the app to match.
+
+### What changed
+
+* **Navigation is a left drawer**, opened from a floating glass **menu bubble**
+  top-left; **settings** is a floating glass **gear** top-right, not a tab. This
+  is the requested placement and the iOS convention: primary areas on the left,
+  app-level settings top-right.
+* **The bottom is a floating glass entry bubble** — `GlassComposer`, a squircle
+  capsule inset from the edges. On Ask it is the question composer; on Read it
+  is the search field (live filter, return runs full-text search). One widget,
+  two uses.
+* **Content is full-bleed**, painting under the floating controls, with large
+  iOS titles (`LargeTitle`) that scroll away.
+* **Icons are SF symbols on Apple** via `AppIcons`, Material elsewhere.
+* **Corners are true squircles** — Flutter 3.44's `RoundedSuperellipseBorder`
+  and `ClipRSuperellipse`, the real iOS continuous corner, not a circular arc.
+* Floating inset is Apple's 18–21pt; tap targets are 44pt.
+
+### The glass decision worth keeping
+
+The floating controls do **not** use the fragment-shader glass. The
+`liquid_glass_widgets` shader blurs the *entire screen backdrop* when several of
+its surfaces float over a full-content screen — Read came up frosted end to end,
+every element behind the bubbles smeared, only the last-painted gear crisp. Ask
+had hidden this because its content is empty black, and blurred black is black.
+
+`floatingGlass` uses `BackdropFilter` clipped to each control's shape instead. It
+blurs only what is directly beneath the bubble and leaves the rest sharp, which
+is what a floating control actually needs. The true material's refraction is
+lost; a clean translucent blur that works beats a shader that frosts the screen,
+and the user's rule was explicit — never let Apple feel non-native, even if that
+means less flash.
+
+### Verified
+
+iOS 27 simulator, dark: Ask, Read, Library and the drawer all render correctly
+with the floating chrome, SF icons, large titles, squircle composer and blue
+capsule buttons; no full-screen frost. Drawer navigation works by tap and by
+left-edge swipe. The light Apple palette was proven in Phase 25 and is unchanged
+here — only the chrome layout moved.
+
+### Not done
+
+* The simulator-panel tooling is broken by this host's Xcode-beta (missing
+  `SimulatorKit`), and a menu-bar notch utility blocks clicks in the top band,
+  so top-bar interactions were driven by edge-swipe and `simctl`. Light-mode
+  glass-over-content was reasoned about rather than screenshotted.
+* Pushed detail views (source reader, AI backend, bookmarks) keep standard nav
+  bars with a back button — correct iOS for a pushed view, and left as is.
