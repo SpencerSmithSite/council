@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'search/entity_recogniser.dart';
@@ -35,7 +36,11 @@ class DatabaseService {
 
   /// Initialize database from bundled asset
   Future<void> initialize() async {
-    final databasesPath = await getDatabasesPath();
+    // A path_provider directory rather than sqflite's getDatabasesPath(): under
+    // the FFI factory (used so a bundled FTS5-enabled SQLite is available on
+    // every platform) getDatabasesPath() is not a reliable writable location on
+    // Android, whereas the application-support directory always is.
+    final databasesPath = (await getApplicationSupportDirectory()).path;
     final dbPath = p.join(databasesPath, 'theology.db');
     final stampPath = p.join(databasesPath, 'theology.corpus-version');
 
@@ -45,7 +50,7 @@ class DatabaseService {
     final installedVersion =
         await stamp.exists() ? int.tryParse(await stamp.readAsString()) : null;
 
-    if (!await databaseExists(dbPath) || installedVersion != corpusVersion) {
+    if (!await File(dbPath).exists() || installedVersion != corpusVersion) {
       await _reinstall(dbPath, stamp);
     }
 

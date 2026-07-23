@@ -1620,3 +1620,235 @@ here — only the chrome layout moved.
   glass-over-content was reasoned about rather than screenshotted.
 * Pushed detail views (source reader, AI backend, bookmarks) keep standard nav
   bars with a back button — correct iOS for a pushed view, and left as is.
+
+---
+
+# Forward-looking plans (not yet scheduled)
+
+The sections below are design decisions and backlog, not dated phase logs. They
+record where the architecture is headed so the reasoning isn't lost between
+sessions.
+
+## Android — FTS5 missing from platform SQLite (RESOLVED 2026-07-23)
+
+**Fixed and verified on the Pixel emulator the same day.** Added
+`sqflite_common_ffi` + `sqlite3_flutter_libs`, set
+`databaseFactory = databaseFactoryFfi` in `main()` before any DB opens, and
+switched `DatabaseService.initialize()` off `getDatabasesPath()` to a
+`path_provider` application-support directory (the FFI factory's databases path
+is not reliably writable on Android). Now one bundled FTS5-enabled SQLite is used
+on every platform. Re-running the smoke test: the same "Explain the Nicene Creed"
+query that threw `no such module: fts5` returned six matched passages, and a full
+Ask (retrieval → Ollama on the host via `10.0.2.2` → grounded answer with
+citations and the coverage notice) completed successfully. `flutter analyze`
+clean. Still worth a quick iOS/macOS re-verify that the DB opens through the new
+factory (the path moved), but Apple was already the working platform. Details of
+the original bug kept below for context.
+
+### Original report (BLOCKER, found 2026-07-23)
+
+Smoke test on the Pixel emulator (API 37) found the core Ask flow **broken on
+Android**. Tapping a question returns:
+
+```
+DatabaseException(no such module: fts5 (code 1 SQLITE_ERROR)),
+while compiling: SELECT ... FROM content_fts fts ... WHERE content_fts MATCH ?
+```
+
+**Cause.** The app uses plain `sqflite: ^2.3.0`, whose `openDatabase()`
+(`database_service.dart:55`) opens the **platform's system SQLite**. Apple's
+system SQLite (iOS/macOS) includes FTS5, so every prior test passed; Android's
+bundled SQLite does **not** ship the FTS5 module, so the lexical half of hybrid
+search throws and aborts the whole query before retrieval or the LLM is reached.
+The FTS5 table is built in Python and shipped inside `theology.db`, but querying
+it needs FTS5 compiled into the *runtime* engine.
+
+**Scope.** Android-only, and it blocks the app's central feature there. Vector
+search is pure Dart and would work alone, but the hybrid path calls FTS first.
+
+**Fix (recommended): bundle a full-featured SQLite on every platform instead of
+relying on the system one.** Add `sqlite3_flutter_libs` (ships a modern SQLite
+native lib with FTS5/JSON1 for Android/iOS/Linux/Windows) + `sqflite_common_ffi`,
+and set `databaseFactory = databaseFactoryFfi` at startup so `openDatabase`
+routes to the bundled engine on all platforms. This also pins one SQLite version
+everywhere, removing "works on my platform" drift. Small code change (startup
+init + factory), then rebuild and re-run this smoke test. Verify on Android
+first, and re-confirm iOS/macOS still open the DB through the new factory.
+
+*Alternative considered:* guard/skip FTS and fall back to vector-only on Android
+— rejected; it silently degrades retrieval quality and hides the real problem.
+
+## Ollama cold-start connection abort (minor, found 2026-07-23)
+
+During the same smoke test the **first** Ask after switching the backend to
+Ollama failed with `ClientException: Software caused connection abort,
+uri=.../api/generate`, while retrieval and the connection test both succeeded. A
+warm retry produced a full answer. Cause: the first `/api/generate` had to
+cold-load a 20 GB / 33B model into GPU, and during that long silent gap (no
+bytes flowing) the connection was reset — on the emulator this is the QEMU slirp
+NAT dropping an idle connection, but a real device on a slow cold load could see
+it too. `ollama_service.generateStream()` puts no timeout on `client.send()`, so
+this is a socket/keepalive issue, not a Dart timeout.
+
+Not a blocker (warm calls work), but a real first-run UX rough edge: a user who
+opens the app and asks before the model is loaded gets a cryptic error. Options
+when we get to it: send an initial `keep_alive`/warm-up ping when the Ollama
+backend is selected; catch the abort and show "the model is still loading, try
+again in a moment" with an auto-retry; or issue a tiny priming request on
+backend-select so the model is resident before the first real question.
+
+## Android — 16 KB page-size alignment (pre-Play-Store, found 2026-07-23)
+
+The app builds, installs, runs and renders correctly on the Android emulator
+(Pixel, API 37 / Android 17) — Material chrome, onboarding, pack list all
+correct. But on launch Android shows an **"App Compatibility"** dialog: the app
+isn't **16 KB page-size compatible**, so it runs in page-size-compatible mode.
+
+- **Not a crash, not a testing blocker** — it runs fine in compatibility mode.
+- **Is a Play Store blocker at release**: Google requires 16 KB-aligned native
+  libraries for apps targeting Android 15+ (the platform is moving from 4 KB to
+  16 KB memory pages). Modern devices/emulators enforce the check.
+- **Real offender: `lib/arm64-v8a/libonnxruntime.so` — "LOAD segment not
+  aligned."** It ships inside the `onnxruntime: ^1.4.1` plugin, which wraps an
+  older ONNX Runtime build. The other libs the dialog lists (`libflutter.so`,
+  `libdartjni.so`, `libVkLayer_khronos_validation.so`) report "Unknown error"
+  and are largely the emulator's own check noise — current Flutter aligns its
+  engine libs.
+- **Fix at release time:** bump/replace the onnxruntime plugin to a 16 KB-aligned
+  build (or a maintained fork), and bump AGP + NDK (r27+ aligns to 16 KB by
+  default). Re-verify the dialog is gone. Defer until we're preparing a Play
+  Store submission — it changes nothing for development or sideloaded testing.
+
+## Scaling — the corpus, GitHub, and search as data grows (decided 2026-07-23)
+
+The question that prompted this: if we eventually ship packs for everything in
+the research catalog, does the current design hold? Traced the whole pipeline
+(ingest → chunk → embed → pack → runtime search → LLM). Conclusion: **it holds
+much further than it looks, and the first thing to break is the vector index —
+not storage, and not the LLM.**
+
+### Embeddings do not need a full rebuild per source
+
+`tools/build_embeddings.py --incremental` embeds only chunks that lack a vector.
+This is safe because chunk ids are **derived, not autoincremented**
+(`id = unit_id * 1000 + sequence`, `build_chunks.py`), so appending sources
+never renumbers existing chunks and their vectors stay valid. Workflow for a
+batch of new sources:
+
+```
+python3 tools/build_chunks.py --write
+python3 tools/build_embeddings.py --incremental --write   # seconds, not minutes
+```
+
+Full re-embed (`--write` without `--incremental`, which does `DELETE FROM
+chunk_embeddings` first) is only needed when a source is **replaced in place**
+(stub → full text, e.g. the Scots Confession), and even then only the changed
+unit's chunks actually differ. The 18.8-min full rebuild on 2026-07-23 was
+avoidable — use `--incremental` by default.
+
+### Storage is not the constraint
+
+| | Now (435 sources, 81M chars) | ~5× (most PD material) | Maximal (all Bibles, Spurgeon, Migne, commentaries) |
+|---|---|---|---|
+| Chunks | 76k | ~375k | ~1.4M |
+| Embeddings resident | 28 MB | ~140 MB | ~525 MB |
+| Packs total (gzip) | 48 MB | ~250 MB | ~1 GB |
+| Largest single fragment | 14 MB | ~40 MB | ~120 MB |
+
+- **GitHub Releases**: 2 GB per-asset cap (largest fragment is 14 MB — miles
+  under); release assets don't count against repo size; no practical cap on
+  total release-asset storage. Fine even at the maximal column.
+- **SQLite / the device**: handles multi-GB DBs without issue. The fragment
+  model already ships only what the user installs and stores overlapping content
+  once (dedup across packs).
+
+### The LLM never slows down with corpus size
+
+This is RAG: retrieval selects the top-K chunks (`limit * 6` candidates in
+`semantic_search.dart`) and only those enter the Ollama context. The model sees
+the same small fixed context whether the library is 50 MB or 10 GB. So corpus
+growth is a **retrieval-quality** problem, never an LLM-latency problem.
+
+### What actually breaks first: the in-memory brute-force vector index
+
+`VectorIndex.load()` pulls **every** embedding into RAM and `search()` does an
+exhaustive dot-product scan (`vector_index.dart`). Elegant and correct at 76k
+chunks (~28 MB, a few ms). At ~1.4M chunks it means ~525 MB resident (rough for
+a phone) and hundreds of ms per keystroke-triggered search. **RAM is the ceiling
+before latency is.** The code comment already acknowledges this trade.
+
+### Staged plan (build only when the numbers demand it)
+
+- **Now (free):** make `--incremental` the standard embed step (already
+  supported); keep the fragment/pack model.
+- **At ~300–500k installed chunks — make search corpus-size-independent:**
+  - *Two-stage retrieval*: let FTS5 cheaply pre-select a few thousand lexical
+    candidates, then run the vector dot-product only over those. `HybridRanker`
+    already fuses lexical + semantic; this bounds vector work with **no new
+    dependency**. This is the one architectural change to plan for.
+  - *Memory-map the vectors* instead of a resident `Int8List`, so RAM stops
+    being the ceiling.
+- **Only if truly maximal (millions of chunks):** adopt an on-disk ANN index —
+  `sqlite-vec` is the cleanest fit since we're already in SQLite. This is the
+  dependency the current comment defers; keep it deferred until then.
+- **For correctness as competing chunks multiply:** add a light **rerank** over
+  the top ~20 fused candidates (the LLM itself, or a cross-encoder) before they
+  enter context. Cheap because it only touches the top-K.
+- **Storage hygiene for the "installs everything" user:** uninstall already
+  reclaims space and dedups. Add a **"Manage storage"** view in the Library
+  showing per-pack on-disk size and total footprint. UI task, not architecture.
+
+**Bottom line:** the single investment to plan for (not build yet) is moving the
+vector search from "load-all + brute-force" to "FTS-prefiltered + vector-rerank,"
+triggered somewhere around a few hundred thousand installed chunks. Everything
+else already scales.
+
+## Bible versions — add every copyright-free translation we can
+
+Today the app ships **KJV only**, which is the most conspicuous gap for an app
+whose premise is comparing traditions. Add public-domain translations as their
+own Scripture packs. Reference list of what's copyright-free:
+`https://www.blueletterbible.org/versions.cfm` (BLB marks each version's status).
+
+Public-domain / copyright-free versions to add (cross-checked with BLB and
+ebible.org USFM ids where applicable):
+
+- **King James Version (KJV)** — have it.
+- **American Standard Version (ASV, 1901)** — PD. `eng-asv`.
+- **Young's Literal Translation (YLT)** — PD. `eng-ylt`.
+- **Darby Translation (DBY)** — PD. `eng-DBY`.
+- **Webster's Bible** — PD (BLB's "WEB" is *Webster's*, not the World English
+  Bible — don't confuse the two).
+- **World English Bible (WEB/WEBBE)** — PD/CC0. `eng-web` / `eng-webbe` (with
+  Apocrypha). Modern-language PD baseline.
+- **Geneva Bible (1560)** — PD. Reformed/historical.
+- **Douay-Rheims (Challoner)** — PD. `eng-dra`. Catholic canon. (Pull the ebible
+  USFM; drbo.org claims © on presentation only.)
+- **Brenton's English Septuagint (BES)** — PD. `eng-Brenton`. Orthodox OT.
+- **Latin Vulgate (VUL)** — PD. Textual base / Catholic.
+- **Textus Receptus / Westcott-Hort Greek NT** — PD. Original-language study.
+- **Reina-Valera 1960 (Spanish)** — usable under attribution guidelines, not
+  strictly PD; treat as a permissions item, not a clean PD add.
+
+Modern translations (ESV, NIV, NASB, NKJV, CSB, NLT, NET, AMP, LSB) are all
+**copyright-blocked** — do not ingest without a licensing path. Build the single
+ebible.org USFM importer once; it serves every PD version above. See
+`~/Documents/council research/research/acquisition-roadmap.md` §15 for the full
+Bible-version gap analysis.
+
+## Far-future reader features (post-v1)
+
+Explicitly deferred until the initial version ships. These are reader-experience
+improvements, independent of the corpus/retrieval work, and none block a first
+release:
+
+- **Note-taking** — user annotations attached to a source/unit, stored locally.
+- **Text-to-speech** — the app reads a source aloud (offline TTS so it works
+  without a network, consistent with the offline-first premise).
+- **Highlighting** — persistent user highlights across passages.
+- **Sharing snippets** — export/share a quoted passage with its citation
+  (respecting per-source license terms when sharing externally).
+- (Natural neighbours to revisit alongside the above: bookmarks/collections of
+  saved passages, adjustable reading themes/fonts beyond the current set.)
+
+Priority order and data model for these are undecided; revisit after v1.

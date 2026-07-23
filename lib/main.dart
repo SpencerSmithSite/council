@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
@@ -21,6 +22,15 @@ import 'src/theme/glass_controls.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Route every database through the FFI factory backed by a bundled,
+  // FTS5-enabled SQLite (sqlite3_flutter_libs). Without this the app opens the
+  // platform's system SQLite, and Android's build has no FTS5 module — so the
+  // lexical half of hybrid search threw `no such module: fts5` and the whole
+  // Ask flow failed on Android while working on Apple. Must run before any
+  // database is opened.
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
 
   // Initialize database
   final dbService = DatabaseService();

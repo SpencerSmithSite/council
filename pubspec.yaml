@@ -15,6 +15,14 @@ dependencies:
   
   # Database
   sqflite: ^2.3.0
+  # The app queries an FTS5 table shipped inside the corpus. sqflite alone opens
+  # the *platform* SQLite, and Android's build ships without the FTS5 module, so
+  # every hybrid search threw `no such module: fts5` on Android while working on
+  # Apple's FTS5-enabled system SQLite. Routing openDatabase through the FFI
+  # factory backed by sqlite3_flutter_libs bundles one modern, FTS5-enabled
+  # SQLite on every platform, removing that platform drift.
+  sqflite_common_ffi: ^2.3.3
+  sqlite3_flutter_libs: ^0.5.24
   path: ^1.8.3
   
   # HTTP (for Ollama)
