@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 11,
+  "corpusVersion": 12,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -19,6 +19,120 @@
     "worship": 71
   },
   "fragments": {
+    "f-bible-web": {
+      "authors": [
+        "World English Bible"
+      ],
+      "titles": [
+        "The Holy Bible: World English Bible"
+      ],
+      "tags": {
+        "angels": 141,
+        "baptism": 17,
+        "creation": 25,
+        "eschatology": 24,
+        "faith": 115,
+        "grace": 95,
+        "holy-spirit": 60,
+        "justification": 2,
+        "last-judgment": 186,
+        "prayer": 112,
+        "salvation": 120,
+        "sanctification": 7,
+        "scripture": 34,
+        "sin": 324,
+        "worship": 90
+      },
+      "traditions": [
+        "Scripture"
+      ]
+    },
+    "f-bible-asv": {
+      "authors": [
+        "American Standard Version"
+      ],
+      "titles": [
+        "The Holy Bible: American Standard Version"
+      ],
+      "tags": {
+        "angels": 115,
+        "baptism": 16,
+        "church": 49,
+        "creation": 9,
+        "eschatology": 22,
+        "faith": 104,
+        "grace": 83,
+        "holy-spirit": 56,
+        "justification": 2,
+        "last-judgment": 150,
+        "prayer": 75,
+        "salvation": 108,
+        "sanctification": 7,
+        "scripture": 31,
+        "sin": 240,
+        "worship": 70
+      },
+      "traditions": [
+        "Scripture"
+      ]
+    },
+    "f-bible-brenton": {
+      "authors": [
+        "Lancelot C. L. Brenton"
+      ],
+      "titles": [
+        "The Septuagint (Brenton's English Translation)"
+      ],
+      "tags": {
+        "angels": 71,
+        "church": 1,
+        "creation": 7,
+        "eschatology": 2,
+        "faith": 8,
+        "grace": 42,
+        "holy-spirit": 5,
+        "last-judgment": 233,
+        "prayer": 83,
+        "salvation": 74,
+        "sanctification": 2,
+        "scripture": 5,
+        "sin": 272,
+        "worship": 70
+      },
+      "traditions": [
+        "Scripture"
+      ]
+    },
+    "f-bible-dra": {
+      "authors": [
+        "Richard Challoner"
+      ],
+      "titles": [
+        "The Holy Bible: Douay-Rheims (Challoner Revision)"
+      ],
+      "tags": {
+        "angels": 145,
+        "baptism": 16,
+        "church": 75,
+        "creation": 11,
+        "eschatology": 25,
+        "faith": 119,
+        "grace": 125,
+        "holy-spirit": 7,
+        "justification": 12,
+        "last-judgment": 296,
+        "prayer": 133,
+        "sacraments": 1,
+        "salvation": 116,
+        "sanctification": 16,
+        "scripture": 34,
+        "sin": 348,
+        "worship": 43
+      },
+      "traditions": [
+        "Scripture"
+      ]
+    },
     "f-chrysostom": {
       "authors": [
         "John Chrysostom"
@@ -2821,6 +2935,136 @@
       ],
       "fragments": [
         "f-methodist"
+      ]
+    },
+    "bible-web": {
+      "name": "World English Bible",
+      "authors": [
+        "World English Bible"
+      ],
+      "titles": [
+        "The Holy Bible: World English Bible"
+      ],
+      "tags": {
+        "angels": 141,
+        "baptism": 17,
+        "creation": 25,
+        "eschatology": 24,
+        "faith": 115,
+        "grace": 95,
+        "holy-spirit": 60,
+        "justification": 2,
+        "last-judgment": 186,
+        "prayer": 112,
+        "salvation": 120,
+        "sanctification": 7,
+        "scripture": 34,
+        "sin": 324,
+        "worship": 90
+      },
+      "traditions": [
+        "Scripture"
+      ],
+      "fragments": [
+        "f-bible-web"
+      ]
+    },
+    "bible-asv": {
+      "name": "The Holy Bible: American Standard Version",
+      "authors": [
+        "American Standard Version"
+      ],
+      "titles": [
+        "The Holy Bible: American Standard Version"
+      ],
+      "tags": {
+        "angels": 115,
+        "baptism": 16,
+        "church": 49,
+        "creation": 9,
+        "eschatology": 22,
+        "faith": 104,
+        "grace": 83,
+        "holy-spirit": 56,
+        "justification": 2,
+        "last-judgment": 150,
+        "prayer": 75,
+        "salvation": 108,
+        "sanctification": 7,
+        "scripture": 31,
+        "sin": 240,
+        "worship": 70
+      },
+      "traditions": [
+        "Scripture"
+      ],
+      "fragments": [
+        "f-bible-asv"
+      ]
+    },
+    "bible-brenton": {
+      "name": "Brenton's Septuagint",
+      "authors": [
+        "Lancelot C. L. Brenton"
+      ],
+      "titles": [
+        "The Septuagint (Brenton's English Translation)"
+      ],
+      "tags": {
+        "angels": 71,
+        "church": 1,
+        "creation": 7,
+        "eschatology": 2,
+        "faith": 8,
+        "grace": 42,
+        "holy-spirit": 5,
+        "last-judgment": 233,
+        "prayer": 83,
+        "salvation": 74,
+        "sanctification": 2,
+        "scripture": 5,
+        "sin": 272,
+        "worship": 70
+      },
+      "traditions": [
+        "Scripture"
+      ],
+      "fragments": [
+        "f-bible-brenton"
+      ]
+    },
+    "bible-dra": {
+      "name": "Douay-Rheims (Challoner)",
+      "authors": [
+        "Richard Challoner"
+      ],
+      "titles": [
+        "The Holy Bible: Douay-Rheims (Challoner Revision)"
+      ],
+      "tags": {
+        "angels": 145,
+        "baptism": 16,
+        "church": 75,
+        "creation": 11,
+        "eschatology": 25,
+        "faith": 119,
+        "grace": 125,
+        "holy-spirit": 7,
+        "justification": 12,
+        "last-judgment": 296,
+        "prayer": 133,
+        "sacraments": 1,
+        "salvation": 116,
+        "sanctification": 16,
+        "scripture": 34,
+        "sin": 348,
+        "worship": 43
+      },
+      "traditions": [
+        "Scripture"
+      ],
+      "fragments": [
+        "f-bible-dra"
       ]
     }
   }
