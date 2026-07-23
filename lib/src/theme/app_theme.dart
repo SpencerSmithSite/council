@@ -3,75 +3,69 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 
 import 'palette.dart';
+import 'themes.dart';
 
-/// A theme the user can pick, independent of the platform.
+/// The brightness axis of the theme system — one of two the user controls.
 ///
-/// [system], [light] and [dark] resolve to the *platform's* look — Apple system
-/// colours on a Mac, Fluent on Windows, Material on Android — so "Light" means
-/// "the standard light appearance for this device", not one hard-coded scheme.
-/// [catppuccinMocha] is the exception: it is the same fixed palette everywhere,
-/// because a named community palette is the point of choosing it.
-enum AppThemeChoice {
+/// This decides light vs dark (or follow the device); the *named theme*
+/// (`themeId`, see [resolveThemes]) decides which light and which dark. Keeping
+/// them separate is what lets every theme, including "Default", honour a single
+/// Light/Dark/System switch.
+enum AppThemeMode {
   system,
   light,
-  dark,
-  catppuccinMocha;
+  dark;
 
   String get label => switch (this) {
-        AppThemeChoice.system => 'System',
-        AppThemeChoice.light => 'Light',
-        AppThemeChoice.dark => 'Dark',
-        AppThemeChoice.catppuccinMocha => 'Catppuccin Mocha',
+        AppThemeMode.system => 'System',
+        AppThemeMode.light => 'Light',
+        AppThemeMode.dark => 'Dark',
       };
 
-  /// A one-line description for the picker, so the choice can be understood
-  /// without selecting it.
-  String get detail => switch (this) {
-        AppThemeChoice.system => 'Match the device appearance',
-        AppThemeChoice.light => 'Always light',
-        AppThemeChoice.dark => 'Always dark',
-        AppThemeChoice.catppuccinMocha => 'A warm dark palette, the same on every platform',
-      };
-
-  /// Which [ThemeMode] `MaterialApp` should run in for this choice. Catppuccin
-  /// is a dark theme, so both slots are filled with it and the mode is fixed to
-  /// dark; the OS toggle has nothing to switch between.
   ThemeMode get themeMode => switch (this) {
-        AppThemeChoice.system => ThemeMode.system,
-        AppThemeChoice.light => ThemeMode.light,
-        AppThemeChoice.dark => ThemeMode.dark,
-        AppThemeChoice.catppuccinMocha => ThemeMode.dark,
+        AppThemeMode.system => ThemeMode.system,
+        AppThemeMode.light => ThemeMode.light,
+        AppThemeMode.dark => ThemeMode.dark,
       };
 
-  static AppThemeChoice fromName(String? name) {
-    return AppThemeChoice.values.firstWhere(
-      (c) => c.name == name,
-      orElse: () => AppThemeChoice.system,
+  static AppThemeMode fromName(String? name) {
+    return AppThemeMode.values.firstWhere(
+      (m) => m.name == name,
+      orElse: () => AppThemeMode.system,
     );
   }
 }
 
-/// The light and dark [ThemeData] to hand `MaterialApp` for a given choice.
+/// The light and dark [ThemeData] to hand `MaterialApp` for a chosen theme.
 ///
 /// `MaterialApp` always wants both a `theme` and a `darkTheme` and switches
-/// between them by `themeMode`. For the platform-following choices those are the
-/// real light and dark appearances; for Catppuccin both are the same fixed
-/// theme, so the OS never pulls the app somewhere it did not choose.
+/// between them by `themeMode`. Every theme fills both: "Default" with the
+/// platform's own light and dark looks, a named theme with its two palettes.
 class ResolvedThemes {
   final ThemeData light;
   final ThemeData dark;
   const ResolvedThemes(this.light, this.dark);
 }
 
-ResolvedThemes resolveThemes(AppThemeChoice choice) {
+/// Build the light and dark [ThemeData] for a theme id.
+///
+/// [kDefaultThemeId] (or any unknown id) resolves to the platform-adaptive
+/// look — Apple system colours on a Mac, Fluent on Windows, Material on Android.
+/// Any other id is a fixed community palette from [kNamedThemes], the same on
+/// every platform. Either way the platform *shapes* (Apple's grouped glass, etc)
+/// are kept via [_build]; only the colours change.
+ResolvedThemes resolveThemes(String themeId) {
   final family = PlatformFamily.current();
-  if (choice == AppThemeChoice.catppuccinMocha) {
-    final theme = _build(catppuccinMochaPalette(), family);
-    return ResolvedThemes(theme, theme);
+  final named = namedThemeById(themeId);
+  if (named == null) {
+    return ResolvedThemes(
+      _build(_paletteFor(family, Brightness.light), family),
+      _build(_paletteFor(family, Brightness.dark), family),
+    );
   }
   return ResolvedThemes(
-    _build(_paletteFor(family, Brightness.light), family),
-    _build(_paletteFor(family, Brightness.dark), family),
+    _build(named.light, family),
+    _build(named.dark, family),
   );
 }
 
@@ -81,6 +75,17 @@ AppPalette _paletteFor(PlatformFamily family, Brightness brightness) {
     PlatformFamily.fluent => fluentPalette(brightness),
     PlatformFamily.material => materialPalette(brightness),
   };
+}
+
+/// The raw [AppPalette] a theme would use at a given brightness — the colours
+/// only, without building a whole [ThemeData]. The theme picker uses it to paint
+/// a live preview swatch of each option in the mode currently in effect.
+AppPalette previewPalette(String themeId, Brightness brightness) {
+  final named = namedThemeById(themeId);
+  if (named != null) {
+    return brightness == Brightness.dark ? named.dark : named.light;
+  }
+  return _paletteFor(PlatformFamily.current(), brightness);
 }
 
 /// Turns a palette into a fully-themed [ThemeData].
