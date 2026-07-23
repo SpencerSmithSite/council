@@ -1712,7 +1712,21 @@ first, and re-confirm iOS/macOS still open the DB through the new factory.
 *Alternative considered:* guard/skip FTS and fall back to vector-only on Android
 — rejected; it silently degrades retrieval quality and hides the real problem.
 
-## Ollama cold-start connection abort (minor, found 2026-07-23)
+## Ollama cold-start connection abort (RESOLVED 2026-07-23)
+
+**Fixed as part of beta polish.** Two layers: (1) `OllamaService.preload()` sends
+an empty-prompt `keep_alive` request that loads the model, called from
+`InferenceProvider.refreshStatus()` whenever Ollama is the reachable backend — so
+the model is warmed on app start / on selecting Ollama, before the first
+question; (2) `generateStream()` retries on a connection-reset that happens
+before any token (the cold-start signature), only while nothing has streamed, so
+a mid-answer drop is never duplicated. The chat screen also maps a residual
+connection error to "the model may still be loading — try again" instead of a
+raw socket exception. Verified on the Android emulator: with the model unloaded,
+`ollama ps` showed it preloaded right after launch, and the first question
+streamed a full grounded answer with no abort. Original report kept below.
+
+### Original report (minor, found 2026-07-23)
 
 During the same smoke test the **first** Ask after switching the backend to
 Ollama failed with `ClientException: Software caused connection abort,

@@ -123,23 +123,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 8),
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Welcome to Council',
-                      style: theme.textTheme.headlineSmall),
-                  const SizedBox(height: 12),
-                  Text(
-                    'The King James Bible is already installed and works '
-                    'offline. Everything else — the church fathers, the '
-                    'creeds, each tradition\'s confessions — is yours to '
-                    'choose, so the app only holds what you want.',
-                    style: theme.textTheme.bodyMedium,
+                  // The app's mark, so the first screen carries its identity.
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Image.asset('assets/icon/icon.png',
+                        width: 78, height: 78),
                   ),
                   const SizedBox(height: 16),
-                  Text('What would you like to add?',
-                      style: theme.textTheme.titleSmall),
+                  Text(
+                    'Welcome to Council',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'The councils, creeds, confessions, and church fathers of '
+                    'every tradition — searchable offline, with optional AI '
+                    'answers that cite their sources.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 18),
+                  const _IncludedChip(),
+                  const SizedBox(height: 22),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Add to your library',
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w600)),
+                  ),
                 ],
               ),
             ),
@@ -245,6 +262,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       .toList();
 }
 
+/// What ships with the app, stated plainly and warmly rather than buried in a
+/// paragraph — so a reader looking at a library of things to *add* can see what
+/// they already have.
+class _IncludedChip extends StatelessWidget {
+  const _IncludedChip();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: scheme.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, size: 18, color: scheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            'King James Bible included — works offline',
+            style: TextStyle(
+                color: scheme.onSurface,
+                fontSize: 13,
+                fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Choice extends StatelessWidget {
   final Collection collection;
   final int bytes;
@@ -260,8 +310,19 @@ class _Choice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
+      // A chosen collection is tinted and outlined in the accent, so the
+      // selection reads at a glance rather than only from the checkbox.
+      color: selected ? scheme.primary.withValues(alpha: 0.08) : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: selected ? scheme.primary : scheme.outlineVariant,
+          width: selected ? 1.5 : 0.5,
+        ),
+      ),
       child: CheckboxListTile(
         value: selected,
         onChanged: (value) => onChanged(value ?? false),

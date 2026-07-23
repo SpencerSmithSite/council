@@ -84,6 +84,12 @@ class OllamaBackend implements InferenceBackend {
   @override
   Future<List<String>> availableModels() => _service.getModels();
 
+  /// Preload the model so the *first* question isn't the one that pays the
+  /// cold start (which, unwarmed, can drop the connection before any token
+  /// arrives). Best-effort and cheap to call whenever this backend becomes the
+  /// active one.
+  Future<void> warmUp() => _service.preload(model: model.isEmpty ? null : model);
+
   @override
   void dispose() {}
 }
