@@ -45,7 +45,7 @@ free of.
 
 ## Where the corpus stands
 
-As of 2026-07-22:
+As of 2026-07-23:
 
 | tradition | sources | volume |
 |---|---:|---:|
@@ -55,7 +55,7 @@ As of 2026-07-22:
 | methodist | 2 | 3.595 M |
 | ecumenical | 19 | 0.915 M |
 | lutheran | 4 | 0.792 M |
-| reformed | 8 | 0.284 M |
+| reformed | 8 | 0.384 M |
 | baptist | 1 | 0.083 M |
 | anglican | 1 | 0.040 M |
 | eastern-orthodox | 2 | 0.004 M |
@@ -295,7 +295,23 @@ One source, now that the Thirty-Nine Articles are properly sourced.
   of some chapters and not others; matching one form silently absorbed 1.5 and
   1.8 into their neighbours. Chapter 31 having five paragraphs rather than four
   is what distinguishes the original from the American revision of 1788.
-- **Scots Confession (1560)**, **Second Helvetic (1566)** — both still stubs.
+- [x] **Scots Confession (1560)** — done, 2026-07-23. 25 chapters, 0.041 M
+  chars, replacing a 6-unit 1,882-character stub. `tools/ingest_scots.py`.
+  Text from Wikisource (declared `{{PD-old}}` — public domain by age, which for
+  a 1560 document is beyond question), with each chapter verified against
+  creeds.net's independent transcription. The preface is deliberately omitted:
+  it is a non-doctrinal salutation that neither creeds.net nor Schaff carries in
+  this rendering, so it could not be corroborated, and the corpus does not ship
+  what it cannot check.
+- [ ] **Second Helvetic (1566)** — **deferred, likely copyright-blocked.** The
+  complete English text on `ccel.org/creeds/helvetic.htm` (30 chapters) is the
+  1966 Arthur Cochrane translation, which is © Westminster Press; CCEL's
+  `/creeds/` pages carry no rights declaration, unlike its `/ccel/` text
+  exports. Schaff's *Creeds of Christendom* has the confession only in the
+  Latin original. So the readily-available modern English is in copyright and
+  no public-domain English edition was found — the same constraint that removed
+  the Catechism of the Catholic Church. Revisit if a PD English translation
+  surfaces, or ship the Latin with that limitation stated.
 - **Calvin's *Institutes*** (45001) — the single largest Reformed work absent.
 - **Owen**, **Turretin**, **Bavinck** (Dutch, translations vary in status).
 
@@ -354,6 +370,8 @@ should be scoped honestly before being promised.
 4. **Re-ingest `Adversus haereses` and *The Harmony of the Gospels***, which
    currently hold chapter indexes rather than chapter text.
 5. ~~**A clean Westminster Confession**~~ — done 2026-07-22.
+6. ~~**Scots Confession (1560)**~~ — done 2026-07-23. Second Helvetic deferred
+   (1966 English translation is in copyright; see the Reformed section).
 
 Once two or three of these land, the pack split should be revisited: the
 boundaries live in `tools/data/packs.json` and re-splitting is an edit and a
