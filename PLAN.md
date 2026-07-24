@@ -1731,6 +1731,40 @@ three. 89 tests pass; `flutter analyze` clean.
 
 ---
 
+## Phase 30 — Second device-test round (2026-07-24)
+
+Five issues from another test pass (`testNotes/Council.pdf`), shipped in PR #56.
+
+* **Read auto-refreshes on library changes.** The shelf was loaded once at
+  init, so a freshly downloaded source only showed after a manual
+  pull-to-refresh. `ReadScreen` now listens to `PackProvider` and reloads when
+  the *installed set* changes (not on the many progress ticks a download fires).
+* **Read collapse-all / expand-all.** A header button collapses every tradition
+  section at once and flips to expand-all when all are collapsed;
+  `ReadShelfService.setCollapsed` persists it.
+* **AI Backend — removed** the "Coming: on-device models" card, **fixed the
+  cramped layout** (option cards' borders were touching; added consistent
+  spacing), and **stopped the cloud-provider selector wrapping "ChatGPT"** onto
+  two lines (dropped the selected-segment checkmark, one-line labels sized to
+  fit four across).
+* **Onboarding rebuilt as three swipeable steps** — Scripture (KJV installed +
+  the other PD translations), Build-your-library (Creeds & Confessions badged
+  "Start here"), and the AI backend (search-only default, Ollama / API-key
+  options that open the full setup). Page-indicator dots, Back / Next / Skip,
+  "Get started" on the last step, swipe between steps.
+* **"Show Onboarding"** added beside "Reset All Settings" to re-run the
+  walkthrough; it pushes the flow and pops back on finish. First-run display was
+  already gated on `hasOnboarded`.
+
+Verified on the Android emulator (all three onboarding steps, the Start-here
+badge, the AI choice persisting to Settings, the AI-Backend spacing +
+single-line provider labels + removed box, the collapse/expand toggle, and — the
+reported bug — the ASV appearing in Read the instant it finished downloading,
+with no refresh). Onboarding + Settings also re-verified on macOS; iOS rebuilt
+from the same shared code. 89 tests pass; `flutter analyze` clean.
+
+---
+
 # Forward-looking plans (not yet scheduled)
 
 The sections below are design decisions and backlog, not dated phase logs. They
