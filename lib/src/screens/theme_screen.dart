@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../services/settings_provider.dart';
 import '../theme/app_theme.dart';
+import '../theme/inset_group.dart';
 import '../theme/palette.dart';
 import '../theme/glass_controls.dart';
 import '../theme/themes.dart';
@@ -38,59 +39,82 @@ class ThemeScreen extends StatelessWidget {
       for (final t in kNamedThemes) (id: t.id, label: t.label),
     ];
 
+    final top = MediaQuery.of(context).padding.top;
+
+    // Full-bleed like the Settings and Library screens it is pushed from: a
+    // scrolling large title with a floating round back button, and the content
+    // in grouped inset sections rather than under a solid app bar.
     return Scaffold(
-      appBar: AppBar(title: const Text('Theme')),
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(
-            16, 8, 16, 16 + MediaQuery.of(context).padding.bottom),
+      body: Stack(
         children: [
-          const _SectionLabel('Appearance'),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<AppThemeMode>(
-              segments: const [
-                ButtonSegment(
-                    value: AppThemeMode.system, label: Text('System')),
-                ButtonSegment(value: AppThemeMode.light, label: Text('Light')),
-                ButtonSegment(value: AppThemeMode.dark, label: Text('Dark')),
+          Positioned.fill(
+            child: ListView(
+              padding: EdgeInsets.only(
+                  bottom: 16 + MediaQuery.of(context).padding.bottom),
+              children: [
+                const LargeTitle('Theme'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InsetGroup(
+                        header: 'Appearance',
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: SegmentedButton<AppThemeMode>(
+                                segments: const [
+                                  ButtonSegment(
+                                      value: AppThemeMode.system,
+                                      label: Text('System')),
+                                  ButtonSegment(
+                                      value: AppThemeMode.light,
+                                      label: Text('Light')),
+                                  ButtonSegment(
+                                      value: AppThemeMode.dark,
+                                      label: Text('Dark')),
+                                ],
+                                selected: {settings.appThemeMode},
+                                showSelectedIcon: false,
+                                onSelectionChanged: (s) =>
+                                    settings.setThemeMode(s.first),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+                      InsetGroup(
+                        header: 'Theme',
+                        children: [
+                          for (final option in options)
+                            _ThemeOptionTile(
+                              label: option.label,
+                              palette: previewPalette(option.id, brightness),
+                              selected: settings.themeId == option.id,
+                              onTap: () => settings.setThemeId(option.id),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
-              selected: {settings.appThemeMode},
-              showSelectedIcon: false,
-              onSelectionChanged: (s) => settings.setThemeMode(s.first),
             ),
           ),
-          const SizedBox(height: 24),
-          const _SectionLabel('Theme'),
-          const SizedBox(height: 4),
-          for (final option in options)
-            _ThemeOptionTile(
-              label: option.label,
-              palette: previewPalette(option.id, brightness),
-              selected: settings.themeId == option.id,
-              onTap: () => settings.setThemeId(option.id),
+          Positioned(
+            top: top + 8,
+            left: AppleMetrics.edgeInset,
+            child: GlassBubble(
+              icon: AppIcons.back,
+              tooltip: 'Back',
+              onTap: () => Navigator.of(context).maybePop(),
             ),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(
-        text.toUpperCase(),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              letterSpacing: 0.6,
-            ),
       ),
     );
   }
@@ -115,9 +139,8 @@ class _ThemeOptionTile extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         child: Row(
           children: [
             _ThemeSwatch(palette: palette),

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
 import '../services/ollama_service.dart';
+import '../theme/glass_controls.dart';
 
 /// Choose and configure how answers are generated.
 ///
@@ -17,47 +18,75 @@ class AiBackendScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inference = context.watch<InferenceProvider>();
+    final top = MediaQuery.of(context).padding.top;
 
+    // Full-bleed like the Settings screen it is pushed from: a scrolling large
+    // title with a floating round back button rather than a solid app bar.
     return Scaffold(
-      appBar: AppBar(title: const Text('AI Backend')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Stack(
         children: [
-          _StatusBanner(inference: inference),
-          const SizedBox(height: 16),
+          Positioned.fill(
+            child: ListView(
+              padding: EdgeInsets.only(
+                  bottom: 16 + MediaQuery.of(context).padding.bottom),
+              children: [
+                const LargeTitle('AI Backend'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _StatusBanner(inference: inference),
+                      const SizedBox(height: 16),
 
-          _Option(
-            id: 'none',
-            title: 'No AI — search only',
-            subtitle:
-                'Browse and search the library. Nothing is generated and '
-                'nothing leaves your device.',
-            icon: Icons.menu_book_outlined,
-            selected: inference.backendId == 'none',
-          ),
-          _Option(
-            id: 'ollama',
-            title: 'Ollama',
-            subtitle:
-                'A model running on this machine, or on another one you can '
-                'reach over your network or VPN.',
-            icon: Icons.dns_outlined,
-            selected: inference.backendId == 'ollama',
-          ),
-          if (inference.backendId == 'ollama') const _OllamaSettings(),
+                      _Option(
+                        id: 'none',
+                        title: 'No AI — search only',
+                        subtitle:
+                            'Browse and search the library. Nothing is '
+                            'generated and nothing leaves your device.',
+                        icon: Icons.menu_book_outlined,
+                        selected: inference.backendId == 'none',
+                      ),
+                      _Option(
+                        id: 'ollama',
+                        title: 'Ollama',
+                        subtitle:
+                            'A model running on this machine, or on another '
+                            'one you can reach over your network or VPN.',
+                        icon: Icons.dns_outlined,
+                        selected: inference.backendId == 'ollama',
+                      ),
+                      if (inference.backendId == 'ollama')
+                        const _OllamaSettings(),
 
-          _Option(
-            id: 'cloud',
-            title: 'Your own API key',
-            subtitle:
-                'Claude, ChatGPT, Gemini or Grok, billed to your own account.',
-            icon: Icons.vpn_key_outlined,
-            selected: inference.backendId == 'cloud',
-          ),
-          if (inference.backendId == 'cloud') const _CloudSettings(),
+                      _Option(
+                        id: 'cloud',
+                        title: 'Your own API key',
+                        subtitle: 'Claude, ChatGPT, Gemini or Grok, billed to '
+                            'your own account.',
+                        icon: Icons.vpn_key_outlined,
+                        selected: inference.backendId == 'cloud',
+                      ),
+                      if (inference.backendId == 'cloud') const _CloudSettings(),
 
-          const SizedBox(height: 24),
-          const _PlatformModelsNote(),
+                      const SizedBox(height: 24),
+                      const _PlatformModelsNote(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: top + 8,
+            left: AppleMetrics.edgeInset,
+            child: GlassBubble(
+              icon: AppIcons.back,
+              tooltip: 'Back',
+              onTap: () => Navigator.of(context).maybePop(),
+            ),
+          ),
         ],
       ),
     );
@@ -250,7 +279,7 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
     final models = _models;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -362,7 +391,7 @@ class _CloudSettingsState extends State<_CloudSettings> {
     final provider = inference.cloudProvider;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
