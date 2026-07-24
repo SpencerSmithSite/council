@@ -1765,6 +1765,38 @@ from the same shared code. 89 tests pass; `flutter analyze` clean.
 
 ---
 
+## Phase 31 — Animated logo loading screen (2026-07-24)
+
+A loading indicator built from the app's own mark rather than a generic
+spinner (PR #58).
+
+* **`BrandLoader`** (`lib/src/widgets/brand_loader.dart`) animates the logo with
+  three quiet motions off one `AnimationController`: a breathing scale, a glow
+  that swells with it, and a band of light that sweeps across the tile like
+  light on an open page. A `ShaderMask` (srcATop) keeps the highlight inside the
+  rounded corners. Cheap enough for a cold-start splash on a slow device.
+* **`BrandSplash`** wraps it on the logo's indigo with a "Council / Preparing
+  your library…" caption. `main()` now `runApp`s a `_CouncilBootstrap` that
+  paints this first frame immediately and runs the heavy startup (DB decompress,
+  ~20 MB embedding model, `loadInstalled`) inside a `FutureBuilder`, swapping to
+  the real app when it resolves. No minimum splash time — a fast boot barely
+  flashes it. A `_BootstrapError` view covers a startup that throws.
+* The onboarding **"Downloading …"** view uses the same `BrandLoader` in place
+  of the old `CircularProgressIndicator`.
+
+Gotcha: text in a bare widget under `MaterialApp.home` renders in Flutter's
+yellow-underlined debug style — `BrandSplash` needs a `Scaffold`/`Material`
+ancestor (and `decoration: TextDecoration.none`) for the caption to paint
+cleanly.
+
+Verified on the Android emulator (splash steady with a temporary boot delay,
+since removed): the mark animates on indigo, the light-sweep visibly moves
+between frames, and the Downloading view shows the same mark on the themed
+background. Both Apple builds boot cleanly through the new bootstrap path. 89
+tests pass; `flutter analyze` clean.
+
+---
+
 # Forward-looking plans (not yet scheduled)
 
 The sections below are design decisions and backlog, not dated phase logs. They
