@@ -5,6 +5,7 @@ import '../services/inference/inference_provider.dart';
 import '../services/packs/pack_manifest.dart';
 import '../services/packs/pack_provider.dart';
 import '../services/settings_provider.dart';
+import '../widgets/brand_loader.dart';
 import 'ai_backend_screen.dart';
 
 /// First run (and, from Settings, any run): three swipeable steps that hand the
@@ -132,8 +133,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 24),
+                const BrandLoader(size: 96),
+                const SizedBox(height: 28),
                 Text('Downloading ${_currentName ?? ''}',
                     style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),

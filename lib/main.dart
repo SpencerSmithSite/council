@@ -19,8 +19,9 @@ import 'src/screens/onboarding_screen.dart';
 import 'src/theme/app_theme.dart';
 import 'src/theme/glass.dart';
 import 'src/theme/glass_controls.dart';
+import 'src/widgets/brand_loader.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Route every database through the FFI factory backed by a bundled,
@@ -32,46 +33,121 @@ void main() async {
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
 
-  // Initialize database
-  final dbService = DatabaseService();
-  await dbService.initialize();
+  // Show a first frame immediately (the branded splash) and do the heavy
+  // startup work behind it, rather than blocking on a blank native splash. On
+  // a fast device this barely flashes; on a slow one — or a slow first network
+  // call — the reader sees the mark breathing instead of a frozen screen.
+  runApp(const _CouncilBootstrap());
+}
 
-  // Load persisted preferences before the first frame so the app doesn't flash
-  // the wrong theme on launch.
-  final settings = SettingsProvider();
-  await settings.load();
+/// Runs the app's asynchronous startup, showing [BrandSplash] until it finishes.
+///
+/// Kept out of `main()` so the framework is already mounted and painting the
+/// splash while the database decompresses, the embedding model loads (~20 MB),
+/// and the installed library is read. There is deliberately no minimum splash
+/// time: if startup is instant the reader should not be made to wait.
+class _CouncilBootstrap extends StatefulWidget {
+  const _CouncilBootstrap();
 
-  final inference = InferenceProvider();
-  await inference.load();
+  @override
+  State<_CouncilBootstrap> createState() => _CouncilBootstrapState();
+}
 
-  // Semantic retrieval is loaded after the database and treated as optional:
-  // it costs ~20 MB and a moment of startup, and a device that cannot run the
-  // model should still get a searchable library rather than a failed launch.
-  dbService.semantic = await SemanticSearch.tryLoad(dbService.database);
+class _CouncilBootstrapState extends State<_CouncilBootstrap> {
+  late final Future<TheologyApp> _app = _bootstrap();
 
-  // Reloading the vector index after a pack changes is not optional: it is a
-  // snapshot taken at startup, so without it newly installed text is found by
-  // lexical search and ignored by semantic search.
-  final packs = PackProvider(
-    PackService(
-      dbService.database,
-      onContentChanged: () async => dbService.semantic?.reload(),
-    ),
-    await PackCatalogue.load(),
-  );
-  await packs.loadInstalled();
-  // Fetched at startup rather than when the Library is first opened. It is
-  // 1.4 KB, and without it the coverage notice can name a collection but not
-  // say what it costs — so the first time anyone sees the offer, it is the one
-  // time it cannot tell them the price.
-  unawaited(packs.refresh());
+  Future<TheologyApp> _bootstrap() async {
+    // Initialize database
+    final dbService = DatabaseService();
+    await dbService.initialize();
 
-  runApp(TheologyApp(
-    dbService: dbService,
-    packs: packs,
-    settings: settings,
-    inference: inference,
-  ));
+    // Load persisted preferences before the first frame so the app doesn't
+    // flash the wrong theme on launch.
+    final settings = SettingsProvider();
+    await settings.load();
+
+    final inference = InferenceProvider();
+    await inference.load();
+
+    // Semantic retrieval is loaded after the database and treated as optional:
+    // it costs ~20 MB and a moment of startup, and a device that cannot run the
+    // model should still get a searchable library rather than a failed launch.
+    dbService.semantic = await SemanticSearch.tryLoad(dbService.database);
+
+    // Reloading the vector index after a pack changes is not optional: it is a
+    // snapshot taken at startup, so without it newly installed text is found by
+    // lexical search and ignored by semantic search.
+    final packs = PackProvider(
+      PackService(
+        dbService.database,
+        onContentChanged: () async => dbService.semantic?.reload(),
+      ),
+      await PackCatalogue.load(),
+    );
+    await packs.loadInstalled();
+    // Fetched at startup rather than when the Library is first opened. It is
+    // 1.4 KB, and without it the coverage notice can name a collection but not
+    // say what it costs. Not awaited, so a slow network never holds up launch.
+    unawaited(packs.refresh());
+
+    return TheologyApp(
+      dbService: dbService,
+      packs: packs,
+      settings: settings,
+      inference: inference,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<TheologyApp>(
+      future: _app,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) return snapshot.data!;
+
+        // The splash needs the basic app scaffolding (Directionality, a media
+        // query) around it, but not a theme — it paints its own indigo.
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: snapshot.hasError
+              ? _BootstrapError(error: snapshot.error!)
+              : const BrandSplash(message: 'Preparing your library…'),
+        );
+      },
+    );
+  }
+}
+
+/// Shown if startup itself fails — rare, but better than a splash that never
+/// resolves.
+class _BootstrapError extends StatelessWidget {
+  final Object error;
+
+  const _BootstrapError({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 40),
+              const SizedBox(height: 16),
+              const Text(
+                'Council could not start.',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              Text('$error', textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class TheologyApp extends StatelessWidget {
