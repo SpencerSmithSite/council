@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#3B2E6B</color>
+    <!-- Brand indigo for the launch window, matching the Flutter BrandSplash so
+         the native launch screen is an invisible bridge into the animated one. -->
+    <color name="brand_indigo">#3B2E6B</color>
 </resources>
