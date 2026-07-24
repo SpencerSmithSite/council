@@ -43,8 +43,10 @@ class AppIcons {
   // Content and actions.
   static IconData get bookmark =>
       isApplePlatform ? CupertinoIcons.bookmark : Icons.bookmark_outline;
-  static IconData get bookmarkFill =>
-      isApplePlatform ? CupertinoIcons.bookmark_fill : Icons.bookmark;
+  static IconData get star =>
+      isApplePlatform ? CupertinoIcons.star : Icons.star_border;
+  static IconData get starFill =>
+      isApplePlatform ? CupertinoIcons.star_fill : Icons.star;
   static IconData get pin =>
       isApplePlatform ? CupertinoIcons.pin_fill : Icons.push_pin;
   static IconData get info =>
