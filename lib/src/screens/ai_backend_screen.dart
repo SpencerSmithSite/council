@@ -48,6 +48,8 @@ class AiBackendScreen extends StatelessWidget {
                         icon: Icons.menu_book_outlined,
                         selected: inference.backendId == 'none',
                       ),
+                      const SizedBox(height: 12),
+
                       _Option(
                         id: 'ollama',
                         title: 'Ollama',
@@ -58,7 +60,11 @@ class AiBackendScreen extends StatelessWidget {
                         selected: inference.backendId == 'ollama',
                       ),
                       if (inference.backendId == 'ollama')
-                        const _OllamaSettings(),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: _OllamaSettings(),
+                        ),
+                      const SizedBox(height: 12),
 
                       _Option(
                         id: 'cloud',
@@ -68,10 +74,11 @@ class AiBackendScreen extends StatelessWidget {
                         icon: Icons.vpn_key_outlined,
                         selected: inference.backendId == 'cloud',
                       ),
-                      if (inference.backendId == 'cloud') const _CloudSettings(),
-
-                      const SizedBox(height: 24),
-                      const _PlatformModelsNote(),
+                      if (inference.backendId == 'cloud')
+                        const Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: _CloudSettings(),
+                        ),
                     ],
                   ),
                 ),
@@ -395,14 +402,29 @@ class _CloudSettingsState extends State<_CloudSettings> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SegmentedButton<CloudProvider>(
-            segments: CloudProvider.values
-                .map((p) => ButtonSegment(value: p, label: Text(p.label)))
-                .toList(),
-            selected: {provider},
-            onSelectionChanged: (selection) =>
-                context.read<InferenceProvider>()
-                    .setCloudProvider(selection.first),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<CloudProvider>(
+              // The selected-segment checkmark ate enough width to wrap the
+              // longest label ("ChatGPT") onto a second line; drop it, keep the
+              // labels to one line, and give them a size that fits four across.
+              showSelectedIcon: false,
+              style: SegmentedButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 13),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+              ),
+              segments: CloudProvider.values
+                  .map((p) => ButtonSegment(
+                        value: p,
+                        label: Text(p.label,
+                            maxLines: 1, softWrap: false),
+                      ))
+                  .toList(),
+              selected: {provider},
+              onSelectionChanged: (selection) => context
+                  .read<InferenceProvider>()
+                  .setCloudProvider(selection.first),
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -499,37 +521,6 @@ class _CloudSettingsState extends State<_CloudSettings> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlatformModelsNote extends StatelessWidget {
-  const _PlatformModelsNote();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Coming: on-device models',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Apple Foundation Models (iPhone 15 Pro or later, M-series Mac) '
-              'and Gemini Nano on recent flagship Android phones will run '
-              'entirely on-device with no key and no download. Council will '
-              'never ship a language model of its own — that would cost '
-              'gigabytes and perform worse than any option above.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
       ),
     );
   }

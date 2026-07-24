@@ -4,6 +4,7 @@ import '../theme/glass_controls.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
+import '../services/packs/pack_provider.dart';
 import '../services/read_shelf_service.dart';
 import 'bookmarks_screen.dart';
 import 'content_detail_screen.dart';
@@ -36,11 +37,37 @@ class _ReadScreenState extends State<ReadScreen> {
   Set<int> _starred = {};
   Set<String> _collapsed = {};
 
+  // The library's installed set, watched so the shelf reloads the moment a pack
+  // is added or removed — the reader shouldn't have to pull-to-refresh to see a
+  // download they just made.
+  PackProvider? _packs;
+  Set<String> _knownFragments = {};
+
   @override
   void initState() {
     super.initState();
     _loadShelf();
     _loadShelfPrefs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _packs = context.read<PackProvider>();
+      _knownFragments = _packs!.installedFragments.toSet();
+      _packs!.addListener(_onPacksChanged);
+    });
+  }
+
+  /// Reload the shelf when the *installed set* changes — not on the many
+  /// progress ticks a download fires — so newly installed sources appear (and
+  /// removed ones disappear) without a manual refresh.
+  void _onPacksChanged() {
+    final packs = _packs;
+    if (packs == null) return;
+    final current = packs.installedFragments;
+    if (current.length != _knownFragments.length ||
+        !current.containsAll(_knownFragments)) {
+      _knownFragments = current.toSet();
+      _loadShelf();
+    }
   }
 
   Future<void> _loadShelfPrefs() async {
@@ -71,8 +98,35 @@ class _ReadScreenState extends State<ReadScreen> {
     if (mounted) setState(() => _collapsed = next);
   }
 
+  /// Every tradition that currently has a (non-pinned) section on the shelf —
+  /// the set "collapse all" acts on.
+  Set<String> _traditionNames() {
+    final sources = _sources;
+    if (sources == null) return {};
+    return {
+      for (final s in sources)
+        if (!_pinned.contains(s['id'] as int)) s['tradition'] as String,
+    };
+  }
+
+  /// True when every collapsible section is already collapsed, so the header
+  /// button offers "expand all" rather than "collapse all".
+  bool get _allCollapsed {
+    final traditions = _traditionNames();
+    return traditions.isNotEmpty && traditions.every(_collapsed.contains);
+  }
+
+  Future<void> _toggleCollapseAll() async {
+    final traditions = _traditionNames();
+    // Collapse everything, or — if it is all collapsed already — expand it.
+    final next = await _shelf
+        .setCollapsed(_allCollapsed ? <String>{} : traditions);
+    if (mounted) setState(() => _collapsed = next);
+  }
+
   @override
   void dispose() {
+    _packs?.removeListener(_onPacksChanged);
     _query.dispose();
     super.dispose();
   }
@@ -145,9 +199,11 @@ class _ReadScreenState extends State<ReadScreen> {
                         pinned: _pinned,
                         starred: _starred,
                         collapsed: _collapsed,
+                        allCollapsed: _allCollapsed,
                         onTogglePin: _togglePin,
                         onToggleStar: _toggleStar,
                         onToggleCollapse: _toggleCollapse,
+                        onToggleCollapseAll: _toggleCollapseAll,
                         onOpenBookmarks: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -185,9 +241,11 @@ class _Shelf extends StatelessWidget {
   final Set<int> pinned;
   final Set<int> starred;
   final Set<String> collapsed;
+  final bool allCollapsed;
   final ValueChanged<int> onTogglePin;
   final ValueChanged<int> onToggleStar;
   final ValueChanged<String> onToggleCollapse;
+  final VoidCallback onToggleCollapseAll;
 
   const _Shelf({
     required this.sources,
@@ -196,9 +254,11 @@ class _Shelf extends StatelessWidget {
     required this.pinned,
     required this.starred,
     required this.collapsed,
+    required this.allCollapsed,
     required this.onTogglePin,
     required this.onToggleStar,
     required this.onToggleCollapse,
+    required this.onToggleCollapseAll,
     this.filtered = false,
   });
 
@@ -208,12 +268,28 @@ class _Shelf extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // Whether there is at least one collapsible tradition section to act on.
+    final hasSections =
+        sources!.any((s) => !pinned.contains(s['id'] as int));
+
     final header = LargeTitle(
       'Read',
-      trailing: IconButton(
-        tooltip: 'Bookmarks',
-        icon: Icon(AppIcons.bookmark),
-        onPressed: onOpenBookmarks,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasSections)
+            IconButton(
+              tooltip: allCollapsed ? 'Expand all' : 'Collapse all',
+              icon: Icon(
+                  allCollapsed ? Icons.unfold_more : Icons.unfold_less),
+              onPressed: onToggleCollapseAll,
+            ),
+          IconButton(
+            tooltip: 'Bookmarks',
+            icon: Icon(AppIcons.bookmark),
+            onPressed: onOpenBookmarks,
+          ),
+        ],
       ),
     );
 
