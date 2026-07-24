@@ -1657,6 +1657,50 @@ tests); `flutter analyze` clean.
 
 ---
 
+## Phase 28 — Device-test UI fixes (2026-07-23)
+
+Eight issues from a device test pass (`testNotes/Council.pdf`), fixed together
+in PR #50.
+
+* **Packs — no Download on already-present collections.** Installed collections
+  showed Remove, but a collection whose every fragment was already downloaded
+  via another pack still offered a Download that fetched nothing. Now: header
+  reads "Already downloaded", no button. (`library_screen.dart`)
+* **Packs — App Store download ring.** The linear progress bar is replaced by a
+  circular fill-arc around a centre square (`_DownloadRing`) while a pack
+  downloads.
+* **"Manage content" page fixed.** `LibraryScreen` pushed as a route had a
+  transparent scaffold (fell through to black) and no back button. Added an
+  `embedded` flag: the tab host stays transparent and lets the shell's chrome
+  float over it; the pushed route paints the themed background and floats its
+  own back button. `main.dart` passes `embedded: true` for the tab.
+* **Settings — Show Citations toggle respects the palette.** The adaptive switch
+  is a Cupertino switch on Apple, whose "on" track defaulted to system green;
+  pinned to `scheme.primary`.
+* **Settings — Apple floating header.** Dropped the solid `AppBar` for the
+  full-bleed `LargeTitle` + floating round back `GlassBubble` the primary
+  screens use.
+* **Read — swipe to pin / bookmark.** Swipe a source right to pin it to a
+  Pinned section at the top, left to bookmark it (filled-bookmark glyph via a
+  `Dismissible` that springs back rather than dismissing). New
+  `ReadShelfService` persists pinned + saved source ids and collapsed
+  traditions in SharedPreferences.
+* **Read — collapsible tradition sections.** Each tradition header is a
+  disclosure row with a count and a rotating chevron; collapsed state persists.
+* **Ollama — Test button + model dropdown.** "Test connection" verifies the
+  host and pulls its model list, then swaps the free-text model field for a
+  dropdown of the models actually installed on that host. (`ai_backend_screen`,
+  reusing `OllamaService.getModels`.)
+
+Verified end-to-end on the Android emulator (already-downloaded packs show no
+button; the download ring renders; Manage-content has a themed background and
+back button; Settings uses the floating header with an accent citations toggle;
+Read pin/bookmark swipes and section collapse all work and persist; the Ollama
+Test button populated a 17-model dropdown from a live host at `10.0.2.2:11434`).
+89 tests pass; `flutter analyze` clean.
+
+---
+
 # Forward-looking plans (not yet scheduled)
 
 The sections below are design decisions and backlog, not dated phase logs. They
