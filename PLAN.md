@@ -1701,6 +1701,36 @@ Test button populated a 17-model dropdown from a live host at `10.0.2.2:11434`).
 
 ---
 
+## Phase 29 — Sub-page consistency and cross-platform parity (2026-07-24)
+
+Follow-ups after checking the Phase 28 work on every platform.
+
+* **Read "bookmark" → "star" (PR #52).** The source-level swipe favourite was
+  labelled "Bookmark", colliding with the passage-level Bookmarks reached from
+  the header. Renamed to **Star** (Star / Unstar, filled-star glyph, stored as
+  `shelf_starred_sources`) so a whole-work favourite and a single-passage
+  bookmark are never confused.
+* **Theme and AI Backend pages got the Apple floating header (PR #53).** Both
+  Settings sub-pages still opened under a solid `AppBar`. Converted to the
+  full-bleed `LargeTitle` + floating back `GlassBubble`, and laid the Theme
+  page's mode control and theme list out as grouped `InsetGroup` sections so it
+  matches the Settings screen it is launched from.
+* **InsetGroup ink fix (PR #54).** Grouped sections paint an opaque fill over
+  the Scaffold's Material, so row ripples had no Material to render on (Flutter
+  logged "ListTile … ink splashes may be invisible"). Wrapped each section's
+  column in a transparent Material.
+
+All of the above (and every Phase 28 change) live in shared Dart code — there
+is no per-platform branching that would leave one platform behind; the iOS and
+macOS apps only looked stale because they were running builds from before the
+work. Rebuilt and verified on **all three platforms**: macOS (Settings floating
+header + accent citations toggle, new grouped Theme page), iOS (collapsible Read
+sections, the star glyph after a swipe), and Android (Settings + Theme pages,
+star, and all eight Phase 28 fixes). The ink-splash warning is gone on all
+three. 89 tests pass; `flutter analyze` clean.
+
+---
+
 # Forward-looking plans (not yet scheduled)
 
 The sections below are design decisions and backlog, not dated phase logs. They
