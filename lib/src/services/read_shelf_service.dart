@@ -1,21 +1,25 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Per-source UI state for the Read tab: which sources the reader has pinned to
-/// the top, which they have bookmarked, and which tradition sections they have
+/// the top, which they have starred, and which tradition sections they have
 /// collapsed.
+///
+/// Starring is a source-level favourite, deliberately distinct from the
+/// passage-level bookmarks (a whole work vs. a single unit within one), which
+/// is why it has its own name and store rather than reusing "bookmark".
 ///
 /// This is small, device-local preference data — how one reader likes their
 /// shelf arranged — not corpus content, so it lives in SharedPreferences
 /// alongside the other settings rather than in the database.
 class ReadShelfService {
   static const _pinnedKey = 'shelf_pinned_sources';
-  static const _savedKey = 'shelf_saved_sources';
+  static const _starredKey = 'shelf_starred_sources';
   static const _collapsedKey = 'shelf_collapsed_traditions';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
   Future<Set<int>> pinned() => _readInts(_pinnedKey);
-  Future<Set<int>> saved() => _readInts(_savedKey);
+  Future<Set<int>> starred() => _readInts(_starredKey);
 
   Future<Set<String>> collapsed() async {
     final prefs = await _prefs;
@@ -26,7 +30,7 @@ class ReadShelfService {
   /// new set so the caller can update its state in one step.
   Future<Set<int>> togglePinned(int id) => _toggleInt(_pinnedKey, id);
 
-  Future<Set<int>> toggleSaved(int id) => _toggleInt(_savedKey, id);
+  Future<Set<int>> toggleStarred(int id) => _toggleInt(_starredKey, id);
 
   Future<Set<String>> toggleCollapsed(String tradition) async {
     final prefs = await _prefs;

@@ -30,10 +30,10 @@ class _ReadScreenState extends State<ReadScreen> {
   List<Map<String, dynamic>>? _results;
   bool _searching = false;
 
-  // Persisted shelf arrangement: pinned and bookmarked source ids, and the
-  // names of tradition sections the reader has collapsed.
+  // Persisted shelf arrangement: pinned and starred source ids, and the names
+  // of tradition sections the reader has collapsed.
   Set<int> _pinned = {};
-  Set<int> _saved = {};
+  Set<int> _starred = {};
   Set<String> _collapsed = {};
 
   @override
@@ -45,12 +45,12 @@ class _ReadScreenState extends State<ReadScreen> {
 
   Future<void> _loadShelfPrefs() async {
     final pinned = await _shelf.pinned();
-    final saved = await _shelf.saved();
+    final starred = await _shelf.starred();
     final collapsed = await _shelf.collapsed();
     if (mounted) {
       setState(() {
         _pinned = pinned;
-        _saved = saved;
+        _starred = starred;
         _collapsed = collapsed;
       });
     }
@@ -61,9 +61,9 @@ class _ReadScreenState extends State<ReadScreen> {
     if (mounted) setState(() => _pinned = next);
   }
 
-  Future<void> _toggleSave(int id) async {
-    final next = await _shelf.toggleSaved(id);
-    if (mounted) setState(() => _saved = next);
+  Future<void> _toggleStar(int id) async {
+    final next = await _shelf.toggleStarred(id);
+    if (mounted) setState(() => _starred = next);
   }
 
   Future<void> _toggleCollapse(String tradition) async {
@@ -143,10 +143,10 @@ class _ReadScreenState extends State<ReadScreen> {
                         onRefresh: _loadShelf,
                         filtered: _query.text.trim().isNotEmpty,
                         pinned: _pinned,
-                        saved: _saved,
+                        starred: _starred,
                         collapsed: _collapsed,
                         onTogglePin: _togglePin,
-                        onToggleSave: _toggleSave,
+                        onToggleStar: _toggleStar,
                         onToggleCollapse: _toggleCollapse,
                         onOpenBookmarks: () => Navigator.push(
                           context,
@@ -183,10 +183,10 @@ class _Shelf extends StatelessWidget {
   final bool filtered;
   final VoidCallback onOpenBookmarks;
   final Set<int> pinned;
-  final Set<int> saved;
+  final Set<int> starred;
   final Set<String> collapsed;
   final ValueChanged<int> onTogglePin;
-  final ValueChanged<int> onToggleSave;
+  final ValueChanged<int> onToggleStar;
   final ValueChanged<String> onToggleCollapse;
 
   const _Shelf({
@@ -194,10 +194,10 @@ class _Shelf extends StatelessWidget {
     required this.onRefresh,
     required this.onOpenBookmarks,
     required this.pinned,
-    required this.saved,
+    required this.starred,
     required this.collapsed,
     required this.onTogglePin,
-    required this.onToggleSave,
+    required this.onToggleStar,
     required this.onToggleCollapse,
     this.filtered = false,
   });
@@ -293,9 +293,9 @@ class _Shelf extends StatelessWidget {
     return _SourceTile(
       source: source,
       isPinned: pinned.contains(id),
-      isSaved: saved.contains(id),
+      isStarred: starred.contains(id),
       onTogglePin: () => onTogglePin(id),
-      onToggleSave: () => onToggleSave(id),
+      onToggleStar: () => onToggleStar(id),
     );
   }
 }
@@ -355,23 +355,24 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// A source on the shelf. Swipe right to pin it to the top, swipe left to
-/// bookmark it; a filled bookmark glyph marks the saved ones. The row springs
-/// back after either swipe rather than being dismissed — the gestures toggle
-/// state, they do not remove anything.
+/// A source on the shelf. Swipe right to pin it to the top, swipe left to star
+/// it; a filled star glyph marks the starred ones. (Starring a whole source is
+/// deliberately separate from the passage-level bookmarks reached from the
+/// header.) The row springs back after either swipe rather than being dismissed
+/// — the gestures toggle state, they do not remove anything.
 class _SourceTile extends StatelessWidget {
   final Map<String, dynamic> source;
   final bool isPinned;
-  final bool isSaved;
+  final bool isStarred;
   final VoidCallback onTogglePin;
-  final VoidCallback onToggleSave;
+  final VoidCallback onToggleStar;
 
   const _SourceTile({
     required this.source,
     required this.isPinned,
-    required this.isSaved,
+    required this.isStarred,
     required this.onTogglePin,
-    required this.onToggleSave,
+    required this.onToggleStar,
   });
 
   @override
@@ -392,10 +393,10 @@ class _SourceTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isSaved)
+          if (isStarred)
             Padding(
               padding: const EdgeInsets.only(right: 6),
-              child: Icon(AppIcons.bookmarkFill, size: 16, color: scheme.primary),
+              child: Icon(AppIcons.starFill, size: 16, color: scheme.primary),
             ),
           Icon(AppIcons.chevronRight, size: 18),
         ],
@@ -421,14 +422,14 @@ class _SourceTile extends StatelessWidget {
         leading: false,
         color: scheme.tertiary,
         onColor: scheme.onTertiary,
-        icon: isSaved ? AppIcons.bookmarkFill : AppIcons.bookmark,
-        label: isSaved ? 'Remove' : 'Bookmark',
+        icon: isStarred ? AppIcons.starFill : AppIcons.star,
+        label: isStarred ? 'Unstar' : 'Star',
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           onTogglePin();
         } else {
-          onToggleSave();
+          onToggleStar();
         }
         // Never actually dismiss: the swipe is an action, and the row stays.
         return false;
