@@ -8,6 +8,7 @@ import '../theme/glass_controls.dart';
 import '../theme/inset_group.dart';
 import '../theme/themes.dart';
 import 'ai_backend_screen.dart';
+import 'onboarding_screen.dart';
 import 'theme_screen.dart';
 import 'library_screen.dart';
 import '../services/packs/pack_provider.dart';
@@ -184,10 +185,22 @@ class SettingsScreen extends StatelessWidget {
 
           const SizedBox(height: 28),
 
-          // A destructive action, styled as iOS renders one: centred, in the
-          // error colour, on its own cell rather than as a filled button.
+          // Two whole-app actions, iOS-style: centred text on their own cells.
+          // "Show Onboarding" re-runs the welcome walkthrough; "Reset All
+          // Settings" is destructive and drawn in the error colour.
           InsetGroup(
             children: [
+              ListTile(
+                title: Text(
+                  'Show Onboarding',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: scheme.primary),
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                ),
+              ),
               ListTile(
                 title: Text(
                   'Reset All Settings',

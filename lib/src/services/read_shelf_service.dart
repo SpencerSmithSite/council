@@ -41,6 +41,14 @@ class ReadShelfService {
     return set;
   }
 
+  /// Replace the whole collapsed set — used by the Read page's collapse-all /
+  /// expand-all control.
+  Future<Set<String>> setCollapsed(Set<String> traditions) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(_collapsedKey, traditions.toList());
+    return traditions;
+  }
+
   // SharedPreferences has no int-list type, so the ids are stored as strings.
   Future<Set<int>> _readInts(String key) async {
     final prefs = await _prefs;
