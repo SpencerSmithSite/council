@@ -66,7 +66,14 @@ class InsetGroup extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(apple ? 10 : 12),
-        child: Column(children: separated),
+        // A transparent Material sitting *above* the section's opaque fill, so
+        // the ink splashes of the rows (ListTiles, InkWells) paint on it and
+        // stay visible. Without it their nearest Material is the Scaffold,
+        // whose ink is hidden behind this section's colour.
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(children: separated),
+        ),
       ),
     );
 
