@@ -13,7 +13,16 @@ import '../services/packs/pack_provider.dart';
 /// material that makes the app useful before anything has been downloaded.
 /// Everything else is chosen.
 class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({super.key});
+  /// True when hosted inside the main tab shell, which already paints the
+  /// background and floats the menu and settings bubbles over the content.
+  ///
+  /// False when the screen is pushed as its own route — from Settings' "Manage
+  /// content" or from the Read tab. A pushed route has none of that chrome, so
+  /// it must paint its own themed background (a transparent scaffold otherwise
+  /// shows through to black) and offer a back button of its own.
+  final bool embedded;
+
+  const LibraryScreen({super.key, this.embedded = false});
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -59,10 +68,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
     final visible =
         manifest == null ? const <Collection>[] : _matching(manifest.collections);
+    final top = MediaQuery.of(context).padding.top;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
+    final content = Column(
         children: [
           Expanded(
             child: RefreshIndicator(
@@ -129,7 +137,29 @@ class _LibraryScreenState extends State<LibraryScreen> {
             },
           ),
         ],
-      ),
+      );
+
+    // As a tab, the shell paints the background and the chrome; the screen stays
+    // transparent. As a pushed route it owns both — a themed background and a
+    // floating back button in the top-left corner.
+    return Scaffold(
+      backgroundColor: widget.embedded ? Colors.transparent : null,
+      body: widget.embedded
+          ? content
+          : Stack(
+              children: [
+                Positioned.fill(child: content),
+                Positioned(
+                  top: top + 8,
+                  left: AppleMetrics.edgeInset,
+                  child: GlassBubble(
+                    icon: AppIcons.back,
+                    tooltip: 'Back',
+                    onTap: () => Navigator.of(context).maybePop(),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -238,32 +268,45 @@ class _PackTile extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 6),
 
-            if (busy && !installed) ...[
+            // The action, at the bottom-right of the cell:
+            //   • busy      → an App Store-style progress ring, no button
+            //   • installed → Remove
+            //   • costs bytes → Download
+            //   • already present via another pack (0 bytes) → no button at
+            //     all; the header already reads "Already downloaded", and
+            //     offering a download that would fetch nothing was the bug.
+            if (busy) ...[
               const SizedBox(height: 12),
-              LinearProgressIndicator(
-                // Indeterminate until the first bytes arrive, so the bar does
-                // not sit at zero looking stalled while the request connects.
-                value: packs.progress > 0 ? packs.progress : null,
+              Align(
+                alignment: Alignment.centerRight,
+                child: _DownloadRing(
+                  // Indeterminate until the first bytes arrive, so the ring does
+                  // not sit empty looking stalled while the request connects.
+                  value: packs.progress > 0 ? packs.progress : null,
+                ),
+              ),
+            ] else if (installed) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed:
+                      blocked ? null : () => _confirmRemove(context, packs),
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text('Remove'),
+                ),
+              ),
+            ] else if (packs.bytesToInstall(pack) > 0) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.tonalIcon(
+                  onPressed: blocked ? null : () => packs.install(pack),
+                  icon: const Icon(Icons.download),
+                  label: const Text('Download'),
+                ),
               ),
             ],
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: installed
-                  ? TextButton.icon(
-                      onPressed: blocked || busy
-                          ? null
-                          : () => _confirmRemove(context, packs),
-                      icon: const Icon(Icons.delete_outline),
-                      label: const Text('Remove'),
-                    )
-                  : FilledButton.tonalIcon(
-                      onPressed:
-                          blocked || busy ? null : () => packs.install(pack),
-                      icon: const Icon(Icons.download),
-                      label: Text(busy ? 'Installing…' : 'Download'),
-                    ),
-            ),
           ],
         ),
       ),
@@ -297,5 +340,64 @@ class _PackTile extends StatelessWidget {
       ),
     );
     if (confirmed == true) await packs.uninstall(pack);
+  }
+}
+
+/// The App Store download indicator: a thin ring that fills clockwise around a
+/// small centre square as the pack downloads.
+///
+/// [value] is the fraction complete, or null before the first bytes arrive, when
+/// the ring spins as an indeterminate indicator rather than sitting empty.
+class _DownloadRing extends StatelessWidget {
+  final double? value;
+
+  const _DownloadRing({this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    const diameter = 30.0;
+
+    return SizedBox(
+      width: diameter,
+      height: diameter,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // The faint full track the progress ring is drawn over.
+          SizedBox(
+            width: diameter,
+            height: diameter,
+            child: CircularProgressIndicator(
+              value: 1,
+              strokeWidth: 2.5,
+              valueColor:
+                  AlwaysStoppedAnimation(scheme.surfaceContainerHighest),
+            ),
+          ),
+          SizedBox(
+            width: diameter,
+            height: diameter,
+            child: CircularProgressIndicator(
+              value: value,
+              strokeWidth: 2.5,
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation(scheme.primary),
+            ),
+          ),
+          // The centre square, the App Store's "downloading" (and tap-to-stop)
+          // affordance. Purely indicative here — the download runs to
+          // completion — but it is the shape users read as an active download.
+          Container(
+            width: 9,
+            height: 9,
+            decoration: BoxDecoration(
+              color: scheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

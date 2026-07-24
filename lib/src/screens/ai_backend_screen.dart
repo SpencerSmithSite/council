@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/ollama_service.dart';
 
 /// Choose and configure how answers are generated.
 ///
@@ -135,6 +136,15 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
   late final TextEditingController _host;
   late final TextEditingController _model;
 
+  /// Models the host reported on the last successful test, or null before a
+  /// test has run. Once populated, the free-text model field is replaced by a
+  /// dropdown of exactly what the server actually has pulled — no more guessing
+  /// the name and getting a silent "model not found".
+  List<String>? _models;
+  bool _testing = false;
+  String? _testMessage;
+  bool _testOk = false;
+
   @override
   void initState() {
     super.initState();
@@ -148,6 +158,70 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
     _host.dispose();
     _model.dispose();
     super.dispose();
+  }
+
+  /// Verify the host and pull its list of models, then hand the choice to a
+  /// dropdown. Persists the host so a warm-up and status check run against it.
+  Future<void> _test() async {
+    final inference = context.read<InferenceProvider>();
+    final host = _host.text.trim();
+
+    setState(() {
+      _testing = true;
+      _testMessage = null;
+    });
+
+    // Persist the typed host before probing, so the rest of the app (status
+    // banner, warm-up) is testing the same address the user just entered.
+    await inference.setOllama(host: host);
+
+    final service = OllamaService(baseUrl: host);
+    final reachable = await service.isAvailable();
+    final models = reachable ? await service.getModels() : <String>[];
+
+    if (!mounted) return;
+
+    if (!reachable) {
+      setState(() {
+        _testing = false;
+        _testOk = false;
+        _models = null;
+        _testMessage =
+            'Could not reach Ollama at $host. Check it is running and the '
+            'address is correct.';
+      });
+      return;
+    }
+
+    if (models.isEmpty) {
+      setState(() {
+        _testing = false;
+        _testOk = false;
+        _models = const [];
+        _testMessage = 'Connected, but no models are installed. Pull one, e.g. '
+            '"ollama pull llama3.2".';
+      });
+      return;
+    }
+
+    // Keep the current model if the server actually has it (matching the exact
+    // tag, or a bare name like "llama3.2" against "llama3.2:latest"); otherwise
+    // select the first, so the dropdown never shows a model that isn't there.
+    final current = _model.text.trim();
+    final chosen = models.contains(current)
+        ? current
+        : models.firstWhere((m) => m.startsWith(current),
+            orElse: () => models.first);
+    _model.text = chosen;
+    await inference.setOllama(model: chosen);
+
+    setState(() {
+      _testing = false;
+      _testOk = true;
+      _models = models;
+      _testMessage = 'Connected — ${models.length} '
+          'model${models.length == 1 ? '' : 's'} available.';
+    });
   }
 
   /// Guidance for the host field, which differs by platform for a reason the
@@ -171,7 +245,9 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
 
   @override
   Widget build(BuildContext context) {
-    final inference = context.read<InferenceProvider>();
+    final inference = context.watch<InferenceProvider>();
+    final scheme = Theme.of(context).colorScheme;
+    final models = _models;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -186,26 +262,77 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
               helperMaxLines: 4,
               border: const OutlineInputBorder(),
             ),
-            onSubmitted: (value) => inference.setOllama(host: value),
+            onSubmitted: (_) => _test(),
           ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _model,
-            decoration: const InputDecoration(
-              labelText: 'Model',
-              helperText: 'A model you have pulled, e.g. llama3.2',
-              border: OutlineInputBorder(),
+
+          // Before a successful test the model is free text — you may know the
+          // name before the host is reachable. After a test it becomes a
+          // dropdown of exactly what the server reported.
+          if (models != null && models.isNotEmpty)
+            DropdownButtonFormField<String>(
+              initialValue: models.contains(inference.ollamaModel)
+                  ? inference.ollamaModel
+                  : models.first,
+              decoration: const InputDecoration(
+                labelText: 'Model',
+                helperText: 'Models installed on this host.',
+                border: OutlineInputBorder(),
+              ),
+              items: models
+                  .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) inference.setOllama(model: value);
+              },
+            )
+          else
+            TextField(
+              controller: _model,
+              decoration: const InputDecoration(
+                labelText: 'Model',
+                helperText: 'A model you have pulled, e.g. llama3.2 — or test '
+                    'the connection to choose from a list.',
+                helperMaxLines: 2,
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (value) => inference.setOllama(model: value),
             ),
-            onSubmitted: (value) => inference.setOllama(model: value),
-          ),
           const SizedBox(height: 12),
+
           FilledButton.tonal(
-            onPressed: () => inference.setOllama(
-              host: _host.text,
-              model: _model.text,
-            ),
-            child: const Text('Save and test connection'),
+            onPressed: _testing ? null : _test,
+            child: _testing
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Test connection'),
           ),
+
+          if (_testMessage != null) ...[
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  _testOk ? Icons.check_circle : Icons.error_outline,
+                  size: 18,
+                  color: _testOk ? scheme.primary : scheme.error,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _testMessage!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: _testOk ? scheme.onSurface : scheme.error,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
