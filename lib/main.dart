@@ -164,7 +164,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _screenFor(_Area area) => switch (area) {
         _Area.ask => const ChatScreen(),
         _Area.read => const ReadScreen(),
-        _Area.library => const LibraryScreen(),
+        _Area.library => const LibraryScreen(embedded: true),
       };
 
   @override

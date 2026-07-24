@@ -49,17 +49,46 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
+    final top = MediaQuery.of(context).padding.top;
 
+    // Full-bleed like the primary screens: a scrolling large title with a
+    // floating round back button, rather than a solid bar bolted to the top —
+    // the same Apple chrome the Read and Library tabs use. The scaffold keeps
+    // its themed background (this is a pushed route), so the content is never
+    // stranded on black.
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: ListView(
-        // A normal pushed route with its own nav bar, so a plain bottom inset
-        // for the home indicator is all it needs.
-        padding: EdgeInsets.fromLTRB(
-            16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
+      body: Stack(
         children: [
+          Positioned.fill(
+            child: ListView(
+              padding: EdgeInsets.only(
+                  bottom: 16 + MediaQuery.of(context).padding.bottom),
+              children: [
+                const LargeTitle('Settings'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(children: _sections(context, settings)),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: top + 8,
+            left: AppleMetrics.edgeInset,
+            child: GlassBubble(
+              icon: AppIcons.back,
+              tooltip: 'Back',
+              onTap: () => Navigator.of(context).maybePop(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _sections(BuildContext context, SettingsProvider settings) {
+    final scheme = Theme.of(context).colorScheme;
+    return [
           InsetGroup(
             header: 'Appearance',
             children: [
@@ -145,6 +174,10 @@ class SettingsScreen extends StatelessWidget {
                 title: const Text('Show Citations'),
                 value: settings.showCitations,
                 onChanged: settings.setShowCitations,
+                // The adaptive switch is a Cupertino switch on Apple, whose
+                // "on" track defaults to system green and ignores the palette.
+                // Pin it to the theme accent so it matches the chosen theme.
+                activeTrackColor: scheme.primary,
               ),
             ],
           ),
@@ -171,9 +204,7 @@ class SettingsScreen extends StatelessWidget {
           const SizedBox(height: 32),
 
           const Center(child: _AboutFooter()),
-        ],
-      ),
-    );
+    ];
   }
 }
 
