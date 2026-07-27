@@ -119,7 +119,6 @@
 				B731BCEAECD0267A1AE8B268 /* Pods-RunnerTests.release.xcconfig */,
 				9A0E761BB7C7B3FF1D689A0B /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -430,6 +429,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -461,6 +461,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -469,18 +470,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				/* Flutter's framework-unpacking step refuses a binary that does
-				 * not contain "arm64 x86_64" while `lipo -info` on that same
-				 * binary reports exactly `x86_64 arm64`. The check disagrees with
-				 * the file it is reading, so no amount of rebuilding fixes it.
-				 *
-				 * Building a single slice sidesteps it, as it did for macOS. On
-				 * Apple Silicon the simulator is arm64 and every supported device
-				 * is arm64, so nothing reachable is lost — only the Intel
-				 * simulator, which this project already stopped supporting.
-				 */
-				ARCHS = arm64;
-				EXCLUDED_ARCHS = x86_64;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -500,10 +489,13 @@
 				DEVELOPMENT_TEAM = Y2Q5JVG8X5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Council;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2026.7.24;
 				PRODUCT_BUNDLE_IDENTIFIER = site.spencersmith.council;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -566,6 +558,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -597,6 +590,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -611,18 +605,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				/* Flutter's framework-unpacking step refuses a binary that does
-				 * not contain "arm64 x86_64" while `lipo -info` on that same
-				 * binary reports exactly `x86_64 arm64`. The check disagrees with
-				 * the file it is reading, so no amount of rebuilding fixes it.
-				 *
-				 * Building a single slice sidesteps it, as it did for macOS. On
-				 * Apple Silicon the simulator is arm64 and every supported device
-				 * is arm64, so nothing reachable is lost — only the Intel
-				 * simulator, which this project already stopped supporting.
-				 */
-				ARCHS = arm64;
-				EXCLUDED_ARCHS = x86_64;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -635,6 +617,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -666,6 +649,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -674,18 +658,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				/* Flutter's framework-unpacking step refuses a binary that does
-				 * not contain "arm64 x86_64" while `lipo -info` on that same
-				 * binary reports exactly `x86_64 arm64`. The check disagrees with
-				 * the file it is reading, so no amount of rebuilding fixes it.
-				 *
-				 * Building a single slice sidesteps it, as it did for macOS. On
-				 * Apple Silicon the simulator is arm64 and every supported device
-				 * is arm64, so nothing reachable is lost — only the Intel
-				 * simulator, which this project already stopped supporting.
-				 */
-				ARCHS = arm64;
-				EXCLUDED_ARCHS = x86_64;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -707,10 +679,13 @@
 				DEVELOPMENT_TEAM = Y2Q5JVG8X5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Council;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2026.7.24;
 				PRODUCT_BUNDLE_IDENTIFIER = site.spencersmith.council;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -730,10 +705,13 @@
 				DEVELOPMENT_TEAM = Y2Q5JVG8X5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Council;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2026.7.24;
 				PRODUCT_BUNDLE_IDENTIFIER = site.spencersmith.council;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

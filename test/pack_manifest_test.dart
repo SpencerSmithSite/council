@@ -10,6 +10,7 @@ void main() {
   const body = '''
   {
     "corpusVersion": 5,
+    "idSpace": 2,
     "fragments": [
       {"id": "f-augustine", "file": "f-augustine.db.gz", "bytes": 4194304,
        "sha256": "aa", "sources": 44, "units": 2496, "chunks": 7179},
@@ -25,10 +26,11 @@ void main() {
   }
   ''';
 
-  test('reads fragments, collections and the corpus version', () {
+  test('reads fragments, collections and the id space', () {
     final manifest = PackManifest.parse(body);
 
     expect(manifest.corpusVersion, 5);
+    expect(manifest.idSpace, 2);
     expect(manifest.fragments, hasLength(2));
     expect(manifest.collections, hasLength(2));
     expect(manifest.collections.first.kind, CollectionKind.author);
@@ -61,6 +63,7 @@ void main() {
       // An older app reading a newer manifest should degrade, not crash.
       final stale = PackManifest(
         corpusVersion: 5,
+        idSpace: 2,
         fragments: manifest.fragments,
         collections: [
           const Collection(id: 'x', name: 'X', description: '',
@@ -69,6 +72,24 @@ void main() {
       );
       expect(stale.bytesToInstall(stale.collections.single, {}), 4194304);
     });
+  });
+
+  test('a catalogue with no id space is read as the first one', () {
+    // Every catalogue published before packs were decoupled from app releases
+    // omits the field, and they all belong to the id space that was numbered 1
+    // at the build where the ledger began. Defaulting to 0, or throwing, would
+    // make the app refuse content it can install perfectly well.
+    final manifest = PackManifest.parse('''
+      {
+        "corpusVersion": 12,
+        "fragments": [
+          {"id": "f-anglican", "file": "f-anglican.db.gz", "bytes": 40960,
+           "sha256": "cc", "sources": 1, "units": 39, "chunks": 57}
+        ],
+        "collections": []
+      }
+    ''');
+    expect(manifest.idSpace, 1);
   });
 
   test('a malformed manifest throws rather than yielding an empty catalogue',

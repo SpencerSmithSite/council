@@ -101,6 +101,127 @@
       ]
     },
     {
+      "id": "f-calvin",
+      "authors": [
+        "John Calvin"
+      ]
+    },
+    {
+      "id": "f-henry",
+      "authors": [
+        "Matthew Henry"
+      ]
+    },
+    {
+      "id": "f-spurgeon",
+      "authors": [
+        "Charles Haddon Spurgeon",
+        "Charles Hadden Spurgeon"
+      ]
+    },
+    {
+      "id": "f-edwards",
+      "authors": [
+        "Jonathan Edwards"
+      ]
+    },
+    {
+      "id": "f-luther",
+      "authors": [
+        "Martin Luther"
+      ]
+    },
+    {
+      "id": "f-bunyan",
+      "authors": [
+        "John Bunyan"
+      ]
+    },
+    {
+      "id": "f-barnes",
+      "authors": [
+        "Albert Barnes"
+      ]
+    },
+    {
+      "id": "f-baxter",
+      "authors": [
+        "Richard Baxter"
+      ]
+    },
+    {
+      "id": "f-hodge",
+      "authors": [
+        "Charles Hodge"
+      ]
+    },
+    {
+      "id": "f-manton",
+      "authors": [
+        "Thomas Manton"
+      ]
+    },
+    {
+      "id": "f-gill",
+      "authors": [
+        "John Gill"
+      ]
+    },
+    {
+      "id": "f-knox",
+      "authors": [
+        "John Knox"
+      ]
+    },
+    {
+      "id": "f-watson",
+      "authors": [
+        "Thomas Watson"
+      ]
+    },
+    {
+      "id": "f-murray",
+      "authors": [
+        "Andrew Murray"
+      ]
+    },
+    {
+      "id": "f-flavel",
+      "authors": [
+        "John Flavel"
+      ]
+    },
+    {
+      "id": "f-ryle",
+      "authors": [
+        "John Charles Ryle"
+      ]
+    },
+    {
+      "id": "f-newton",
+      "authors": [
+        "John Newton"
+      ]
+    },
+    {
+      "id": "f-law",
+      "authors": [
+        "William Law"
+      ]
+    },
+    {
+      "id": "f-whitefield",
+      "authors": [
+        "George Whitefield"
+      ]
+    },
+    {
+      "id": "f-owen",
+      "authors": [
+        "John Owen"
+      ]
+    },
+    {
       "id": "f-fathers-rest",
       "traditions": [
         "early-church"
@@ -294,6 +415,78 @@
       ]
     },
     {
+      "id": "author-calvin",
+      "kind": "author",
+      "name": "John Calvin",
+      "description": "The Institutes of the Christian Religion in Beveridge's translation, and Calvin's commentaries on the Old and New Testaments.",
+      "fragments": [
+        "f-calvin"
+      ]
+    },
+    {
+      "id": "author-henry",
+      "kind": "author",
+      "name": "Matthew Henry",
+      "description": "The unabridged Commentary on the Whole Bible, 1708-1710.",
+      "fragments": [
+        "f-henry"
+      ]
+    },
+    {
+      "id": "author-spurgeon",
+      "kind": "author",
+      "name": "Charles Spurgeon",
+      "description": "The New Park Street and Metropolitan Tabernacle sermons, and The Treasury of David.",
+      "fragments": [
+        "f-spurgeon"
+      ]
+    },
+    {
+      "id": "author-edwards",
+      "kind": "author",
+      "name": "Jonathan Edwards",
+      "description": "Religious Affections, Freedom of the Will, and the sermons.",
+      "fragments": [
+        "f-edwards"
+      ]
+    },
+    {
+      "id": "author-luther",
+      "kind": "author",
+      "name": "Martin Luther",
+      "description": "Luther beyond the Book of Concord \u2014 the treatises, the Galatians commentary and the Table Talk.",
+      "fragments": [
+        "f-luther"
+      ]
+    },
+    {
+      "id": "author-bunyan",
+      "kind": "author",
+      "name": "John Bunyan",
+      "description": "The Pilgrim's Progress, The Holy War, and Grace Abounding.",
+      "fragments": [
+        "f-bunyan"
+      ]
+    },
+    {
+      "id": "author-baxter",
+      "kind": "author",
+      "name": "Richard Baxter",
+      "description": "The Saints' Everlasting Rest and The Reformed Pastor.",
+      "fragments": [
+        "f-baxter"
+      ]
+    },
+    {
+      "id": "author-owen",
+      "kind": "author",
+      "name": "John Owen",
+      "description": "The Death of Death in the Death of Christ, Pneumatologia, Communion with God, the treatises on mortification, temptation and indwelling sin, and the sermons \u2014 thirty-one works from Goold's edition.",
+      "fragments": [
+        "f-owen"
+      ]
+    },
+    {
       "id": "tradition-catholic",
       "kind": "tradition",
       "name": "Catholic",
@@ -312,7 +505,8 @@
       "name": "Lutheran",
       "description": "The Book of Concord \u2014 the Augsburg Confession and its Apology, the Smalcald Articles and Luther's catechisms.",
       "fragments": [
-        "f-lutheran"
+        "f-lutheran",
+        "f-luther"
       ]
     },
     {
@@ -321,7 +515,19 @@
       "name": "Reformed & Presbyterian",
       "description": "The Westminster Confession as ratified by the Scottish Parliament in 1690, the Westminster catechisms, the Heidelberg Catechism, the Canons of Dordt and the Belgic Confession.",
       "fragments": [
-        "f-reformed"
+        "f-reformed",
+        "f-calvin",
+        "f-henry",
+        "f-edwards",
+        "f-baxter",
+        "f-owen",
+        "f-hodge",
+        "f-barnes",
+        "f-manton",
+        "f-knox",
+        "f-watson",
+        "f-murray",
+        "f-flavel"
       ]
     },
     {
@@ -330,7 +536,10 @@
       "name": "Anglican",
       "description": "The Thirty-Nine Articles of Religion.",
       "fragments": [
-        "f-anglican"
+        "f-anglican",
+        "f-ryle",
+        "f-newton",
+        "f-law"
       ]
     },
     {
@@ -338,7 +547,10 @@
       "kind": "tradition",
       "name": "Baptist",
       "fragments": [
-        "f-baptist"
+        "f-baptist",
+        "f-spurgeon",
+        "f-bunyan",
+        "f-gill"
       ],
       "description": "The Second London Baptist Confession of Faith (1689), the central Baptist confessional document."
     },
@@ -360,7 +572,8 @@
       "name": "Methodist & Wesleyan",
       "description": "John Wesley's Sermons on Several Occasions (1771) \u2014 with his notes on the New Testament, the doctrinal standard of Methodism \u2014 and the other Methodist sources in the library.",
       "fragments": [
-        "f-methodist"
+        "f-methodist",
+        "f-whitefield"
       ]
     },
     {

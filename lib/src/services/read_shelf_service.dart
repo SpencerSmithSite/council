@@ -16,6 +16,13 @@ class ReadShelfService {
   static const _starredKey = 'shelf_starred_sources';
   static const _collapsedKey = 'shelf_collapsed_traditions';
 
+  /// Whether the reader has ever arranged the sections themselves.
+  ///
+  /// Needed because the collapsed set alone cannot distinguish "never touched
+  /// it" from "deliberately expanded everything" — both are the empty set — and
+  /// the two want opposite behaviour on the next launch.
+  static const _arrangedKey = 'shelf_sections_arranged';
+
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
   Future<Set<int>> pinned() => _readInts(_pinnedKey);
@@ -25,6 +32,9 @@ class ReadShelfService {
     final prefs = await _prefs;
     return (prefs.getStringList(_collapsedKey) ?? const <String>[]).toSet();
   }
+
+  Future<bool> hasArrangedSections() async =>
+      (await _prefs).getBool(_arrangedKey) ?? false;
 
   /// Add [id] to the pinned set if absent, remove it if present. Returns the
   /// new set so the caller can update its state in one step.
@@ -38,12 +48,27 @@ class ReadShelfService {
         (prefs.getStringList(_collapsedKey) ?? const <String>[]).toSet();
     if (!set.remove(tradition)) set.add(tradition);
     await prefs.setStringList(_collapsedKey, set.toList());
+    await prefs.setBool(_arrangedKey, true);
     return set;
   }
 
   /// Replace the whole collapsed set — used by the Read page's collapse-all /
   /// expand-all control.
   Future<Set<String>> setCollapsed(Set<String> traditions) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(_collapsedKey, traditions.toList());
+    await prefs.setBool(_arrangedKey, true);
+    return traditions;
+  }
+
+  /// Collapse everything, on a shelf the reader has never arranged.
+  ///
+  /// A dozen tradition sections expanded is a screen of scrolling before the
+  /// shape of the library is visible at all; collapsed, the whole of it fits at
+  /// once and opening one is a tap. Deliberately *not* marked as arranged: this
+  /// is the app's default, not a choice the reader made, so the first time they
+  /// expand or collapse anything their preference takes over permanently.
+  Future<Set<String>> applyDefaultCollapse(Set<String> traditions) async {
     final prefs = await _prefs;
     await prefs.setStringList(_collapsedKey, traditions.toList());
     return traditions;

@@ -6,32 +6,57 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with the creeds, councils, catechisms and confessions — **44 works, 902 passages** — and everything else is downloaded on request. That keeps the install small while the full library runs to 437 works and 58.8 million characters.
+Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **687 works and 460 million characters**.
 
-Bundled:
+Bundled: the King James Version, complete.
 
-- Ecumenical creeds and councils (Nicaea, Chalcedon, the Seven Councils, Trent)
-- Confessions and catechisms (Augsburg, Westminster, Heidelberg, Dort, the Thirty-Nine Articles)
-- Lutheran, Reformed, Catholic, Anglican, Orthodox and Methodist standards
+First download — **Creeds & Confessions**, 8.9 MB:
+
+- Ecumenical creeds and councils — the acts themselves, not summaries: the
+  creeds, canons and synodal letters of all seven ecumenical councils and
+  eleven local synods, plus Trent's canons and decrees
+- Confessions and catechisms (Augsburg, Westminster, Heidelberg, Dort, the
+  Thirty-Nine Articles, both London Baptist confessions)
+- Lutheran, Reformed, Catholic, Anglican, Baptist, Methodist and Eastern
+  Orthodox standards
 
 Downloadable from **Settings → Library**:
 
 | Collection | Works | Download |
 |---|---|---|
-| Augustine of Hippo | 44 | 4.6 MB |
-| John Chrysostom | 36 | 6.3 MB |
-| Church Fathers | 313 | 22.8 MB |
+| Creeds & Confessions | 53 | 8.9 MB |
+| Eastern Orthodox | 74 | 11.8 MB |
+| Augustine of Hippo | 48 | 12.9 MB |
+| John Owen | 31 | 13.6 MB |
+| Matthew Henry | 6 | 23.9 MB |
+| John Calvin | 48 | 29.4 MB |
+| Church Fathers | 402 | 51.0 MB |
+| Charles Spurgeon | 74 | 92.3 MB |
+
+Thirty-one collections over forty-three shared fragments, 285 MB published in
+all. The same collections as standalone files would be 568 MB — no work is
+downloaded twice, however many collections it belongs to, which is why the
+big authors have a fragment each rather than sitting inside their tradition's.
 
 The full library spans:
 
 - Early Church Fathers (Athanasius, Augustine, Chrysostom, Origen, and more)
-- Medieval scholastics (Aquinas, Anselm, Boethius)
-- Reformation (Luther, Calvin, Melanchthon)
-- Puritan (Owen, Baxter, Charnock, Brakel)
-- Eastern Orthodox (Desert Fathers, Philokalia, Climacus)
-- Catholic mystical theology (Ignatius, Teresa of Ávila, Thomas à Kempis)
+- Medieval scholastics (Aquinas)
+- Reformation (Calvin's *Institutes* and commentaries, Luther, Knox)
+- Puritan and Reformed (John Owen's complete works, Edwards, Baxter, Manton,
+  Watson, Flavel, Charnock, Matthew Henry's commentary, Hodge's *Systematic
+  Theology*)
+- Baptist (Spurgeon's sermons and *The Treasury of David* on all 150 psalms,
+  Bunyan, Gill, both London confessions)
+- Eastern Orthodox (Philaret's *Longer Catechism*, the Confession of
+  Dositheus, the *Book of Needs*)
+- Catholic (Aquinas, Trent, Thomas à Kempis)
+- Anglican and Methodist (Ryle, Newton, William Law, Wesley, Whitefield)
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
 - Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, and more)
+
+Not covered, and deliberately not faked: Pentecostal and Oriental Orthodox,
+whose defining documents are 20th-century and in copyright. See `SOURCES.md`.
 - Modern theology (Barth, C.S. Lewis, Schaeffer, Tozer, Packer, Sproul)
 - Biblical texts (Sermon on the Mount, Gospel of John, Hebrews, James, the Parables)
 

@@ -23,6 +23,34 @@ than a missing one.
 found yet. These stay, and the app now marks them plainly as having no recorded
 origin rather than presenting them with the confidence of a sourced text.
 
+---
+
+**Second pass.** The eight left standing were kept on the reading that their
+wording was genuine but abridged. Reading their unit *titles in order* shows
+that it is not, and that the defect is worse than abridgement. Each of these
+sources is **two unrelated works interleaved**, odd positions from one and even
+from the other:
+
+    Philokalia Selections      Slough of Despond · Watchfulness · The Cross and
+                               the Burden · The Jesus Prayer · Vanity Fair ·
+                               Dispassion · The Celestial City · Theosis
+
+Half of that is *Pilgrim's Progress*. Under Wesley's name sit the Didache's
+"Two Ways" and the arrest, trial and burning of Polycarp. Under Gregory of
+Nyssa sit three sections of *Nostra Aetate* — Vatican II, 1965, and in
+copyright. Under Teresa of Ávila's *Interior Castle* sit the inward, outward
+and corporate disciplines of Richard Foster's *Celebration of Discipline*,
+1978, also in copyright.
+
+So all eight go. This is the rule about never placing text under an author's
+byline that is not theirs, applied to the case where the byline is wrong *and*
+the text is someone else's living copyright. A gap is better.
+
+The Seven Ecumenical Councils is the one happy case: it is superseded rather
+than merely deleted. Its seven paragraphs of summary are replaced by the actual
+acts — creeds, canons and synodal letters — already in the corpus from New
+Advent, which run to some 550,000 characters across the seven.
+
 Dry run by default.
 
     python3 tools/prune_unprovenanced.py
@@ -74,6 +102,40 @@ NOT_OURS_TO_SHIP = {
         "© Libreria Editrice Vaticana; recorded here as public domain",
     "Lumen Gentium":
         "© Libreria Editrice Vaticana; recorded here as public domain",
+}
+
+# Second pass: sources whose units belong to a different work than their title
+# claims. The evidence is in the docstring; the byline is the point. Each entry
+# names what is actually in there, so this reads as a finding rather than an
+# assertion.
+MISATTRIBUTED = {
+    "The Philokalia Selections":
+        "half the units are Pilgrim's Progress (Slough of Despond, "
+        "Vanity Fair, the Celestial City)",
+    "A Plain Account of the People Called Methodists (Wesley)":
+        "opens with the Didache's Two Ways and the martyrdom of Polycarp",
+    "The Life of Moses (Gregory of Nyssa)":
+        "three units are Nostra Aetate (Vatican II, 1965, in copyright)",
+    "The Interior Castle (Teresa of Avila)":
+        "alternates with Richard Foster's Celebration of Discipline "
+        "(1978, in copyright)",
+    "The Spiritual Exercises (Ignatius)":
+        "seven paragraphs of unsourced précis under Ignatius' byline",
+    "The Orthodox Confession of Faith (Peter Mogila)":
+        "six paragraphs of unsourced précis; the first is the Nicene Creed",
+    "Second Helvetic Confession":
+        "nine paragraphs of unsourced précis of a thirty-chapter confession",
+}
+
+# Superseded, but by a group rather than by a single edition — so it cannot go
+# in SUPERSEDED above, which verifies one replacement title. Every council named
+# here is checked to exist before the summary is deleted.
+SUPERSEDED_BY_SET = {
+    "The Seven Ecumenical Councils": [
+        "Nicaea I (325)", "Constantinople I (381)", "Ephesus (431)",
+        "Chalcedon (451)", "Constantinople II (553)",
+        "Constantinople III (680)", "Nicaea II (787)",
+    ],
 }
 
 
@@ -159,10 +221,45 @@ def main():
         print(f"  {title[:44]:46} {units:4}u {chars:7}c   {reason}")
         doomed.append((stub_id, title))
 
+    print("\nSuperseded by the acts themselves")
+    for title, replacements in SUPERSEDED_BY_SET.items():
+        stub_id = source_id(conn, title)
+        if stub_id is None:
+            print(f"  already gone   {title}")
+            continue
+        missing = [t for t in replacements if source_id(conn, t) is None]
+        if missing:
+            sys.exit(
+                f"REFUSED: {title!r} is replaced by {replacements}, and "
+                f"{missing} are not in the corpus. Deleting the summary now "
+                f"would leave those councils with nothing at all."
+            )
+        chars = sum(unit_count(conn, source_id(conn, t))[1] for t in replacements)
+        units, old_chars = unit_count(conn, stub_id)
+        print(f"  {title[:44]:46} {units:4}u {old_chars:7}c  ->  "
+              f"{len(replacements)} councils, {chars} c of creeds and canons")
+        doomed.append((stub_id, title))
+
+    print("\nMisattributed — the units are not the work the title names")
+    for title, reason in MISATTRIBUTED.items():
+        stub_id = source_id(conn, title)
+        if stub_id is None:
+            print(f"  already gone   {title}")
+            continue
+        units, chars = unit_count(conn, stub_id)
+        print(f"  {title[:44]:46} {units:4}u {chars:7}c   {reason}")
+        doomed.append((stub_id, title))
+
     # Provenanced sources with the same defect. Reported rather than deleted:
     # they are real works whose text should be re-ingested from the chapter
     # pages, not entries to drop.
-    print("\nProvenanced but holding indexes — re-ingest, do not delete")
+    #
+    # Both were re-ingested on 2026-07-26 once `is_hub` was fixed — 28,578
+    # characters of chapter titles became 1.2 M of Irenaeus, and 32,546 became
+    # 0.8 M of the Harmony. Left printing so the numbers stay in view: this is
+    # where the defect was first named, and the figures beside it are what
+    # says it is closed.
+    print("\nProvenanced but holding indexes — fixed 2026-07-26, watched here")
     for title in ("Adversus haereses", "The Harmony of the Gospels"):
         found = source_id(conn, title)
         if found is not None:

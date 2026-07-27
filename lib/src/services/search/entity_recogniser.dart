@@ -40,6 +40,15 @@ class EntityRecogniser {
     'saint', 'st', 'selections', 'fragments', 'epistle', 'epistles', 'letter',
     'letters', 'homily', 'homilies', 'treatise', 'works', 'church', 'holy',
     'christian', 'god', 'first', 'second', 'third', 'new', 'old',
+    // The persons of the Trinity, and the names for Christ. These are rare in
+    // *titles* and ubiquitous in *questions*, which is the combination the
+    // rarity rule below cannot survive: "Is the Son equal to the Father?"
+    // supplied two tokens rare enough to look distinctive and scoped the whole
+    // question to Owen's *Of Communion with God the Father, Son and Holy
+    // Ghost*. That is the "saved"/"virgin"/"topics" failure again — a word can
+    // be rare among titles and still identify nothing — arriving through two
+    // rare words at once rather than one.
+    'father', 'son', 'spirit', 'ghost', 'lord', 'jesus', 'christ',
   };
 
   /// How much of a work's title a question must use before it counts as

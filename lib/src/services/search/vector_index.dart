@@ -56,37 +56,81 @@ class VectorIndex {
 
   int get length => _chunkIds.length;
 
-  /// Load the index from the bundled database.
-  ///
-  /// Costs a couple of seconds and ~20 MB, so callers should do this once,
-  /// lazily, and off the first frame.
-  static Future<VectorIndex> load(Database db) async {
-    final rows = await db.rawQuery('''
-      SELECT e.chunk_id, e.vector, c.content_unit_id, c.char_start, c.char_end
-      FROM chunk_embeddings e
-      JOIN content_chunks c ON e.chunk_id = c.id
-      ORDER BY e.chunk_id
-    ''');
+  /// How many rows to pull per round trip. See [load].
+  static const int _pageSize = 20000;
 
-    final count = rows.length;
+  /// Load the index from the database, a page at a time.
+  ///
+  /// Costs a few seconds and ~165 MB at 430,000 chunks, so callers should do
+  /// this once, lazily, and off the first frame.
+  ///
+  /// **Why this is paged.** It was a single query returning every row, which
+  /// was fine at the 115,000 chunks this was written against and stopped being
+  /// fine at 430,000: the whole result set — 165 MB of BLOBs — is marshalled
+  /// across the platform channel and materialised as a `List<Map>` before the
+  /// first byte is read. sqflite serialises every database operation through
+  /// one queue, so for as long as that call ran, *nothing else in the app
+  /// could touch the database*. In testing it blocked the queue for around
+  /// four minutes, and the symptom was not a slow search but a library that
+  /// stopped answering.
+  ///
+  /// Paging fixes the blocking rather than the total time: each page is a
+  /// short operation, and anything else queued runs between them. Keyset
+  /// pagination (`chunk_id > last`) rather than OFFSET, which rescans.
+  static Future<VectorIndex> load(Database db) async {
+    final count = Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM chunk_embeddings'),
+        ) ??
+        0;
+
     final vectors = Int8List(count * dims);
     final chunkIds = Int32List(count);
     final unitIds = Int32List(count);
     final starts = Int32List(count);
     final ends = Int32List(count);
 
-    for (var i = 0; i < count; i++) {
-      final row = rows[i];
-      final blob = row['vector'] as Uint8List;
-      vectors.setRange(
-        i * dims,
-        i * dims + dims,
-        blob.buffer.asInt8List(blob.offsetInBytes, dims),
+    var i = 0;
+    var after = -1;
+    while (i < count) {
+      final rows = await db.rawQuery('''
+        SELECT e.chunk_id, e.vector, c.content_unit_id, c.char_start, c.char_end
+        FROM chunk_embeddings e
+        JOIN content_chunks c ON e.chunk_id = c.id
+        WHERE e.chunk_id > ?
+        ORDER BY e.chunk_id
+        LIMIT ?
+      ''', [after, _pageSize]);
+      if (rows.isEmpty) break;
+
+      for (final row in rows) {
+        // The count and the join can disagree if a chunk lost its parent; stop
+        // rather than write past the end of the buffers.
+        if (i >= count) break;
+        final blob = row['vector'] as Uint8List;
+        vectors.setRange(
+          i * dims,
+          i * dims + dims,
+          blob.buffer.asInt8List(blob.offsetInBytes, dims),
+        );
+        chunkIds[i] = row['chunk_id'] as int;
+        unitIds[i] = row['content_unit_id'] as int;
+        starts[i] = row['char_start'] as int;
+        ends[i] = row['char_end'] as int;
+        i++;
+      }
+      after = rows.last['chunk_id'] as int;
+    }
+
+    // A chunk whose parent unit is gone yields fewer rows than the count. Trim
+    // rather than leave zeroed vectors, which would score as valid neighbours.
+    if (i < count) {
+      return VectorIndex._(
+        Int8List.sublistView(vectors, 0, i * dims),
+        Int32List.sublistView(chunkIds, 0, i),
+        Int32List.sublistView(unitIds, 0, i),
+        Int32List.sublistView(starts, 0, i),
+        Int32List.sublistView(ends, 0, i),
       );
-      chunkIds[i] = row['chunk_id'] as int;
-      unitIds[i] = row['content_unit_id'] as int;
-      starts[i] = row['char_start'] as int;
-      ends[i] = row['char_end'] as int;
     }
 
     return VectorIndex._(vectors, chunkIds, unitIds, starts, ends);

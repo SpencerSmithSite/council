@@ -1797,6 +1797,629 @@ tests pass; `flutter analyze` clean.
 
 ---
 
+## Phase 32 — Contents pages ingested as the works themselves (2026-07-26)
+
+Reported from the app: the Ecumenical Councils section holds summaries and not
+the canons; the City of God is a summary; so are *Christian Doctrine*, the
+*Confessions*, Augustine's letters and Basil's letters. Every one of those was
+true, and they had three unrelated causes.
+
+### The cause that hid the longest
+
+New Advent gives a long work a contents page. `1201.htm` is not the City of God
+— it is Augustine's argument for each of its 22 books, with links to
+`120101`…`120122` where the text lives. The ingester already knew about
+multi-part works, and its test for one was:
+
+```python
+def is_hub(work, body):
+    """A hub has no text of its own but links to three or more parts."""
+    return parse_work(work, body) is None and len(sub_links(body)) >= 3
+```
+
+That first clause is the bug. A contents page **does** have text of its own —
+several thousand well-formed characters of it, genuinely written by Augustine —
+so `parse_work` returned a record, `is_hub` said no, and the work was ingested
+as the contents page. It then looked correct from every angle that gets
+checked: right title, right author, right source URL, right translator, real
+prose, provenance `primary_text`. It was only wrong by **length**, and nothing
+measured length.
+
+Eighteen works were affected, and not marginal ones:
+
+| work | was | now |
+|---|---:|---:|
+| City of God | 3 units, 8 K | 665 units, 2.36 M |
+| Basil, Letters | 1 unit, 3 K | 323 units, 0.84 M |
+| Confessions | 2 units, 4 K | 276 units, 0.63 M |
+
+The fix is one clause: the links decide alone, and `parse_multipart` then takes
+the text from the parts and discards the hub body. Restricting the link scan to
+ids that extend the work's own (`1201` owns `120101`) also dropped 20 stray
+cross-references that a bare count would have miscounted.
+
+### Three more, found by counting what was thrown away
+
+Fixing `is_hub` made the parts readable, and reading them exposed three further
+losses. All three were pre-existing; none had ever produced an error. Each was
+found the same way — not by inspecting output, but by asking, for every page,
+*what did this drop and why*.
+
+**1. Short letters were being discarded.** 111 of Basil's 325 letters parsed to
+nothing. `MIN_WORK_CHARS = 1200`, the floor that rejects a page too short to be
+a work, was being applied to each *part*. Basil's letter 13 is 193 characters:
+
+> To Olympius. As all the fruits of the season come to us in their proper time,
+> flowers in spring, grain in summer, and apples in autumn, so the fruit for
+> winter is talk.
+
+A part is not a candidate hub — its parent already answered that — so the only
+thing the floor has to reject there is navigation chrome, which strips to
+nothing. It is 80 characters for parts now. This was not introduced by the hub
+fix: Cyprian's Epistles had been a recognised hub all along, quietly losing
+four of its 82 letters since the first ingest.
+
+**2. Works in exactly two books were absent from the corpus entirely.** The hub
+threshold was three parts. A two-book work was therefore not a hub, and its
+contents page was too short to survive the length floor as a flat work, so it
+fell between the two paths and was never ingested at all — not summarised,
+*missing*. Ten works went that way: Tertullian's *Ad Nationes*, Augustine's
+*Soliloquies*, *Our Lord's Sermon on the Mount*, *On the Grace of Christ*,
+*The Predestination of the Saints*, Jerome *Against Jovinianus*, Ambrose *On
+Repentance* and *On the Death of Satyrus*, Athanasius' *Apologia Contra
+Arianos*, and Sulpitius Severus' *Sacred History*. Two is safe as a threshold
+now that the link scan only counts a page's own children.
+
+**3. Parts are not always numbered.** Most works number them (`3202` →
+`3202001`); some letter them. Gregory Nazianzen's letters are `3103a`, `3103b`,
+`3103c`, and Ephraim's *Nisibene Hymns* and the *Gospel of Nicodemus* the same.
+A pattern matching digits saw no parts on those pages, and their contents pages
+are a few hundred characters, so they failed the length floor too and were
+likewise absent rather than short.
+
+With the hub check finally doing its own job, `MIN_WORK_CHARS` was doing only
+its own — and 1,200 was too high for that. The surviving fragment of Quadratus,
+the earliest Christian apology there is, is 853 characters and was being
+dropped. At 500 that one work is admitted and nothing else in the manifest
+moves. **Every work in the New Advent manifest now parses to text.**
+
+### Two audits, because one was not enough
+
+`tools/audit_completeness.py` is new. Its first check is statistical: a contents
+page is a run of headings, so it carries a structural marker every hundred
+characters or so and few sentence-ending periods, while prose does the reverse.
+Measured across the corpus the two populations do not overlap — flagged sources
+run 3 to 96 markers per 1,000 characters and the next unflagged source is at
+2.3. Conciliar acts are the case that makes a naive threshold wrong: Laodicea
+is 71 "Canon N" markers in 33 KB, but each canon is followed by real prose, so
+its sentence density is normal. Both bounds are needed.
+
+A ratio test — markers outpacing sentences — was written first, read better,
+and **silently missed the City of God, the Confessions and the Harmony of the
+Gospels**, whose contents pages summarise each book in a sentence or two and so
+keep an ordinary sentence rate. It is recorded in the module docstring as what
+the tool deliberately does not do.
+
+The second check is not a heuristic at all. For New Advent works the cached hub
+page says how many parts the work has, so "22 parts, 3 units stored" is a fact
+rather than a judgement. It catches the four the punctuation signal misses —
+including *Christian Doctrine*, whose contents page describes each book in a
+full sentence and scores 0.62.
+
+### The audit that was supposed to catch this had gone blind
+
+`audit_corpus.py` is the tool that separates generated filler from real text,
+and it was reporting **59% of the corpus as "unknown" and 220 of 415 sources as
+holding no confidently-primary text** — Chrysostom's homilies on Matthew,
+Augustine's sermons, Cyprian's epistles. A tool that flags everything is a tool
+nobody reads, which is part of why the contents pages sat there.
+
+The cause is one character class. `normalized_title_tokens` matched `[a-z]+`,
+so it stripped the numbers — and "Homily 12" and "Homily 13" became the same
+token set, i.e. word-shuffles of each other. That single signal fired 17,469
+times. The generator's shuffles were of *words* ("On the Creed That Is the
+Nicene" against "On the Nicene That the Creed Professes"), so keeping digits
+costs it nothing, and a one-token title now cannot fire it at all: "Preface"
+twice in a work is a fact about the work.
+
+| | before | after |
+|---|---:|---:|
+| classified primary_text | 36.4% | **89.9%** |
+| sources with no primary text | 220 of 415 | **6 of 415** |
+
+Four of the remaining six are the contents pages this phase is about. The other
+two are heuristic edge cases in a dialogue and a liturgical list, and are left
+flagged rather than tuned away.
+
+### The second cause: eight sources that were two works each
+
+`prune_unprovenanced.py` had left eight sources standing on the reading that
+their wording was genuine but abridged. Reading their unit titles *in order*
+shows it is not. Each is two unrelated works interleaved, odd positions from
+one and even from the other:
+
+    Philokalia Selections   Slough of Despond · Watchfulness · The Cross and
+                            the Burden · The Jesus Prayer · Vanity Fair ·
+                            Dispassion · The Celestial City · Theosis
+
+Half of that is *Pilgrim's Progress*. Under Wesley's name sit the Didache's Two
+Ways and the arrest, trial and burning of Polycarp. Under Gregory of Nyssa sit
+three sections of *Nostra Aetate* — Vatican II, 1965, in copyright. Under
+Teresa of Ávila sit the inward, outward and corporate disciplines of Richard
+Foster's *Celebration of Discipline*, 1978, also in copyright.
+
+All eight removed. **Every source in the corpus now has a `source_url`**, which
+is the first time that has been true.
+
+The Seven Ecumenical Councils was the one happy case: superseded rather than
+merely deleted. Its seven paragraphs of summary are replaced by acts already in
+the corpus — creeds, canons and synodal letters running to 503 K characters
+across the seven — and the deletion is gated on all seven being present, so a
+rename upstream fails loudly instead of leaving those councils with nothing.
+
+### The third cause: a confession that was never there
+
+The corpus had the Second London Baptist Confession (1689) and not the First
+(1644), which reads as though Baptists began in 1689.
+
+`tools/ingest_first_london.py` adds it: 53 articles from reformedreader.org's
+transcription of the first edition, corroborated against Underhill's *Confessions
+of Faith* (Hanserd Knollys Society, 1854) on archive.org.
+
+**What that corroboration is worth is stated rather than implied.** Underhill
+prints the 1646 second impression, "corrected and enlarged", so it is not a
+second transcription of the same words and a word-identity check against it
+would mean nothing — article I was rewritten wholesale between the two. What it
+does settle is every way a confessional text found on the open web actually
+goes wrong: it fixes the article count and order, proves this is the whole
+document rather than an abridgement, and its 17th-century vocabulary proves the
+text has not been quietly modernised into a paraphrase. Median vocabulary
+overlap is 93%, lowest 71%; the gate is set to what that supports and no
+higher.
+
+Two numbering defects are asserted rather than tolerated: the 1644 printing
+sets the 36th article as XXVI and the last as LII when the preceding article is
+already LII. Both are in Underhill. A page that has been silently re-edited now
+fails the ingester instead of shipping.
+
+### A loader that does not churn what it does not fix
+
+`build_corpus.py` only appends — running it twice inserts every work again.
+`tools/refresh_newadvent.py` matches on `source_url` and replaces only works
+whose parsed units actually differ. That is not an optimisation. Replacing
+units means new `content_units.id` values, and the app's highlights and notes
+live in a separate database keyed on exactly those ids, so rewriting all 400
+works to fix 18 would silently detach every annotation a reader has made on the
+other 382. It also refuses to replace a work that parses *shorter* than what is
+stored, since a half-failed fetch must not overwrite good text for being newer.
+
+### Result
+
+| | before | after |
+|---|---:|---:|
+| sources | 439 | 446 |
+| content units | 28,520 | 36,917 |
+| characters | 99.2 M | **123.7 M** |
+| chunks | 92,697 | 115,409 |
+| sources with no `source_url` | 8 | **0** |
+| sources holding a contents page | 14 | **0** |
+| New Advent works missing entirely | 14 | **0** |
+| `audit_corpus` primary_text | 36.4% | **87.3%** |
+
+The 24.5 M characters gained are almost entirely from works the app already
+listed. It was not short of texts; it was short of their contents.
+
+### What is tracked now
+
+`TODO.md` was two months stale and claimed figures that no longer described the
+app. It is now the corpus ledger — have, don't have, should have, and a
+**shouldn't have** table naming every removal and what it actually was, so none
+of it comes back. Three audits are named at the top of it and are meant to be
+run before and after any corpus change.
+
+---
+
+## Phase 33 — Packs publishable without an app release (2026-07-26)
+
+Phase 32 produced 24.5 M characters of corrections and then could not deliver
+them: the app refused any catalogue whose `corpusVersion` differed from its
+own, so every reader on the previous build would have been told
+
+> This content was built for a different version of the app.
+
+until they updated. Raised as: *"we can't update the packs without pushing an
+app update? If we push changes to the packs, the app should just point to the
+new packs."*
+
+### The gate was testing the wrong thing
+
+Fragments merge by raw row id — `INSERT INTO content_units SELECT * FROM
+pack.content_units`, no renumbering — which is what keeps install cheap, since
+chunk ids are derived from unit ids and embeddings are keyed on chunk ids. The
+requirement that creates is that ids be **disjoint**. The version check enforced
+something stronger and easier: that the pack and the app came from *the same
+build*.
+
+Those coincide only by accident. Checking the two builds directly:
+
+| | v12 | v13 |
+|---|---:|---:|
+| KJV core unit ids | 23558–24746 | **23558–24746** |
+| max unit id | 33453 | 42757 |
+
+The core did not move and everything new was appended above the old maximum. v13
+was installable into a v12 app the whole time; the gate refused it anyway.
+
+### Three changes
+
+**1. Packs are gated on `idSpace`, not `corpusVersion`.** `corpusVersion` keeps
+its real job — it governs the database bundled *inside the binary*, which can
+only change with a release. `idSpace` is a separate number that advances only
+when a rebuild reassigns an id that is already in the field.
+
+**2. `build_packs.py` proves the build appended.** `check_id_space` keeps a
+ledger of what was last published — per source, the id range its units occupy
+and a hash of their text — and compares. Three faults, each named rather than
+collapsed into a bump:
+
+- `moved` — a source kept its text and changed its ids
+- `rewritten` — a source kept its ids and changed its text
+- `occupied` — new content landed on ids the previous build had handed out
+
+`occupied` is the dangerous one: the reader keeps the old text under an id the
+new pack expects to insert, and the merge fails on a primary-key collision
+partway through. Ids *freed* and left fallow are fine, which matters because
+that is exactly the shape of Phase 32 — 23 works were re-ingested into fresh
+ids above the mark and their old ids abandoned.
+
+Verified against all six cases (three faults, plus append-only, a removed
+source, and Phase 32's own shape) rather than reasoned about.
+
+**3. A republished fragment replaces the installed one.** This is the half that
+actually delivers an update, and without it relaxing the gate would have been
+worse than useless. `install()` skipped any fragment already present, keyed on
+id — so a reader holding `f-augustine` would have been told they were up to
+date and kept the City of God summary for ever. Fragments now record the
+checksum they were installed from, and a catalogue offering a different one
+triggers a rebuild: `_retire` tears the old rows down and the new file merges
+over. Teardown happens only *after* the replacement has downloaded, verified
+and unpacked, so a failed update leaves the reader with what they had rather
+than with nothing.
+
+### What is still coupled, and honestly
+
+- The bundled core ships inside the binary. Core content changes always need a
+  release. Today the core is the KJV alone, so this rarely binds.
+- **v13 itself still ships together with the app.** Apps already in TestFlight
+  are running the old equality check and cannot be talked out of it. The
+  decoupling applies from the *next* corpus build onward — that is the nature
+  of the fix, and it is worth saying rather than implying otherwise.
+
+`build_packs.py` now ends by saying which case a build is in, so this is not
+something to reason out at publish time.
+
+---
+
+## Phase 34 — The Reformation, and an Orthodox tradition that exists (2026-07-26)
+
+Two gaps, closed together because they are the same gap seen from two sides:
+the corpus was a patristic library with a confessional appendix. 402 of its 446
+sources were early-church; Reformed had seven, Baptist two, Anglican one, and
+Eastern Orthodox none at all. A question about assurance or the atonement could
+be answered out of Augustine and Chrysostom without a single voice from the
+tradition that spent four centuries arguing about them.
+
+### Eastern Orthodox — from zero to a tradition
+
+`tools/ingest_orthodox.py`. Three primary texts, each chosen because it has an
+unambiguously public-domain English translation, not because it was the first
+thing found:
+
+- **The Longer Catechism** (Philaret of Moscow, 1830; Blackmore's 1845 English
+  as reprinted in Schaff) — 611 numbered questions on faith, hope and love.
+- **The Confession of Dositheus** (Synod of Jerusalem, 1672; Robertson, 1899) —
+  the Orthodox answer to Cyril Lucaris, and the nearest thing Orthodoxy has to
+  a post-schism conciliar symbol.
+- **The Book of Needs** (the *Trebnik*; Shann, 1894) — baptism, chrismation,
+  confession, marriage, unction and burial. A catechism says what a tradition
+  believes; a service book shows what it does, and for Orthodoxy most of the
+  theology lives in the second.
+
+Each web transcription is gated against a scan of the printing it claims to
+reproduce — Blackmore's 1845 Aberdeen edition and Robertson's 1899 volume, both
+pinned by archive.org identifier. The scans are OCR and unusable as text; the
+Robertson volume is bilingual and its OCR confuses Greek and Latin scripts
+outright. That is fine for the question actually being asked, which is whether
+this is the same document, at full length, in its own century's English. The
+check is word-*pair* containment rather than word containment, because
+single-word overlap passes on any two texts of the same period and subject.
+Philaret scores a median of 95%, Dositheus 87%.
+
+**What the gates caught.** Every one of these was a defect that would have
+shipped looking correct:
+
+- A length floor on answers silently dropped 93 of Philaret's 610 questions,
+  because a catechism answers many questions in a single clause.
+- Three genuine holes in the Philaret transcription — question 288 absent
+  outright, 126 and 150 printed with empty answers. Asserted as an exact set,
+  so a page that has been re-edited in *either* direction now fails here.
+- The last unit of each work absorbing its page footer: Philaret ending with a
+  citation of itself, Dositheus with the host site's navigation menu. The
+  corroboration gate does not catch this — a few hundred characters of
+  navigation on a long unit still scores well — so the boundaries are explicit.
+- Gutenberg's CRLF line endings, which made every blank-line paragraph split
+  fail and produced 28 correctly-detected chapters with no text under any of
+  them.
+
+`TODO.md` was also wrong and is corrected: it named Kadloubovsky's Philokalia
+extracts as the public-domain route. That translation is Faber, **1951**, and
+in copyright exactly like the Palmer/Sherrard/Ware one it was offered as an
+alternative to. There is no public-domain English Philokalia.
+
+### Reformation and post-Reformation — CCEL
+
+`tools/survey_ccel.py` then `tools/ingest_reformation.py`.
+
+The acquisition list is *derived*, not remembered: `survey_ccel.py` walks
+CCEL's own author index pages, and every title, author, translator and rights
+line comes out of the work's own export header. The only judgements in the
+ingester are which works to take and which tradition and genre each belongs to.
+That distinction matters, because the two things most easily got wrong from
+memory — who translated a work and whether it is public domain — are exactly
+the two the header states outright.
+
+**Units are cut on CCEL's own structure.** Not with a heading regex per work;
+there are two hundred works here and their headings agree on nothing. Every
+CCEL export is divided by a rule of underscores, and that rule is a real
+boundary in all of them — it separates each of Spurgeon's sermons, each chapter
+of the *Institutes*, each chapter of Matthew Henry, each section of Edwards. So
+the rule is the backbone and a classifier sorts the segments into headings,
+footnote blocks and body text.
+
+Three things that had to be learned by looking rather than assumed:
+
+- **Titles are recognised by layout, not by case.** An all-capitals test finds
+  the chapter marks in Calvin and Henry and misses every one of Spurgeon's
+  sermon titles, which are set in ordinary mixed case — leaving nine hundred
+  sermons named after the volume they came from. What actually marks a heading
+  is a short block standing alone between blank lines that does not end like a
+  sentence.
+- **CCEL's `Creator(s)` field is not one name per person.** `Calvin, John
+  (1509-1564) (Alternative) (Translator)` is one man with role markers, not two
+  people; reading the roles naively made Calvin his own translator and filed
+  forty-five commentary volumes with no author at all.
+- **Most exports have no `Rights:` line.** See below.
+
+### Public domain where the archive does not say
+
+The rights gate is the one place this phase had to decide something rather than
+read it. CCEL states `Rights: Public Domain` for some works and says nothing at
+all for most. Refusing everything unstated would drop Spurgeon, Owen, Edwards
+and Bunyan; accepting everything unstated is how in-copyright text gets a
+public-domain label, which this corpus has already had to be cleaned of once.
+
+Two bases, in order of strength, and every source records which one it rests
+on:
+
+1. **CCEL states public domain.** Taken at face value.
+2. **Publication date.** The work is in the author's own English — so no
+   translator's copyright can attach — and the author died before 1929. This is
+   the same reasoning `ingest_gutenberg.py` already records for the Book of
+   Concord.
+
+A declared modern print basis refuses the work under (2) but not under (1).
+Owen died in 1683, but CCEL sets his *Mortification of Sin* from a Banner of
+Truth printing of 1967, and a modern edition can carry modern editorial matter;
+with nothing but an inference to go on, that is not something to reason past.
+Calvin's commentaries are set from a Baker printing of 1996 and are ingested
+anyway, because CCEL affirmatively states public domain — the printing is a
+photographic reissue of the Calvin Translation Society's Victorian edition, and
+second-guessing the archive that cleared it, on the strength of a date the
+archive can see too, is not caution but noise.
+
+The works this refuses are listed by name and reason in `SOURCES.md`. Luther's
+*Bondage of the Will* is the notable loss: CCEL credits no translator and
+states no rights, and a translation of unknown date is not something to guess
+at.
+
+### Delivery
+
+The Reformed fragment would otherwise have become a single hundred-megabyte
+download holding everything from Calvin on Genesis to a Puritan tract. Ten
+author fragments were split out ahead of the tradition fragments — Calvin,
+Henry, Spurgeon, Owen, Edwards, Luther, Bunyan, Barnes, Baxter, Hodge — exactly
+as `f-augustine` already sits ahead of `f-fathers-rest`, with matching author
+collections so a reader can take Calvin without taking the Puritans.
+
+### What 3.7× exposed
+
+Three defects that were latent at 123 M characters and load-bearing at 453 M.
+None was found by reasoning about the change; all three came out of the
+integration suite, which went from 4 minutes 57 seconds to 5 seconds.
+
+**Search became unusable on scoped questions.** `ftsMatchQuery` made every term
+a prefix match, so a question phrased as a sentence handed FTS5 `the*`,
+`did*` and `about*` — each matching a large fraction of the index — and asked
+it to rank all of that to return six passages. Unscoped questions merely got
+slow. Scoped ones fell off a cliff: when the filter admits one source in 638,
+the scan runs a long way down the ranking before it finds anything, and "What
+did the Council of Trent decree about justification?" went from about a second
+to over thirty. Dropping stopwords from the match brings it to 319 ms and costs
+nothing in precision, because no passage was ever worth returning on the
+strength of containing "about".
+
+The general lesson, recorded because it will recur: **a prefix match is a
+scan**, and its cost scales with the corpus while its value does not.
+
+**Loading the vector index blocked every other query.** `VectorIndex.load`
+issued one query for all 429,516 embeddings. sqflite marshals the whole result
+set across the platform channel before the first row is read, and it runs every
+database operation through a single queue — so for as long as that call ran,
+nothing else in the app could touch the database. Now paged, with keyset
+pagination rather than OFFSET.
+
+Worth stating precisely, because it points at the real fix: SQLite reads those
+same 165 MB in **0.28 seconds**. The remaining cost is per-row marshalling, and
+the way to remove it rather than spread it is to stop having 429,516 rows —
+store the vectors as a handful of contiguous blocks written at build time. The
+index does not need to be sorted, only paired, so blocks can arrive in any
+order and per-fragment blocks would merge without renumbering. Not done here;
+paging was enough to stop it blocking.
+
+**The first download tripled in size without anyone touching it.**
+"Creeds & Confessions" references the tradition fragments, and those had
+quietly become the Puritan shelf — Manton's 18.1 M characters among them —
+taking the essentials pack from 4.3 MB to 31.5 MB. Ten more author fragments
+were split out ahead of the tradition ones and it is back to 8.5 MB.
+
+This is a property of the fragment design worth watching: a collection defined
+by *which fragments it references* inherits whatever those fragments later
+accumulate. Adding an author to a tradition silently enlarges every collection
+that names that tradition's fragment.
+
+### Delivery, and a ranking change it forced
+
+Two genres were added to `source_types`, which had held the same eight since
+the corpus was creeds and Fathers: **Commentary** and **Liturgy**. Filing
+Calvin on Genesis as a "Treatise", or the Orthodox rite of baptism as one, is a
+small lie that shows up in every citation of it. `load_ccel.py` creates genre
+rows on demand; `traditions` deliberately keeps its hard lookup, because a
+typo'd genre is a wrong label while a typo'd tradition silently invents a new
+branch of Christianity.
+
+Per-author collections then broke a suggestion rule that had been right up to
+that point. Asked "What do Baptists believe about baptism?" with nothing
+Baptist installed, the app offered **John Bunyan** — Baptist, two works, and so
+the winner under "the narrowest pack that fixes it", which is the correct rule
+for a question naming an author or a work. It is the wrong rule here: the gap
+reported is not "you lack a Baptist author" but "you lack the Baptist
+tradition", and Bunyan's allegories are not the confessions. Inverting to
+breadth overshoots to "Creeds & Confessions", which holds Baptist material
+among six other traditions and is not what was asked about either. What
+actually identifies the right answer is that the collection covers *one*
+tradition and is the fullest such — so that is what the sort now does when, and
+only when, the reason is `traditionAbsent`.
+
+---
+
+## Phase 35 — Owen, the Treasury, and 30 M characters of link tables (2026-07-27)
+
+Phase 34 ended with a refusal table. Two rows of it were large enough to be worth
+going back for: all 31 works of John Owen, and all six volumes of Spurgeon's
+*Treasury of David*. Both are now in, and neither came in by relaxing a gate.
+
+### Owen: answering a rights question with evidence instead of a date
+
+CCEL's Owen carries no rights statement and names a Banner of Truth printing of
+1965-68. `ingest_reformation.py` refused all 31, correctly: a header cannot tell
+a *new* edition from a *reprint* of an old one, and guessing wrong puts
+in-copyright text in the corpus under a public-domain label.
+
+But the question is answerable, just not from the header. Banner of Truth's Owen
+is a facsimile of William H. Goold's edition of 1850-55, which is on archive.org
+as page scans. So `ingest_owen.py` measures rather than reasons: it scores the
+text CCEL transcribed against the OCR of Goold's volumes and admits a work only
+where the match says the two are the same document.
+
+The measure is word-pair containment, the primitive `ingest_orthodox.py` already
+used. What makes it trustworthy here is not the absolute number but the spread
+between the cases that could be confused:
+
+| | containment |
+|---|---:|
+| Owen, *Death of Death* vs the volume that contains it | 92.0% |
+| Owen, *Mortification of Sin* — same author, same idiom, wrong volume | 43.7% |
+| Calvin, *Institutes* — unrelated Reformed treatise | 18.2% |
+
+Fifty points between a true match and the hardest near-miss available. All 31
+works cleared it, 87-98%. Three that no single volume holds — the collected
+sermons, *Pneumatologia*, the *Inquiry into Evangelical Churches* — are admitted
+on a whole-edition score against a *higher* bar (90%), because scoring against
+sixteen volumes at once is a much easier test to pass and the fallback must not
+become a way in for what the sharp test rejected. The run re-measures Calvin
+against the assembled witness every time, and aborts if the control ever climbs
+into the range where the measure has stopped discriminating.
+
+**The pinning bug worth remembering.** The first run refused *Vindiciæ
+Evangelicæ* and the Grotius review as uncorroborated. They were not:
+archive.org's `volume` metadata is unreliable, the scans numbered straight
+through Goold's twenty-four volumes put a Hebrews volume where Works vol. 12
+should be, and the two works had no witness to match against at all. A missing
+witness read as a fact about the text. The fix was to verify each pin against
+the volume's own contents page, and — more durably — to make `parse` report the
+volume each work matched, so a bad pin shows up as a work with no home rather
+than as a rights problem.
+
+### The Treasury: a text problem, not a rights one
+
+Spurgeon died in 1892; nothing about the Treasury's copyright is in doubt. CCEL
+simply serves it as page images. The text therefore comes from Ted Hildebrandt's
+2007 digitisation for Gordon College — a real text layer, not OCR — with all 150
+psalms corroborated against archive.org's scans of the Victorian printings at a
+median of 97%, lowest 91%.
+
+Two sources were considered and rejected, and the reasons are worth keeping:
+
+- **sacred-texts.com** has the whole work in clean per-psalm HTML. Its
+  robots.txt sets `Content-Signal: ai-train=no, use=reference`, which is an
+  express reservation against exactly this use, and the site is behind a
+  challenge that would have to be worked around to read at all. Either alone is
+  disqualifying.
+- **An anonymous HTML transcription on archive.org** is complete in structure
+  and not in content: missing psalms 4, 10, 11, 17-20, 22-24 and the whole of
+  119 — 139 of 150, absent the two psalms most likely to be looked up.
+
+The units follow Spurgeon's own divisions. Psalms are attributed to pages by
+**running head** rather than by heading, because the headings are not uniform:
+psalm 119 is a volume of the original in its own right, opens with a preface
+instead of the usual navigation block, and runs to 172 sub-sections under a
+different vocabulary. Keying on headings loses the longest psalm in the Psalter.
+
+**The same class of pinning bug, caught by the same reporting.** Psalms 53-57
+scored 52-62% and were refused. The cause was that the printings *do not divide
+the work the same way* — the 1882 second volume stops at psalm 52 while the 1881
+third starts at 58 — so pinning one of each left five psalms in no volume at all.
+Numbering the pins by volume is what made a hole in the witness look like a fact
+about the text, so the pins are now a flat list of identifiers, deliberately
+overlapping. Overlap is free here: each psalm takes its *best* scan rather than a
+union, so an extra witness can only close a gap, never make the measure more
+permissive.
+
+### What the corroboration work exposed
+
+Going after two refused works surfaced a defect in the text that was already
+shipping, and it was larger than either of them.
+
+- **3,438 units — about 30 M characters — were CCEL's reference apparatus.**
+  Every export ends with a colophon and a numbered list resolving each hyperlink
+  to a `file:///ccel/...` path. All 3,438 were over half link text; the worst
+  were 95%. They passed every gate because a page of link targets is long enough
+  to satisfy a floor expressed in characters. `clean()` now drops paragraphs
+  that are majority URL, judged by proportion rather than presence — a sentence
+  that cites a URL is still a sentence.
+- **Front-matter skipping was discarding whole works.** It took the *last*
+  match inside a twelve-segment window, and `INDEXES?` was in the front-matter
+  pattern despite being back matter. In a short work the closing indexes fall
+  inside that window, so the skip jumped past the entire body: twelve works were
+  lost outright as stubs, and five of Charnock's regeneration discourses shipped
+  at about an eighth of their real length. Owen's *Review of Grotius* was the
+  diagnostic case — it was ingested as five units of the index's link table, and
+  scored 11.9% against Goold because what was being measured was not Owen.
+  Front matter is now a contiguous *prefix*, and the index patterns are gone
+  from it because `BACK_MATTER` already had them.
+
+The general lesson is the one the corpus keeps re-learning from a new angle:
+**every floor here is expressed in characters, and apparatus has characters.**
+The gates that work are the ones that measure a *ratio* — placeholders per
+thousand characters, lowercase share, URL share — because those distinguish text
+from things that merely occupy the space text would.
+
+The corroboration passes did not find these defects by looking for them. They
+found them because a work that is silently not itself cannot match a scan of
+itself, which is a property worth having on purpose.
+
+---
+
 # Forward-looking plans (not yet scheduled)
 
 The sections below are design decisions and backlog, not dated phase logs. They
@@ -2024,19 +2647,38 @@ ebible.org USFM importer once; it serves every PD version above. See
 `~/Documents/council research/research/acquisition-roadmap.md` §15 for the full
 Bible-version gap analysis.
 
-## Far-future reader features (post-v1)
+## Reader annotations — built
 
-Explicitly deferred until the initial version ships. These are reader-experience
-improvements, independent of the corpus/retrieval work, and none block a first
-release:
+Selecting text while reading, and everything that follows from it. Previously
+listed here as post-v1; built ahead of that because it is what turns a library
+into something a reader works *in*.
 
-- **Note-taking** — user annotations attached to a source/unit, stored locally.
+Tapping a passage selects it — verses for Scripture, paragraphs for prose,
+sentences where a paragraph runs too long to be a useful unit — and raises a
+toolbar offering copy, the platform share sheet, five highlight colours, a note,
+and a question to the configured model about the selected text.
+
+The data model, since it was undecided when this section was written:
+
+- **A separate database.** `council_user.db`, opened by `UserDatabase`, holding
+  highlights, notes, conversations and messages. Deliberately *not*
+  `theology.db`: that file is deleted and reinstalled whenever `corpusVersion`
+  changes, so a note kept there would be destroyed by a routine content update.
+- **Anchored by character range, plus a snapshot of the text.** The offsets are
+  what make rendering cheap; the stored quotation is what lets an annotation be
+  re-found if a corpus rebuild shifts a unit, and what lets a note still show
+  what it is about after its passage is uninstalled with a pack.
+- **Conversations are persisted**, so the Ask tab reopens where it was left and
+  the Chat history page can return to any earlier thread. A thread started from
+  a selection stores that passage, and leads its own prompt with it.
+
+Still deferred:
+
 - **Text-to-speech** — the app reads a source aloud (offline TTS so it works
   without a network, consistent with the offline-first premise).
-- **Highlighting** — persistent user highlights across passages.
-- **Sharing snippets** — export/share a quoted passage with its citation
-  (respecting per-source license terms when sharing externally).
-- (Natural neighbours to revisit alongside the above: bookmarks/collections of
-  saved passages, adjustable reading themes/fonts beyond the current set.)
-
-Priority order and data model for these are undecided; revisit after v1.
+- **Collections of saved passages** beyond the existing bookmarks, and reading
+  themes/fonts beyond the current set.
+- **Re-anchoring on drift.** The snapshot is stored but not yet used: an
+  annotation whose offsets no longer match is currently rendered where the
+  offsets say. Searching for the stored text and re-anchoring is the fix, and
+  costs nothing until a corpus rebuild actually moves something.

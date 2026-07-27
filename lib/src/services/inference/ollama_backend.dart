@@ -20,7 +20,15 @@ class OllamaBackend implements InferenceBackend {
   OllamaBackend({required this.host, required this.model});
 
   static const String defaultHost = 'http://localhost:11434';
-  static const String defaultModel = 'llama3.2';
+
+  /// Deliberately blank.
+  ///
+  /// Pre-filling a plausible name — it used to be `llama3.2` — means the app
+  /// ships configured for a model the user very likely has not pulled, and the
+  /// first question then fails with "model not found" against a host that is
+  /// working perfectly. Blank makes the real order of operations visible:
+  /// enter the host, fetch what it has, choose from that.
+  static const String defaultModel = '';
 
   @override
   String get id => 'ollama';
@@ -62,7 +70,17 @@ class OllamaBackend implements InferenceBackend {
         '"ollama pull llama3.2".',
       );
     }
-    if (model.isNotEmpty && !models.any((m) => m.startsWith(model))) {
+    // No model chosen is a real "not ready", not a detail to paper over: with
+    // an empty name the request would go out under whatever default the client
+    // happens to hold, which is how someone ends up querying a model they never
+    // selected.
+    if (model.trim().isEmpty) {
+      return BackendStatus.unavailable(
+        'Connected to $host, but no model is selected. Choose one from the '
+        'list in AI Backend settings.',
+      );
+    }
+    if (!models.any((m) => m.startsWith(model))) {
       return BackendStatus.unavailable(
         'Ollama is running but "$model" is not installed. Pull it or pick '
         'another model.',

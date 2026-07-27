@@ -11,7 +11,9 @@ import 'src/services/search/semantic_search.dart';
 import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
 import 'src/services/packs/pack_service.dart';
+import 'src/screens/chat_history_screen.dart';
 import 'src/screens/chat_screen.dart';
+import 'src/screens/notes_screen.dart';
 import 'src/screens/read_screen.dart';
 import 'src/screens/library_screen.dart';
 import 'src/screens/settings_screen.dart';
@@ -188,7 +190,22 @@ class TheologyApp extends StatelessWidget {
               data: media.copyWith(
                 textScaler: TextScaler.linear(settings.fontScale),
               ),
-              child: child ?? const SizedBox.shrink(),
+              // Tapping away from a field dismisses the keyboard, on every
+              // screen including pushed ones.
+              //
+              // iOS gives a text field no escape of its own: a multi-line
+              // composer's return key inserts a newline, and a form field
+              // behind the keyboard cannot be scrolled if its screen does not
+              // scroll — so the keyboard could take half the display with
+              // nothing on screen able to close it. Translucent, so buttons
+              // and list rows still receive their own taps; the arena gives
+              // the tap to the innermost recognizer and this only fires when
+              // nothing else claims it.
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: child ?? const SizedBox.shrink(),
+              ),
             );
           },
           // First run goes to setup. Gated on a stored flag rather than on an
@@ -237,11 +254,26 @@ class _MainScreenState extends State<MainScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  /// Reaches into the Ask tab so the compose button can start a new thread,
+  /// and so a conversation chosen in the history list can be opened *there*
+  /// rather than in a second screen showing the same thread.
+  final _chatKey = GlobalKey<ChatScreenState>();
+
   Widget _screenFor(_Area area) => switch (area) {
-        _Area.ask => const ChatScreen(),
+        _Area.ask => ChatScreen(key: _chatKey),
         _Area.read => const ReadScreen(),
         _Area.library => const LibraryScreen(embedded: true),
       };
+
+  Future<void> _openHistory() async {
+    final id = await Navigator.push<int>(
+      context,
+      MaterialPageRoute(builder: (_) => const ChatHistoryScreen()),
+    );
+    if (id == null || !mounted) return;
+    setState(() => _area = _Area.ask);
+    await _chatKey.currentState?.openConversation(id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +291,17 @@ class _MainScreenState extends State<MainScreen> {
         onSelect: (area) {
           setState(() => _area = area);
           Navigator.pop(context);
+        },
+        onOpenNotes: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NotesScreen()),
+          );
+        },
+        onOpenHistory: () {
+          Navigator.pop(context);
+          _openHistory();
         },
       ),
       // Full-bleed: the content paints edge to edge so the glass controls have
@@ -284,17 +327,31 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
 
-          // Top-right: settings.
+          // Top-right: settings, and — on Ask only — a compose button, since
+          // starting a fresh thread is the one action that has nowhere else to
+          // live now that conversations persist across launches.
           Positioned(
             top: top + 8,
             right: AppleMetrics.edgeInset,
-            child: GlassBubble(
-              icon: AppIcons.settings,
-              tooltip: 'Settings',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              ),
+            child: Row(
+              children: [
+                if (_area == _Area.ask) ...[
+                  GlassBubble(
+                    icon: AppIcons.newChat,
+                    tooltip: 'New conversation',
+                    onTap: () => _chatKey.currentState?.startNewConversation(),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                GlassBubble(
+                  icon: AppIcons.settings,
+                  tooltip: 'Settings',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -303,12 +360,25 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-/// The navigation sidebar, listing the primary areas.
+/// The navigation sidebar: the three primary areas, then the reader's own
+/// material below a rule.
+///
+/// Notes and Chat history are deliberately *not* areas. An area is a place the
+/// app can sit in; these two are lists you go into, take something out of, and
+/// come back from — Notes opens an editor, and picking a conversation puts it
+/// in the Ask tab rather than becoming a fourth destination of its own.
 class _NavigationDrawer extends StatelessWidget {
   final _Area current;
   final ValueChanged<_Area> onSelect;
+  final VoidCallback onOpenNotes;
+  final VoidCallback onOpenHistory;
 
-  const _NavigationDrawer({required this.current, required this.onSelect});
+  const _NavigationDrawer({
+    required this.current,
+    required this.onSelect,
+    required this.onOpenNotes,
+    required this.onOpenHistory,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -334,10 +404,27 @@ class _NavigationDrawer extends StatelessWidget {
             const SizedBox(height: 8),
             for (final area in _Area.values)
               _DrawerRow(
-                area: area,
+                icon: area.icon,
+                title: area.title,
                 selected: area == current,
                 onTap: () => onSelect(area),
               ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: Divider(height: 1),
+            ),
+            _DrawerRow(
+              icon: AppIcons.notes,
+              title: 'Notes',
+              selected: false,
+              onTap: onOpenNotes,
+            ),
+            _DrawerRow(
+              icon: AppIcons.history,
+              title: 'Chat history',
+              selected: false,
+              onTap: onOpenHistory,
+            ),
           ],
         ),
       ),
@@ -346,12 +433,14 @@ class _NavigationDrawer extends StatelessWidget {
 }
 
 class _DrawerRow extends StatelessWidget {
-  final _Area area;
+  final IconData icon;
+  final String title;
   final bool selected;
   final VoidCallback onTap;
 
   const _DrawerRow({
-    required this.area,
+    required this.icon,
+    required this.title,
     required this.selected,
     required this.onTap,
   });
@@ -375,10 +464,10 @@ class _DrawerRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
             child: Row(
               children: [
-                Icon(area.icon, color: color, size: 22),
+                Icon(icon, color: color, size: 22),
                 const SizedBox(width: 14),
                 Text(
-                  area.title,
+                  title,
                   style: TextStyle(
                     color: color,
                     fontSize: 17,

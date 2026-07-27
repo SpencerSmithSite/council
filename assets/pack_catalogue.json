@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 12,
+  "corpusVersion": 15,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -176,26 +176,26 @@
         "Two Letters to Theodore After His Fall"
       ],
       "tags": {
-        "angels": 359,
-        "baptism": 116,
-        "church": 378,
-        "creation": 104,
-        "eschatology": 212,
-        "eucharist": 1,
-        "faith": 504,
-        "grace": 685,
-        "holy-spirit": 77,
-        "incarnation": 15,
+        "angels": 437,
+        "baptism": 146,
+        "church": 455,
+        "creation": 136,
+        "eschatology": 310,
+        "eucharist": 2,
+        "faith": 634,
+        "grace": 790,
+        "holy-spirit": 95,
+        "incarnation": 20,
         "justification": 20,
-        "last-judgment": 355,
-        "prayer": 281,
+        "last-judgment": 439,
+        "prayer": 310,
         "sacraments": 4,
-        "salvation": 337,
-        "sanctification": 24,
-        "scripture": 261,
-        "sin": 754,
+        "salvation": 412,
+        "sanctification": 33,
+        "scripture": 344,
+        "sin": 918,
         "trinity": 4,
-        "worship": 83
+        "worship": 99
       },
       "traditions": [
         "Early Church"
@@ -235,6 +235,7 @@
         "On the Creed: A Sermon to Catechumens",
         "On the Good of Marriage",
         "On the Good of Widowhood",
+        "On the Grace of Christ, and on Original Sin",
         "On the Holy Trinity",
         "On the Morals of the Catholic Church",
         "On the Morals of the Manichaeans",
@@ -243,35 +244,38 @@
         "On the Soul and its Origin",
         "On the Spirit and the Letter",
         "On the Work of Monks",
+        "Our Lord's Sermon on the Mount",
         "Reply to Faustus the Manichaean",
         "Sermons on Selected Lessons of the New Testament",
+        "Soliloquies",
         "The Enarrations, or Expositions, on the Psalms",
         "The Enchiridion",
         "The Harmony of the Gospels",
+        "The Predestination of the Saints/Gift of Perseverance",
         "To Consentius: Against Lying",
         "Tractates on the Gospel of John"
       ],
       "tags": {
-        "angels": 206,
-        "baptism": 381,
-        "church": 647,
-        "creation": 64,
-        "eschatology": 164,
-        "eucharist": 10,
-        "faith": 763,
-        "grace": 553,
-        "holy-spirit": 227,
-        "incarnation": 29,
-        "justification": 43,
-        "last-judgment": 342,
-        "prayer": 217,
-        "sacraments": 236,
-        "salvation": 233,
-        "sanctification": 28,
-        "scripture": 579,
-        "sin": 904,
-        "trinity": 135,
-        "worship": 108
+        "angels": 681,
+        "baptism": 581,
+        "church": 1553,
+        "creation": 204,
+        "eschatology": 510,
+        "eucharist": 18,
+        "faith": 1667,
+        "grace": 1197,
+        "holy-spirit": 498,
+        "incarnation": 61,
+        "justification": 70,
+        "last-judgment": 894,
+        "prayer": 547,
+        "sacraments": 436,
+        "salvation": 556,
+        "sanctification": 54,
+        "scripture": 1372,
+        "sin": 1896,
+        "trinity": 224,
+        "worship": 415
       },
       "traditions": [
         "Early Church"
@@ -284,6 +288,7 @@
       "titles": [
         "A Treatise on the Soul",
         "Ad Martyras",
+        "Ad Nationes",
         "Against Hermogenes",
         "Against Marcion",
         "Against Praxeas",
@@ -320,22 +325,22 @@
         "baptism": 55,
         "church": 121,
         "creation": 70,
-        "eschatology": 105,
+        "eschatology": 106,
         "eucharist": 5,
-        "faith": 246,
-        "grace": 103,
+        "faith": 250,
+        "grace": 104,
         "holy-spirit": 70,
         "incarnation": 8,
         "justification": 1,
-        "last-judgment": 117,
-        "prayer": 74,
+        "last-judgment": 122,
+        "prayer": 75,
         "sacraments": 34,
         "salvation": 113,
         "sanctification": 5,
-        "scripture": 180,
-        "sin": 160,
+        "scripture": 182,
+        "sin": 164,
         "trinity": 11,
-        "worship": 40
+        "worship": 52
       },
       "traditions": [
         "Early Church"
@@ -358,7 +363,7 @@
       "tags": {
         "angels": 121,
         "baptism": 23,
-        "church": 90,
+        "church": 91,
         "creation": 70,
         "eschatology": 84,
         "eucharist": 1,
@@ -436,6 +441,7 @@
         "Ad Afros Epistola Synodica",
         "Ad Episcopus Aegypti et Libyae",
         "Against the Heathen",
+        "Apologia Contra Arianos",
         "Apologia ad Constantium",
         "Apologia de Fuga",
         "Circular Letter",
@@ -456,19 +462,19 @@
       "tags": {
         "angels": 33,
         "baptism": 3,
-        "church": 144,
+        "church": 164,
         "creation": 54,
         "eschatology": 31,
-        "faith": 138,
-        "grace": 71,
-        "holy-spirit": 29,
+        "faith": 143,
+        "grace": 78,
+        "holy-spirit": 30,
         "incarnation": 12,
         "justification": 2,
-        "last-judgment": 43,
-        "prayer": 46,
-        "salvation": 41,
+        "last-judgment": 53,
+        "prayer": 48,
+        "salvation": 42,
         "sanctification": 4,
-        "scripture": 122,
+        "scripture": 125,
         "sin": 40,
         "trinity": 6,
         "worship": 39
@@ -520,33 +526,35 @@
         "Concerning Widows",
         "Letters",
         "Memorial of Symmachus",
+        "On Repentance",
         "On the Christian Faith (De fide)",
+        "On the Death of Satyrus",
         "On the Duties of the Clergy",
         "On the Holy Spirit",
         "On the Mysteries",
         "Sermon against Auxentius"
       ],
       "tags": {
-        "angels": 80,
-        "baptism": 26,
-        "church": 111,
-        "creation": 25,
-        "eschatology": 16,
+        "angels": 86,
+        "baptism": 34,
+        "church": 133,
+        "creation": 27,
+        "eschatology": 45,
         "eucharist": 1,
-        "faith": 158,
-        "grace": 164,
-        "holy-spirit": 94,
-        "incarnation": 44,
-        "justification": 1,
-        "last-judgment": 82,
-        "prayer": 50,
-        "sacraments": 33,
-        "salvation": 38,
-        "sanctification": 13,
-        "scripture": 159,
-        "sin": 105,
-        "trinity": 40,
-        "worship": 41
+        "faith": 184,
+        "grace": 201,
+        "holy-spirit": 103,
+        "incarnation": 46,
+        "justification": 3,
+        "last-judgment": 94,
+        "prayer": 60,
+        "sacraments": 41,
+        "salvation": 46,
+        "sanctification": 14,
+        "scripture": 174,
+        "sin": 141,
+        "trinity": 42,
+        "worship": 50
       },
       "traditions": [
         "Early Church"
@@ -583,6 +591,7 @@
         "Consummation of Thomas the Apostle",
         "Death of Pilate (unknown date; late)",
         "Giving Up of Pontius Pilate (unknown date; late)",
+        "Gospel of Nicodemus",
         "Gospel of Peter (c. 190)",
         "Gospel of Pseudo-Matthew (c. 400)",
         "Gospel of Thomas (c. 200)",
@@ -598,27 +607,470 @@
         "The Testaments of the Twelve Patriarchs (c. 192)"
       ],
       "tags": {
-        "angels": 149,
+        "angels": 164,
         "baptism": 18,
         "church": 40,
-        "creation": 20,
-        "eschatology": 20,
+        "creation": 21,
+        "eschatology": 30,
         "eucharist": 8,
         "faith": 40,
-        "grace": 39,
-        "holy-spirit": 52,
+        "grace": 44,
+        "holy-spirit": 60,
         "incarnation": 3,
         "last-judgment": 36,
-        "prayer": 73,
-        "salvation": 33,
+        "prayer": 85,
+        "salvation": 39,
         "sanctification": 1,
-        "scripture": 7,
-        "sin": 79,
+        "scripture": 11,
+        "sin": 92,
         "trinity": 2,
         "worship": 36
       },
       "traditions": [
         "Early Church"
+      ]
+    },
+    "f-calvin": {
+      "authors": [
+        "John Calvin"
+      ],
+      "titles": [
+        "A Treatise on Relics",
+        "Commentaries on the Catholic Epistles",
+        "Commentary on Acts - Volume 1",
+        "Commentary on Acts - Volume 2",
+        "Commentary on Corinthians - Volume 1",
+        "Commentary on Corinthians - Volume 2",
+        "Commentary on Daniel - Volume 1",
+        "Commentary on Daniel - Volume 2",
+        "Commentary on Ezekiel - Volume 1",
+        "Commentary on Ezekiel - Volume 2",
+        "Commentary on Galatians and Ephesians",
+        "Commentary on Genesis - Volume 1",
+        "Commentary on Genesis - Volume 2",
+        "Commentary on Habakkuk, Zephaniah, Haggai",
+        "Commentary on Hebrews",
+        "Commentary on Hosea",
+        "Commentary on Isaiah - Volume 1",
+        "Commentary on Isaiah - Volume 2",
+        "Commentary on Isaiah - Volume 3",
+        "Commentary on Isaiah - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 1",
+        "Commentary on Jeremiah and Lamentations - Volume 2",
+        "Commentary on Jeremiah and Lamentations - Volume 3",
+        "Commentary on Jeremiah and Lamentations - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 5",
+        "Commentary on Joel, Amos, Obadiah",
+        "Commentary on John - Volume 1",
+        "Commentary on John - Volume 2",
+        "Commentary on Jonah, Micah, Nahum",
+        "Commentary on Joshua",
+        "Commentary on Matthew, Mark, Luke - Volume 1",
+        "Commentary on Matthew, Mark, Luke - Volume 2",
+        "Commentary on Matthew, Mark, Luke - Volume 3",
+        "Commentary on Philippians, Colossians, and Thessalonians",
+        "Commentary on Psalms - Volume 1",
+        "Commentary on Psalms - Volume 2",
+        "Commentary on Psalms - Volume 3",
+        "Commentary on Psalms - Volume 4",
+        "Commentary on Psalms - Volume 5",
+        "Commentary on Romans",
+        "Commentary on Timothy, Titus, Philemon",
+        "Commentary on Zechariah, Malachi",
+        "Harmony of the Law - Volume 1",
+        "Harmony of the Law - Volume 2",
+        "Harmony of the Law - Volume 3",
+        "Harmony of the Law - Volume 4",
+        "On the Christian Life",
+        "The Institutes of the Christian Religion"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-henry": {
+      "authors": [
+        "Matthew Henry"
+      ],
+      "titles": [
+        "Commentary on the Whole Bible Volume I (Genesis to Deuteronomy)",
+        "Commentary on the Whole Bible Volume II (Joshua to Esther)",
+        "Commentary on the Whole Bible Volume III (Job to Song of Solomon)",
+        "Commentary on the Whole Bible Volume IV (Isaiah to Malachi)",
+        "Commentary on the Whole Bible Volume V (Matthew to John)",
+        "Commentary on the Whole Bible Volume VI (Acts to Revelation)"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-spurgeon": {
+      "authors": [
+        "Charles Hadden Spurgeon",
+        "Charles Haddon Spurgeon"
+      ],
+      "titles": [
+        "A Puritan Catechism",
+        "All of Grace",
+        "Faith's Checkbook",
+        "Morning and Evening: Daily Readings",
+        "Spurgeon's Sermons Volume 01: 1855",
+        "Spurgeon's Sermons Volume 02: 1856",
+        "Spurgeon's Sermons Volume 03: 1857",
+        "Spurgeon's Sermons Volume 04: 1858",
+        "Spurgeon's Sermons Volume 05: 1859",
+        "Spurgeon's Sermons Volume 06: 1860",
+        "Spurgeon's Sermons Volume 07: 1861",
+        "Spurgeon's Sermons Volume 08: 1862",
+        "Spurgeon's Sermons Volume 09: 1863",
+        "Spurgeon's Sermons Volume 10: 1864",
+        "Spurgeon's Sermons Volume 11: 1865",
+        "Spurgeon's Sermons Volume 12: 1866",
+        "Spurgeon's Sermons Volume 13: 1867",
+        "Spurgeon's Sermons Volume 14: 1868",
+        "Spurgeon's Sermons Volume 15: 1869",
+        "Spurgeon's Sermons Volume 16: 1870",
+        "Spurgeon's Sermons Volume 17: 1871",
+        "Spurgeon's Sermons Volume 18: 1872",
+        "Spurgeon's Sermons Volume 19: 1873",
+        "Spurgeon's Sermons Volume 20: 1874",
+        "Spurgeon's Sermons Volume 21: 1875",
+        "Spurgeon's Sermons Volume 22: 1876",
+        "Spurgeon's Sermons Volume 23: 1877",
+        "Spurgeon's Sermons Volume 24: 1878",
+        "Spurgeon's Sermons Volume 25: 1879",
+        "Spurgeon's Sermons Volume 26: 1880",
+        "Spurgeon's Sermons Volume 27: 1881",
+        "Spurgeon's Sermons Volume 28: 1882",
+        "Spurgeon's Sermons Volume 29: 1883",
+        "Spurgeon's Sermons Volume 30: 1884",
+        "Spurgeon's Sermons Volume 31: 1885",
+        "Spurgeon's Sermons Volume 32: 1886",
+        "Spurgeon's Sermons Volume 33: 1887",
+        "Spurgeon's Sermons Volume 34: 1888",
+        "Spurgeon's Sermons Volume 35: 1889",
+        "Spurgeon's Sermons Volume 36: 1890",
+        "Spurgeon's Sermons Volume 37: 1891",
+        "Spurgeon's Sermons Volume 38: 1892",
+        "Spurgeon's Sermons Volume 39: 1893",
+        "Spurgeon's Sermons Volume 40: 1894",
+        "Spurgeon's Sermons Volume 41: 1895",
+        "Spurgeon's Sermons Volume 42: 1896",
+        "Spurgeon's Sermons Volume 43: 1897",
+        "Spurgeon's Sermons Volume 44: 1898",
+        "Spurgeon's Sermons Volume 45: 1899",
+        "Spurgeon's Sermons Volume 46: 1900",
+        "Spurgeon's Sermons Volume 47: 1901",
+        "Spurgeon's Sermons Volume 48: 1902",
+        "Spurgeon's Sermons Volume 49: 1903",
+        "Spurgeon's Sermons Volume 50: 1904",
+        "Spurgeon's Sermons Volume 51: 1905",
+        "Spurgeon's Sermons Volume 52: 1906",
+        "Spurgeon's Sermons Volume 53: 1907",
+        "Spurgeon's Sermons Volume 54: 1908",
+        "Spurgeon's Sermons Volume 55: 1909",
+        "Spurgeon's Sermons Volume 56: 1910",
+        "Spurgeon's Sermons Volume 57: 1911",
+        "Spurgeon's Sermons Volume 58: 1912",
+        "Spurgeon's Sermons Volume 59: 1913",
+        "Spurgeon's Sermons Volume 60: 1914",
+        "Spurgeon's Sermons Volume 61: 1915",
+        "Spurgeon's Sermons Volume 62: 1916",
+        "Spurgeon's Sermons Volume 63: 1917",
+        "The Treasury of David \u2014 Psalms 1-41",
+        "The Treasury of David \u2014 Psalms 107-119",
+        "The Treasury of David \u2014 Psalms 120-150",
+        "The Treasury of David \u2014 Psalms 42-72",
+        "The Treasury of David \u2014 Psalms 73-89",
+        "The Treasury of David \u2014 Psalms 90-106",
+        "Till He Come"
+      ],
+      "tags": {},
+      "traditions": [
+        "Baptist"
+      ]
+    },
+    "f-edwards": {
+      "authors": [
+        "Jonathan Edwards"
+      ],
+      "titles": [
+        "An Unpublished Essay on the Trinity",
+        "Freedom of the Will",
+        "Religious Affections",
+        "Select Sermons",
+        "The Works of Jonathan Edwards, Volume One",
+        "The Works of Jonathan Edwards, Volume Two",
+        "Treatise on Grace"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-luther": {
+      "authors": [
+        "Martin Luther"
+      ],
+      "titles": [
+        "A Treatise on Good Works",
+        "Concerning Christian Liberty",
+        "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
+        "Preface to the Letter of St. Paul to the Romans",
+        "The Large Catechism"
+      ],
+      "tags": {},
+      "traditions": [
+        "Lutheran"
+      ]
+    },
+    "f-bunyan": {
+      "authors": [
+        "John Bunyan"
+      ],
+      "titles": [
+        "Miscellaneous Pieces",
+        "The Holy War",
+        "The Pilgrim's Progress"
+      ],
+      "tags": {},
+      "traditions": [
+        "Baptist"
+      ]
+    },
+    "f-barnes": {
+      "authors": [
+        "Albert Barnes"
+      ],
+      "titles": [
+        "Barnes' New Testament Notes"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-baxter": {
+      "authors": [
+        "Richard Baxter"
+      ],
+      "titles": [
+        "The Reformed Pastor",
+        "The Saints' Everlasting Rest"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-hodge": {
+      "authors": [
+        "Charles Hodge"
+      ],
+      "titles": [
+        "A Commentary on the Epistle to the Ephesians",
+        "Systematic Theology - Volume I",
+        "Systematic Theology - Volume II",
+        "Systematic Theology - Volume III"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-manton": {
+      "authors": [
+        "Thomas Manton"
+      ],
+      "titles": [
+        "The Complete Works of Thomas Manton, D.D. Vol. I",
+        "The Complete Works of Thomas Manton, D.D. Vol. II",
+        "The Complete Works of Thomas Manton, D.D. Vol. III",
+        "The Complete Works of Thomas Manton, D.D. Vol. IV",
+        "The Complete Works of Thomas Manton, D.D. Vol. V",
+        "The Complete Works of Thomas Manton, D.D. Vol. VIII",
+        "The Works of Thomas Manton, D.D. Vol. VI",
+        "The Works of Thomas Manton, D.D. Vol. VII",
+        "The Works of Thomas Manton, D.D. Vol. XX"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-gill": {
+      "authors": [
+        "John Gill"
+      ],
+      "titles": [
+        "A Body of Practical Divinity",
+        "An Exposition of the Book of Solomon's Song",
+        "Doctrinal Divinity"
+      ],
+      "tags": {},
+      "traditions": [
+        "Baptist"
+      ]
+    },
+    "f-knox": {
+      "authors": [
+        "John Knox"
+      ],
+      "titles": [
+        "The First Blast of the Trumpet Against the Monstrous Regiment of Women.",
+        "The History of the Reformation of Religion in Scotland",
+        "The Works of John Knox, Vol. 1 (of 6)",
+        "Treatise on Prayer"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-watson": {
+      "authors": [
+        "Thomas Watson"
+      ],
+      "titles": [
+        "A Divine Cordial, or, The transcendent priviledge of those that love God and are savingly called ...",
+        "The Beatitudes: An Exposition of Matthew 5:1-12",
+        "The Ten Commandments"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-murray": {
+      "authors": [
+        "Andrew Murray"
+      ],
+      "titles": [
+        "Absolute Surrender",
+        "The Deeper Christian Life",
+        "The Master's Indwelling",
+        "The School of Obedience",
+        "The True Vine: Meditations for a Month on John 15:1-16",
+        "The Two Covenants",
+        "Waiting On God!",
+        "With Christ in the School of Prayer",
+        "Working For God!"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-flavel": {
+      "authors": [
+        "John Flavel"
+      ],
+      "titles": [
+        "A Saint Indeed or the Great Work of a Christian in Keeping the Heart in the Several Conditions of Life",
+        "Christ Altogether Lovely",
+        "Pneumatologia: A Treatise of the Soul of Man"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ]
+    },
+    "f-ryle": {
+      "authors": [
+        "John Charles Ryle"
+      ],
+      "titles": [
+        "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
+        "The Upper Room: Being a Few Truths for the Times"
+      ],
+      "tags": {},
+      "traditions": [
+        "Anglican"
+      ]
+    },
+    "f-newton": {
+      "authors": [
+        "John Newton"
+      ],
+      "titles": [
+        "Messiah Vol. 1",
+        "Messiah Vol. 2",
+        "Olney Hymns"
+      ],
+      "tags": {},
+      "traditions": [
+        "Anglican"
+      ]
+    },
+    "f-law": {
+      "authors": [
+        "William Law"
+      ],
+      "titles": [
+        "A Serious Call to a Devout and Holy Life",
+        "An Humble, Affectionate, and Earnest Address to the Clergy",
+        "Spirit of Love",
+        "The Spirit of Prayer"
+      ],
+      "tags": {},
+      "traditions": [
+        "Anglican"
+      ]
+    },
+    "f-whitefield": {
+      "authors": [
+        "George Whitefield"
+      ],
+      "titles": [
+        "Selected Sermons of George Whitefield"
+      ],
+      "tags": {},
+      "traditions": [
+        "Methodist"
+      ]
+    },
+    "f-owen": {
+      "authors": [
+        "John Owen"
+      ],
+      "titles": [
+        "A Brief Declaration and Vindication of The Doctrine of the Trinity",
+        "A Brief Instruction in the Worship of God",
+        "A Discourse Concerning Liturgies, and their Imposition",
+        "A Discourse concerning Evangelical Love, Church Peace, and Unity",
+        "A Display of Arminianism",
+        "A Dissertation on Divine Justice",
+        "A Practical Exposition upon Psalm CXXX",
+        "A Review of the Annotations of Hugo Grotius",
+        "A Treatise of the Dominion of Sin and Grace",
+        "An Inquiry into the Original, Nature, Institution, Power, Order, and Communion of Evangelical Churches",
+        "Eshcol; A Cluster of the Fruit of Canaan",
+        "Gospel Grounds and Evidences of the Faith of God's Elect",
+        "Meditations and Discourses on the Glory of Christ",
+        "Nature and Causes of Apostasy from the Gospel",
+        "Of Communion with God the Father, Son and Holy Ghost",
+        "Of Schism",
+        "Of Temptation",
+        "Of the Mortification of Sin in Believers",
+        "Pneumatologia",
+        "Sacramental Discourses",
+        "Several Practical Cases of Conscience Resolved",
+        "The Death of Death in the Death of Christ",
+        "The Doctrine of Justification by Faith",
+        "The Doctrine of the Saints' Perseverance Explained and Confirmed",
+        "The Duty of Pastors and People Distinguished",
+        "The Grace and Duty of being Spiritually Minded",
+        "The Nature, Power, Deceit, and Prevelancy of the Remainders of Indwelling Sin in Believers",
+        "The Sermons of John Owen",
+        "Truth and Innocence Vindicated",
+        "Two Short Catechisms",
+        "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
       ]
     },
     "f-fathers-rest": {
@@ -696,6 +1148,7 @@
         "Acts of the Disputation with the Heresiarch Manes",
         "Address to the Greeks",
         "Adversus haereses",
+        "Against Jovinianus",
         "Against Plato, On the Cause of the Universe",
         "Against Vigilantius",
         "Against the Heathen",
@@ -777,6 +1230,7 @@
         "Letters",
         "Letters",
         "Letters",
+        "Letters",
         "Life of Constantine",
         "Martyrdom of Habib the Deacon (unknown date)",
         "Martyrdom of Justin, Chariton, and other Roman Martyrs",
@@ -784,6 +1238,7 @@
         "Miscellaneous Fragments",
         "Miscellaneous Fragments from Lost Writings",
         "Nine Homilies of Hexaemeron",
+        "Nisibene Hymns",
         "Octavius",
         "Of the Manicheans",
         "Of the Manner In Which the Persecutors Died",
@@ -816,6 +1271,8 @@
         "Prefaces and Other Works",
         "Recognitions",
         "Register of Letters",
+        "Remains of the Second and Third Centuries (various dates)",
+        "Sacred History",
         "Second Apology",
         "Second Epistle",
         "Sermons",
@@ -838,7 +1295,6 @@
         "The Legend of Barlaam and Josaphat",
         "The Life and Passion of Cyprian",
         "The Life of Malchus, the Captive Monk",
-        "The Life of Moses (Gregory of Nyssa)",
         "The Life of Paulus the First Hermit",
         "The Life of S. Hilarion",
         "The Liturgy of James",
@@ -868,26 +1324,26 @@
         "Writings"
       ],
       "tags": {
-        "angels": 710,
-        "baptism": 424,
-        "church": 2003,
-        "creation": 458,
-        "eschatology": 521,
-        "eucharist": 45,
-        "faith": 2023,
-        "grace": 800,
-        "holy-spirit": 607,
-        "incarnation": 228,
-        "justification": 22,
-        "last-judgment": 1031,
-        "prayer": 790,
-        "sacraments": 114,
-        "salvation": 823,
-        "sanctification": 61,
-        "scripture": 1114,
-        "sin": 1276,
-        "trinity": 207,
-        "worship": 785
+        "angels": 1002,
+        "baptism": 519,
+        "church": 2905,
+        "creation": 571,
+        "eschatology": 658,
+        "eucharist": 51,
+        "faith": 2659,
+        "grace": 1225,
+        "holy-spirit": 727,
+        "incarnation": 279,
+        "justification": 24,
+        "last-judgment": 1440,
+        "prayer": 1181,
+        "sacraments": 137,
+        "salvation": 1113,
+        "sanctification": 78,
+        "scripture": 1566,
+        "sin": 1940,
+        "trinity": 243,
+        "worship": 894
       },
       "traditions": [
         "Early Church"
@@ -931,9 +1387,12 @@
       ]
     },
     "f-lutheran": {
-      "authors": [],
+      "authors": [
+        "Martin WILLIAM HAZLITT, Esq. Luther"
+      ],
       "titles": [
         "Luther's Small Catechism",
+        "Table Talk",
         "The Apology of the Augsburg Confession",
         "The Augsburg Confession",
         "The Smalcald Articles"
@@ -963,12 +1422,29 @@
       ]
     },
     "f-reformed": {
-      "authors": [],
+      "authors": [
+        "E.W. Bullinger",
+        "Horatius, D.D. Bonar",
+        "John Henry Beveridge Calvin",
+        "Stephen Charnock",
+        "Thomas Boston",
+        "Thomas d. 1686 Watson"
+      ],
       "titles": [
-        "Second Helvetic Confession",
+        "A Body of Divinity",
+        "A Discourse of God's being the Author of Reconciliation",
+        "A Discourse of the Efficient of Regeneration",
+        "A Discourse of the Nature of Regeneneration",
+        "A Discourse of the Word, the Instrument of Regeneration",
+        "A Discourse on the Cleansing Virtue of Christ's Blood",
+        "Commentary on Revelation",
+        "God's Way of Peace",
+        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "The Belgic Confession",
         "The Canons of Dordt",
+        "The Crook in the Lot",
         "The Heidelberg Catechism",
+        "The Necessity of Regeneration",
         "The Scots Confession",
         "The Westminster Confession of Faith",
         "The Westminster Larger Catechism",
@@ -977,40 +1453,40 @@
       "tags": {
         "angels": 27,
         "baptism": 33,
-        "church": 90,
+        "church": 88,
         "creation": 15,
         "eschatology": 30,
-        "faith": 124,
-        "grace": 145,
+        "faith": 123,
+        "grace": 144,
         "holy-spirit": 43,
         "incarnation": 4,
         "justification": 26,
         "last-judgment": 34,
         "prayer": 41,
         "sacraments": 65,
-        "salvation": 82,
+        "salvation": 79,
         "sanctification": 19,
-        "scripture": 52,
-        "sin": 207,
-        "trinity": 7,
-        "worship": 45
+        "scripture": 51,
+        "sin": 206,
+        "trinity": 6,
+        "worship": 43
       },
       "traditions": [
         "Reformed"
       ]
     },
     "f-catholic": {
-      "authors": [],
+      "authors": [
+        "\u00e0 Kempis, 1380-1471 Thomas"
+      ],
       "titles": [
         "The Canons and Decrees of the Council of Trent",
-        "The Interior Castle (Teresa of Avila)",
-        "The Spiritual Exercises (Ignatius)"
+        "The Imitation of Christ"
       ],
       "tags": {
         "angels": 5,
         "baptism": 15,
-        "christology": 3,
-        "church": 78,
+        "church": 77,
         "creation": 1,
         "eschatology": 3,
         "eucharist": 13,
@@ -1020,13 +1496,12 @@
         "incarnation": 3,
         "justification": 16,
         "last-judgment": 14,
-        "prayer": 27,
+        "prayer": 12,
         "sacraments": 58,
-        "salvation": 25,
+        "salvation": 22,
         "sanctification": 1,
         "scripture": 17,
         "sin": 43,
-        "trinity": 3,
         "worship": 9
       },
       "traditions": [
@@ -1034,8 +1509,13 @@
       ]
     },
     "f-anglican": {
-      "authors": [],
+      "authors": [
+        "John C. Ryle",
+        "Joseph Barber Lightfoot"
+      ],
       "titles": [
+        "Expository Thoughts on Matthew",
+        "The Apostolic Fathers",
         "The Thirty-Nine Articles of Religion"
       ],
       "tags": {
@@ -1060,6 +1540,7 @@
     "f-baptist": {
       "authors": [],
       "titles": [
+        "The First London Baptist Confession of Faith",
         "The Second London Baptist Confession of Faith"
       ],
       "tags": {
@@ -1088,28 +1569,28 @@
     },
     "f-methodist": {
       "authors": [
+        "Adam Clarke",
         "John Wesley"
       ],
       "titles": [
-        "A Plain Account of the People Called Methodists (Wesley)",
+        "Entire Sanctification",
         "Sermons on Several Occasions"
       ],
       "tags": {
         "angels": 25,
         "baptism": 5,
-        "christology": 7,
-        "church": 45,
+        "church": 35,
         "creation": 18,
         "eschatology": 5,
         "faith": 53,
         "grace": 30,
-        "holy-spirit": 9,
+        "holy-spirit": 8,
         "incarnation": 1,
         "justification": 9,
         "last-judgment": 21,
         "prayer": 10,
         "sacraments": 3,
-        "salvation": 30,
+        "salvation": 20,
         "sanctification": 4,
         "scripture": 39,
         "sin": 64,
@@ -1121,22 +1602,17 @@
       ]
     },
     "f-orthodox": {
-      "authors": [],
-      "titles": [
-        "The Orthodox Confession of Faith (Peter Mogila)",
-        "The Philokalia Selections"
+      "authors": [
+        "Orthodox Eastern Church",
+        "Philaret (Drozdov) of Moscow",
+        "Synod of Jerusalem"
       ],
-      "tags": {
-        "baptism": 1,
-        "christology": 4,
-        "church": 3,
-        "eschatology": 1,
-        "eucharist": 1,
-        "prayer": 8,
-        "sacraments": 1,
-        "salvation": 1,
-        "trinity": 1
-      },
+      "titles": [
+        "The Book of Needs of the Holy Orthodox Church",
+        "The Confession of Dositheus",
+        "The Longer Catechism of the Orthodox, Catholic, Eastern Church"
+      ],
+      "tags": {},
       "traditions": [
         "Eastern Orthodox"
       ]
@@ -1163,20 +1639,18 @@
         "Neocaesarea (315)",
         "Nicaea I (325)",
         "Nicaea II (787)",
-        "Sardica (344)",
-        "The Seven Ecumenical Councils"
+        "Sardica (344)"
       ],
       "tags": {
         "angels": 5,
         "baptism": 12,
-        "christology": 7,
-        "church": 118,
+        "church": 111,
         "creation": 2,
         "eschatology": 5,
         "eucharist": 2,
         "faith": 52,
         "grace": 24,
-        "holy-spirit": 8,
+        "holy-spirit": 7,
         "incarnation": 10,
         "last-judgment": 19,
         "prayer": 23,
@@ -1197,46 +1671,73 @@
     "creeds-and-confessions": {
       "name": "Creeds & Confessions",
       "authors": [
+        "Adam Clarke",
         "Councils",
-        "John Wesley"
+        "E.W. Bullinger",
+        "Horatius, D.D. Bonar",
+        "John C. Ryle",
+        "John Henry Beveridge Calvin",
+        "John Wesley",
+        "Joseph Barber Lightfoot",
+        "Martin WILLIAM HAZLITT, Esq. Luther",
+        "Orthodox Eastern Church",
+        "Philaret (Drozdov) of Moscow",
+        "Stephen Charnock",
+        "Synod of Jerusalem",
+        "Thomas Boston",
+        "Thomas d. 1686 Watson",
+        "\u00e0 Kempis, 1380-1471 Thomas"
       ],
       "titles": [
-        "A Plain Account of the People Called Methodists (Wesley)",
+        "A Body of Divinity",
+        "A Discourse of God's being the Author of Reconciliation",
+        "A Discourse of the Efficient of Regeneration",
+        "A Discourse of the Nature of Regeneneration",
+        "A Discourse of the Word, the Instrument of Regeneration",
+        "A Discourse on the Cleansing Virtue of Christ's Blood",
         "Ancyra (314)",
         "Antioch in Encaeniis (341)",
         "Carthage (419)",
         "Carthage under Cyprian (257)",
         "Chalcedon (451)",
+        "Commentary on Revelation",
         "Constantinople (382)",
         "Constantinople I (381)",
         "Constantinople II (553)",
         "Constantinople III (680)",
         "Constantinople under Nectarius (394)",
         "Constantinople/\"Trullo\"/Quinisext (692)",
+        "Entire Sanctification",
         "Ephesus (431)",
+        "Expository Thoughts on Matthew",
         "Gangra (343)",
+        "God's Way of Peace",
         "Laodicea (390)",
         "Luther's Small Catechism",
         "Neocaesarea (315)",
         "Nicaea I (325)",
         "Nicaea II (787)",
+        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "Sardica (344)",
-        "Second Helvetic Confession",
         "Sermons on Several Occasions",
+        "Table Talk",
         "The Apology of the Augsburg Confession",
+        "The Apostolic Fathers",
         "The Augsburg Confession",
         "The Belgic Confession",
+        "The Book of Needs of the Holy Orthodox Church",
         "The Canons and Decrees of the Council of Trent",
         "The Canons of Dordt",
+        "The Confession of Dositheus",
+        "The Crook in the Lot",
+        "The First London Baptist Confession of Faith",
         "The Heidelberg Catechism",
-        "The Interior Castle (Teresa of Avila)",
-        "The Orthodox Confession of Faith (Peter Mogila)",
-        "The Philokalia Selections",
+        "The Imitation of Christ",
+        "The Longer Catechism of the Orthodox, Catholic, Eastern Church",
+        "The Necessity of Regeneration",
         "The Scots Confession",
         "The Second London Baptist Confession of Faith",
-        "The Seven Ecumenical Councils",
         "The Smalcald Articles",
-        "The Spiritual Exercises (Ignatius)",
         "The Thirty-Nine Articles of Religion",
         "The Westminster Confession of Faith",
         "The Westminster Larger Catechism",
@@ -1244,25 +1745,24 @@
       ],
       "tags": {
         "angels": 75,
-        "baptism": 92,
-        "christology": 21,
-        "church": 461,
+        "baptism": 91,
+        "church": 438,
         "creation": 48,
-        "eschatology": 57,
-        "eucharist": 23,
-        "faith": 419,
-        "grace": 348,
-        "holy-spirit": 85,
+        "eschatology": 56,
+        "eucharist": 22,
+        "faith": 418,
+        "grace": 347,
+        "holy-spirit": 83,
         "incarnation": 19,
         "last-judgment": 135,
-        "prayer": 147,
-        "sacraments": 179,
-        "salvation": 201,
+        "prayer": 124,
+        "sacraments": 178,
+        "salvation": 184,
         "sanctification": 35,
-        "scripture": 214,
-        "sin": 498,
-        "trinity": 30,
-        "worship": 122,
+        "scripture": 213,
+        "sin": 497,
+        "trinity": 25,
+        "worship": 120,
         "justification": 100
       },
       "traditions": [
@@ -1387,12 +1887,14 @@
         "Ad Afros Epistola Synodica",
         "Ad Episcopus Aegypti et Libyae",
         "Ad Martyras",
+        "Ad Nationes",
         "Address to the Greeks",
         "Adversus haereses",
         "Africanus to Origen",
         "Against Celsus",
         "Against Eunomius",
         "Against Hermogenes",
+        "Against Jovinianus",
         "Against Marcion",
         "Against Plato, On the Cause of the Universe",
         "Against Praxeas",
@@ -1415,6 +1917,7 @@
         "Apocalypse of Peter (c. 130)",
         "Apocalypse of Sedrach (unknown date; very late)",
         "Apocalypse of the Virgin (unknown date; very late)",
+        "Apologia Contra Arianos",
         "Apologia ad Constantium",
         "Apologia de Fuga",
         "Apology",
@@ -1505,6 +2008,7 @@
         "Funeral Oration on Meletius",
         "Genuine",
         "Giving Up of Pontius Pilate (unknown date; late)",
+        "Gospel of Nicodemus",
         "Gospel of Peter (c. 190)",
         "Gospel of Pseudo-Matthew (c. 400)",
         "Gospel of Thomas (c. 200)",
@@ -1562,6 +2066,7 @@
         "Narrative of Joseph of Arimathea (unknown date; late)",
         "Narrative of Zosimus (unknown date)",
         "Nine Homilies of Hexaemeron",
+        "Nisibene Hymns",
         "No One Can Harm the Man Who Does Not Injure Himself",
         "Octavius",
         "Of Patience",
@@ -1605,12 +2110,14 @@
         "On the Councils, or the Faith of the Easterns",
         "On the Creation of the World",
         "On the Creed: A Sermon to Catechumens",
+        "On the Death of Satyrus",
         "On the Duties of the Clergy",
         "On the Faith (\"The Pearl\")",
         "On the Faith (To Simplicius)",
         "On the Flesh of Christ",
         "On the Good of Marriage",
         "On the Good of Widowhood",
+        "On the Grace of Christ, and on Original Sin",
         "On the Holy Spirit",
         "On the Holy Spirit (Against the Followers of Macedonius)",
         "On the Holy Trinity",
@@ -1646,6 +2153,7 @@
         "Orations",
         "Origen to Africanus",
         "Origen to Gregory",
+        "Our Lord's Sermon on the Mount",
         "Pastoral Rule",
         "Poem on Easter",
         "Prefaces",
@@ -1653,8 +2161,10 @@
         "Protoevangelium of James (c. 150)",
         "Recognitions",
         "Register of Letters",
+        "Remains of the Second and Third Centuries (various dates)",
         "Reply to Faustus the Manichaean",
         "Report of Pontius Pilate (unknown date; late)",
+        "Sacred History",
         "Scorpiace",
         "Second Apology",
         "Second Epistle",
@@ -1662,6 +2172,7 @@
         "Sermon against Auxentius",
         "Sermons",
         "Sermons on Selected Lessons of the New Testament",
+        "Soliloquies",
         "Some Exegetical Fragments of Hippolytus",
         "Statement of Faith",
         "Testament of Abraham (unknown date)",
@@ -1689,7 +2200,6 @@
         "The Legend of Barlaam and Josaphat",
         "The Life and Passion of Cyprian",
         "The Life of Malchus, the Captive Monk",
-        "The Life of Moses (Gregory of Nyssa)",
         "The Life of Paulus the First Hermit",
         "The Life of S. Hilarion",
         "The Liturgy of James",
@@ -1704,6 +2214,7 @@
         "The Pastor (or \"The Shepherd\")",
         "The Perpetual Virginity of Blessed Mary",
         "The Phoenix",
+        "The Predestination of the Saints/Gift of Perseverance",
         "The Prescription Against Heretics",
         "The Refutation of All Heresies",
         "The Resurrection of the Dead",
@@ -1733,26 +2244,26 @@
         "Writings"
       ],
       "tags": {
-        "angels": 1848,
-        "baptism": 1063,
-        "church": 3606,
-        "creation": 987,
-        "eschatology": 1215,
-        "eucharist": 73,
-        "faith": 4165,
-        "grace": 2556,
-        "holy-spirit": 1280,
-        "incarnation": 360,
-        "justification": 91,
-        "last-judgment": 2157,
-        "prayer": 1642,
-        "sacraments": 425,
-        "salvation": 1782,
-        "sanctification": 150,
-        "scripture": 2871,
-        "sin": 3611,
-        "trinity": 431,
-        "worship": 1322
+        "angels": 2714,
+        "baptism": 1396,
+        "church": 5534,
+        "creation": 1275,
+        "eschatology": 1836,
+        "eucharist": 88,
+        "faith": 5870,
+        "grace": 3780,
+        "holy-spirit": 1707,
+        "incarnation": 450,
+        "justification": 122,
+        "last-judgment": 3229,
+        "prayer": 2417,
+        "sacraments": 656,
+        "salvation": 2485,
+        "sanctification": 203,
+        "scripture": 4223,
+        "sin": 5484,
+        "trinity": 558,
+        "worship": 1775
       },
       "traditions": [
         "Early Church"
@@ -1835,6 +2346,7 @@
         "Acts of Thomas (c. 240)",
         "Acts of Xanthippe and Polyxena (c. 270)",
         "Ad Martyras",
+        "Ad Nationes",
         "Africanus to Origen",
         "Against Celsus",
         "Against Hermogenes",
@@ -1864,6 +2376,7 @@
         "Exhortation to the Heathen",
         "Fragments",
         "Giving Up of Pontius Pilate (unknown date; late)",
+        "Gospel of Nicodemus",
         "Gospel of Peter (c. 190)",
         "Gospel of Pseudo-Matthew (c. 400)",
         "Gospel of Thomas (c. 200)",
@@ -1906,26 +2419,26 @@
         "Who is the Rich Man That Shall Be Saved?"
       ],
       "tags": {
-        "angels": 443,
+        "angels": 458,
         "baptism": 101,
-        "church": 278,
-        "creation": 181,
-        "eschatology": 220,
+        "church": 279,
+        "creation": 182,
+        "eschatology": 231,
         "eucharist": 15,
-        "faith": 514,
-        "grace": 228,
-        "holy-spirit": 190,
+        "faith": 518,
+        "grace": 234,
+        "holy-spirit": 198,
         "incarnation": 18,
         "justification": 2,
-        "last-judgment": 262,
-        "prayer": 246,
+        "last-judgment": 267,
+        "prayer": 259,
         "sacraments": 35,
-        "salvation": 288,
+        "salvation": 294,
         "sanctification": 14,
-        "scripture": 530,
-        "sin": 491,
+        "scripture": 536,
+        "sin": 508,
         "trinity": 19,
-        "worship": 248
+        "worship": 260
       },
       "traditions": [
         "Early Church"
@@ -1956,6 +2469,7 @@
         "Against the Heathen",
         "Answer to Eunomius' Second Book",
         "Answer to Letters of Petilian, Bishop of Cirta",
+        "Apologia Contra Arianos",
         "Apologia ad Constantium",
         "Apologia de Fuga",
         "Christian Doctrine",
@@ -2026,16 +2540,19 @@
         "On Patience",
         "On Pilgrimages",
         "On Rebuke and Grace",
+        "On Repentance",
         "On Two Souls, Against the Manichaeans",
         "On Virginity",
         "On the Baptism of Christ (Sermon for the Day of Lights)",
         "On the Catechising of the Uninstructed",
         "On the Christian Faith (De fide)",
         "On the Creed: A Sermon to Catechumens",
+        "On the Death of Satyrus",
         "On the Duties of the Clergy",
         "On the Faith (To Simplicius)",
         "On the Good of Marriage",
         "On the Good of Widowhood",
+        "On the Grace of Christ, and on Original Sin",
         "On the Holy Spirit",
         "On the Holy Spirit (Against the Followers of Macedonius)",
         "On the Holy Trinity",
@@ -2052,15 +2569,18 @@
         "On the Soul and the Resurrection",
         "On the Spirit and the Letter",
         "On the Work of Monks",
+        "Our Lord's Sermon on the Mount",
         "Reply to Faustus the Manichaean",
         "Second Homily on Eutropius (After His Captivity)",
         "Sermon against Auxentius",
         "Sermons on Selected Lessons of the New Testament",
+        "Soliloquies",
         "Statement of Faith",
         "The Enarrations, or Expositions, on the Psalms",
         "The Enchiridion",
         "The Great Catechism",
         "The Harmony of the Gospels",
+        "The Predestination of the Saints/Gift of Perseverance",
         "Three Homilies on the Power of Satan",
         "To Consentius: Against Lying",
         "Tomus ad Antiochenos",
@@ -2069,26 +2589,26 @@
         "Vita S. Antoni (Life of St. Anthony)"
       ],
       "tags": {
-        "angels": 695,
-        "baptism": 538,
-        "church": 1325,
-        "creation": 348,
-        "eschatology": 474,
-        "faith": 1628,
-        "grace": 1528,
-        "holy-spirit": 483,
-        "incarnation": 114,
-        "justification": 67,
-        "last-judgment": 864,
-        "prayer": 606,
-        "salvation": 671,
-        "sanctification": 75,
-        "scripture": 1227,
-        "sin": 1844,
-        "trinity": 205,
-        "worship": 289,
-        "eucharist": 13,
-        "sacraments": 276
+        "angels": 1254,
+        "baptism": 776,
+        "church": 2350,
+        "creation": 522,
+        "eschatology": 947,
+        "faith": 2693,
+        "grace": 2321,
+        "holy-spirit": 782,
+        "incarnation": 153,
+        "justification": 96,
+        "last-judgment": 1522,
+        "prayer": 977,
+        "salvation": 1078,
+        "sanctification": 111,
+        "scripture": 2121,
+        "sin": 3036,
+        "trinity": 296,
+        "worship": 621,
+        "eucharist": 22,
+        "sacraments": 484
       },
       "traditions": [
         "Early Church"
@@ -2177,6 +2697,7 @@
         "On the Creed: A Sermon to Catechumens",
         "On the Good of Marriage",
         "On the Good of Widowhood",
+        "On the Grace of Christ, and on Original Sin",
         "On the Holy Trinity",
         "On the Morals of the Catholic Church",
         "On the Morals of the Manichaeans",
@@ -2185,35 +2706,38 @@
         "On the Soul and its Origin",
         "On the Spirit and the Letter",
         "On the Work of Monks",
+        "Our Lord's Sermon on the Mount",
         "Reply to Faustus the Manichaean",
         "Sermons on Selected Lessons of the New Testament",
+        "Soliloquies",
         "The Enarrations, or Expositions, on the Psalms",
         "The Enchiridion",
         "The Harmony of the Gospels",
+        "The Predestination of the Saints/Gift of Perseverance",
         "To Consentius: Against Lying",
         "Tractates on the Gospel of John"
       ],
       "tags": {
-        "angels": 206,
-        "baptism": 381,
-        "church": 647,
-        "creation": 64,
-        "eschatology": 164,
-        "eucharist": 10,
-        "faith": 763,
-        "grace": 553,
-        "holy-spirit": 227,
-        "incarnation": 29,
-        "justification": 43,
-        "last-judgment": 342,
-        "prayer": 217,
-        "sacraments": 236,
-        "salvation": 233,
-        "sanctification": 28,
-        "scripture": 579,
-        "sin": 904,
-        "trinity": 135,
-        "worship": 108
+        "angels": 681,
+        "baptism": 581,
+        "church": 1553,
+        "creation": 204,
+        "eschatology": 510,
+        "eucharist": 18,
+        "faith": 1667,
+        "grace": 1197,
+        "holy-spirit": 498,
+        "incarnation": 61,
+        "justification": 70,
+        "last-judgment": 894,
+        "prayer": 547,
+        "sacraments": 436,
+        "salvation": 556,
+        "sanctification": 54,
+        "scripture": 1372,
+        "sin": 1896,
+        "trinity": 224,
+        "worship": 415
       },
       "traditions": [
         "Early Church"
@@ -2266,26 +2790,26 @@
         "Two Letters to Theodore After His Fall"
       ],
       "tags": {
-        "angels": 359,
-        "baptism": 116,
-        "church": 378,
-        "creation": 104,
-        "eschatology": 212,
-        "eucharist": 1,
-        "faith": 504,
-        "grace": 685,
-        "holy-spirit": 77,
-        "incarnation": 15,
+        "angels": 437,
+        "baptism": 146,
+        "church": 455,
+        "creation": 136,
+        "eschatology": 310,
+        "eucharist": 2,
+        "faith": 634,
+        "grace": 790,
+        "holy-spirit": 95,
+        "incarnation": 20,
         "justification": 20,
-        "last-judgment": 355,
-        "prayer": 281,
+        "last-judgment": 439,
+        "prayer": 310,
         "sacraments": 4,
-        "salvation": 337,
-        "sanctification": 24,
-        "scripture": 261,
-        "sin": 754,
+        "salvation": 412,
+        "sanctification": 33,
+        "scripture": 344,
+        "sin": 918,
         "trinity": 4,
-        "worship": 83
+        "worship": 99
       },
       "traditions": [
         "Early Church"
@@ -2302,6 +2826,7 @@
       "titles": [
         "A Treatise on the Soul",
         "Ad Martyras",
+        "Ad Nationes",
         "Against Hermogenes",
         "Against Marcion",
         "Against Praxeas",
@@ -2338,22 +2863,22 @@
         "baptism": 55,
         "church": 121,
         "creation": 70,
-        "eschatology": 105,
+        "eschatology": 106,
         "eucharist": 5,
-        "faith": 246,
-        "grace": 103,
+        "faith": 250,
+        "grace": 104,
         "holy-spirit": 70,
         "incarnation": 8,
         "justification": 1,
-        "last-judgment": 117,
-        "prayer": 74,
+        "last-judgment": 122,
+        "prayer": 75,
         "sacraments": 34,
         "salvation": 113,
         "sanctification": 5,
-        "scripture": 180,
-        "sin": 160,
+        "scripture": 182,
+        "sin": 164,
         "trinity": 11,
-        "worship": 40
+        "worship": 52
       },
       "traditions": [
         "Early Church"
@@ -2380,7 +2905,7 @@
       "tags": {
         "angels": 121,
         "baptism": 23,
-        "church": 90,
+        "church": 91,
         "creation": 70,
         "eschatology": 84,
         "eucharist": 1,
@@ -2415,6 +2940,7 @@
         "Ad Afros Epistola Synodica",
         "Ad Episcopus Aegypti et Libyae",
         "Against the Heathen",
+        "Apologia Contra Arianos",
         "Apologia ad Constantium",
         "Apologia de Fuga",
         "Circular Letter",
@@ -2435,19 +2961,19 @@
       "tags": {
         "angels": 33,
         "baptism": 3,
-        "church": 144,
+        "church": 164,
         "creation": 54,
         "eschatology": 31,
-        "faith": 138,
-        "grace": 71,
-        "holy-spirit": 29,
+        "faith": 143,
+        "grace": 78,
+        "holy-spirit": 30,
         "incarnation": 12,
         "justification": 2,
-        "last-judgment": 43,
-        "prayer": 46,
-        "salvation": 41,
+        "last-judgment": 53,
+        "prayer": 48,
+        "salvation": 42,
         "sanctification": 4,
-        "scripture": 122,
+        "scripture": 125,
         "sin": 40,
         "trinity": 6,
         "worship": 39
@@ -2510,18 +3036,317 @@
         "f-gregory-nyssa"
       ]
     },
+    "author-calvin": {
+      "name": "John Calvin",
+      "authors": [
+        "John Calvin"
+      ],
+      "titles": [
+        "A Treatise on Relics",
+        "Commentaries on the Catholic Epistles",
+        "Commentary on Acts - Volume 1",
+        "Commentary on Acts - Volume 2",
+        "Commentary on Corinthians - Volume 1",
+        "Commentary on Corinthians - Volume 2",
+        "Commentary on Daniel - Volume 1",
+        "Commentary on Daniel - Volume 2",
+        "Commentary on Ezekiel - Volume 1",
+        "Commentary on Ezekiel - Volume 2",
+        "Commentary on Galatians and Ephesians",
+        "Commentary on Genesis - Volume 1",
+        "Commentary on Genesis - Volume 2",
+        "Commentary on Habakkuk, Zephaniah, Haggai",
+        "Commentary on Hebrews",
+        "Commentary on Hosea",
+        "Commentary on Isaiah - Volume 1",
+        "Commentary on Isaiah - Volume 2",
+        "Commentary on Isaiah - Volume 3",
+        "Commentary on Isaiah - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 1",
+        "Commentary on Jeremiah and Lamentations - Volume 2",
+        "Commentary on Jeremiah and Lamentations - Volume 3",
+        "Commentary on Jeremiah and Lamentations - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 5",
+        "Commentary on Joel, Amos, Obadiah",
+        "Commentary on John - Volume 1",
+        "Commentary on John - Volume 2",
+        "Commentary on Jonah, Micah, Nahum",
+        "Commentary on Joshua",
+        "Commentary on Matthew, Mark, Luke - Volume 1",
+        "Commentary on Matthew, Mark, Luke - Volume 2",
+        "Commentary on Matthew, Mark, Luke - Volume 3",
+        "Commentary on Philippians, Colossians, and Thessalonians",
+        "Commentary on Psalms - Volume 1",
+        "Commentary on Psalms - Volume 2",
+        "Commentary on Psalms - Volume 3",
+        "Commentary on Psalms - Volume 4",
+        "Commentary on Psalms - Volume 5",
+        "Commentary on Romans",
+        "Commentary on Timothy, Titus, Philemon",
+        "Commentary on Zechariah, Malachi",
+        "Harmony of the Law - Volume 1",
+        "Harmony of the Law - Volume 2",
+        "Harmony of the Law - Volume 3",
+        "Harmony of the Law - Volume 4",
+        "On the Christian Life",
+        "The Institutes of the Christian Religion"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ],
+      "fragments": [
+        "f-calvin"
+      ]
+    },
+    "author-henry": {
+      "name": "Matthew Henry",
+      "authors": [
+        "Matthew Henry"
+      ],
+      "titles": [
+        "Commentary on the Whole Bible Volume I (Genesis to Deuteronomy)",
+        "Commentary on the Whole Bible Volume II (Joshua to Esther)",
+        "Commentary on the Whole Bible Volume III (Job to Song of Solomon)",
+        "Commentary on the Whole Bible Volume IV (Isaiah to Malachi)",
+        "Commentary on the Whole Bible Volume V (Matthew to John)",
+        "Commentary on the Whole Bible Volume VI (Acts to Revelation)"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ],
+      "fragments": [
+        "f-henry"
+      ]
+    },
+    "author-spurgeon": {
+      "name": "Charles Spurgeon",
+      "authors": [
+        "Charles Hadden Spurgeon",
+        "Charles Haddon Spurgeon"
+      ],
+      "titles": [
+        "A Puritan Catechism",
+        "All of Grace",
+        "Faith's Checkbook",
+        "Morning and Evening: Daily Readings",
+        "Spurgeon's Sermons Volume 01: 1855",
+        "Spurgeon's Sermons Volume 02: 1856",
+        "Spurgeon's Sermons Volume 03: 1857",
+        "Spurgeon's Sermons Volume 04: 1858",
+        "Spurgeon's Sermons Volume 05: 1859",
+        "Spurgeon's Sermons Volume 06: 1860",
+        "Spurgeon's Sermons Volume 07: 1861",
+        "Spurgeon's Sermons Volume 08: 1862",
+        "Spurgeon's Sermons Volume 09: 1863",
+        "Spurgeon's Sermons Volume 10: 1864",
+        "Spurgeon's Sermons Volume 11: 1865",
+        "Spurgeon's Sermons Volume 12: 1866",
+        "Spurgeon's Sermons Volume 13: 1867",
+        "Spurgeon's Sermons Volume 14: 1868",
+        "Spurgeon's Sermons Volume 15: 1869",
+        "Spurgeon's Sermons Volume 16: 1870",
+        "Spurgeon's Sermons Volume 17: 1871",
+        "Spurgeon's Sermons Volume 18: 1872",
+        "Spurgeon's Sermons Volume 19: 1873",
+        "Spurgeon's Sermons Volume 20: 1874",
+        "Spurgeon's Sermons Volume 21: 1875",
+        "Spurgeon's Sermons Volume 22: 1876",
+        "Spurgeon's Sermons Volume 23: 1877",
+        "Spurgeon's Sermons Volume 24: 1878",
+        "Spurgeon's Sermons Volume 25: 1879",
+        "Spurgeon's Sermons Volume 26: 1880",
+        "Spurgeon's Sermons Volume 27: 1881",
+        "Spurgeon's Sermons Volume 28: 1882",
+        "Spurgeon's Sermons Volume 29: 1883",
+        "Spurgeon's Sermons Volume 30: 1884",
+        "Spurgeon's Sermons Volume 31: 1885",
+        "Spurgeon's Sermons Volume 32: 1886",
+        "Spurgeon's Sermons Volume 33: 1887",
+        "Spurgeon's Sermons Volume 34: 1888",
+        "Spurgeon's Sermons Volume 35: 1889",
+        "Spurgeon's Sermons Volume 36: 1890",
+        "Spurgeon's Sermons Volume 37: 1891",
+        "Spurgeon's Sermons Volume 38: 1892",
+        "Spurgeon's Sermons Volume 39: 1893",
+        "Spurgeon's Sermons Volume 40: 1894",
+        "Spurgeon's Sermons Volume 41: 1895",
+        "Spurgeon's Sermons Volume 42: 1896",
+        "Spurgeon's Sermons Volume 43: 1897",
+        "Spurgeon's Sermons Volume 44: 1898",
+        "Spurgeon's Sermons Volume 45: 1899",
+        "Spurgeon's Sermons Volume 46: 1900",
+        "Spurgeon's Sermons Volume 47: 1901",
+        "Spurgeon's Sermons Volume 48: 1902",
+        "Spurgeon's Sermons Volume 49: 1903",
+        "Spurgeon's Sermons Volume 50: 1904",
+        "Spurgeon's Sermons Volume 51: 1905",
+        "Spurgeon's Sermons Volume 52: 1906",
+        "Spurgeon's Sermons Volume 53: 1907",
+        "Spurgeon's Sermons Volume 54: 1908",
+        "Spurgeon's Sermons Volume 55: 1909",
+        "Spurgeon's Sermons Volume 56: 1910",
+        "Spurgeon's Sermons Volume 57: 1911",
+        "Spurgeon's Sermons Volume 58: 1912",
+        "Spurgeon's Sermons Volume 59: 1913",
+        "Spurgeon's Sermons Volume 60: 1914",
+        "Spurgeon's Sermons Volume 61: 1915",
+        "Spurgeon's Sermons Volume 62: 1916",
+        "Spurgeon's Sermons Volume 63: 1917",
+        "The Treasury of David \u2014 Psalms 1-41",
+        "The Treasury of David \u2014 Psalms 107-119",
+        "The Treasury of David \u2014 Psalms 120-150",
+        "The Treasury of David \u2014 Psalms 42-72",
+        "The Treasury of David \u2014 Psalms 73-89",
+        "The Treasury of David \u2014 Psalms 90-106",
+        "Till He Come"
+      ],
+      "tags": {},
+      "traditions": [
+        "Baptist"
+      ],
+      "fragments": [
+        "f-spurgeon"
+      ]
+    },
+    "author-edwards": {
+      "name": "Jonathan Edwards",
+      "authors": [
+        "Jonathan Edwards"
+      ],
+      "titles": [
+        "An Unpublished Essay on the Trinity",
+        "Freedom of the Will",
+        "Religious Affections",
+        "Select Sermons",
+        "The Works of Jonathan Edwards, Volume One",
+        "The Works of Jonathan Edwards, Volume Two",
+        "Treatise on Grace"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ],
+      "fragments": [
+        "f-edwards"
+      ]
+    },
+    "author-luther": {
+      "name": "Martin Luther",
+      "authors": [
+        "Martin Luther"
+      ],
+      "titles": [
+        "A Treatise on Good Works",
+        "Concerning Christian Liberty",
+        "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
+        "Preface to the Letter of St. Paul to the Romans",
+        "The Large Catechism"
+      ],
+      "tags": {},
+      "traditions": [
+        "Lutheran"
+      ],
+      "fragments": [
+        "f-luther"
+      ]
+    },
+    "author-bunyan": {
+      "name": "John Bunyan",
+      "authors": [
+        "John Bunyan"
+      ],
+      "titles": [
+        "Miscellaneous Pieces",
+        "The Holy War",
+        "The Pilgrim's Progress"
+      ],
+      "tags": {},
+      "traditions": [
+        "Baptist"
+      ],
+      "fragments": [
+        "f-bunyan"
+      ]
+    },
+    "author-baxter": {
+      "name": "Richard Baxter",
+      "authors": [
+        "Richard Baxter"
+      ],
+      "titles": [
+        "The Reformed Pastor",
+        "The Saints' Everlasting Rest"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ],
+      "fragments": [
+        "f-baxter"
+      ]
+    },
+    "author-owen": {
+      "name": "John Owen",
+      "authors": [
+        "John Owen"
+      ],
+      "titles": [
+        "A Brief Declaration and Vindication of The Doctrine of the Trinity",
+        "A Brief Instruction in the Worship of God",
+        "A Discourse Concerning Liturgies, and their Imposition",
+        "A Discourse concerning Evangelical Love, Church Peace, and Unity",
+        "A Display of Arminianism",
+        "A Dissertation on Divine Justice",
+        "A Practical Exposition upon Psalm CXXX",
+        "A Review of the Annotations of Hugo Grotius",
+        "A Treatise of the Dominion of Sin and Grace",
+        "An Inquiry into the Original, Nature, Institution, Power, Order, and Communion of Evangelical Churches",
+        "Eshcol; A Cluster of the Fruit of Canaan",
+        "Gospel Grounds and Evidences of the Faith of God's Elect",
+        "Meditations and Discourses on the Glory of Christ",
+        "Nature and Causes of Apostasy from the Gospel",
+        "Of Communion with God the Father, Son and Holy Ghost",
+        "Of Schism",
+        "Of Temptation",
+        "Of the Mortification of Sin in Believers",
+        "Pneumatologia",
+        "Sacramental Discourses",
+        "Several Practical Cases of Conscience Resolved",
+        "The Death of Death in the Death of Christ",
+        "The Doctrine of Justification by Faith",
+        "The Doctrine of the Saints' Perseverance Explained and Confirmed",
+        "The Duty of Pastors and People Distinguished",
+        "The Grace and Duty of being Spiritually Minded",
+        "The Nature, Power, Deceit, and Prevelancy of the Remainders of Indwelling Sin in Believers",
+        "The Sermons of John Owen",
+        "Truth and Innocence Vindicated",
+        "Two Short Catechisms",
+        "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined"
+      ],
+      "tags": {},
+      "traditions": [
+        "Reformed"
+      ],
+      "fragments": [
+        "f-owen"
+      ]
+    },
     "tradition-catholic": {
       "name": "Catholic",
       "authors": [
         "Ambrose",
         "Augustine of Hippo",
         "Tertullian",
-        "Thomas Aquinas"
+        "Thomas Aquinas",
+        "\u00e0 Kempis, 1380-1471 Thomas"
       ],
       "titles": [
         "A Treatise on the Soul",
         "Acts or Disputation Against Fortunatus the Manichaean",
         "Ad Martyras",
+        "Ad Nationes",
         "Against Hermogenes",
         "Against Marcion",
         "Against Praxeas",
@@ -2571,10 +3396,12 @@
         "On the Catechising of the Uninstructed",
         "On the Christian Faith (De fide)",
         "On the Creed: A Sermon to Catechumens",
+        "On the Death of Satyrus",
         "On the Duties of the Clergy",
         "On the Flesh of Christ",
         "On the Good of Marriage",
         "On the Good of Widowhood",
+        "On the Grace of Christ, and on Original Sin",
         "On the Holy Spirit",
         "On the Holy Trinity",
         "On the Morals of the Catholic Church",
@@ -2588,10 +3415,12 @@
         "On the Spirit and the Letter",
         "On the Veiling of Virgins",
         "On the Work of Monks",
+        "Our Lord's Sermon on the Mount",
         "Reply to Faustus the Manichaean",
         "Scorpiace",
         "Sermon against Auxentius",
         "Sermons on Selected Lessons of the New Testament",
+        "Soliloquies",
         "Summa Theologiae: Prima Pars",
         "Summa Theologiae: Prima Secundae",
         "Summa Theologiae: Secunda Secundae",
@@ -2602,38 +3431,37 @@
         "The Enarrations, or Expositions, on the Psalms",
         "The Enchiridion",
         "The Harmony of the Gospels",
-        "The Interior Castle (Teresa of Avila)",
+        "The Imitation of Christ",
         "The Martyrdom of Perpetua and Felicity",
+        "The Predestination of the Saints/Gift of Perseverance",
         "The Prescription Against Heretics",
         "The Soul's Testimony",
-        "The Spiritual Exercises (Ignatius)",
         "To Consentius: Against Lying",
         "To His Wife",
         "To Scapula",
         "Tractates on the Gospel of John"
       ],
       "tags": {
-        "angels": 798,
-        "baptism": 713,
-        "christology": 3,
-        "church": 1397,
-        "creation": 259,
-        "eschatology": 427,
-        "eucharist": 110,
-        "faith": 1727,
-        "grace": 1393,
-        "holy-spirit": 416,
-        "incarnation": 162,
-        "justification": 127,
-        "last-judgment": 920,
-        "prayer": 499,
-        "sacraments": 783,
-        "salvation": 654,
-        "sanctification": 98,
-        "scripture": 1103,
-        "sin": 2374,
-        "trinity": 278,
-        "worship": 332
+        "angels": 1279,
+        "baptism": 921,
+        "church": 2324,
+        "creation": 401,
+        "eschatology": 803,
+        "eucharist": 118,
+        "faith": 2661,
+        "grace": 2075,
+        "holy-spirit": 696,
+        "incarnation": 196,
+        "justification": 156,
+        "last-judgment": 1489,
+        "prayer": 825,
+        "sacraments": 991,
+        "salvation": 982,
+        "sanctification": 125,
+        "scripture": 1913,
+        "sin": 3406,
+        "worship": 660,
+        "trinity": 366
       },
       "traditions": [
         "Catholic",
@@ -2649,11 +3477,20 @@
     },
     "tradition-lutheran": {
       "name": "Lutheran",
-      "authors": [],
+      "authors": [
+        "Martin Luther",
+        "Martin WILLIAM HAZLITT, Esq. Luther"
+      ],
       "titles": [
+        "A Treatise on Good Works",
+        "Concerning Christian Liberty",
+        "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
         "Luther's Small Catechism",
+        "Preface to the Letter of St. Paul to the Romans",
+        "Table Talk",
         "The Apology of the Augsburg Confession",
         "The Augsburg Confession",
+        "The Large Catechism",
         "The Smalcald Articles"
       ],
       "tags": {
@@ -2680,55 +3517,241 @@
         "Lutheran"
       ],
       "fragments": [
-        "f-lutheran"
+        "f-lutheran",
+        "f-luther"
       ]
     },
     "tradition-reformed": {
       "name": "Reformed & Presbyterian",
-      "authors": [],
+      "authors": [
+        "Albert Barnes",
+        "Andrew Murray",
+        "Charles Hodge",
+        "E.W. Bullinger",
+        "Horatius, D.D. Bonar",
+        "John Calvin",
+        "John Flavel",
+        "John Henry Beveridge Calvin",
+        "John Knox",
+        "John Owen",
+        "Jonathan Edwards",
+        "Matthew Henry",
+        "Richard Baxter",
+        "Stephen Charnock",
+        "Thomas Boston",
+        "Thomas Manton",
+        "Thomas Watson",
+        "Thomas d. 1686 Watson"
+      ],
       "titles": [
-        "Second Helvetic Confession",
+        "A Body of Divinity",
+        "A Brief Declaration and Vindication of The Doctrine of the Trinity",
+        "A Brief Instruction in the Worship of God",
+        "A Commentary on the Epistle to the Ephesians",
+        "A Discourse Concerning Liturgies, and their Imposition",
+        "A Discourse concerning Evangelical Love, Church Peace, and Unity",
+        "A Discourse of God's being the Author of Reconciliation",
+        "A Discourse of the Efficient of Regeneration",
+        "A Discourse of the Nature of Regeneneration",
+        "A Discourse of the Word, the Instrument of Regeneration",
+        "A Discourse on the Cleansing Virtue of Christ's Blood",
+        "A Display of Arminianism",
+        "A Dissertation on Divine Justice",
+        "A Divine Cordial, or, The transcendent priviledge of those that love God and are savingly called ...",
+        "A Practical Exposition upon Psalm CXXX",
+        "A Review of the Annotations of Hugo Grotius",
+        "A Saint Indeed or the Great Work of a Christian in Keeping the Heart in the Several Conditions of Life",
+        "A Treatise of the Dominion of Sin and Grace",
+        "A Treatise on Relics",
+        "Absolute Surrender",
+        "An Inquiry into the Original, Nature, Institution, Power, Order, and Communion of Evangelical Churches",
+        "An Unpublished Essay on the Trinity",
+        "Barnes' New Testament Notes",
+        "Christ Altogether Lovely",
+        "Commentaries on the Catholic Epistles",
+        "Commentary on Acts - Volume 1",
+        "Commentary on Acts - Volume 2",
+        "Commentary on Corinthians - Volume 1",
+        "Commentary on Corinthians - Volume 2",
+        "Commentary on Daniel - Volume 1",
+        "Commentary on Daniel - Volume 2",
+        "Commentary on Ezekiel - Volume 1",
+        "Commentary on Ezekiel - Volume 2",
+        "Commentary on Galatians and Ephesians",
+        "Commentary on Genesis - Volume 1",
+        "Commentary on Genesis - Volume 2",
+        "Commentary on Habakkuk, Zephaniah, Haggai",
+        "Commentary on Hebrews",
+        "Commentary on Hosea",
+        "Commentary on Isaiah - Volume 1",
+        "Commentary on Isaiah - Volume 2",
+        "Commentary on Isaiah - Volume 3",
+        "Commentary on Isaiah - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 1",
+        "Commentary on Jeremiah and Lamentations - Volume 2",
+        "Commentary on Jeremiah and Lamentations - Volume 3",
+        "Commentary on Jeremiah and Lamentations - Volume 4",
+        "Commentary on Jeremiah and Lamentations - Volume 5",
+        "Commentary on Joel, Amos, Obadiah",
+        "Commentary on John - Volume 1",
+        "Commentary on John - Volume 2",
+        "Commentary on Jonah, Micah, Nahum",
+        "Commentary on Joshua",
+        "Commentary on Matthew, Mark, Luke - Volume 1",
+        "Commentary on Matthew, Mark, Luke - Volume 2",
+        "Commentary on Matthew, Mark, Luke - Volume 3",
+        "Commentary on Philippians, Colossians, and Thessalonians",
+        "Commentary on Psalms - Volume 1",
+        "Commentary on Psalms - Volume 2",
+        "Commentary on Psalms - Volume 3",
+        "Commentary on Psalms - Volume 4",
+        "Commentary on Psalms - Volume 5",
+        "Commentary on Revelation",
+        "Commentary on Romans",
+        "Commentary on Timothy, Titus, Philemon",
+        "Commentary on Zechariah, Malachi",
+        "Commentary on the Whole Bible Volume I (Genesis to Deuteronomy)",
+        "Commentary on the Whole Bible Volume II (Joshua to Esther)",
+        "Commentary on the Whole Bible Volume III (Job to Song of Solomon)",
+        "Commentary on the Whole Bible Volume IV (Isaiah to Malachi)",
+        "Commentary on the Whole Bible Volume V (Matthew to John)",
+        "Commentary on the Whole Bible Volume VI (Acts to Revelation)",
+        "Eshcol; A Cluster of the Fruit of Canaan",
+        "Freedom of the Will",
+        "God's Way of Peace",
+        "Gospel Grounds and Evidences of the Faith of God's Elect",
+        "Harmony of the Law - Volume 1",
+        "Harmony of the Law - Volume 2",
+        "Harmony of the Law - Volume 3",
+        "Harmony of the Law - Volume 4",
+        "Meditations and Discourses on the Glory of Christ",
+        "Nature and Causes of Apostasy from the Gospel",
+        "Of Communion with God the Father, Son and Holy Ghost",
+        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
+        "Of Schism",
+        "Of Temptation",
+        "Of the Mortification of Sin in Believers",
+        "On the Christian Life",
+        "Pneumatologia",
+        "Pneumatologia: A Treatise of the Soul of Man",
+        "Religious Affections",
+        "Sacramental Discourses",
+        "Select Sermons",
+        "Several Practical Cases of Conscience Resolved",
+        "Systematic Theology - Volume I",
+        "Systematic Theology - Volume II",
+        "Systematic Theology - Volume III",
+        "The Beatitudes: An Exposition of Matthew 5:1-12",
         "The Belgic Confession",
         "The Canons of Dordt",
+        "The Complete Works of Thomas Manton, D.D. Vol. I",
+        "The Complete Works of Thomas Manton, D.D. Vol. II",
+        "The Complete Works of Thomas Manton, D.D. Vol. III",
+        "The Complete Works of Thomas Manton, D.D. Vol. IV",
+        "The Complete Works of Thomas Manton, D.D. Vol. V",
+        "The Complete Works of Thomas Manton, D.D. Vol. VIII",
+        "The Crook in the Lot",
+        "The Death of Death in the Death of Christ",
+        "The Deeper Christian Life",
+        "The Doctrine of Justification by Faith",
+        "The Doctrine of the Saints' Perseverance Explained and Confirmed",
+        "The Duty of Pastors and People Distinguished",
+        "The First Blast of the Trumpet Against the Monstrous Regiment of Women.",
+        "The Grace and Duty of being Spiritually Minded",
         "The Heidelberg Catechism",
+        "The History of the Reformation of Religion in Scotland",
+        "The Institutes of the Christian Religion",
+        "The Master's Indwelling",
+        "The Nature, Power, Deceit, and Prevelancy of the Remainders of Indwelling Sin in Believers",
+        "The Necessity of Regeneration",
+        "The Reformed Pastor",
+        "The Saints' Everlasting Rest",
+        "The School of Obedience",
         "The Scots Confession",
+        "The Sermons of John Owen",
+        "The Ten Commandments",
+        "The True Vine: Meditations for a Month on John 15:1-16",
+        "The Two Covenants",
         "The Westminster Confession of Faith",
         "The Westminster Larger Catechism",
-        "The Westminster Shorter Catechism"
+        "The Westminster Shorter Catechism",
+        "The Works of John Knox, Vol. 1 (of 6)",
+        "The Works of Jonathan Edwards, Volume One",
+        "The Works of Jonathan Edwards, Volume Two",
+        "The Works of Thomas Manton, D.D. Vol. VI",
+        "The Works of Thomas Manton, D.D. Vol. VII",
+        "The Works of Thomas Manton, D.D. Vol. XX",
+        "Treatise on Grace",
+        "Treatise on Prayer",
+        "Truth and Innocence Vindicated",
+        "Two Short Catechisms",
+        "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined",
+        "Waiting On God!",
+        "With Christ in the School of Prayer",
+        "Working For God!"
       ],
       "tags": {
         "angels": 27,
         "baptism": 33,
-        "church": 90,
+        "church": 88,
         "creation": 15,
         "eschatology": 30,
-        "faith": 124,
-        "grace": 145,
+        "faith": 123,
+        "grace": 144,
         "holy-spirit": 43,
         "incarnation": 4,
         "justification": 26,
         "last-judgment": 34,
         "prayer": 41,
         "sacraments": 65,
-        "salvation": 82,
+        "salvation": 79,
         "sanctification": 19,
-        "scripture": 52,
-        "sin": 207,
-        "trinity": 7,
-        "worship": 45
+        "scripture": 51,
+        "sin": 206,
+        "trinity": 6,
+        "worship": 43
       },
       "traditions": [
         "Reformed"
       ],
       "fragments": [
-        "f-reformed"
+        "f-reformed",
+        "f-calvin",
+        "f-henry",
+        "f-edwards",
+        "f-baxter",
+        "f-owen",
+        "f-hodge",
+        "f-barnes",
+        "f-manton",
+        "f-knox",
+        "f-watson",
+        "f-murray",
+        "f-flavel"
       ]
     },
     "tradition-anglican": {
       "name": "Anglican",
-      "authors": [],
+      "authors": [
+        "John C. Ryle",
+        "John Charles Ryle",
+        "John Newton",
+        "Joseph Barber Lightfoot",
+        "William Law"
+      ],
       "titles": [
-        "The Thirty-Nine Articles of Religion"
+        "A Serious Call to a Devout and Holy Life",
+        "An Humble, Affectionate, and Earnest Address to the Clergy",
+        "Expository Thoughts on Matthew",
+        "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
+        "Messiah Vol. 1",
+        "Messiah Vol. 2",
+        "Olney Hymns",
+        "Spirit of Love",
+        "The Apostolic Fathers",
+        "The Spirit of Prayer",
+        "The Thirty-Nine Articles of Religion",
+        "The Upper Room: Being a Few Truths for the Times"
       ],
       "tags": {
         "baptism": 3,
@@ -2749,14 +3772,103 @@
         "Anglican"
       ],
       "fragments": [
-        "f-anglican"
+        "f-anglican",
+        "f-ryle",
+        "f-newton",
+        "f-law"
       ]
     },
     "tradition-baptist": {
       "name": "Baptist",
-      "authors": [],
+      "authors": [
+        "Charles Hadden Spurgeon",
+        "Charles Haddon Spurgeon",
+        "John Bunyan",
+        "John Gill"
+      ],
       "titles": [
-        "The Second London Baptist Confession of Faith"
+        "A Body of Practical Divinity",
+        "A Puritan Catechism",
+        "All of Grace",
+        "An Exposition of the Book of Solomon's Song",
+        "Doctrinal Divinity",
+        "Faith's Checkbook",
+        "Miscellaneous Pieces",
+        "Morning and Evening: Daily Readings",
+        "Spurgeon's Sermons Volume 01: 1855",
+        "Spurgeon's Sermons Volume 02: 1856",
+        "Spurgeon's Sermons Volume 03: 1857",
+        "Spurgeon's Sermons Volume 04: 1858",
+        "Spurgeon's Sermons Volume 05: 1859",
+        "Spurgeon's Sermons Volume 06: 1860",
+        "Spurgeon's Sermons Volume 07: 1861",
+        "Spurgeon's Sermons Volume 08: 1862",
+        "Spurgeon's Sermons Volume 09: 1863",
+        "Spurgeon's Sermons Volume 10: 1864",
+        "Spurgeon's Sermons Volume 11: 1865",
+        "Spurgeon's Sermons Volume 12: 1866",
+        "Spurgeon's Sermons Volume 13: 1867",
+        "Spurgeon's Sermons Volume 14: 1868",
+        "Spurgeon's Sermons Volume 15: 1869",
+        "Spurgeon's Sermons Volume 16: 1870",
+        "Spurgeon's Sermons Volume 17: 1871",
+        "Spurgeon's Sermons Volume 18: 1872",
+        "Spurgeon's Sermons Volume 19: 1873",
+        "Spurgeon's Sermons Volume 20: 1874",
+        "Spurgeon's Sermons Volume 21: 1875",
+        "Spurgeon's Sermons Volume 22: 1876",
+        "Spurgeon's Sermons Volume 23: 1877",
+        "Spurgeon's Sermons Volume 24: 1878",
+        "Spurgeon's Sermons Volume 25: 1879",
+        "Spurgeon's Sermons Volume 26: 1880",
+        "Spurgeon's Sermons Volume 27: 1881",
+        "Spurgeon's Sermons Volume 28: 1882",
+        "Spurgeon's Sermons Volume 29: 1883",
+        "Spurgeon's Sermons Volume 30: 1884",
+        "Spurgeon's Sermons Volume 31: 1885",
+        "Spurgeon's Sermons Volume 32: 1886",
+        "Spurgeon's Sermons Volume 33: 1887",
+        "Spurgeon's Sermons Volume 34: 1888",
+        "Spurgeon's Sermons Volume 35: 1889",
+        "Spurgeon's Sermons Volume 36: 1890",
+        "Spurgeon's Sermons Volume 37: 1891",
+        "Spurgeon's Sermons Volume 38: 1892",
+        "Spurgeon's Sermons Volume 39: 1893",
+        "Spurgeon's Sermons Volume 40: 1894",
+        "Spurgeon's Sermons Volume 41: 1895",
+        "Spurgeon's Sermons Volume 42: 1896",
+        "Spurgeon's Sermons Volume 43: 1897",
+        "Spurgeon's Sermons Volume 44: 1898",
+        "Spurgeon's Sermons Volume 45: 1899",
+        "Spurgeon's Sermons Volume 46: 1900",
+        "Spurgeon's Sermons Volume 47: 1901",
+        "Spurgeon's Sermons Volume 48: 1902",
+        "Spurgeon's Sermons Volume 49: 1903",
+        "Spurgeon's Sermons Volume 50: 1904",
+        "Spurgeon's Sermons Volume 51: 1905",
+        "Spurgeon's Sermons Volume 52: 1906",
+        "Spurgeon's Sermons Volume 53: 1907",
+        "Spurgeon's Sermons Volume 54: 1908",
+        "Spurgeon's Sermons Volume 55: 1909",
+        "Spurgeon's Sermons Volume 56: 1910",
+        "Spurgeon's Sermons Volume 57: 1911",
+        "Spurgeon's Sermons Volume 58: 1912",
+        "Spurgeon's Sermons Volume 59: 1913",
+        "Spurgeon's Sermons Volume 60: 1914",
+        "Spurgeon's Sermons Volume 61: 1915",
+        "Spurgeon's Sermons Volume 62: 1916",
+        "Spurgeon's Sermons Volume 63: 1917",
+        "The First London Baptist Confession of Faith",
+        "The Holy War",
+        "The Pilgrim's Progress",
+        "The Second London Baptist Confession of Faith",
+        "The Treasury of David \u2014 Psalms 1-41",
+        "The Treasury of David \u2014 Psalms 107-119",
+        "The Treasury of David \u2014 Psalms 120-150",
+        "The Treasury of David \u2014 Psalms 42-72",
+        "The Treasury of David \u2014 Psalms 73-89",
+        "The Treasury of David \u2014 Psalms 90-106",
+        "Till He Come"
       ],
       "tags": {
         "angels": 7,
@@ -2782,7 +3894,10 @@
         "Baptist"
       ],
       "fragments": [
-        "f-baptist"
+        "f-baptist",
+        "f-spurgeon",
+        "f-bunyan",
+        "f-gill"
       ]
     },
     "tradition-orthodox": {
@@ -2790,7 +3905,10 @@
       "authors": [
         "Athanasius",
         "Gregory of Nyssa",
-        "John Chrysostom"
+        "John Chrysostom",
+        "Orthodox Eastern Church",
+        "Philaret (Drozdov) of Moscow",
+        "Synod of Jerusalem"
       ],
       "titles": [
         "Ad Afros Epistola Synodica",
@@ -2798,6 +3916,7 @@
         "Against Eunomius",
         "Against the Heathen",
         "Answer to Eunomius' Second Book",
+        "Apologia Contra Arianos",
         "Apologia ad Constantium",
         "Apologia de Fuga",
         "Circular Letter",
@@ -2857,36 +3976,36 @@
         "On the Soul and the Resurrection",
         "Second Homily on Eutropius (After His Captivity)",
         "Statement of Faith",
+        "The Book of Needs of the Holy Orthodox Church",
+        "The Confession of Dositheus",
         "The Great Catechism",
-        "The Orthodox Confession of Faith (Peter Mogila)",
-        "The Philokalia Selections",
+        "The Longer Catechism of the Orthodox, Catholic, Eastern Church",
         "Three Homilies on the Power of Satan",
         "Tomus ad Antiochenos",
         "Two Letters to Theodore After His Fall",
         "Vita S. Antoni (Life of St. Anthony)"
       ],
       "tags": {
-        "baptism": 132,
-        "christology": 4,
-        "church": 570,
-        "eschatology": 295,
+        "angels": 487,
+        "baptism": 161,
+        "church": 664,
+        "creation": 291,
+        "eschatology": 392,
         "eucharist": 3,
-        "prayer": 347,
-        "sacraments": 8,
-        "salvation": 401,
-        "trinity": 31,
-        "angels": 409,
-        "creation": 259,
-        "faith": 707,
-        "grace": 811,
-        "holy-spirit": 162,
-        "incarnation": 41,
+        "faith": 842,
+        "grace": 923,
+        "holy-spirit": 181,
+        "incarnation": 46,
         "justification": 23,
-        "last-judgment": 440,
-        "sanctification": 34,
-        "scripture": 489,
-        "sin": 835,
-        "worship": 140
+        "last-judgment": 534,
+        "prayer": 370,
+        "sacraments": 7,
+        "salvation": 476,
+        "sanctification": 43,
+        "scripture": 575,
+        "sin": 999,
+        "trinity": 30,
+        "worship": 156
       },
       "traditions": [
         "Early Church",
@@ -2902,28 +4021,30 @@
     "tradition-methodist": {
       "name": "Methodist & Wesleyan",
       "authors": [
+        "Adam Clarke",
+        "George Whitefield",
         "John Wesley"
       ],
       "titles": [
-        "A Plain Account of the People Called Methodists (Wesley)",
+        "Entire Sanctification",
+        "Selected Sermons of George Whitefield",
         "Sermons on Several Occasions"
       ],
       "tags": {
         "angels": 25,
         "baptism": 5,
-        "christology": 7,
-        "church": 45,
+        "church": 35,
         "creation": 18,
         "eschatology": 5,
         "faith": 53,
         "grace": 30,
-        "holy-spirit": 9,
+        "holy-spirit": 8,
         "incarnation": 1,
         "justification": 9,
         "last-judgment": 21,
         "prayer": 10,
         "sacraments": 3,
-        "salvation": 30,
+        "salvation": 20,
         "sanctification": 4,
         "scripture": 39,
         "sin": 64,
@@ -2934,7 +4055,8 @@
         "Methodist"
       ],
       "fragments": [
-        "f-methodist"
+        "f-methodist",
+        "f-whitefield"
       ]
     },
     "bible-web": {

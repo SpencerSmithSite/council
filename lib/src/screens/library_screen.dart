@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/glass.dart';
 import '../theme/glass_controls.dart';
 import 'package:provider/provider.dart';
 
@@ -70,13 +71,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
         manifest == null ? const <Collection>[] : _matching(manifest.collections);
     final top = MediaQuery.of(context).padding.top;
 
-    final content = Column(
-        children: [
-          Expanded(
-            child: RefreshIndicator(
+    final content = Builder(
+      // Inside the body, so the composer's measured height is in scope. See
+      // [floatingBottomInset].
+      builder: (context) => RefreshIndicator(
               onRefresh: packs.refresh,
               child: ListView(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.only(
+                  bottom: floatingBottomInset(context, extra: 8),
+                ),
                 children: [
                   const LargeTitle('Library'),
                   if (packs.error != null)
@@ -125,18 +128,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ],
               ),
             ),
-          ),
-          GlassComposer(
-            controller: _query,
-            hintText: 'Search packs',
-            leadingIcon: AppIcons.search,
-            onChanged: (_) => setState(() {}),
-            onClear: () {
-              _query.clear();
-              setState(() {});
-            },
-          ),
-        ],
       );
 
     // As a tab, the shell paints the background and the chrome; the screen stays
@@ -144,6 +135,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
     // floating back button in the top-left corner.
     return Scaffold(
       backgroundColor: widget.embedded ? Colors.transparent : null,
+      // The search capsule floats over the shelf; the packs pass behind it.
+      extendBody: true,
+      bottomNavigationBar: GlassComposer(
+        controller: _query,
+        hintText: 'Search packs',
+        leadingIcon: AppIcons.search,
+        onChanged: (_) => setState(() {}),
+        onClear: () {
+          _query.clear();
+          setState(() {});
+        },
+      ),
       body: widget.embedded
           ? content
           : Stack(

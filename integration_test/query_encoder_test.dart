@@ -60,8 +60,26 @@ void main() {
     expect(cosine(saved, justified), greaterThan(cosine(saved, bishops)));
   });
 
-  test('the index loaded and covers the corpus', () {
-    expect(index.length, greaterThan(50000));
+  test('the index loaded and covers the corpus', () async {
+    // Against whatever corpus is installed, not against an absolute figure.
+    //
+    // This used to assert `greaterThan(50000)`, which is not a property of
+    // this suite — it never installs content packs, so it was really asserting
+    // that some *earlier* test run had left them behind. Bumping
+    // `corpusVersion` re-unpacks the bundled database and discards installed
+    // packs, exactly as it is meant to, and the assertion then failed with
+    // 3,919 (the bundled King James Version) against a corpus that was
+    // perfectly correct.
+    //
+    // The property actually worth pinning is that the index holds *every*
+    // vector in the database — a partial load is the silent failure, and it is
+    // what paging `VectorIndex.load` risked introducing. Loading over the full
+    // library, where paging genuinely does more than one round trip, is
+    // covered by `retrieval_test.dart`, which installs the packs first.
+    final rows = await db.database
+        .rawQuery('SELECT COUNT(*) AS n FROM chunk_embeddings');
+    expect(index.length, rows.first['n'] as int);
+    expect(index.length, greaterThan(0));
   });
 
   group('semantic retrieval against the real corpus', () {

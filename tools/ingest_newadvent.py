@@ -46,8 +46,25 @@ JUNK_DIV_RE = re.compile(
     re.S | re.I,
 )
 
-# Works whose extracted text falls below this are link hubs or stubs, not text.
-MIN_WORK_CHARS = 1200
+# Works whose extracted text falls below this are stubs, not text.
+#
+# It was 1,200, and it was doing two jobs: rejecting stubs, and catching the
+# contents pages that [is_hub] was failing to recognise. Now that the hub check
+# works — it runs first, on the links alone, and no longer needs the page to be
+# textless — this only has the first job, and 1,200 was too high for it. The
+# surviving fragment of Quadratus, the earliest Christian apology there is, is
+# 853 characters, and was dropped by it. At 500 that one work is admitted and
+# nothing else in the manifest changes.
+MIN_WORK_CHARS = 500
+
+# The same floor applied to a *part* throws away real text. Basil's letter 13
+# runs to 193 characters — "To Olympius. Your letter contained nothing but the
+# charge that I write no letters" — and 111 of his 325 letters fell under 1,200
+# and were dropped silently, so a work that looked fully expanded was missing a
+# third of itself. A part is not a candidate hub (its parent already answered
+# that), so the only thing this floor has to reject is a page of pure
+# navigation chrome, which strips to nothing.
+MIN_PART_CHARS = 80
 
 # Paragraph-chunking target for works with no section headings.
 CHUNK_TARGET_CHARS = 2500
@@ -159,17 +176,34 @@ def build_manifest():
 # most of the corpus by volume.
 
 
-def sub_links(body):
-    """Part links on a hub page, in document order, de-duplicated."""
+def sub_links(work, body):
+    """Part links on a hub page, in document order, de-duplicated.
+
+    Restricted to ids that *extend* the work's own — 1201 owns 120101…120122 —
+    because a page's body also links sideways to other works, and those are
+    separate entries in the manifest already. Without the prefix test a stray
+    cross-reference in a long work counts toward the hub threshold below.
+    Requiring the id to be strictly longer excludes the page's link to itself.
+
+    Part ids are not always numeric. Most works number their parts
+    (`3202` → `3202001`), but some letter them: Gregory Nazianzen's letters are
+    `3103a`, `3103b`, `3103c`, and Ephraim's Nisibene Hymns the same. A pattern
+    matching digits only saw no parts on those pages, and since their contents
+    pages are a few hundred characters they then failed the length floor too —
+    so those works were **absent from the corpus entirely** rather than merely
+    short.
+    """
     start = body.find("</h1>")
     end = body.find("About this page")
     region = body[start if start >= 0 else 0 : end if end > 0 else len(body)]
 
     seen, links = set(), []
     for href, label in re.findall(
-        r'href="(?:\.\./)?fathers/(\d{5,})\.htm"[^>]*>(.*?)</a>', region, re.S
+        r'href="(?:\.\./)?fathers/([0-9a-z]+)\.htm"[^>]*>(.*?)</a>', region, re.S
     ):
-        if href in seen:
+        if href in seen or len(href) <= len(work["id"]):
+            continue
+        if not href.startswith(work["id"]):
             continue
         seen.add(href)
         links.append((href, clean_text(label)))
@@ -177,8 +211,50 @@ def sub_links(body):
 
 
 def is_hub(work, body):
-    """A hub has no text of its own but links to three or more parts."""
-    return parse_work(work, body) is None and len(sub_links(body)) >= 3
+    """A hub is a page that links to two or more of its own parts.
+
+    It used to also require the page to hold no text of its own, and that is
+    what put summaries in the corpus where the works belong. New Advent gives
+    a long work a contents page: for City of God, Augustine's argument for
+    each of the 22 books; for Irenaeus and the Harmony of the Gospels, 28-32 KB
+    of chapter titles. All of it parses as ordinary prose, so those works read
+    as short-but-real and were never expanded — the app showed the summary of
+    Book 1 where Book 1 should have been.
+
+    A contents page is not evidence that a work is short. The links are, so
+    they decide alone, and `parse_multipart` then takes the text from the parts
+    and discards the hub body.
+
+    The threshold was three, and a work in exactly two books therefore fell
+    between the two paths — not a hub, and a contents page too short to survive
+    [MIN_WORK_CHARS] as a flat work — so it was **absent from the corpus
+    entirely**. Ten works went that way, including Tertullian's *Ad Nationes*,
+    Augustine's *Soliloquies* and *Our Lord's Sermon on the Mount*, and Jerome
+    *Against Jovinianus*. Two is safe now that [sub_links] only counts a page's
+    own children: a child id cannot be a sideways reference to another work.
+    """
+    return len(sub_links(work, body)) >= 2
+
+
+# Plural in a work's title -> what one of its parts is called. Most hub pages
+# label their links usefully ("Book 3", "Letter 12"); Gregory the Great's
+# Register of Letters labels all 420 of them with a bare number, which reaches
+# the reader as a unit titled "1 — 1". The work's own title says what a part of
+# it is, so this reads it off rather than inventing "Part 1".
+PART_NOUNS = {
+    "letters": "Letter", "homilies": "Homily", "sermons": "Sermon",
+    "epistles": "Epistle", "orations": "Oration", "books": "Book",
+    "tractates": "Tractate", "conferences": "Conference", "canons": "Canon",
+    "discourses": "Discourse", "lectures": "Lecture", "treatises": "Treatise",
+}
+
+
+def part_noun(work_title):
+    for word in reversed(re.findall(r"[A-Za-z]+", work_title)):
+        noun = PART_NOUNS.get(word.lower())
+        if noun:
+            return noun
+    return "Part"
 
 
 def build_parts():
@@ -192,12 +268,15 @@ def build_parts():
         body = path.read_text(encoding="utf-8")
         if not is_hub(w, body):
             continue
-        for order, (part_id, label) in enumerate(sub_links(body), 1):
+        noun = part_noun(w["title"])
+        for order, (part_id, label) in enumerate(sub_links(w, body), 1):
+            if re.fullmatch(r"\d+", label.strip()):
+                label = f"{noun} {label.strip()}"
             parts.append(
                 {
                     "id": part_id,
                     "url": f"{BASE}{part_id}.htm",
-                    "title": label or f"Part {order}",
+                    "title": label or f"{noun} {order}",
                     "order": order,
                     "parent_id": w["id"],
                     "parent_title": w["title"],
@@ -346,11 +425,15 @@ def units_from_paragraphs(region, work_title):
     return units
 
 
-def parse_work(work, body):
+def parse_work(work, body, minimum=MIN_WORK_CHARS):
     """Split a work page into content units.
 
     Provenance is read before the ad-stripping pass, since the footer lives in
     a div adjacent to the ad slots.
+
+    `minimum` is what counts as too little text to be a work at all. It is
+    lowered to [MIN_PART_CHARS] for the parts of a multi-part work, where short
+    really does mean short.
     """
     provenance = parse_provenance(body)
     body = JUNK_DIV_RE.sub(" ", body)
@@ -378,7 +461,7 @@ def parse_work(work, body):
         units = units_from_paragraphs(region, work["title"])
 
     total = sum(len(u["content"]) for u in units)
-    if not units or total < MIN_WORK_CHARS:
+    if not units or total < minimum:
         return None
 
     return {
@@ -400,7 +483,9 @@ def parse_multipart(work, parts):
         path = CACHE / f"{part['id']}.html"
         if not path.exists():
             continue
-        record = parse_work(part, path.read_text(encoding="utf-8"))
+        record = parse_work(
+            part, path.read_text(encoding="utf-8"), minimum=MIN_PART_CHARS
+        )
         if record is None:
             continue
         provenance = provenance or record["provenance"]

@@ -383,9 +383,31 @@ class PackCatalogue {
     // the cheapest way to get an answer, and anyone wanting more can take a
     // broader collection afterwards. Suggesting the largest would be asking
     // someone to download the complete fathers to read one letter.
+    // ...except when the reason is that a whole tradition is missing, where
+    // narrowest is the wrong answer and so is broadest.
+    //
+    // Once per-author collections existed, "What do Baptists believe about
+    // baptism?" started offering *John Bunyan* — two works, and Baptist, so
+    // both the filter and the narrowness rule were satisfied. But the gap
+    // being reported is not "you lack a Baptist author", it is "you lack the
+    // Baptist tradition", and Bunyan's allegories are not the Baptist
+    // confessions. Inverting to breadth alone overshoots the other way, to
+    // "Creeds & Confessions" — which does hold Baptist material, among six
+    // other traditions, and is not what was asked about either.
+    //
+    // What actually distinguishes the right answer is that the collection is
+    // *about* that tradition and nothing else. So: collections covering one
+    // tradition first, and the fullest of those, which is the one that
+    // genuinely supplies what is missing.
     suggestions.sort((a, b) {
       final byReason = a.reason.index.compareTo(b.reason.index);
       if (byReason != 0) return byReason;
+      if (a.reason == SuggestionReason.traditionAbsent) {
+        final byFocus =
+            _traditionsIn(a.packId).compareTo(_traditionsIn(b.packId));
+        if (byFocus != 0) return byFocus;
+        return _worksIn(b.packId).compareTo(_worksIn(a.packId));
+      }
       return _worksIn(a.packId).compareTo(_worksIn(b.packId));
     });
 
@@ -396,6 +418,11 @@ class PackCatalogue {
   }
 
   int _worksIn(String packId) => packs[packId]?.titles.length ?? 0;
+
+  /// How many traditions a collection spans. One means it is *about* a
+  /// tradition rather than merely containing some of it.
+  int _traditionsIn(String packId) =>
+      packs[packId]?.traditions.length ?? 1 << 20;
 
   /// How many tagged passages exist for [tag] across the whole library,
   /// installed or not.

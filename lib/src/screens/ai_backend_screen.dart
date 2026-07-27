@@ -241,22 +241,38 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
     }
 
     // Keep the current model if the server actually has it (matching the exact
-    // tag, or a bare name like "llama3.2" against "llama3.2:latest"); otherwise
-    // select the first, so the dropdown never shows a model that isn't there.
+    // tag, or a bare name like "llama3.2" against "llama3.2:latest").
+    //
+    // Otherwise leave it unset rather than selecting the first one for them.
+    // Picking a model on someone's behalf is how the old default caused
+    // trouble: the app looks configured, and the choice that decides the
+    // quality of every answer was made by a sort order.
     final current = _model.text.trim();
-    final chosen = models.contains(current)
-        ? current
-        : models.firstWhere((m) => m.startsWith(current),
-            orElse: () => models.first);
-    _model.text = chosen;
-    await inference.setOllama(model: chosen);
+    final chosen = current.isEmpty
+        ? null
+        : models.contains(current)
+            ? current
+            : models.firstWhere((m) => m.startsWith(current),
+                orElse: () => '');
+
+    if (chosen != null && chosen.isNotEmpty) {
+      _model.text = chosen;
+      await inference.setOllama(model: chosen);
+    } else {
+      _model.clear();
+      await inference.setOllama(model: '');
+    }
 
     setState(() {
       _testing = false;
       _testOk = true;
       _models = models;
-      _testMessage = 'Connected — ${models.length} '
-          'model${models.length == 1 ? '' : 's'} available.';
+      _testMessage = chosen != null && chosen.isNotEmpty
+          ? 'Connected — ${models.length} '
+              'model${models.length == 1 ? '' : 's'} available.'
+          : 'Connected — ${models.length} '
+              'model${models.length == 1 ? '' : 's'} found. Now choose one '
+              'below.';
     });
   }
 
@@ -307,9 +323,13 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
           // dropdown of exactly what the server reported.
           if (models != null && models.isNotEmpty)
             DropdownButtonFormField<String>(
+              // Unset until the reader picks, unless a previous choice is
+              // still installed. An empty dropdown is the honest state after a
+              // first connection, and it is what makes the next step obvious.
               initialValue: models.contains(inference.ollamaModel)
                   ? inference.ollamaModel
-                  : models.first,
+                  : null,
+              hint: const Text('Choose a model'),
               decoration: const InputDecoration(
                 labelText: 'Model',
                 helperText: 'Models installed on this host.',
@@ -327,8 +347,8 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
               controller: _model,
               decoration: const InputDecoration(
                 labelText: 'Model',
-                helperText: 'A model you have pulled, e.g. llama3.2 — or test '
-                    'the connection to choose from a list.',
+                helperText: 'Leave this blank — connect first, then pick from '
+                    'the models the host reports.',
                 helperMaxLines: 2,
                 border: OutlineInputBorder(),
               ),
@@ -344,7 +364,10 @@ class _OllamaSettingsState extends State<_OllamaSettings> {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Test connection'),
+                // Named for both halves of what it does: the button is the
+                // step between typing a host and having a model to choose, and
+                // calling it only "test" hid that the list comes from here.
+                : const Text('Test Connection + Pull models'),
           ),
 
           if (_testMessage != null) ...[

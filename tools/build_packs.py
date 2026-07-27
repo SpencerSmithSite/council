@@ -27,10 +27,21 @@ has already had once: chunk ids are derived from unit ids, embeddings are keyed
 on chunk ids, and a renumbering that goes wrong does not raise an error, it
 just silently points vectors at unrelated text.
 
-The corollary is a rule: **packs and the core must always be built together
-from the same corpus, and `corpusVersion` must be bumped when they are.** A
-pack built against a different corpus can collide with ids the app already has.
-The manifest records the version so the app can refuse a mismatch.
+The corollary used to be stated as a rule — *packs and the core must always be
+built together, and `corpusVersion` bumped when they are* — and the app refused
+any catalogue whose version differed from its own. That was stricter than the
+thing it protected, and the cost was concrete: a corpus correction could not
+reach a single reader until the app itself was released again, however careful
+the rebuild had been.
+
+What actually has to hold is narrower. **No id a fragment carries may already
+mean something else on the reader's device.** A rebuild that only appends
+satisfies that against every app built since the last renumbering, because
+every id already in the field still holds exactly what it held. So the id space
+is numbered separately from the corpus, and `check_id_space` decides per build
+whether this one appended or reassigned — comparing against a ledger of what
+was last published, rather than trusting anyone to remember. Only a reassigning
+build advances the number and forces readers to update.
 
 Packs carry no FTS index. The index lives in the app's database and is appended
 to on install, which costs a little install time and saves shipping a second
@@ -55,12 +66,28 @@ DB_PATH = ROOT / "assets" / "theology.db"
 CORE_GZ = ROOT / "assets" / "theology.db.gz"
 CONFIG_PATH = ROOT / "tools" / "data" / "packs.json"
 CATALOGUE_PATH = ROOT / "assets" / "pack_catalogue.json"
+LEDGER_PATH = ROOT / "tools" / "data" / "id_ledger.json"
 DIST = ROOT / "dist" / "packs"
 
-# Must match DatabaseService.corpusVersion. The app refuses a pack whose
-# corpusVersion differs from its own, because ids are only guaranteed disjoint
-# within a single build.
-CORPUS_VERSION = 12
+# Must match DatabaseService.corpusVersion. This governs the *bundled* database:
+# the app throws away its installed copy and unpacks the new one when this
+# changes. It ships inside the binary, so it can only ever change with a release.
+CORPUS_VERSION = 15
+
+# What packs are actually gated on. See `read_ledger` below.
+#
+# This used to be CORPUS_VERSION, which meant every corpus change — however
+# small, however careful — required an app release before any of it could reach
+# a reader, because the app refused a manifest whose version differed from its
+# own. That is stricter than the thing being protected. Ids only have to be
+# *disjoint*; they do not have to come from the same build. A rebuild that only
+# appends leaves every existing id meaning exactly what it meant before, and its
+# packs merge safely into an app built against the previous corpus.
+#
+# So the id space gets its own number, bumped only when a rebuild reassigns an
+# id that is already in the field. `check_id_space` decides that from the
+# ledger rather than from anyone remembering to.
+ID_SPACE_START = 1
 
 # Reference tables are small, shared, and copied whole into every pack, so that
 # installing a pack cannot leave a source pointing at a tradition the app has
@@ -366,6 +393,119 @@ def sha256(path):
     return digest.hexdigest()
 
 
+# --------------------------------------------------------------------------
+# id space
+#
+# The property a downloadable fragment needs is not "same build as the app". It
+# is: **no id it carries already means something else on the reader's device.**
+# Those are different, and the second one survives a rebuild that the first one
+# does not.
+#
+# The ledger records, per source, the id range its units occupy and a hash of
+# their text. That is enough to decide the question, because units are inserted
+# in one contiguous run per source, so "same range and same text" means every
+# individual id in it still holds what it held.
+
+
+def current_ledger(conn):
+    """Per-source id footprint of the corpus as it stands."""
+    sources = {}
+    rows = conn.execute(
+        """SELECT s.source_url, MIN(u.id), MAX(u.id), COUNT(u.id),
+                  GROUP_CONCAT(u.content, char(30))
+           FROM sources s JOIN content_units u ON u.source_id = s.id
+           WHERE s.source_url IS NOT NULL AND s.source_url <> ''
+           GROUP BY s.id"""
+    )
+    for url, low, high, count, text in rows:
+        sources[url] = {
+            "min": low,
+            "max": high,
+            "count": count,
+            "hash": hashlib.sha256((text or "").encode()).hexdigest()[:16],
+        }
+    top = conn.execute("SELECT MAX(id) FROM content_units").fetchone()[0] or 0
+    return {"maxUnitId": top, "sources": sources}
+
+
+def read_ledger():
+    if not LEDGER_PATH.exists():
+        return None
+    return json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+
+
+def check_id_space(conn):
+    """Decide this build's id-space number, and say why it is what it is.
+
+    A source is *settled* if it sits entirely at or below the previous build's
+    high-water mark — meaning some reader out there may already hold those ids.
+    Anything above the mark is new ground and cannot collide with anything.
+
+    A build is compatible when every settled id still holds the text it held.
+    Three things break that, and all three are reported by name rather than
+    collapsed into a bump:
+
+      moved     a source kept its text and changed its ids
+      rewritten a source kept its ids and changed its text
+      occupied  new content landed on ids the previous build had already used
+
+    The first two are what a careless rebuild does. The third is what reusing
+    freed ids does, and it is the genuinely dangerous one: the reader's copy
+    would keep the old text under an id the new pack expects to insert, and the
+    merge fails on a primary-key collision halfway through.
+    """
+    now = current_ledger(conn)
+    before = read_ledger()
+
+    if before is None:
+        print(f"id space: {ID_SPACE_START} (no ledger yet — first recorded build)")
+        return ID_SPACE_START, now
+
+    mark = before["maxUnitId"]
+    was = before["sources"]
+    moved, rewritten, occupied = [], [], []
+
+    for url, entry in now["sources"].items():
+        old = was.get(url)
+        settled = entry["min"] <= mark
+        if old is None:
+            if settled:
+                occupied.append(url)
+            continue
+        same_ids = (old["min"], old["max"], old["count"]) == (
+            entry["min"], entry["max"], entry["count"])
+        same_text = old["hash"] == entry["hash"]
+        if same_ids and same_text:
+            continue
+        if same_text and not same_ids:
+            # Only a problem if the new home is on settled ground; a source
+            # rebuilt into fresh ids above the mark retires its old ones and
+            # collides with nothing.
+            if settled:
+                moved.append(url)
+        elif same_ids and not same_text:
+            rewritten.append(url)
+        elif settled:
+            occupied.append(url)
+
+    faults = [("moved", moved), ("rewritten", rewritten), ("occupied", occupied)]
+    if not any(items for _, items in faults):
+        space = before.get("idSpace", ID_SPACE_START)
+        print(f"id space: {space} (unchanged — this build only appends, so its "
+              f"packs install into any app already on space {space})")
+        return space, now
+
+    space = before.get("idSpace", ID_SPACE_START) + 1
+    print(f"id space: {space} (BUMPED — ids in the field have been reassigned)")
+    for label, items in faults:
+        for url in items[:6]:
+            print(f"    {label:10} {url}")
+        if len(items) > 6:
+            print(f"    {label:10} … and {len(items) - 6} more")
+    print("  Readers must update the app before they can install these packs.")
+    return space, now
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--write", action="store_true", help="build the packs")
@@ -403,6 +543,11 @@ def main():
               f"{len(collection['fragments'])} fragments{note}")
 
     if not args.write:
+        # Reported on a dry run too, because whether this build's packs can
+        # reach readers without an app release is the thing worth knowing
+        # *before* spending ten minutes compressing 74 MB.
+        print()
+        check_id_space(conn)
         print("\nDry run. Pass --write to build.")
         return
 
@@ -444,8 +589,10 @@ def main():
     # fragments a reader does not already have, so it is computed in the app
     # rather than fixed here — the same collection costs different amounts to
     # different people.
+    id_space, ledger = check_id_space(conn)
     manifest = {
         "corpusVersion": CORPUS_VERSION,
+        "idSpace": id_space,
         "fragments": [built[f["id"]] for f in fragments if f["id"] in built],
         "collections": [
             {
@@ -463,6 +610,13 @@ def main():
     with open(DIST / "manifest.json", "w") as handle:
         json.dump(manifest, handle, indent=2)
         handle.write("\n")
+
+    # Written only on a real build, and only after the manifest it describes.
+    # The ledger is the record of what is *published*; writing it on a dry run
+    # would move the high-water mark for a build nobody can install, and the
+    # next real build would then measure itself against fiction.
+    ledger["idSpace"] = id_space
+    LEDGER_PATH.write_text(json.dumps(ledger, indent=1) + "\n", encoding="utf-8")
 
     total = sum(f["bytes"] for f in manifest["fragments"])
     naive = sum(
@@ -518,7 +672,14 @@ def main():
           f"{CATALOGUE_PATH.stat().st_size / 1024:.0f} KB")
 
     print(f"\nWrote {DIST / 'manifest.json'}")
-    print(f"Remember: DatabaseService.corpusVersion must be {CORPUS_VERSION}")
+    print(f"\nDatabaseService.corpusVersion must be {CORPUS_VERSION} "
+          f"and idSpace must be {id_space}.")
+    if id_space == (read_ledger() or {}).get("idSpace", ID_SPACE_START):
+        print("These packs install into any app already on id space "
+              f"{id_space} — publish them whenever you like.")
+    else:
+        print("This build reassigned ids, so these packs need the app release "
+              "to go out first. Publish them together.")
 
 
 if __name__ == "__main__":

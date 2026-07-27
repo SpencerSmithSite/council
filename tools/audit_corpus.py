@@ -82,8 +82,19 @@ UNKNOWN = "unknown"
 
 
 def normalized_title_tokens(title):
-    """Word multiset of a title, for detecting reshuffled variants."""
-    words = re.findall(r"[a-z]+", (title or "").lower())
+    """Token set of a title, for detecting reshuffled variants.
+
+    **Numbers are kept.** They were stripped, and that made "Homily 12" and
+    "Homily 13" the same token set — so every numbered series in the corpus
+    reported its own titles as shuffles of each other. The signal fired 17,469
+    times, almost all of it on Chrysostom's homilies and Augustine's sermons,
+    and it dominated the verdicts to the point where 59% of a corpus of real
+    translations came back "unknown". A number is exactly what distinguishes
+    one homily from the next; the generator's shuffles were of *words* — "On
+    the Creed That Is the Nicene" against "On the Nicene That the Creed
+    Professes" — so keeping digits costs the signal nothing.
+    """
+    words = re.findall(r"[a-z0-9]+", (title or "").lower())
     stop = {"on", "the", "that", "is", "a", "of", "and", "as", "who", "which"}
     return frozenset(w for w in words if w not in stop)
 
@@ -151,8 +162,21 @@ def classify(units):
             ):
                 reasons.append("mechanical phrase repetition")
 
+            # Two or more tokens, because a one-token title carries no ordering
+            # to shuffle. "Preface" appearing twice in a work is a fact about
+            # the work, not evidence of a generator.
+            #
+            # And at least two *words*. Keeping digits fixed one false positive
+            # and created a smaller one at the other end: "Letter 1 — 3" and
+            # "Letter 3 — 1" are different sections of Athanasius with the same
+            # token multiset, so every numbered sub-section in the corpus
+            # reported its siblings as shuffles. The generator's shuffles were
+            # of words — "On the Creed That Is the Nicene" against "On the
+            # Nicene That the Creed Professes" — and a title whose only
+            # variation is numeric cannot be one.
             tokens = normalized_title_tokens(title)
-            if tokens and token_counts[tokens] > 1:
+            words = {t for t in tokens if not t.isdigit()}
+            if len(tokens) > 1 and len(words) > 1 and token_counts[tokens] > 1:
                 reasons.append("title is a word-shuffle of a sibling unit")
 
             if title_counts[title.lower()] > 1:
