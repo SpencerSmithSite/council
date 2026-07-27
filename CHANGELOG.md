@@ -2,6 +2,211 @@
 
 All notable changes to Council will be documented in this file.
 
+Versions are the release date (`YYYY.M.D`) plus a build counter. Entries below
+`30.0.0` predate that scheme and are left as they were written.
+
+## [2026.7.27+6] - 2026-07-27
+
+### Corpus — John Owen, the Treasury of David, and 30 M characters removed
+
+**460.1 M characters across 687 sources.** Two of the largest refusals from the
+previous build are now in, and a defect that build had been shipping is out.
+
+- **John Owen — all 31 works** (3,995 units, 22.7 M characters). Previously
+  refused because CCEL states no rights and sets him from a Banner of Truth
+  printing of 1965-68. Those printings are facsimiles of William H. Goold's
+  edition of 1850-55, so `tools/ingest_owen.py` settles the question by
+  measurement instead of by date: it scores each transcription's word pairs
+  against archive.org's scans of Goold's sixteen volumes. Every work matched at
+  87-98%, where Owen's *other* works score in the forties against the same
+  volume and Calvin's *Institutes* scores 18%. *The Death of Death*,
+  *Pneumatologia*, *Communion with God*, *Of the Mortification of Sin*, *Of
+  Temptation*, *Vindiciæ Evangelicæ*, the sermons, and the rest.
+- **Spurgeon's *Treasury of David* — all 150 psalms** (2,530 units, 11.7 M
+  characters). Never a rights question, only a text one: CCEL serves it as page
+  images. It now comes from Ted Hildebrandt's 2007 digitisation for Gordon
+  College, corroborated psalm by psalm against the Victorian printings at a
+  median of 97%. Units follow Spurgeon's own divisions — exposition, explanatory
+  notes and quaint sayings, hints to the village preacher.
+- **Twelve works recovered that the previous build lost silently**, including
+  Boston's *Crook in the Lot*, Edwards's *Treatise on Grace* and *Unpublished
+  Essay on the Trinity*, Flavel's *Christ Altogether Lovely*, Murray's *Absolute
+  Surrender*, and Luther's preface to Romans. Front-matter skipping was treating
+  a work's *closing* index as a reason to discard everything before it, so short
+  works were truncated to their tail matter or dropped as stubs. Five of
+  Charnock's discourses on regeneration had been shipping at about an eighth of
+  their real length.
+- **3,438 units of CCEL's reference apparatus removed** — roughly 30 M
+  characters of `file:///ccel/...` link tables and colophons that read as text,
+  retrieved as text, and said nothing. They cleared every gate because a page of
+  link targets is long enough to satisfy a floor expressed in characters.
+
+### Fixed
+
+- `ingest_reformation.py` now treats front matter as a contiguous prefix, and
+  drops paragraphs that are majority URL text.
+- The *Treasury*'s psalm 119 units are individually addressable rather than
+  twenty units sharing one title.
+- `Till He Come` is filed with the rest of Spurgeon; CCEL's header spells his
+  name "Hadden" there, which had put it in the Baptist tradition fragment.
+
+### Notes
+
+- Corpus version 15. The bundled database changed, so this ships with the app
+  release rather than as a pack-only publish.
+
+## [2026.7.26+5] - 2026-07-26
+
+### Corpus — the Reformation, and an Orthodox tradition that exists
+
+**453.0 M characters across 638 sources, up from 123.7 M across 446.** Unlike
+the previous build, this one is new material rather than recovered text.
+
+- **Eastern Orthodox is no longer zero.** It had a row in the database and
+  nothing in it, after both entries were removed as misattributed — one of them
+  filed *Pilgrim's Progress* as the Philokalia. It now holds Philaret of
+  Moscow's *Longer Catechism* (608 of its 611 questions), the Confession of
+  Dositheus (1672) and the *Book of Needs* — the rites of baptism,
+  chrismation, confession, marriage, unction and burial.
+- **189 works from CCEL.** Calvin's *Institutes* and 45 volumes of his
+  commentaries; Matthew Henry's unabridged *Commentary on the Whole Bible*;
+  63 volumes of Spurgeon's sermons; Luther's *Galatians*, *Table Talk* and the
+  Ninety-Five Theses; Bunyan, Baxter, Edwards, Manton, Watson, Flavel,
+  Charnock, Knox, Gill, Hodge, Barnes, Ryle, Whitefield, William Law, Newton,
+  Andrew Murray and à Kempis.
+- **The corpus changed shape, not just size.** It was 402 early-church sources
+  against seven Reformed and two Baptist — a patristic library with a
+  confessional appendix, which could answer a question about the atonement
+  without one voice from the tradition that spent four centuries arguing about
+  it. Early-church is now 13% of the volume rather than 65%, and nothing was
+  removed to make that true.
+- **Two new genres**, because the eight the corpus had were from when it was
+  creeds and Fathers: **Commentary** and **Liturgy**. Filing Calvin on Genesis
+  as a "Treatise" is a small lie that appears in every citation of it.
+- **72 works were offered and refused**, each with its reason recorded — a
+  modern print basis with no rights statement (32, which is the whole of John
+  Owen), a translation of unknown date (5, including Luther's *Bondage of the
+  Will*), and six volumes of Spurgeon's *Treasury of David* whose CCEL export
+  turns out to be page-image placeholders rather than text.
+
+### Fixed
+
+- **`audit_corpus.py` reported numbered sub-sections as generated filler.**
+  "Letter 1 — 3" and "Letter 3 — 1" have the same token multiset, so every
+  numbered series flagged its own siblings as word-shuffles of each other. The
+  shuffle check now requires two distinct non-numeric words. Primary-text share
+  went from 85.5% to 88.1% on a corpus 3.7× larger than the one that last
+  measured 87.3%.
+- **Units too large to chunk.** `split_oversized` broke text on blank lines
+  only, so a block containing none was returned whole — one unit of 5.4 M
+  characters labelled "(1 of 1)". Beyond being unreadable this corrupts
+  retrieval: chunk ids are `unit_id * 1000 + sequence`, so a unit yielding more
+  than a thousand chunks collides with the next unit's ids and the embeddings
+  start pointing at unrelated text. Now falls back to splitting at sentences.
+- **Scripture indexes ingested as text.** Matthew Henry's volumes each end with
+  one; 231 units and 6.5 M characters of "Isaiah 1:1 … 1:2 …" that read as
+  prose and say nothing. The same defect as a contents page standing in for a
+  work, arriving from the other end of the book.
+
+### Performance — three things the larger corpus broke
+
+None of these were visible at 123 M characters. All were found by the
+integration suite, which went from 4 minutes 57 seconds to **5 seconds**.
+
+- **Searches took over 30 seconds.** Every term in a question was turned into
+  a prefix match, so `the*` and `about*` asked FTS5 to rank a large fraction of
+  the corpus to return six passages. Worst when the question named something —
+  a scoped search runs a long way down that ranking before finding a passage
+  the scope admits — so "What did the Council of Trent decree about
+  justification?" went from about a second to over thirty. Stopwords are now
+  dropped from the match: **319 ms**.
+- **Loading the vector index blocked the whole database.** All 429,516 vectors
+  came back from one query — 165 MB marshalled at once — and sqflite runs every
+  database operation through a single queue, so nothing else could read while
+  it ran. It is now paged. (SQLite reads the same 165 MB in 0.28 s; the cost is
+  the platform channel, not the database.)
+- **"Creeds & Confessions" quietly became a 31.5 MB download.** It is the first
+  thing every reader fetches, and it references the tradition fragments — which
+  had become the Puritan shelf, Manton's 18 M characters included. Ten more
+  author fragments were split out; it is **8.5 MB** again.
+
+### Changed
+
+- **A question naming an absent tradition now offers that tradition**, not the
+  narrowest pack containing it. Once per-author collections existed, "What do
+  Baptists believe about baptism?" answered with *John Bunyan* — Baptist, and
+  two works, so the existing "narrowest wins" rule picked it. Bunyan's
+  allegories are not the Baptist confessions.
+
+## [2026.7.26+4] - 2026-07-26
+
+### Corpus — the works, not their contents pages
+
+**123.7 M characters, up from 99.2 M — and almost none of it from works that
+were not already listed.**
+
+- **Eighteen works held their New Advent contents page instead of their text.**
+  The City of God was 8,259 characters describing the City of God; it is now
+  2.36 M across 665 sections. The same for the *Confessions*, *Christian
+  Doctrine*, the *Tractates on the Gospel of John*, the *Enarrations on the
+  Psalms*, Irenaeus, Cassian's *Conferences*, and the letter collections of
+  Augustine, Jerome, Basil, Theodoret and Gregory the Great.
+- **Fourteen works were missing from the corpus outright**, not summarised —
+  Tertullian's *Ad Nationes*, Augustine's *Soliloquies* and *Our Lord's Sermon
+  on the Mount*, Jerome *Against Jovinianus*, Gregory Nazianzen's letters,
+  Ephraim's *Nisibene Hymns*, and eight more. All now present.
+- **Short letters were being discarded**: 111 of Basil's 325, and four of
+  Cyprian's 82 since the very first ingest.
+- **The First London Baptist Confession (1644)** added, 53 articles, verified
+  against Underhill's 1854 edition. Shipping only the 1689 read as though
+  Baptists began in 1689.
+- **Eight sources removed.** Each was two unrelated works interleaved under one
+  title — *Pilgrim's Progress* filed as the Philokalia, the martyrdom of
+  Polycarp under Wesley's name, *Nostra Aetate* under Gregory of Nyssa, Richard
+  Foster under Teresa of Ávila. The last two are also in copyright.
+- **The Seven Ecumenical Councils summary replaced by the acts** — creeds,
+  canons and synodal letters already in the corpus, 503 K characters across the
+  seven.
+- **Every source now records where it came from.** First time that is true.
+
+### Tools
+
+- `tools/audit_completeness.py` — new. Finds sources holding a contents page
+  rather than the work, and New Advent works missing from the corpus entirely.
+- `tools/refresh_newadvent.py` — new. Re-loads corrected works in place,
+  touching only those whose text actually changed, so annotations anchored to
+  the rest survive.
+- `tools/ingest_first_london.py` — new.
+- `tools/audit_corpus.py` — fixed a signal that stripped digits from titles and
+  so read "Homily 12" and "Homily 13" as shuffles of each other. It was firing
+  17,469 times and reporting 59% of the corpus as unclassifiable; primary-text
+  classification went from 36.4% to 87.3%.
+
+### Packs — publishable without an app release
+
+- **Content packs are gated on an id space, not the corpus version.** Every
+  corpus correction previously waited for an app release, because the app
+  refused any catalogue built from a different corpus. The real requirement is
+  only that a pack not carry an id already meaning something else on the
+  device, which a rebuild that appends satisfies on its own.
+- **`build_packs.py` proves the build appended** rather than trusting it,
+  comparing against a ledger of what was last published and reporting exactly
+  which sources moved, were rewritten, or landed on occupied ids.
+- **A republished fragment now replaces the installed one.** Install used to
+  skip anything already present, so a reader holding `f-augustine` would have
+  kept the City of God summary and been told they were up to date.
+- The old copy is torn down only after the replacement has downloaded and
+  verified, so a failed update leaves the reader with what they had.
+
+This release still ships packs and app together — apps already in the field run
+the old check. It applies from the next corpus build onward.
+
+### Verified
+
+`flutter analyze` clean, 151 unit tests, 9 pack integration tests and all 24
+retrieval integration tests passing on macOS against the full library with
+every pack installed, plus a six-case harness over the id-space check.
+
 ## [30.0.0] - 2026-04-15
 
 ### 🎉 ALL THIN SOURCES EXPANDED — ZERO REMAINING!

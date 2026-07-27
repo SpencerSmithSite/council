@@ -100,9 +100,20 @@ class PackService {
         id TEXT PRIMARY KEY,
         bytes INTEGER NOT NULL,
         units INTEGER NOT NULL,
-        installed_at TEXT NOT NULL
+        installed_at TEXT NOT NULL,
+        sha256 TEXT
       )
     ''');
+    // The checksum is what makes a *republished* fragment distinguishable from
+    // the one already installed. Added after the table shipped, so an existing
+    // library needs the column bolted on; it is nullable because the fragments
+    // already on disk were installed before anything recorded which build they
+    // came from, and guessing would be worse than admitting it. A null reads as
+    // "unknown, so replace when the catalogue offers one" in [install].
+    final columns = await db.rawQuery('PRAGMA table_info(installed_fragments)');
+    if (!columns.any((c) => c['name'] == 'sha256')) {
+      await db.execute('ALTER TABLE installed_fragments ADD COLUMN sha256 TEXT');
+    }
     await db.execute('''
       CREATE TABLE IF NOT EXISTS fragment_sources (
         fragment_id TEXT NOT NULL,
@@ -120,6 +131,19 @@ class PackService {
   Future<Set<String>> installedFragments() async {
     final rows = await db.query('installed_fragments', columns: ['id']);
     return rows.map((r) => r['id'] as String).toSet();
+  }
+
+  /// Installed fragment id -> the checksum of the file it came from.
+  ///
+  /// Null for anything installed before checksums were recorded. Callers treat
+  /// that as "not known to be current" rather than as "current", because the
+  /// whole point of asking is to find fragments that need replacing.
+  Future<Map<String, String?>> installedFragmentChecksums() async {
+    final rows =
+        await db.query('installed_fragments', columns: ['id', 'sha256']);
+    return {
+      for (final row in rows) row['id'] as String: row['sha256'] as String?,
+    };
   }
 
   Future<PackManifest> fetchManifest() async {
@@ -146,29 +170,48 @@ class PackService {
   Future<void> install(
     Collection collection,
     PackManifest manifest, {
-    required int corpusVersion,
+    required int idSpace,
     void Function(int received, int total)? onProgress,
   }) async {
-    if (manifest.corpusVersion != corpusVersion) {
+    if (manifest.idSpace != idSpace) {
       throw const PackException(
         'This content was built for a different version of the app. Update '
         'the app and try again.',
       );
     }
 
-    final present = await installedFragments();
-    final wanted = collection.fragments
-        .where((id) => !present.contains(id))
-        .map((id) => manifest.fragment(id))
-        .whereType<Fragment>()
-        .toList();
+    // A fragment already present is skipped — unless the catalogue is offering
+    // a different file than the one installed, in which case it is replaced.
+    //
+    // Skipping on presence alone was the reason a corrected corpus could not
+    // reach anyone who already had it: the City of God was republished with
+    // its actual text instead of its contents page, and every reader holding
+    // `f-augustine` would have been told they were up to date and kept the
+    // summary. Presence is not currency.
+    final installed = await installedFragmentChecksums();
+    final wanted = <Fragment>[];
+    final stale = <Fragment>[];
+    for (final id in collection.fragments) {
+      final fragment = manifest.fragment(id);
+      if (fragment == null) continue;
+      if (!installed.containsKey(id)) {
+        wanted.add(fragment);
+      } else if (installed[id] != fragment.sha256) {
+        stale.add(fragment);
+        wanted.add(fragment);
+      }
+    }
 
     final total = wanted.fold(0, (sum, f) => sum + f.bytes);
     var done = 0;
 
     for (final fragment in wanted) {
+      // Torn down inside the same call rather than beforehand, so a download
+      // that fails leaves the old copy in place. Replacing content the reader
+      // already has should never be able to end with them holding neither.
       await _installFragment(
         fragment,
+        replacing: stale.contains(fragment),
         onProgress: (received, _) => onProgress?.call(done + received, total),
       );
       done += fragment.bytes;
@@ -181,7 +224,7 @@ class PackService {
       {
         'id': collection.id,
         'name': collection.name,
-        'corpus_version': corpusVersion,
+        'corpus_version': idSpace,
         'installed_at': DateTime.now().toIso8601String(),
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -199,6 +242,7 @@ class PackService {
 
   Future<void> _installFragment(
     Fragment fragment, {
+    bool replacing = false,
     void Function(int, int)? onProgress,
   }) async {
     final dir = await getApplicationSupportDirectory();
@@ -212,6 +256,9 @@ class PackService {
       await _download(fragment, archive, onProgress);
       await _verify(fragment, archive);
       await _expand(archive, expanded);
+      // Only once the replacement is downloaded, checksummed and unpacked. Any
+      // failure above this line leaves the reader with the copy they had.
+      if (replacing) await _retire(fragment.id);
       await _merge(fragment, expanded);
     } finally {
       // Whether or not it worked: a failed install that leaves 100 MB of
@@ -333,6 +380,9 @@ class PackService {
           'bytes': fragment.bytes,
           'units': fragment.units,
           'installed_at': DateTime.now().toIso8601String(),
+          // What a later catalogue is compared against to decide whether this
+          // fragment has been republished since.
+          'sha256': fragment.sha256,
         });
       });
     } finally {
@@ -421,6 +471,24 @@ class PackService {
         where: 'fragment_id = ?', whereArgs: [fragmentId]);
     await txn.delete('installed_fragments',
         where: 'id = ?', whereArgs: [fragmentId]);
+  }
+
+  /// Remove a fragment's content so a newer build of it can be merged over.
+  ///
+  /// The same teardown [uninstall] performs, minus the collection bookkeeping:
+  /// the reader is not removing anything, so their collections stay exactly as
+  /// they were and only the text underneath is exchanged.
+  ///
+  /// The FTS rebuild is not optional. The index is external-content with no
+  /// sync triggers, so leaving it would have it describing rows that are gone
+  /// — and the replacement's rows get their own ids, so the stale entries
+  /// would not even be overwritten. Searches would return passages that cannot
+  /// be opened.
+  Future<void> _retire(String fragmentId) async {
+    await db.transaction((txn) async {
+      await _deleteFragment(txn, fragmentId);
+      await txn.execute("INSERT INTO content_fts(content_fts) VALUES('rebuild')");
+    });
   }
 
   void dispose() => _client.close();

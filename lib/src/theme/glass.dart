@@ -233,3 +233,25 @@ double floatingTopInset(BuildContext context) {
   // 44pt bubble + its 8pt top offset + a little breathing room.
   return safeTop + 60;
 }
+
+/// How far a scrolling view must pad its bottom so its last line can be scrolled
+/// out from under the bar floating over it.
+///
+/// A floating bar does not take the space it occupies — that is the whole point
+/// of it, and it is why content passes behind it and stays legible through the
+/// glass. The cost is that the bottom of a scroll view is no longer the bottom
+/// of what can be read: without this padding the final lines can never be
+/// brought out from under the bar, and simply appear cut off.
+///
+/// The number comes from `MediaQuery.padding.bottom`, which a [Scaffold] with
+/// `extendBody: true` sets to the measured height of its `bottomNavigationBar`.
+/// So it tracks a composer that has grown to five lines, or a bar that is not
+/// there at all, without a constant that has to be kept in step by hand.
+///
+/// **Call this from a context inside the scaffold's `body`.** The [MediaQuery]
+/// carrying the bar's height is installed by the [Scaffold] *around* the body,
+/// so a context taken from the screen's own `build` method sees only the safe
+/// area and the padding comes out short. Screens use a [Builder] to get one.
+double floatingBottomInset(BuildContext context, {double extra = 12}) {
+  return MediaQuery.of(context).padding.bottom + extra;
+}

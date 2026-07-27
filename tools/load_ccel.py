@@ -45,6 +45,29 @@ def lookup(conn, table, name):
     return row[0]
 
 
+def ensure_source_types(conn, records):
+    """Create genre rows the records need but the database has not got yet.
+
+    The eight original genres were enough while the corpus was creeds, councils
+    and the Fathers. They are not enough for a library that holds Calvin on
+    Genesis and the Orthodox rite of baptism: filing a commentary as a
+    "Treatise" is a small lie that shows up in every citation of it.
+
+    Only `source_types` is opened up this way. `traditions` deliberately keeps
+    the hard `lookup` — a typo'd genre is a cosmetic wrong label, whereas a
+    typo'd tradition silently creates a new branch of Christianity.
+    """
+    existing = {r[0] for r in conn.execute("SELECT name FROM source_types")}
+    wanted = {r["kind"] for r in records} - existing
+    for name in sorted(wanted):
+        conn.execute(
+            "INSERT INTO source_types (name, slug) VALUES (?, ?)",
+            (name, re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")),
+        )
+        print(f"  created source_type {name!r}")
+    return wanted
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", type=Path, default=DB_PATH)
@@ -68,6 +91,7 @@ def main():
     print(f"\nbackup -> {backup}")
 
     conn = sqlite3.connect(args.db)
+    ensure_source_types(conn, records)
     taken = {r[0] for r in conn.execute("SELECT slug FROM sources")}
     next_unit_id = conn.execute(
         "SELECT coalesce(max(id), 0) FROM content_units"
@@ -110,6 +134,11 @@ def main():
             f"From {record['collection']}" if record.get("collection") else None,
             f"Translated by {record['translator']}" if record.get("translator") else None,
             f"Edited by {record['editor']}" if record.get("editor") else None,
+            # An ingester's own caveat about the edition — which questions a
+            # transcription drops, which chapters a translator omitted. This is
+            # the only place a reader can see it, so it must not be silently
+            # discarded on the way into the database.
+            record.get("notes"),
             f"Rights: {record['rights']}",
             f"Ingested from {origin}",
         ) if x)

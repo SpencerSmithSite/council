@@ -86,13 +86,19 @@ void main() {
       m.collections.firstWhere((c) => c.id == id);
 
   group('content collections', () {
-    test('the manifest declares fragments, collections and a corpus version',
+    test('the manifest declares fragments, collections and an id space',
         () async {
       final manifest = await packs.fetchManifest();
 
-      expect(manifest.corpusVersion, DatabaseService.corpusVersion,
-          reason: 'a fragment built from a different corpus can reuse ids the '
-              'app has already assigned to different text');
+      expect(manifest.idSpace, DatabaseService.idSpace,
+          reason: 'a fragment from a different id space can carry ids the app '
+              'has already assigned to different text');
+      // Deliberately not asserted equal to the app's. A catalogue published
+      // from a later corpus is expected and supported, so long as the ids it
+      // hands out still mean what they meant — which is what idSpace tracks
+      // and this does not.
+      expect(manifest.corpusVersion, greaterThanOrEqualTo(
+          DatabaseService.corpusVersion));
       expect(manifest.fragments, isNotEmpty);
       expect(manifest.collections, isNotEmpty);
       expect(manifest.fragments.first.sha256, hasLength(64));
@@ -116,7 +122,7 @@ void main() {
 
       var sawProgress = false;
       await packs.install(augustine, manifest,
-          corpusVersion: DatabaseService.corpusVersion,
+          idSpace: DatabaseService.idSpace,
           onProgress: (received, total) => sawProgress = received > 0);
 
       expect(sawProgress, isTrue, reason: 'a multi-MB download needs feedback');
@@ -152,7 +158,7 @@ void main() {
       final fathers = find(manifest, 'nicene-fathers');
 
       await packs.install(fathers, manifest,
-          corpusVersion: DatabaseService.corpusVersion);
+          idSpace: DatabaseService.idSpace);
       expect(await packs.installedFragments(), contains('f-chrysostom'));
 
       // Both installed collections claim f-augustine; only one is removed.
@@ -186,22 +192,67 @@ void main() {
       final anglican = find(manifest, 'tradition-anglican');
 
       await packs.install(anglican, manifest,
-          corpusVersion: DatabaseService.corpusVersion);
+          idSpace: DatabaseService.idSpace);
       final sources = await countSources();
 
       await packs.install(anglican, manifest,
-          corpusVersion: DatabaseService.corpusVersion);
+          idSpace: DatabaseService.idSpace);
       expect(await countSources(), sources,
           reason: 'a second install must not insert the rows again');
 
       await packs.uninstall('tradition-anglican');
     }, timeout: _networkTimeout);
 
-    test('content from another corpus build is refused', () async {
+    test('a republished fragment replaces the installed one', () async {
+      // The behaviour that makes a corpus correction reachable without an app
+      // release. Skipping on presence alone is why it was not: the City of God
+      // was republished with its text instead of its contents page, and every
+      // reader already holding `f-augustine` would have been told they were up
+      // to date and kept the summary.
+      //
+      // Simulated by installing the real fragment and then offering a
+      // catalogue that claims a *different* checksum for it. The file behind
+      // it is the same file, so the download still verifies — what is being
+      // tested is that the service notices the difference and rebuilds rather
+      // than skipping, and that the content survives the round trip intact.
+      final manifest = await packs.fetchManifest();
+      final anglican = find(manifest, 'tradition-anglican');
+      await packs.install(anglican, manifest, idSpace: DatabaseService.idSpace);
+
+      final sources = await countSources();
+      final installed = await packs.installedFragmentChecksums();
+      expect(installed['f-anglican'], isNotNull,
+          reason: 'the checksum has to be recorded or nothing can compare it');
+
+      // What the catalogue would look like after a rebuild: same fragment id,
+      // new file. `sha256` is forced to disagree with what is on the device
+      // while still describing the bytes actually served.
+      await db.database.update('installed_fragments', {'sha256': 'stale'},
+          where: 'id = ?', whereArgs: ['f-anglican']);
+
+      await packs.install(anglican, manifest, idSpace: DatabaseService.idSpace);
+
+      expect(await countSources(), sources,
+          reason: 'replacing must not leave the old rows behind as duplicates');
+      expect((await packs.installedFragmentChecksums())['f-anglican'],
+          manifest.fragment('f-anglican')!.sha256,
+          reason: 'the device must record what it now holds');
+
+      // The teardown between the two merges drops rows and the FTS index has
+      // no sync triggers, so this is where a stale index would show.
+      for (final row in await db.search('bishops', limit: 20)) {
+        expect(await db.getContentUnit(row['id'] as int), isNotNull,
+            reason: 'search returned a unit the replacement removed');
+      }
+
+      await packs.uninstall('tradition-anglican');
+    }, timeout: _networkTimeout);
+
+    test('content from another id space is refused', () async {
       final manifest = await packs.fetchManifest();
       await expectLater(
         packs.install(find(manifest, 'tradition-anglican'), manifest,
-            corpusVersion: DatabaseService.corpusVersion + 1),
+            idSpace: DatabaseService.idSpace + 1),
         throwsA(isA<PackException>()),
       );
     });
@@ -211,6 +262,7 @@ void main() {
       final real = manifest.fragment('f-anglican')!;
       final tampered = PackManifest(
         corpusVersion: manifest.corpusVersion,
+        idSpace: manifest.idSpace,
         fragments: [
           Fragment(
             id: real.id,
@@ -228,7 +280,7 @@ void main() {
       final sources = await countSources();
       await expectLater(
         packs.install(find(tampered, 'tradition-anglican'), tampered,
-            corpusVersion: DatabaseService.corpusVersion),
+            idSpace: DatabaseService.idSpace),
         throwsA(isA<PackException>()),
       );
       expect(await countSources(), sources,

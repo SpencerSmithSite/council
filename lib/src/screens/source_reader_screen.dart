@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../reader/passage_reader.dart';
 import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/settings_service.dart';
+import '../theme/glass.dart';
+import '../theme/glass_controls.dart';
 
 /// Read a work straight through, one section at a time.
 ///
@@ -105,16 +108,34 @@ class _SourceReaderScreenState extends State<SourceReaderScreen> {
             ),
         ],
       ),
+      // The pager floats over the page rather than closing it off, so the last
+      // lines of a section pass behind the glass instead of stopping at it.
+      extendBody: true,
+      bottomNavigationBar: sections == null || sections.isEmpty
+          ? null
+          : _Pager(
+              index: _index,
+              total: sections.length,
+              onPrevious: _index > 0 ? () => _open(_index - 1) : null,
+              onNext: _index < sections.length - 1
+                  ? () => _open(_index + 1)
+                  : null,
+            ),
       body: sections == null
           ? const Center(child: CircularProgressIndicator())
           : sections.isEmpty
               ? const Center(child: Text('This work has no sections.'))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
+              : Builder(
+                  // Inside the body, so the pager's measured height is in
+                  // scope. See [floatingBottomInset].
+                  builder: (context) => SingleChildScrollView(
                         controller: _scroll,
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                        padding: EdgeInsets.fromLTRB(
+                          20,
+                          16,
+                          20,
+                          floatingBottomInset(context, extra: 32),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -125,8 +146,30 @@ class _SourceReaderScreenState extends State<SourceReaderScreen> {
                               style: theme.textTheme.titleLarge,
                             ),
                             const SizedBox(height: 16),
-                            SelectableText(
-                              _current?['content'] as String? ?? '',
+                            // Keyed on the section so that paging to the next
+                            // one rebuilds the reader from scratch rather than
+                            // carrying a selection across a change of text.
+                            PassageReader(
+                              key: ValueKey(_current?['id'] ?? _index),
+                              contentUnitId:
+                                  (_current?['id'] as int?) ?? -1,
+                              content:
+                                  _current?['content'] as String? ?? '',
+                              unitTitle: _current?['title'] as String? ??
+                                  sections[_index]['title'] as String?,
+                              sourceTitle:
+                                  _current?['source_title'] as String? ??
+                                      widget.title,
+                              // Clear of the pager floating below. The
+                              // selection toolbar is an overlay entry, so it
+                              // measures from the true screen edge — hence the
+                              // safe area is taken back off the body inset,
+                              // which already includes it.
+                              toolbarBottomInset: floatingBottomInset(
+                                    context,
+                                    extra: 8,
+                                  ) -
+                                  MediaQuery.of(context).viewPadding.bottom,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 // Reading type, not UI type: a little larger
                                 // and much looser than the default, and it
@@ -140,17 +183,6 @@ class _SourceReaderScreenState extends State<SourceReaderScreen> {
                           ],
                         ),
                       ),
-                    ),
-                    _Pager(
-                      index: _index,
-                      total: sections.length,
-                      onPrevious:
-                          _index > 0 ? () => _open(_index - 1) : null,
-                      onNext: _index < sections.length - 1
-                          ? () => _open(_index + 1)
-                          : null,
-                    ),
-                  ],
                 ),
     );
   }
@@ -366,34 +398,57 @@ class _Pager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+    final scheme = Theme.of(context).colorScheme;
+    final safeBottom = MediaQuery.of(context).padding.bottom;
+
+    // A floating capsule rather than a bar ruled off from the page: the text is
+    // the thing being read, and a solid strip bolted across the bottom of it
+    // ends the page early. Held off the edges to the same margin as every other
+    // floating control, so the chrome shares one rhythm.
+    final capsule = floatingGlass(
+      context: context,
+      shape: squircle(
+        26,
+        side: BorderSide(
+          color: (Theme.of(context).dividerTheme.color ?? scheme.outlineVariant)
+              .withValues(alpha: 0.6),
+          width: 0.5,
         ),
       ),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: onPrevious,
-            icon: const Icon(Icons.chevron_left),
-            tooltip: 'Previous',
-          ),
-          Expanded(
-            child: Text(
-              '${index + 1} of $total',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelMedium,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: onPrevious,
+              icon: const Icon(Icons.chevron_left),
+              tooltip: 'Previous',
             ),
-          ),
-          IconButton(
-            onPressed: onNext,
-            icon: const Icon(Icons.chevron_right),
-            tooltip: 'Next',
-          ),
-        ],
+            Expanded(
+              child: Text(
+                '${index + 1} of $total',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+            IconButton(
+              onPressed: onNext,
+              icon: const Icon(Icons.chevron_right),
+              tooltip: 'Next',
+            ),
+          ],
+        ),
       ),
+    );
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppleMetrics.edgeInset,
+        6,
+        AppleMetrics.edgeInset,
+        safeBottom + 8,
+      ),
+      child: capsule,
     );
   }
 }

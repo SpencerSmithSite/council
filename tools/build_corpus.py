@@ -154,13 +154,18 @@ def insert_works(conn, works, tag_ids):
 
         for seq, unit in enumerate(work["units"], 1):
             content = unit["content"]
+            # `content_plain` was written here too until it was dropped by
+            # `collapse_content_columns` further down this same file — the two
+            # were byte-identical for 19,381 of 19,771 rows and cost 55 MB.
+            # This insert kept naming it, so anything reusing `insert_works`
+            # after that migration failed on a column that no longer exists.
             conn.execute(
                 """INSERT INTO content_units
                    (id, source_id, unit_type, unit_number, title, content,
-                    content_plain, sequence, provenance)
-                   VALUES (?, ?, 'section', ?, ?, ?, ?, ?, 'primary_text')""",
+                    sequence, provenance)
+                   VALUES (?, ?, 'section', ?, ?, ?, ?, 'primary_text')""",
                 (next_unit_id, source_id, unit.get("number"), unit["title"],
-                 content, content, seq),
+                 content, seq),
             )
             for tag_id in tags_for(f"{unit['title']} {content[:4000]}", tag_ids):
                 conn.execute(

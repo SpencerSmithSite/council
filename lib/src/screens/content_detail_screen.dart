@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 
+import '../reader/passage_reader.dart';
 import '../services/database_service.dart';
 import '../services/bookmark_service.dart';
 import '../services/recently_viewed_service.dart';
@@ -191,15 +191,22 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
 
           const SizedBox(height: 16),
           
-          // Content
+          // Content. Tappable by verse or paragraph, like the reader — a
+          // passage reached from a search result or a citation should be able
+          // to be marked up in the same way as one reached by reading to it.
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: MarkdownBody(
-                data: text,
-                styleSheet: MarkdownStyleSheet(
-                  p: Theme.of(context).textTheme.bodyLarge,
-                ),
+              child: PassageReader(
+                key: ValueKey(widget.contentId),
+                contentUnitId: widget.contentId!,
+                content: text,
+                unitTitle: title.isNotEmpty ? title : null,
+                sourceTitle: content['source_title'] as String?,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(height: 1.6),
               ),
             ),
           ),

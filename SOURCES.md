@@ -45,33 +45,81 @@ free of.
 
 ## Where the corpus stands
 
-As of 2026-07-23:
+As of 2026-07-27 (corpus v15):
 
-| tradition | sources | volume |
-|---|---:|---:|
-| early-church | 389 | 56.264 M |
-| catholic | 8 | 14.719 M |
-| scripture | 1 | 4.250 M |
-| methodist | 2 | 3.595 M |
-| ecumenical | 19 | 0.915 M |
-| lutheran | 4 | 0.792 M |
-| reformed | 8 | 0.384 M |
-| baptist | 1 | 0.083 M |
-| anglican | 1 | 0.040 M |
-| eastern-orthodox | 2 | 0.004 M |
-| oriental-orthodox | 0 | 0 |
-| pentecostal | 0 | 0 |
+| tradition | sources | volume | previous build |
+|---|---:|---:|---:|
+| reformed | 145 | 174.152 M | 176.268 M |
+| baptist | 82 | 152.050 M | 142.706 M |
+| early-church | 402 | 80.781 M | 80.781 M |
+| scripture | 5 | 22.382 M | 22.382 M |
+| catholic | 7 | 15.024 M | 15.050 M |
+| anglican | 12 | 5.833 M | 5.988 M |
+| methodist | 3 | 5.505 M | 5.465 M |
+| lutheran | 10 | 2.860 M | 2.894 M |
+| ecumenical | 18 | 0.912 M | 0.912 M |
+| eastern-orthodox | 3 | 0.575 M | 0.575 M |
+| oriental-orthodox | 0 | 0 | 0 |
+| pentecostal | 0 | 0 | 0 |
 
-**70% of the corpus is patristic**, down from 96%. Aquinas, the KJV and Wesley
-are what moved it, and 80.9 M characters is not the interesting number in this
-table — the interesting one is that two traditions still have a row and nothing
-in it, and Eastern Orthodox is still a placeholder.
+687 sources, 104,115 units, **460.1 M characters**. See Phase 35 in `PLAN.md`.
 
-Size is not the measure that matters. Baptist is 0.1% of the corpus and closes
-a gap that would otherwise answer a question about baptism without a single
-Baptist voice in it. Methodist went from 0.004 M to 3.595 M in one ingest, and
-what changed was not the volume but that the tradition now has its own
-doctrinal standard rather than a six-unit paraphrase of it.
+**Reformed shrank while gaining Owen's 31 works, and that is the good news in
+this build.** The previous one shipped 30 M characters of CCEL's own reference
+apparatus as if it were text: every export ends with a colophon and a numbered
+list resolving each hyperlink to a `file:///ccel/...` path, and a page of that
+is long enough to clear any floor expressed in characters. 3,438 units of it
+were in the corpus. A second defect in the same family — front-matter skipping
+that treated a *closing* index as a reason to discard everything before it —
+was silently truncating short works to their tail matter, costing twelve works
+outright and reducing five of Charnock's discourses to about an eighth of
+themselves. Both are fixed; the net is that Reformed lost more junk than Owen
+added.
+
+**The shape of the corpus changed, not just its size.** It was a patristic
+library with a confessional appendix — 402 of 446 sources were early-church,
+Reformed had seven and Baptist two. A question about assurance or the atonement
+could be answered out of Augustine and Chrysostom without one voice from the
+tradition that spent four centuries arguing about them. Early-church is now 13%
+of the volume rather than 65%, and nothing was removed to make that true.
+
+**Eastern Orthodox is no longer zero.** It was, for exactly one build, after
+both its entries were removed as misattributed — one of them filed *Pilgrim's
+Progress* as the Philokalia. It now holds Philaret's *Longer Catechism*, the
+Confession of Dositheus and the *Book of Needs*. Still the smallest covered
+tradition, and still short of a Philokalia, because there is no public-domain
+English translation of one.
+
+**Two traditions remain honestly empty**, and are meant to stay that way until
+their material can actually be shipped: Oriental Orthodox and Pentecostal. The
+second is the structural one — Pentecostalism's defining documents are
+20th-century and in copyright, so a corpus built from what is freely
+redistributable will under-represent the second-largest Christian movement in
+the world. That is a limitation of the app, not a gap to be quietly filled.
+
+Size is not the measure that matters. Ecumenical is 0.2% of the corpus and
+holds the acts of all seven ecumenical councils. What changed for Reformed and
+Baptist is not that they grew large but that they went from confessional
+documents alone to the commentary, preaching and controversy those documents
+came out of.
+
+### The second axis: having a work is not holding its text
+
+A tradition can be *covered* and still be wrong, because "we have the City of
+God" and "we have 8,259 characters describing the City of God" look identical
+in every table above. Coverage is one axis; **completeness** is the other, and
+it is invisible to a source count.
+
+Three defects produce it, and they are told apart differently:
+
+| defect | what it looks like | what finds it |
+|---|---|---|
+| generated filler | plausible prose asserting nothing | `audit_corpus.py` — recursive relative clauses |
+| a contents page filed as the work | real prose, right author, right URL, wrong length | `audit_completeness.py` — markers vs sentences, and part counts |
+| two works interleaved under one title | genuine text, wrong byline | `source_url` is missing; read the unit titles in order |
+
+Run all three before and after any corpus change. `TODO.md` is the running
+ledger of what each has found and what is still outstanding.
 
 ## Archives
 
@@ -105,6 +153,52 @@ numbering is taken from *The Constitution of the Presbyterian Church (U.S.A.)*,
 a modern denominational publication, and it prints the PCUS and UPCUSA
 recensions in parallel with the variants inline.
 
+**Most CCEL exports have no `Rights:` line at all**, which the Reformation
+ingest of 2026-07-26 discovered at scale: the field is present for Calvin and
+Matthew Henry and absent for Spurgeon, Owen, Edwards and Bunyan. Refusing
+everything unstated would have dropped most of the Puritans; accepting
+everything unstated is how in-copyright text acquires a public-domain label.
+The rule `ingest_reformation.py` settled on, and records against every source
+it creates:
+
+1. **CCEL states public domain** — taken at face value.
+2. **Otherwise, publication date** — the work is in the author's own English,
+   so no translator's copyright can attach, *and* the author died before 1929.
+
+Under (2) only, a declared modern print basis refuses the work: Owen died in
+1683, but his *Mortification of Sin* is set from a Banner of Truth printing of
+1967, and a modern edition can carry modern editorial matter. Under (1) it does
+not, because an explicit clearance outranks an inference drawn from a date the
+archive can see as well as we can.
+
+3. **Or corroboration against the printing it claims to descend from** — added
+   2026-07-27, and the only way past rule (2). A modern print basis makes a work
+   *unproven*, not proven modern, and the difference is measurable: Banner of
+   Truth's Owen is a facsimile of William H. Goold's edition of 1850-55, which
+   is on archive.org as page scans. `ingest_owen.py` scores each transcription's
+   word pairs against those scans and admits it only on a match. All 31 works
+   scored 87-98% against the volume that holds them, where Calvin's *Institutes*
+   measured the same way scores 33% and Owen's *own other works* score in the
+   forties — so the test separates "this is that printing" from "this is the
+   same author", which is the confusion that would otherwise let something
+   through. The rights line on each source records the score.
+
+   The same route settled the *Treasury of David*, which was a text problem
+   rather than a rights one: CCEL serves it only as page images, so it comes
+   instead from Ted Hildebrandt's 2007 digitisation for Gordon College, with
+   every one of the 150 psalms scored against the Victorian printings (median
+   97%, lowest 91%). The negative control there is Calvin *on the Psalms* —
+   same genre, same verses, same book — at 33%.
+
+   This is the same two-witness standard `ingest_orthodox.py` already used, and
+   the rule it generalises to is: a clean transcription may stand in for a
+   printing whenever it can be shown to *be* that printing, and not otherwise.
+
+The consequence worth stating plainly: **translated works whose export states
+no rights are refused**, because a translation made in 1950 is in copyright
+however old its original. Luther's *Bondage of the Will* is the notable
+casualty — CCEL credits no translator and states nothing.
+
 **Wikisource states its terms per page, and the terms differ per page.** The
 1689 Baptist confession's page declares `{{no source}}` and had to be
 corroborated against a second edition; the 1690 Westminster page carries
@@ -123,7 +217,8 @@ Confirmed present on Project Gutenberg with an ID:
 | The Journal — John Woolman | Quaker | 37311 |
 | No Cross, No Crown — William Penn | Quaker | 44895 |
 | The Great Controversy — Ellen White | Adventist | 25833 |
-| The Book of Common Prayer (1662) | Anglican | 29622 (ingested) |
+| The Book of Common Prayer (1662) | Anglican | **Not on Gutenberg, and 29622 is not it.** This row has been wrong twice: first "(ingested)" when the database had no such source, then "confirmed present on Gutenberg" when 29622 is the *Scottish* Prayer Book of 1912 — author "Episcopal Church in Scotland", and the string "1662" appears nowhere in the file. Checked 2026-07-27. See `TODO.md` for the routes tried |
+| The Book of Common Prayer — Scottish, 1912 | Anglican | 29622, cached. Public domain on date and genuinely Anglican, worth ingesting *as the Scottish book*. Mostly lectionary and psalter tables, which need separating from the liturgy first |
 
 ## The plan, in priority order
 
@@ -165,9 +260,71 @@ largest Protestant families in the world.
   vocabulary, because vocabulary is what the two real risks move — destroyed
   OCR and modernisation both collapse it.
 
+- [x] **First London Baptist Confession (1644)** — done, 2026-07-26. 53
+  articles, 0.032 M chars. `tools/ingest_first_london.py`.
+
+  Shipping the 1689 without the 1644 reads as though Baptists began in 1689.
+  They did not: 1644 is the founding document of the Particular Baptists,
+  written while they were being prosecuted for it, and it says two things the
+  1689 does not put as sharply — baptism *by dipping* stated outright in
+  article XL, and the church's independence of the magistrate in article
+  XLVIII, which is the reason the confession exists.
+
+  Text from **reformedreader.org**, the 1644 first edition in its original
+  article order, bracketing the later impressions' additions. Corroborated
+  against **Underhill's *Confessions of Faith*, Hanserd Knollys Society,
+  1854**, on archive.org.
+
+  **What that corroboration is worth, stated rather than implied.** Underhill
+  prints the *1646 second impression*, "corrected and enlarged", so it is not a
+  second transcription of the same words and no word-identity check against it
+  would mean anything — article I was rewritten wholesale between the two. What
+  it does settle is every way a confession found on the open web actually goes
+  wrong: it fixes the article count and order, proves this is the whole
+  document rather than an abridgement, and its 17th-century vocabulary proves
+  the text has not been quietly modernised into a paraphrase. Measured across
+  the 53 articles the vocabulary overlap is 93% median, 71% lowest; the gate is
+  set to what that supports and no higher.
+
+  Two numbering defects are **asserted rather than tolerated**: the 1644
+  printing sets the 36th article as XXVI and the last as LII when the preceding
+  article is already LII. Both are in Underhill; reformedreader marks the
+  second `[sic]`. A page that has been silently re-edited now fails the
+  ingester instead of shipping.
+
+  Wikisource has no 1644 page, `the1689.com` and `baptiststudiesonline.com` did
+  not respond, and `spurgeon.org/creeds/bc1644.htm` — which reformedreader's
+  own footnote anchors still point at — is 404.
+
+- [x] **Spurgeon** — done. The sermons (63 volumes) came from CCEL on
+  2026-07-26; *The Treasury of David* on 2026-07-27, and separately, because
+  CCEL has that one only as page images. Its six "text" exports are runs of
+  `Image of page 73` around four thousand words of front matter — enough to
+  clear every floor while containing none of the commentary, which is why
+  `ingest_reformation.py` grew a gate counting placeholders per thousand
+  characters.
+
+  The text comes instead from Ted Hildebrandt's 2007 digitisation for Gordon
+  College Biblical eLearning, which is a real text layer rather than OCR, drawn
+  with permission from Phil Johnson's Spurgeon Archive transcription. All 150
+  psalms, cut by Spurgeon's own divisions: the exposition, the collected
+  explanatory notes and quaint sayings, and the hints to the village preacher.
+
+  **Two other sources were rejected.** sacred-texts.com has the whole work in
+  clean per-psalm HTML and its robots.txt sets `Content-Signal: ai-train=no,
+  use=reference` — an express reservation against this use — behind a challenge
+  that would have to be circumvented to read at all. An anonymous HTML
+  transcription on archive.org is complete in structure but missing psalms 4,
+  10, 11, 17-20, 22-24 and the whole of 119: 139 of 150, absent the two psalms
+  most likely to be looked up.
+
+  Corroborated psalm by psalm against archive.org's scans of the 1868-85
+  printings, median 97% and lowest 91%, with Calvin *on the Psalms* as the
+  negative control at 33% — the same genre expounding the same verses of the
+  same book, which is the hardest case available and the one that shows the
+  measure is reading the text rather than the subject.
 - **New Hampshire Confession (1833)**; **Philadelphia Confession (1742)**.
 - **Bunyan** — *Pilgrim's Progress* (131) and *Grace Abounding*.
-- **Spurgeon** — sermons, enormous in volume; on CCEL rather than Gutenberg.
 - **John Gill**, *Body of Divinity*; **Andrew Fuller**.
 
 ### 2. Methodist and Wesleyan — two placeholder entries
@@ -312,8 +469,11 @@ One source, now that the Thirty-Nine Articles are properly sourced.
   no public-domain English edition was found — the same constraint that removed
   the Catechism of the Catholic Church. Revisit if a PD English translation
   surfaces, or ship the Latin with that limitation stated.
-- **Calvin's *Institutes*** (45001) — the single largest Reformed work absent.
-- **Owen**, **Turretin**, **Bavinck** (Dutch, translations vary in status).
+- [x] **Calvin's *Institutes*** — done, 2026-07-26, with 45 volumes of his
+  commentaries. `tools/ingest_reformation.py`.
+- [x] **Owen** — done, 2026-07-27. All 31 works, from Goold's edition of
+  1850-55. `tools/ingest_owen.py`.
+- **Turretin**, **Bavinck** (Dutch, translations vary in status).
 
 ### 7. Restoration and Adventist — absent, and freely available
 

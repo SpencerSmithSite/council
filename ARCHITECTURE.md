@@ -74,6 +74,22 @@ coverage is not going to blow the budget; it roughly doubles the corpus, not 10�
 So: sources are effectively unlimited for this project's purposes. Stop worrying
 about corpus size and worry about retrieval quality.
 
+> **Correction, 2026-07-26.** The estimate above was wrong in one direction and
+> right in the other. "The Church Fathers were the big one" did not survive
+> contact with the commentators: the patristic corpus is 80.8 M characters and
+> Calvin, Matthew Henry and Spurgeon alone are 340 M. The corpus is now **460 M
+> characters over 687 sources**, past the 300–500 MB envelope this section
+> projected as a ceiling, and it got there in three ingests rather than by
+> gradual accumulation.
+>
+> The conclusion holds anyway, for the reason the section gives rather than the
+> arithmetic: SQLite and FTS5 are still not the constraint, and *delivery* was
+> already solved by packs. Nobody downloads 460 M characters — a reader takes
+> the traditions and authors they want, and the largest single fragment is one
+> author's works. What the growth actually changed is that per-author
+> fragments stopped being an optimisation for Augustine and Chrysostom and
+> became necessary: without them the Reformed pack is one ~100 MB file.
+
 ## 4. Can the LLM parse through them?
 
 No — and it never should. The model does not see the corpus. It sees whatever
@@ -188,13 +204,21 @@ Bundling everything stops scaling once denominational packs land. Better:
 - offer **downloadable packs per tradition** (Lutheran, Reformed, Orthodox…)
 - version them, so corpus updates do not require an app release
 
+All three are built. The last one took two goes: packs were first gated on
+`corpusVersion`, which meant they *did* require an app release, because the app
+refused any catalogue from a different corpus build. They are now gated on an
+**id space** — a number that advances only when a rebuild reassigns a row id
+that is already on someone's device — and fragments carry a checksum, so a
+republished one replaces the installed copy instead of being skipped as already
+present. See Phase 33 in PLAN.md.
+
 This also solves the licensing problem cleanly: packs whose texts are not freely
 redistributable simply are not offered.
 
 ### Updates and correctness
 
-- `corpusVersion` already forces reinstall when the bundled DB changes; extend
-  it to per-pack versions
+- `corpusVersion` forces reinstall when the bundled DB changes; `idSpace` and
+  per-fragment checksums do the same job for downloaded packs
 - keep `tools/audit_corpus.py` in the loop — any newly ingested pack gets
   audited before shipping
 - provenance (`source_url`, translator, licence) stays mandatory per §rules in

@@ -81,16 +81,31 @@ class Collection {
 class PackManifest {
   /// The corpus these fragments were split from.
   ///
-  /// Fragments keep the ids they were given in that build, which is what makes
-  /// them safe to merge without renumbering. A fragment from a different build
-  /// can carry ids the app has already used for different text, so a mismatch
-  /// is refused rather than reconciled.
+  /// Informational now. It moves whenever the corpus is rebuilt, which is not
+  /// the question the app has to answer before merging — see [idSpace].
   final int corpusVersion;
+
+  /// Which assignment of row ids these fragments belong to.
+  ///
+  /// Fragments keep the ids they were given when they were built, and that is
+  /// what makes them safe to merge without renumbering. What has to hold is
+  /// that **no id a fragment carries already means something else on this
+  /// device** — not that the fragment and the app were built together.
+  ///
+  /// Those came to the same thing while packs were gated on [corpusVersion],
+  /// and it cost more than it protected: every corpus change, however careful,
+  /// was unreachable until the app itself was released again. A rebuild that
+  /// only appends leaves every id already in the field meaning exactly what it
+  /// meant, so its packs merge safely into an app built against the previous
+  /// corpus. `tools/build_packs.py` proves that per build and only advances
+  /// this number when a rebuild genuinely reassigns an id.
+  final int idSpace;
   final List<Fragment> fragments;
   final List<Collection> collections;
 
   const PackManifest({
     required this.corpusVersion,
+    required this.idSpace,
     required this.fragments,
     required this.collections,
   });
@@ -106,6 +121,10 @@ class PackManifest {
     final json = jsonDecode(body) as Map<String, dynamic>;
     return PackManifest(
       corpusVersion: json['corpusVersion'] as int,
+      // Absent from catalogues published before packs were decoupled from app
+      // releases. Those all belong to the first id space by definition — it
+      // was numbered 1 at the build where the ledger began.
+      idSpace: json['idSpace'] as int? ?? 1,
       fragments: (json['fragments'] as List)
           .map((f) => Fragment.fromJson(f as Map<String, dynamic>))
           .toList(),

@@ -46,8 +46,11 @@ class _ReadScreenState extends State<ReadScreen> {
   @override
   void initState() {
     super.initState();
-    _loadShelf();
-    _loadShelfPrefs();
+    // Ordered, not fired in parallel: the stored arrangement has to be in hand
+    // before the shelf can decide whether to apply the collapsed-by-default
+    // state, or a late-arriving preference load overwrites that decision and
+    // the first open comes up expanded after all.
+    _restoreShelf();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _packs = context.read<PackProvider>();
@@ -68,6 +71,11 @@ class _ReadScreenState extends State<ReadScreen> {
       _knownFragments = current.toSet();
       _loadShelf();
     }
+  }
+
+  Future<void> _restoreShelf() async {
+    await _loadShelfPrefs();
+    if (mounted) await _loadShelf();
   }
 
   Future<void> _loadShelfPrefs() async {
@@ -143,7 +151,23 @@ class _ReadScreenState extends State<ReadScreen> {
       GROUP BY s.id
       ORDER BY t.name, s.author, s.title
     ''');
-    if (mounted) setState(() => _sources = rows);
+    if (!mounted) return;
+    setState(() => _sources = rows);
+    await _applyDefaultCollapse();
+  }
+
+  /// Start collapsed, until the reader says otherwise.
+  ///
+  /// Can only run once the shelf has loaded, because the section names come
+  /// from the sources themselves — and it re-runs after a pack is installed so
+  /// a tradition that has only just appeared starts collapsed too, rather than
+  /// being the one section left hanging open.
+  Future<void> _applyDefaultCollapse() async {
+    if (await _shelf.hasArrangedSections()) return;
+    final traditions = _traditionNames();
+    if (traditions.isEmpty) return;
+    final next = await _shelf.applyDefaultCollapse(traditions);
+    if (mounted) setState(() => _collapsed = next);
   }
 
   /// The shelf, narrowed by whatever is in the box.
@@ -185,10 +209,23 @@ class _ReadScreenState extends State<ReadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
-        children: [
-          Expanded(
-            child: _searching
+      // Search lives in the floating bottom bubble now: typing filters the
+      // shelf live, return runs a full-text search inside the passages. It
+      // hovers over the shelf, which passes behind it.
+      extendBody: true,
+      bottomNavigationBar: GlassComposer(
+        controller: _query,
+        hintText: 'Search the library',
+        leadingIcon: AppIcons.search,
+        onChanged: (_) => setState(() => _results = null),
+        onSubmit: () => _search(_query.text),
+        onClear: () {
+          _query.clear();
+          _search('');
+          setState(() {});
+        },
+      ),
+      body: _searching
                 ? const Center(child: CircularProgressIndicator())
                 : _results != null
                     ? _Results(rows: _results!)
@@ -210,26 +247,15 @@ class _ReadScreenState extends State<ReadScreen> {
                               builder: (_) => const BookmarksScreen()),
                         ),
                       ),
-          ),
-          // Search lives in the floating bottom bubble now: typing filters the
-          // shelf live, return runs a full-text search inside the passages.
-          GlassComposer(
-            controller: _query,
-            hintText: 'Search the library',
-            leadingIcon: AppIcons.search,
-            onChanged: (_) => setState(() => _results = null),
-            onSubmit: () => _search(_query.text),
-            onClear: () {
-              _query.clear();
-              _search('');
-              setState(() {});
-            },
-          ),
-        ],
-      ),
     );
   }
 }
+
+/// The tradition that holds the Bibles, lifted out of alphabetical order.
+///
+/// Matched by name rather than by id because the shelf is built from whatever
+/// is installed, and a pack can introduce sources under it.
+const String _scripture = 'Scripture';
 
 /// The installed works, grouped by tradition, with pinned works lifted to the
 /// top and each tradition section collapsible.
@@ -295,6 +321,7 @@ class _Shelf extends StatelessWidget {
 
     if (sources!.isEmpty) {
       return ListView(
+        padding: EdgeInsets.only(bottom: floatingBottomInset(context)),
         children: [
           header,
           Padding(
@@ -324,25 +351,51 @@ class _Shelf extends StatelessWidget {
           .add(source);
     }
 
+    // Scripture sits directly under Pinned, ahead of the alphabet. It is what
+    // most readers open most often, and leaving it to fall between Reformed
+    // and Universal buries the one section nobody should have to look for.
+    // Everything else keeps the order the query returned.
+    final traditions = byTradition.keys.toList();
+    final scripture = traditions.remove(_scripture);
+    final order = [if (scripture) _scripture, ...traditions];
+
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: EdgeInsets.only(bottom: floatingBottomInset(context, extra: 8)),
+        // Dragging the shelf puts the search keyboard away.
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           header,
-          if (pinnedSources.isNotEmpty) ...[
-            const _SectionHeader(title: 'Pinned'),
+          // Always shown, even empty. Pinning is the shelf's main arrangement
+          // gesture and it is invisible: without a labelled place for pinned
+          // works to land, nothing on screen suggests the gesture exists.
+          _SectionHeader(
+            title: 'Pinned',
+            count: pinnedSources.isEmpty ? null : pinnedSources.length,
+          ),
+          if (pinnedSources.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 2, 20, 10),
+              child: Text(
+                'Swipe a work to the right to keep it here.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            )
+          else
             for (final source in pinnedSources) _tile(context, source),
-          ],
-          for (final entry in byTradition.entries) ...[
+          for (final tradition in order) ...[
             _SectionHeader(
-              title: entry.key,
-              count: entry.value.length,
-              collapsed: collapsed.contains(entry.key),
-              onToggle: () => onToggleCollapse(entry.key),
+              title: tradition,
+              count: byTradition[tradition]!.length,
+              collapsed: collapsed.contains(tradition),
+              onToggle: () => onToggleCollapse(tradition),
             ),
-            if (!collapsed.contains(entry.key))
-              for (final source in entry.value) _tile(context, source),
+            if (!collapsed.contains(tradition))
+              for (final source in byTradition[tradition]!)
+                _tile(context, source),
           ],
           // With Scripture alone the shelf is one book, and the reason is not
           // obvious from an otherwise working screen.
@@ -550,7 +603,8 @@ class _Results extends StatelessWidget {
     if (rows.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          // Centred in the space the search capsule leaves, not behind it.
+          padding: EdgeInsets.fromLTRB(32, 32, 32, floatingBottomInset(context)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -570,7 +624,11 @@ class _Results extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding: EdgeInsets.only(top: floatingTopInset(context), bottom: 8),
+      padding: EdgeInsets.only(
+        top: floatingTopInset(context),
+        bottom: floatingBottomInset(context, extra: 8),
+      ),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemCount: rows.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {

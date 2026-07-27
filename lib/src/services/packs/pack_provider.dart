@@ -111,7 +111,7 @@ class PackProvider extends ChangeNotifier {
       await _service.install(
         collection,
         manifest,
-        corpusVersion: DatabaseService.corpusVersion,
+        idSpace: DatabaseService.idSpace,
         onProgress: (received, total) {
           if (total <= 0) return;
           final next = received / total;

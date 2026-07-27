@@ -25,12 +25,23 @@ class DatabaseService {
   /// Bumped when the bundled corpus changes, so an installed copy of an older
   /// database is replaced rather than kept forever.
   ///
-  /// It also gates content packs. A pack keeps the row ids it was given in the
-  /// corpus build it was split from — that is what lets it be merged without
-  /// renumbering — so a pack from a different build can carry ids this app has
-  /// already used for different text. Packs declare the version they were built
-  /// from and are refused when it does not match this one.
-  static const int corpusVersion = 12;
+  /// This governs the database that ships *inside the binary*, and nothing
+  /// else. It can only change with a release, because the file it describes
+  /// can only change with a release.
+  static const int corpusVersion = 15;
+
+  /// Which assignment of row ids the bundled database belongs to.
+  ///
+  /// Downloadable packs are gated on this rather than on [corpusVersion]. The
+  /// two used to be the same number, and that made every corpus correction
+  /// wait for an app release — the app refused any catalogue whose version
+  /// differed from its own, so republished text could not reach a reader who
+  /// had not updated. The real requirement is narrower: a pack must not carry
+  /// an id that already means something else here. A rebuild that only appends
+  /// satisfies that against every app built since the last renumbering, and
+  /// `tools/build_packs.py` proves it per build rather than trusting anyone to
+  /// remember. Only a rebuild that genuinely reassigns ids advances this.
+  static const int idSpace = 1;
 
   Database? _database;
 
@@ -110,13 +121,40 @@ class DatabaseService {
   ///
   /// Short words are dropped for the same reason: noise in the match, nothing
   /// in the ranking.
+  ///
+  /// Stopwords are dropped because of what the `*` costs. Every term is a
+  /// prefix match, and `the*` matches most of the index — so a question
+  /// phrased as a sentence asked FTS5 to rank a large fraction of the corpus
+  /// in order to return six passages. That was survivable at 123 M characters
+  /// and stopped being survivable at 453 M: a scoped question — where the
+  /// filter admits one source in 638, so the scan runs a long way down the
+  /// ranking before finding anything — went from about a second to over
+  /// thirty. Dropping them costs nothing in precision, since a passage was
+  /// never going to be worth returning because it contains "about".
+  static const Set<String> _ftsStopwords = {
+    'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'any', 'can',
+    'has', 'had', 'have', 'was', 'were', 'what', 'when', 'where', 'which',
+    'who', 'whom', 'why', 'how', 'did', 'does', 'about', 'from', 'into',
+    'that', 'this', 'these', 'those', 'with', 'without', 'they', 'them',
+    'their', 'there', 'then', 'than', 'his', 'her', 'its', 'our', 'your',
+    'say', 'said', 'says', 'tell', 'teach', 'believe', 'mean', 'means',
+    'between', 'differences', 'difference',
+  };
+
   static String ftsMatchQuery(String query) {
-    final terms = query
+    final words = query
         .replaceAll(RegExp(r'[^\w\s]'), ' ')
         .split(RegExp(r'\s+'))
         .where((t) => t.length > 2)
-        .map((t) => '$t*');
-    return terms.join(' OR ');
+        .toList();
+
+    var terms = words.where((t) => !_ftsStopwords.contains(t.toLowerCase()));
+
+    // A question made entirely of stopwords ("what are these about?") would
+    // otherwise match nothing at all, which is worse than matching too much.
+    if (terms.isEmpty) terms = words;
+
+    return terms.map((t) => '$t*').join(' OR ');
   }
 
   /// Search content with FTS5 full-text search
@@ -301,7 +339,7 @@ class DatabaseService {
     } else {
       ftsResults = await search(query, limit: limit * 2);
     }
-    
+
     // Extract potential tags from query
     final queryTags = extractTags(query);
     

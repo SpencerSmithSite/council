@@ -1,7 +1,15 @@
 name: council
 description: Christian Theology AI Research App - Offline-first theological content with AI-powered Q&A
 publish_to: 'none'
-version: 0.2.0+2
+# The release date, then a build counter. There are no feature "versions" to
+# name here — the app ships when it ships — so the date says the one thing a
+# version number is actually asked in practice: which build is this.
+#
+# Written unpadded (7, not 07) because Apple treats these as plain integers.
+# The counter after the + is what App Store Connect requires to differ on every
+# upload; it only ever goes up, and is never reset when the date changes,
+# because Android's versionCode has to increase regardless of the date.
+version: 2026.7.27+6
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -50,6 +58,7 @@ dependencies:
   # documented place to keep arbitrary files.
   path_provider: ^2.1.6
   liquid_glass_widgets: ^0.22.1
+  share_plus: ^12.0.2
 
 dev_dependencies:
   flutter_test:

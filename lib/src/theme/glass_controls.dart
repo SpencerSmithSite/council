@@ -63,6 +63,17 @@ class AppIcons {
       isApplePlatform ? CupertinoIcons.quote_bubble_fill : Icons.format_quote;
   static IconData get emptyChat =>
       isApplePlatform ? CupertinoIcons.bubble_left : Icons.chat_bubble_outline;
+  static IconData get notes => isApplePlatform
+      ? CupertinoIcons.square_pencil
+      : Icons.sticky_note_2_outlined;
+  static IconData get history =>
+      isApplePlatform ? CupertinoIcons.clock : Icons.history;
+  static IconData get newChat => isApplePlatform
+      ? CupertinoIcons.square_pencil
+      : Icons.add_comment_outlined;
+  static IconData get keyboardDismiss => isApplePlatform
+      ? CupertinoIcons.keyboard_chevron_compact_down
+      : Icons.keyboard_hide_outlined;
 }
 
 /// iOS geometry, from Apple's own values.
@@ -243,7 +254,7 @@ class LargeTitle extends StatelessWidget {
 /// underneath it. One widget serves both the Ask composer and the Read search
 /// field, differing only by leading/trailing glyphs and whether it submits or
 /// filters as you type.
-class GlassComposer extends StatelessWidget {
+class GlassComposer extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool enabled;
@@ -278,6 +289,36 @@ class GlassComposer extends StatelessWidget {
   });
 
   @override
+  State<GlassComposer> createState() => _GlassComposerState();
+}
+
+class _GlassComposerState extends State<GlassComposer> {
+  /// Owned here so the composer can both show a dismiss control while the
+  /// keyboard is up and be the thing that puts it away.
+  ///
+  /// This is not decoration. The composer grows to five lines, so on iOS the
+  /// return key inserts a newline rather than closing the keyboard, and the
+  /// content behind is a list that may be too short to drag — which left the
+  /// keyboard occupying half the screen with nothing on screen to dismiss it.
+  final FocusNode _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focus.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _focus
+      ..removeListener(_onFocusChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onFocusChanged() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final bottom = MediaQuery.of(context).viewInsets.bottom;
@@ -285,18 +326,20 @@ class GlassComposer extends StatelessWidget {
 
     final field = Row(
       children: [
-        if (leadingIcon != null) ...[
-          Icon(leadingIcon, size: 20, color: scheme.onSurfaceVariant),
+        if (widget.leadingIcon != null) ...[
+          Icon(widget.leadingIcon, size: 20, color: scheme.onSurfaceVariant),
           const SizedBox(width: 8),
         ],
         Expanded(
           child: TextField(
-            controller: controller,
-            enabled: enabled,
+            controller: widget.controller,
+            focusNode: _focus,
+            enabled: widget.enabled,
             minLines: 1,
             maxLines: 5,
-            textInputAction:
-                onChanged != null ? TextInputAction.search : TextInputAction.send,
+            textInputAction: widget.onChanged != null
+                ? TextInputAction.search
+                : TextInputAction.send,
             style: TextStyle(color: scheme.onSurface, fontSize: 17),
             cursorColor: scheme.primary,
             decoration: InputDecoration(
@@ -305,32 +348,44 @@ class GlassComposer extends StatelessWidget {
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               contentPadding: EdgeInsets.zero,
-              hintText: hintText,
+              hintText: widget.hintText,
               hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 17),
             ),
-            onChanged: onChanged,
-            onSubmitted: (_) => onSubmit?.call(),
+            onChanged: widget.onChanged,
+            onSubmitted: (_) => widget.onSubmit?.call(),
           ),
         ),
-        if (onClear != null)
+        if (widget.onClear != null)
           ValueListenableBuilder(
-            valueListenable: controller,
+            valueListenable: widget.controller,
             builder: (context, value, _) => value.text.isEmpty
                 ? const SizedBox.shrink()
                 : GestureDetector(
-                    onTap: onClear,
+                    onTap: widget.onClear,
                     child: Icon(AppIcons.close,
                         size: 20, color: scheme.onSurfaceVariant),
                   ),
           ),
-        if (trailingIcon != null) ...[
+        if (_focus.hasFocus) ...[
+          const SizedBox(width: 10),
+          Semantics(
+            button: true,
+            label: 'Hide the keyboard',
+            child: GestureDetector(
+              onTap: _focus.unfocus,
+              child: Icon(AppIcons.keyboardDismiss,
+                  size: 22, color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+        if (widget.trailingIcon != null) ...[
           const SizedBox(width: 6),
           GestureDetector(
-            onTap: enabled ? onSubmit : null,
+            onTap: widget.enabled ? widget.onSubmit : null,
             child: Icon(
-              trailingIcon,
+              widget.trailingIcon,
               size: 30,
-              color: enabled ? scheme.primary : scheme.onSurfaceVariant,
+              color: widget.enabled ? scheme.primary : scheme.onSurfaceVariant,
             ),
           ),
         ],
