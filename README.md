@@ -98,3 +98,23 @@ The app connects to Ollama at `http://localhost:11434` and uses the first model 
 - **Search** — full-text search across all content
 - **Chat** — ask questions, get AI answers with citations
 - **Bookmarks** — saved passages
+
+## The website
+
+Council's site is at **<https://spencersmith.site/council>**, and its source
+lives in [`SpencerSmithSite/spencersmith.site`](https://github.com/SpencerSmithSite/spencersmith.site)
+under `public/council/` — plain static HTML alongside the rest of that site.
+
+The one piece that lives *here* is the catalogue generator, because it needs the
+corpus and imports `build_packs`, so the Sources page can never disagree with
+what the app actually ships:
+
+```bash
+gunzip -k assets/theology.db.gz          # if the DB isn't unpacked
+python3 tools/export_catalogue.py --out /path/to/spencersmith.site/public/council/assets/data/sources.json
+```
+
+Re-run it after any corpus rebuild and commit the JSON in the site repository.
+Each card is built from the provenance already recorded against the source plus
+**an excerpt of that work's own opening text** — never a written summary, for the
+reason set out in `SOURCES.md`.
