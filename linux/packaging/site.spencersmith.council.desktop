@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Council
+GenericName=Theology Research
+Comment=Offline-first theology research with search and optional AI
+Exec=council %U
+Icon=site.spencersmith.council
+Terminal=false
+Categories=Education;Literature;Viewer;
+Keywords=bible;theology;commentary;research;offline;
+StartupWMClass=council

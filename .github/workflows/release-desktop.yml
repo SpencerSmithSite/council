@@ -1,0 +1,135 @@
+# Windows and Linux installers, built on their own runners and attached to a
+# release.
+#
+# Flutter does not cross-compile desktop targets — `flutter build windows` and
+# `flutter build linux` refuse to run anywhere but Windows and Linux. macOS and
+# Android are built and signed locally instead, so this workflow deliberately
+# covers only the two platforms that cannot be produced on a Mac.
+#
+# Run it from the Actions tab, giving the tag of an existing release. It attaches
+# the installers to that release; it never creates one, and it is not triggered by
+# pushes or by publishing a release, so nothing is uploaded without being asked.
+
+name: Desktop release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach the installers to"
+        required: true
+        default: v2026.7.27
+
+permissions:
+  contents: write
+
+env:
+  # Matches the toolchain the macOS and Android builds of 2026.7.27 were cut with.
+  FLUTTER_VERSION: "3.44.8"
+
+jobs:
+  windows:
+    name: Windows installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      # The version the installer reports, taken from pubspec so it cannot drift
+      # from the app. `2026.7.27+6` -> `2026.7.27`; Inno Setup rejects the build
+      # suffix.
+      - name: Read version from pubspec
+        id: version
+        shell: bash
+        run: |
+          v=$(sed -n 's/^version: *//p' pubspec.yaml | head -1 | cut -d+ -f1)
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+          echo "Building $v"
+
+      - run: flutter pub get
+      - run: flutter build windows --release
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            /DAppVersion=${{ steps.version.outputs.value }} `
+            windows\packaging\council.iss
+
+      # Kept even when the upload below is skipped, so a failed release upload
+      # does not mean rebuilding from scratch to inspect the installer.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: council-windows-installer
+          path: dist/Council-windows-setup.exe
+          if-no-files-found: error
+
+      - name: Attach to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ inputs.tag }}" \
+            dist/Council-windows-setup.exe \
+            --clobber --repo "${{ github.repository }}"
+
+  linux:
+    name: Linux packages
+    # Pinned rather than ubuntu-latest on purpose: a Flutter desktop binary needs
+    # a glibc at least as new as the one it was linked against, so the runner
+    # image is the real floor on which distributions can run the app. Moving to a
+    # newer image raises that floor and silently drops older distributions — if
+    # you bump this, update the `requires` line for Linux on the download page to
+    # match (ubuntu-22.04 is glibc 2.35).
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and packaging dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            desktop-file-utils file fuse libfuse2
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Read version from pubspec
+        id: version
+        run: |
+          v=$(sed -n 's/^version: *//p' pubspec.yaml | head -1 | cut -d+ -f1)
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+          echo "Building $v"
+
+      - run: flutter pub get
+      - run: flutter build linux --release
+
+      - name: Build .deb and AppImage
+        run: bash linux/packaging/build_packages.sh "${{ steps.version.outputs.value }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: council-linux-packages
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ inputs.tag }}" \
+            dist/Council-linux-amd64.deb \
+            dist/Council-linux-x86_64.AppImage \
+            --clobber --repo "${{ github.repository }}"
