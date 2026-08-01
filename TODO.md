@@ -50,6 +50,73 @@ copyright constraint.
 
 ---
 
+## Under review — held on doctrinal rather than textual grounds (2026-08-01)
+
+Every removal above was for a defect in the *text*: interleaved works, unsourced
+précis, or copyright. This is the first proposed cut on what a work **is**, and
+the audit below is what the corpus actually holds. No decision is recorded yet.
+
+**There are no Gnostic texts in the corpus.** Gospel of Mary, Judas, Philip,
+Truth, Pistis Sophia and the rest of the Nag Hammadi library are all absent, and
+structurally so: every patristic text here comes from the 1880s Ante-Nicene and
+Nicene Fathers volumes via newadvent, and Nag Hammadi was not found until 1945.
+Its translations are all modern and in copyright, so that library could not have
+been ingested even deliberately.
+
+**The corpus's "Gospel of Thomas" is not the Gnostic one.** `[909]` is the
+*Infancy Gospel of Thomas* — ANF Vol. 8, newadvent 0846, miracle stories about
+the boy Jesus, opening "I Thomas, an Israelite, write you this account… the
+miracles of our Lord Jesus Christ in His infancy." The Gnostic sayings gospel is
+a different work and is not here.
+
+**What is here: 40 works bylined `Apocrypha`,** 1.43 M characters, all in
+fragment `f-apocrypha`. None is in the bundled core — but the fragment is listed
+in the **Church Fathers** and **Ante-Nicene Writers** collections in
+`tools/data/packs.json`, so a reader installing either gets all 40 without ever
+choosing apocrypha. That, rather than their presence in the database, is the
+part worth deciding about.
+
+| group | works | note |
+|---|---|---|
+| Infancy and nativity gospels | Infancy Thomas, Protoevangelium of James, Pseudo-Matthew, Arabic Infancy, Nativity of Mary, History of Joseph the Carpenter | the Protoevangelium is where Joachim and Anne, and the perpetual-virginity tradition, come from |
+| Pilate cycle | Gospel of Nicodemus (192 K, the largest), Report/Letter/Giving Up/Death of Pilate, Avenging of the Saviour, Narrative of Joseph of Arimathea | Nicodemus is the source of the Harrowing of Hell |
+| Apocryphal Acts | Andrew, John, Thomas, Philip, Peter & Paul, Paul & Thecla, Barnabas, Bartholomew, Matthew, Thaddaeus, Xanthippe, Andrew & Matthias, Peter & Andrew, Consummation of Thomas | Acts of John and Acts of Thomas carry the most doctrinally alien material |
+| Apocalypses | Peter, Paul, John (late), Moses, Esdras, Sedrach, the Virgin | Apocalypse of Peter appears in the Muratorian canon list |
+| OT pseudepigrapha | Testaments of the Twelve Patriarchs (140 K), Testament of Abraham, Narrative of Zosimus | Second Temple Jewish, not Christian forgery |
+| Other | Gospel of Peter, Assumption of Mary, Doctrine of Addai | |
+
+**Outside that bucket, four more that fit the same question:**
+
+- `[958]` **The False Decretals** (c. 850) — the Pseudo-Isidorian forgeries, a
+  deliberate fabrication of papal letters, and the clearest forgery in the corpus.
+- `[647]` **Recognitions** and `[648]` **Clementine Homilies** — Pseudo-Clementine,
+  carrying Ebionite material, and currently bylined **Clement of Rome** as though
+  genuine. Even if kept, the byline is a misattribution the catalogue asserts.
+- `[633]` **Bardesanes**, *Book of the Laws of Various Countries* — a heterodox
+  author, though this particular text is his least objectionable and was written
+  down by a disciple.
+- `[944]` **The Legend of Barlaam and Josaphat** — a Christianised retelling of
+  the life of the Buddha. Not heresy; not history either.
+
+**Do not confuse these with the following, which should stay.** The Apostolic
+Fathers are sub-apostolic and orthodox, not apocryphal: the *Didache*, the
+*Epistle of Barnabas*, the *Shepherd* of Hermas, 1 Clement, Ignatius, Polycarp,
+*Epistle to Diognetus*. Nor the refutations — Tertullian's *Against Marcion*,
+Hippolytus' *Refutation of All Heresies* — which exist precisely to argue
+against this material and are useless without knowing what they answer. Nor the
+deuterocanon, which is canon for Catholics and the Orthodox and is already here
+inside the Douay-Rheims, Brenton's Septuagint and the WEB.
+
+**1 Enoch and Jubilees are absent and should be added.** Both are canon in the
+Ethiopian Orthodox Tewahedo and Eritrean Orthodox Tewahedo churches, so on the
+corpus's own stated principle — hold what a tradition actually receives as
+scripture — their absence is a gap, not a policy. R. H. Charles' translations
+(*The Book of Enoch*, 1912; *The Book of Jubilees*, 1902/1917) are pre-1929 and
+public domain in the United States. Adding them would also be the first content
+either Tewahedo church has in the corpus at all.
+
+---
+
 ## Have — verified primary text
 
 - **Scripture** — KJV, ASV, World English Bible, Douay-Rheims (Challoner),
