@@ -95,12 +95,6 @@
       ]
     },
     {
-      "id": "f-apocrypha",
-      "authors": [
-        "Apocrypha"
-      ]
-    },
-    {
       "id": "f-calvin",
       "authors": [
         "John Calvin"
@@ -313,7 +307,6 @@
         "f-athanasius",
         "f-clement-alexandria",
         "f-ambrose",
-        "f-apocrypha",
         "f-fathers-rest"
       ]
     },
@@ -334,8 +327,7 @@
       "fragments": [
         "f-tertullian",
         "f-origen",
-        "f-clement-alexandria",
-        "f-apocrypha"
+        "f-clement-alexandria"
       ]
     },
     {
