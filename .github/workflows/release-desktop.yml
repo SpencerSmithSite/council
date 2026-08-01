@@ -51,6 +51,13 @@ jobs:
           echo "value=$v" >> "$GITHUB_OUTPUT"
           echo "Building $v"
 
+      # assets/model/*.onnx is gitignored — 22 MB of weights that are identical
+      # on every fetch — so a fresh checkout cannot bundle its assets and the
+      # build fails on `No file or variants found for asset`.
+      - name: Fetch the embedding model
+        shell: bash
+        run: bash tools/fetch_model.sh
+
       - run: flutter pub get
       - run: flutter build windows --release
 
@@ -112,6 +119,11 @@ jobs:
           v=$(sed -n 's/^version: *//p' pubspec.yaml | head -1 | cut -d+ -f1)
           echo "value=$v" >> "$GITHUB_OUTPUT"
           echo "Building $v"
+
+      # See the Windows job — the model weights are gitignored and have to be
+      # fetched before anything can bundle assets.
+      - name: Fetch the embedding model
+        run: bash tools/fetch_model.sh
 
       - run: flutter pub get
       - run: flutter build linux --release
