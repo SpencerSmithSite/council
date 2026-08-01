@@ -272,6 +272,40 @@ it always needs a release regardless — bump `DatabaseService.corpusVersion`.
       merge without renumbering. Touches `build_packs.py`, `pack_service.dart`
       and `vector_index.dart`, which is why it is not in this change.
 
+## Release signing — both desktop installers warn on first run
+
+Both are gated on a purchase rather than on work, which is why neither is done.
+The download page carries a `note` for each explaining the warning the reader
+will see; both notes come off once these are settled.
+
+- [ ] **Notarise the macOS DMG.** It is already signed with the Developer ID
+      Application certificate (team `Y2Q5JVG8X5`) and built with the hardened
+      runtime, so `codesign --verify --deep --strict` passes — but `spctl`
+      still returns `rejected: Unnotarized Developer ID`, and Gatekeeper
+      refuses a plain double-click. Needs an app-specific password or an App
+      Store Connect API key:
+
+      ```bash
+      xcrun notarytool submit Council-macos.dmg \
+        --apple-id <apple-id> --team-id Y2Q5JVG8X5 --password <app-specific-password> \
+        --wait
+      xcrun stapler staple Council-macos.dmg
+      ```
+
+      Then re-upload with `gh release upload … --clobber`. Staple the DMG, not
+      just the .app inside it, or a fresh download is unnotarised again.
+
+- [ ] **Sign the Windows installer.** `Council-windows-setup.exe` has no
+      Authenticode signature, so SmartScreen shows "Windows protected your PC"
+      on first run and the reader has to choose *More info → Run anyway*.
+      Needs a code-signing certificate — an OV certificate still accrues
+      SmartScreen reputation slowly, an EV one carries it immediately, which is
+      the difference worth paying for if this is bought at all. Once there is a
+      certificate, sign inside CI: add a `signtool` step to the Windows job in
+      `.github/workflows/release-desktop.yml`, after ISCC and before the
+      release upload, with the certificate held in repository secrets rather
+      than in the repo.
+
 ## App work
 
 - [ ] Text-to-speech for a source, offline.
