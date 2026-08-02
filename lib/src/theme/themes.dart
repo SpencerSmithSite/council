@@ -53,6 +53,10 @@ AppPalette _palette({
   Color? error,
 }) {
   final dark = brightness == Brightness.dark;
+  final err =
+      error ?? (dark ? const Color(0xFFFF6B6B) : const Color(0xFFD11A2A));
+  final accentPair = containerPair(accent, surface, text);
+  final errPair = containerPair(err, surface, text);
   return AppPalette(
     groupedBackground: bg,
     separator: separator,
@@ -63,8 +67,16 @@ AppPalette _palette({
       onPrimary: onAccent,
       secondary: accent,
       onSecondary: onAccent,
-      error: error ?? (dark ? const Color(0xFFFF6B6B) : const Color(0xFFD11A2A)),
+      error: err,
       onError: Colors.white,
+      // Tints of this theme's own accent and error, rather than the
+      // full-strength fallbacks Flutter would supply. See [containerOf].
+      primaryContainer: accentPair.container,
+      onPrimaryContainer: accentPair.on,
+      secondaryContainer: accentPair.container,
+      onSecondaryContainer: accentPair.on,
+      errorContainer: errPair.container,
+      onErrorContainer: errPair.on,
       surface: surface,
       onSurface: text,
       onSurfaceVariant: subtext,

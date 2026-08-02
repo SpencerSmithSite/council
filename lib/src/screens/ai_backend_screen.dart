@@ -163,13 +163,29 @@ class _StatusBanner extends StatelessWidget {
     final ok = status.available;
     final scheme = Theme.of(context).colorScheme;
 
+    // The tint carries the state and the theme; the icon and the hairline carry
+    // the attention. Filling the card with saturated red read as an alert
+    // pasted over the chosen theme rather than part of it — and every one of
+    // these is a condition the reader can fix, not a failure.
+    final accent = ok ? scheme.primary : scheme.error;
     return Card(
       color: ok ? scheme.secondaryContainer : scheme.errorContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: accent.withValues(alpha: 0.45)),
+      ),
       child: ListTile(
-        leading: Icon(ok ? Icons.check_circle : Icons.error_outline),
-        title: Text(status.detail ?? (ok ? 'Ready' : 'Not available')),
+        leading: Icon(ok ? Icons.check_circle : Icons.error_outline,
+            color: accent),
+        title: Text(
+          status.detail ?? (ok ? 'Ready' : 'Not available'),
+          style: TextStyle(
+            color: ok ? scheme.onSecondaryContainer : scheme.onErrorContainer,
+          ),
+        ),
         trailing: IconButton(
           icon: const Icon(Icons.refresh),
+          color: accent,
           tooltip: 'Re-check',
           onPressed: inference.refreshStatus,
         ),
@@ -569,13 +585,27 @@ class _CloudSettingsState extends State<_CloudSettings> {
           const SizedBox(height: 16),
           Card(
             color: Theme.of(context).colorScheme.errorContainer,
-            child: const Padding(
-              padding: EdgeInsets.all(12),
+            // Kept in the error tone because it is the one option that sends a
+            // reader's questions off the device, which is the app's central
+            // promise reversed. Tinted rather than filled, so it reads as a
+            // standing caution to be read once — not as something broken.
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: Theme.of(context)
+                    .colorScheme
+                    .error
+                    .withValues(alpha: 0.45),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(Icons.cloud_upload, size: 20),
-                  SizedBox(width: 12),
-                  Expanded(
+                  Icon(Icons.cloud_upload,
+                      size: 20, color: Theme.of(context).colorScheme.error),
+                  const SizedBox(width: 12),
+                  const Expanded(
                     child: Text(
                       'With a cloud key, your questions and the passages '
                       'retrieved for them are sent to that provider. Every '
