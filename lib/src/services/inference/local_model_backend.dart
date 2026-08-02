@@ -48,6 +48,14 @@ class LocalModelBackend implements InferenceBackend {
 
   @override
   Future<BackendStatus> checkStatus() async {
+    // Reachable only through a settings file carried over from a phone, since
+    // the option is not offered here — but silence would look like a bug.
+    if (!LocalModelChoice.runsHere) {
+      return const BackendStatus.unavailable(
+        'Downloaded models run on Android and iOS only. On this machine, '
+        'Ollama gives you a better model for the same privacy.',
+      );
+    }
     if (!await choice.isInstalled()) {
       return BackendStatus.unavailable(
         '${choice.name} is not downloaded yet. It is a '
@@ -101,7 +109,7 @@ class _LocalModelRuntime {
     if (_model != null && _loadedId == choice.id) return _model!;
     await _model?.close();
     _model = await FlutterGemmaPlugin.instance.createModel(
-      modelType: ModelType.gemmaIt,
+      modelType: choice.modelType,
       maxTokens: choice.maxTokens,
       // Capped because a second KV cache beside a multi-gigabyte model is how
       // a phone runs out of memory mid-answer.
@@ -145,6 +153,12 @@ class LocalModelChoice {
   final int contextBudgetChars;
   final String note;
 
+  /// Which family the runtime should treat this as. Carried per model rather
+  /// than fixed, because the two here are from different families and a single
+  /// hardcoded `gemmaIt` — left over from when both were Gemma — would be
+  /// wrong for each of them.
+  final ModelType modelType;
+
   const LocalModelChoice({
     required this.id,
     required this.name,
@@ -156,6 +170,7 @@ class LocalModelChoice {
     required this.maxTokens,
     required this.contextBudgetChars,
     required this.note,
+    required this.modelType,
   });
 
   Future<bool> isInstalled() async {
@@ -171,7 +186,7 @@ class LocalModelChoice {
     final progress = StreamController<int>();
     () async {
       try {
-        await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
+        await FlutterGemma.installModel(modelType: modelType)
             .fromNetwork(url)
             .withProgress(progress.add)
             .install();
@@ -191,39 +206,66 @@ class LocalModelChoice {
 
   /// Smallest first, so the default recommendation is the one most devices can
   /// actually run.
+  ///
+  /// Both are Apache-2.0 and ungated, and that is a requirement rather than a
+  /// preference. The obvious picks were Gemma 3 270M and 1B, and both failed on
+  /// a real device with `HTTP 401`: the `litert-community` Gemma repositories
+  /// are gated, so fetching them needs a HuggingFace account and a token. A
+  /// backend whose entire claim is "no account, no key" cannot be built on
+  /// weights that require an account, and embedding a shared token in the app
+  /// would be a credential in a client binary, one revocation away from
+  /// breaking for everyone.
+  ///
+  /// Qwen 2.5 0.5B is a weaker model than Gemma 3 1B would have been. That is
+  /// the real cost, and it is worth it, because the alternatives were shipping
+  /// a token, mirroring 550 MB of someone else's weights under their licence,
+  /// or asking every reader to sign up before they can use the feature.
+  ///
+  /// There is deliberately only one. SmolLM 135M was offered here as a 170 MB
+  /// option for older phones and was removed after being tried on a device:
+  /// asked what baptism is, with the Westminster catechisms and Aquinas
+  /// retrieved and in front of it, it answered with advice about learning a
+  /// foreign language. It is not that it answered badly — it did not attend to
+  /// the passages at all, which is the one thing this backend exists to do.
+  /// A reader spending 170 MB to get that is worse served than a reader told
+  /// the honest floor is 550 MB.
   static const List<LocalModelChoice> all = [
     LocalModelChoice(
-      id: 'gemma3-270m',
-      name: 'Gemma 3 270M',
-      fileName: 'gemma3-270m-it-q8.task',
-      url: 'https://huggingface.co/litert-community/Gemma3-270M-IT/resolve/'
-          'main/Gemma3-270M-IT_multi-prefill-seq_q8_ekv1024.task',
-      approximateSize: '300 MB',
-      ramMb: 400,
-      minDeviceRamMb: 3000,
-      maxTokens: 1024,
-      contextBudgetChars: 2500,
-      note: 'The smallest option. Summarises and compares passages Council '
-          'has already found; not for open-ended questions.',
-    ),
-    LocalModelChoice(
-      id: 'gemma3-1b',
-      name: 'Gemma 3 1B',
-      fileName: 'gemma3-1b-it-q4.task',
-      url: 'https://huggingface.co/litert-community/Gemma3-1B-IT/resolve/'
-          'main/Gemma3-1B-IT_multi-prefill-seq_q4_ekv2048.task',
+      id: 'qwen2.5-0.5b',
+      name: 'Qwen 2.5 0.5B',
+      fileName: 'Qwen2.5-0.5B-Instruct_multi-prefill-seq_q8_ekv1280.task',
+      url: 'https://huggingface.co/litert-community/Qwen2.5-0.5B-Instruct/'
+          'resolve/main/'
+          'Qwen2.5-0.5B-Instruct_multi-prefill-seq_q8_ekv1280.task',
       approximateSize: '550 MB',
-      ramMb: 900,
+      ramMb: 700,
       minDeviceRamMb: 4000,
-      maxTokens: 2048,
-      contextBudgetChars: 4000,
-      note: 'The best balance for a recent phone. Noticeably better at '
-          'following a question than the 270M.',
+      maxTokens: 1280,
+      contextBudgetChars: 3000,
+      modelType: ModelType.qwen,
+      note: 'Small enough for a phone, and large enough to stay with the '
+          'passages Council retrieves. Best at summarising and comparing '
+          'those; a hosted model is still better for open-ended questions.',
     ),
   ];
 
   static LocalModelChoice byId(String id) =>
       all.firstWhere((m) => m.id == id, orElse: () => all.first);
+
+  /// Whether a downloaded model can run on this platform at all.
+  ///
+  /// Both models above ship as `.task`, which is MediaPipe's format, and
+  /// `flutter_gemma_mediapipe` declares android and ios only — there is no
+  /// desktop `.task` support to fall back to. Offering the download on macOS,
+  /// Windows or Linux would mean a reader spending 550 MB on a file that
+  /// cannot be loaded.
+  ///
+  /// Desktop is not left without an on-device option: Ollama is trivial to
+  /// install there and is better than either of these models. Running `.task`
+  /// on desktop would mean the `.litertlm` engine, a second native runtime and
+  /// a different pair of weights — real work, for a platform that already has
+  /// the better answer.
+  static bool get runsHere => Platform.isAndroid || Platform.isIOS;
 
   /// What to recommend on this device.
   ///
@@ -231,10 +273,5 @@ class LocalModelChoice {
   /// the smaller model rather than guessing high — being handed a model that
   /// runs badly is worse than being handed one that is merely modest, and the
   /// reader can pick the larger one deliberately.
-  static LocalModelChoice recommended() {
-    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
-      return all.last;
-    }
-    return all.first;
-  }
+  static LocalModelChoice recommended() => all.first;
 }

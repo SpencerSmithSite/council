@@ -55,6 +55,16 @@ dependencies:
   # onnxruntime entry in PLAN.md exists to record.
   flutter_gemma: ^1.4.2
 
+  # The engine that actually runs the weights. `flutter_gemma` is only a core
+  # since 1.0 and registers no engine on its own, so without this every
+  # download failed with "FlutterGemma not initialized". MediaPipe is the one
+  # that reads `.task`, which is the format both offered models ship in.
+  #
+  # It declares android and ios only — there is no desktop `.task` support at
+  # all — which is why the downloadable model is offered on phones alone. The
+  # desktop answer is Ollama, which is a better one there anyway.
+  flutter_gemma_mediapipe: ^1.0.4
+
   # Runs the bundled embedding model so a query can be encoded on-device.
   # Supports android, ios, linux, macos and windows — every platform targeted
   # since web was dropped.

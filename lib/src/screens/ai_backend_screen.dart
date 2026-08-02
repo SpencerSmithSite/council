@@ -78,8 +78,10 @@ class AiBackendScreen extends StatelessWidget {
                       // Offered when the device has no built-in model, which
                       // is the case this exists for: without it those readers
                       // have no on-device generation at all, only a server to
-                      // stand up or a key to buy.
-                      if (!inference.offersPlatformLlm) ...[
+                      // stand up or a key to buy. Phones only — see
+                      // [LocalModelChoice.runsHere].
+                      if (!inference.offersPlatformLlm &&
+                          LocalModelChoice.runsHere) ...[
                         _Option(
                           id: LocalModelBackend.backendId,
                           title: 'Download a small model',
@@ -708,31 +710,40 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RadioGroup<String>(
-              groupValue: selected.id,
-              // Not disabled by passing null — RadioGroup requires a handler —
-              // so the guard is inside: swapping models mid-download would
-              // leave the finished file attached to the wrong choice.
-              onChanged: (v) {
-                if (_progress != null) return;
-                context
-                    .read<InferenceProvider>()
-                    .setLocalModel(v ?? selected.id);
-              },
-              child: Column(
-                children: [
-                  for (final choice in LocalModelChoice.all)
-                    RadioListTile<String>(
-                      value: choice.id,
-                      contentPadding: EdgeInsets.zero,
-                      title:
-                          Text('${choice.name} · ${choice.approximateSize}'),
-                      subtitle: Text(choice.note),
-                      isThreeLine: true,
-                    ),
-                ],
+            // A radio group of one is a control that cannot be operated, so
+            // the single-model case is described rather than offered.
+            if (LocalModelChoice.all.length == 1) ...[
+              Text('${selected.name} · ${selected.approximateSize}',
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(selected.note,
+                  style: Theme.of(context).textTheme.bodyMedium),
+            ] else
+              RadioGroup<String>(
+                groupValue: selected.id,
+                // Not disabled by passing null — RadioGroup requires a handler
+                // — so the guard is inside: swapping models mid-download would
+                // leave the finished file attached to the wrong choice.
+                onChanged: (v) {
+                  if (_progress != null) return;
+                  context
+                      .read<InferenceProvider>()
+                      .setLocalModel(v ?? selected.id);
+                },
+                child: Column(
+                  children: [
+                    for (final choice in LocalModelChoice.all)
+                      RadioListTile<String>(
+                        value: choice.id,
+                        contentPadding: EdgeInsets.zero,
+                        title:
+                            Text('${choice.name} · ${choice.approximateSize}'),
+                        subtitle: Text(choice.note),
+                        isThreeLine: true,
+                      ),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 8),
             if (_progress != null) ...[
               LinearProgressIndicator(value: _progress! / 100),
