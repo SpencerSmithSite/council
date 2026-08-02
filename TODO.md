@@ -440,6 +440,14 @@ will see; both notes come off once these are settled.
       fallback ignored the retrieved passages entirely. Now Qwen 2.5 0.5B on
       Android, verified download → install → load → cited answer. See PLAN.md.
 
+- [ ] **Free disk space is never checked.** The catalogue reasons about memory
+      and says nothing about storage, so a reader with 3 GB free can start the
+      4.9 GB download. It fails loudly rather than silently — the installer
+      errors and the card shows it — but only after the bytes have been fetched,
+      which on a metered connection is a real cost. `DeviceMemory` already owns
+      a platform channel; free space is `StatFs` on Android,
+      `attributesOfFileSystemForPath` on iOS and `statvfs` on desktop.
+
 - [ ] **Check the memory thresholds against real phones.** They are calibrated
       against what the OS reports rather than what the device is sold as, which
       was measured on exactly one machine — a 4 GB Android emulator reporting

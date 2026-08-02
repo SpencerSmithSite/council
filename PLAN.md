@@ -3092,6 +3092,50 @@ is sold as — a 4 GB Android reports 3,967 MB — so a 4 GB emulator that had
 already generated an answer with the 0.6B was told it lacked the memory for it.
 Each is now set about a tier below the nominal size it is meant to admit.
 
+## The recommendation now matches the machine (2026-08-02)
+
+Audited against the actual question — does the app pick the best model the
+device can run? — it did not, in two directions.
+
+**`recommended()` never consulted memory.** It returned `all.first`, the
+smallest option for the platform, so a 64 GB Mac Studio was defaulted to the
+1.7B: the weakest thing it could possibly run. The reader had to notice the
+picker to get anything better. Now `recommendedHere()` takes the *largest* that
+fits, which is safe precisely because the thresholds already carry the caution —
+each sits well above the model's resident cost, so "fits" means fits beside the
+OS, the database and the vector index.
+
+**The platform split excluded the small model from desktop.** `all` was a
+disjoint pair of lists, so a 4 GB Linux box saw only the 1.7B and was told it
+lacked the memory — while the 0.6B would have run there perfectly well. Platform
+now sets a *ceiling*, never a floor.
+
+**And the ceiling had to become per-platform rather than a flag.** Marking only
+the 8B as desktop-only left the 4B — 3.2 GB resident — offered to an 8 GB phone,
+which is exactly the case a per-app cap kills. Total RAM is simply the wrong
+measure on a phone: iOS and Android limit what one app may hold to well under
+the physical amount, and exceeding it means the OS kills the app rather than
+swapping. So each model now carries `minPhoneRamMb` separately from
+`minDeviceRamMb`, and null means desktop-only.
+
+| device | offered | recommended |
+|---|---|---|
+| 2 GB phone | 0.6B, marked as not fitting | 0.6B |
+| 3–8 GB phone | 0.6B | 0.6B |
+| 16 GB phone | 0.6B, 1.7B | 1.7B |
+| 4 GB desktop | 0.6B | 0.6B |
+| 8 GB desktop | 0.6B, 1.7B, 4B | 4B |
+| 16 GB+ desktop | all four | 8B |
+
+Verified on both branches: the desktop half by host tests, the phone half by an
+integration test on the emulator, since `Platform.isAndroid` is the only way to
+reach it.
+
+The phone figures are the least-evidenced numbers in the app — only the 0.6B has
+been run on real hardware — and they are set cautiously on purpose. Being too
+conservative costs a flagship reader a better model; being too generous costs an
+ordinary reader a multi-gigabyte download that ends in a crash.
+
 ### The download was hidden from anyone eligible for Apple Intelligence
 
 `offersPlatformLlm` covered `notEnabled` and `modelNotReady` as well as
