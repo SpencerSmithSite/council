@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/device_storage.dart';
 import '../services/inference/local_model_backend.dart';
 import '../services/inference/platform_llm_backend.dart';
 import '../services/ollama_service.dart';
@@ -709,8 +710,8 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
   /// Held in a field rather than created in `build`, so the memory check runs
   /// once instead of on every rebuild — and, more importantly, so a rebuild
   /// mid-download does not restart it and flash the list back to a spinner.
-  late final Future<List<LocalModelChoice>> _offered =
-      LocalModelChoice.availableHere();
+  late final Future<List<({LocalModelTier tier, LocalModelChoice model})>>
+      _tiers = LocalModelChoice.tiersHere();
 
   @override
   void dispose() {
@@ -718,7 +719,35 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
     super.dispose();
   }
 
-  void _download(LocalModelChoice choice) {
+  /// Free space, and whether this model fits in it.
+  ///
+  /// Not cached across rebuilds the way the memory probe is: free space is the
+  /// one device fact that changes while the app is open — often because the
+  /// reader has just gone to make room — so a stale answer would tell them
+  /// their effort had not worked.
+  Future<({bool room, int? freeMb})> _diskFor(LocalModelChoice choice) async {
+    final free = await DeviceStorage.freeMb();
+    return (room: await choice.fitsOnDisk(), freeMb: free);
+  }
+
+  static String _gb(int mb) => mb >= 1024
+      ? '${(mb / 1024).toStringAsFixed(1)} GB'
+      : '$mb MB';
+
+  Future<void> _download(LocalModelChoice choice) async {
+    // Checked here as well as shown above, so the refusal holds however the
+    // button was reached — and checked at the moment of pressing, because the
+    // reader may have freed space since the screen was drawn.
+    if (!await choice.fitsOnDisk()) {
+      final free = await DeviceStorage.freeMb();
+      if (!mounted) return;
+      setState(() => _error =
+          'Not enough free space for ${choice.name}. It needs '
+          '${choice.approximateSize}'
+          '${free == null ? '' : ' and this device has ${_gb(free)} free'}.');
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _progress = 0;
       _error = null;
@@ -796,14 +825,15 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Only the models this device has the memory for. Offering one it
-            // cannot hold means a multi-gigabyte download that ends in the OS
-            // killing the app.
-            FutureBuilder<List<LocalModelChoice>>(
-              future: _offered,
+            // Two or three models, labelled by how they fit *this* device
+            // rather than listed by size. Everything that fits is not a useful
+            // list — on a workstation that is four entries an order of
+            // magnitude apart with nothing saying which to pick.
+            FutureBuilder<List<({LocalModelTier tier, LocalModelChoice model})>>(
+              future: _tiers,
               builder: (context, snap) {
-                final offered = snap.data;
-                if (offered == null) {
+                final tiers = snap.data;
+                if (tiers == null) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator(),
@@ -811,15 +841,15 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
                 }
                 // A radio group of one is a control that cannot be operated,
                 // so a single choice is described rather than offered.
-                if (offered.length == 1) {
+                if (tiers.length == 1) {
+                  final only = tiers.first.model;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${offered.first.name} · '
-                          '${offered.first.approximateSize}',
+                      Text('${only.name} · ${only.approximateSize}',
                           style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 4),
-                      Text(offered.first.note,
+                      Text(only.note,
                           style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   );
@@ -838,13 +868,13 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
                   },
                   child: Column(
                     children: [
-                      for (final choice in offered)
+                      for (final entry in tiers)
                         RadioListTile<String>(
-                          value: choice.id,
+                          value: entry.model.id,
                           contentPadding: EdgeInsets.zero,
-                          title: Text(
-                              '${choice.name} · ${choice.approximateSize}'),
-                          subtitle: Text(choice.note),
+                          title: TierTitle(
+                              tier: entry.tier, model: entry.model),
+                          subtitle: Text(entry.tier.rationale),
                           isThreeLine: true,
                         ),
                     ],
@@ -865,6 +895,29 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
                     '${selected.name} asks for more memory than this device '
                     'has. It would download and then fail to load — Ollama or '
                     'an API key will work here instead.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error),
+                  ),
+                );
+              },
+            ),
+            // Disk is checked separately from memory and treated differently:
+            // a reader can free space and try again, so the model stays
+            // offered with its download blocked and the numbers shown, rather
+            // than disappearing the way one that cannot fit in memory does.
+            FutureBuilder<({bool room, int? freeMb})>(
+              key: ValueKey('disk-${selected.id}-$_installChanged'),
+              future: _diskFor(selected),
+              builder: (context, snap) {
+                final disk = snap.data;
+                if (disk == null || disk.room) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    'Not enough free space for ${selected.name}: it needs '
+                    '${selected.approximateSize} and this device has '
+                    '${disk.freeMb == null ? "less" : _gb(disk.freeMb!)} '
+                    'free. Free some up, or choose a smaller model.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.error),
                   ),
@@ -926,6 +979,46 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The title line of a tier row: what it is for, then which model and how big.
+///
+/// The tier leads because it is the thing the reader is choosing between — a
+/// parameter count is not a decision anyone can make unaided, and the same
+/// weights are the "best answers" option on a phone and the "smaller and
+/// faster" one on a workstation.
+class TierTitle extends StatelessWidget {
+  final LocalModelTier tier;
+  final LocalModelChoice model;
+
+  const TierTitle({super.key, required this.tier, required this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final highlight = tier == LocalModelTier.recommended;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                tier.label,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: highlight ? theme.colorScheme.primary : null,
+                  fontWeight: highlight ? FontWeight.w600 : null,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Text('${model.name} · ${model.approximateSize}',
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+      ],
     );
   }
 }

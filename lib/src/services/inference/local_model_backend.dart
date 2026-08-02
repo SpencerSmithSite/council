@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 import '../device_memory.dart';
+import '../device_storage.dart';
 import 'inference_backend.dart';
 
 /// A small open-weights model the reader downloads once and then runs locally.
@@ -129,6 +130,42 @@ class _LocalModelRuntime {
   }
 }
 
+/// How a model is being offered on this particular device.
+///
+/// A label about *fit*, not about the model: the same weights are the "large"
+/// option on a mid-range phone and the "small" one on a workstation, which is
+/// the whole point of choosing per device.
+enum LocalModelTier {
+  /// Faster and lighter, at the cost of answer quality.
+  small,
+
+  /// The sensible default here.
+  recommended,
+
+  /// The best answers this device can produce, and the slowest.
+  large;
+
+  String get label => switch (this) {
+        LocalModelTier.small => 'Smaller and faster',
+        LocalModelTier.recommended => 'Recommended',
+        LocalModelTier.large => 'Best answers',
+      };
+
+  /// Why a reader might pick this one. Phrased as the trade being made, since
+  /// every one of these is a trade rather than a ranking.
+  String get rationale => switch (this) {
+        LocalModelTier.small =>
+          'Quickest to download and to answer. Best when you mostly want the '
+              'passages found and summarised.',
+        LocalModelTier.recommended =>
+          'The best balance for this device — capable enough to follow a '
+              'question, quick enough to stay usable.',
+        LocalModelTier.large =>
+          'The most capable model this device can hold. Noticeably slower to '
+              'answer, and a much larger download.',
+      };
+}
+
 /// One downloadable model, with the numbers needed to decide whether to offer
 /// it on a given device.
 ///
@@ -142,6 +179,13 @@ class LocalModelChoice {
   final String fileName;
   final String url;
   final String approximateSize;
+
+  /// The download, in megabytes, for checking it will fit on disk.
+  ///
+  /// Separate from [approximateSize], which is prose for the reader and cannot
+  /// be compared against anything. Measured from the actual file rather than
+  /// rounded from the label.
+  final int downloadMb;
 
   /// Rough resident cost of the weights, in megabytes.
   final int ramMb;
@@ -204,6 +248,7 @@ class LocalModelChoice {
     required this.fileName,
     required this.url,
     required this.approximateSize,
+    required this.downloadMb,
     required this.ramMb,
     required this.minDeviceRamMb,
     required this.maxTokens,
@@ -301,6 +346,7 @@ class LocalModelChoice {
     url: 'https://huggingface.co/litert-community/Qwen3-0.6B/resolve/main/'
         'qwen3_0_6b_mixed_int4.litertlm',
     approximateSize: '500 MB',
+    downloadMb: 497,
     ramMb: 700,
     // Admits a nominal 3 GB phone, excludes a 2 GB one. Verified: it runs on
     // a device reporting 3,967 MB.
@@ -322,6 +368,7 @@ class LocalModelChoice {
     url: 'https://huggingface.co/litert-community/Qwen3-1.7B/resolve/main/'
         'Qwen3_1.7B.litertlm',
     approximateSize: '2.1 GB',
+    downloadMb: 2056,
     ramMb: 2400,
     // Admits a nominal 6 GB desktop; on a phone it wants a nominal 12 GB,
     // because 2.4 GB resident has to fit inside a per-app cap rather than
@@ -343,6 +390,7 @@ class LocalModelChoice {
     url: 'https://huggingface.co/litert-community/Qwen3-4B-Instruct-2507/'
         'resolve/main/qwen3_4b_instruct_2507_mixed_int4.litertlm',
     approximateSize: '2.7 GB',
+    downloadMb: 2659,
     ramMb: 3200,
     // Desktop only: 3.2 GB resident is beyond what a phone will let one app
     // hold, whatever its physical memory says.
@@ -362,6 +410,7 @@ class LocalModelChoice {
     url: 'https://huggingface.co/litert-community/Qwen3-8B/resolve/main/'
         'qwen3_8b_mixed_int4.litertlm',
     approximateSize: '4.9 GB',
+    downloadMb: 4887,
     ramMb: 6000,
     // Admits a nominal 16 GB machine. Desktop only, as above.
     minDeviceRamMb: 14000,
@@ -449,6 +498,42 @@ class LocalModelChoice {
       Platform.isWindows ||
       Platform.isLinux;
 
+  /// Whether this model's download will fit in the space left on the device.
+  Future<bool> fitsOnDisk() => DeviceStorage.hasRoomFor(downloadMb);
+
+  /// The two or three models worth putting in front of this reader.
+  ///
+  /// Everything that fits is not a useful list — on a workstation that is four
+  /// entries differing by an order of magnitude in both download size and
+  /// speed, with nothing to say which is which. These are the three questions a
+  /// reader actually has: what is the sensible choice, what if I want it
+  /// smaller and faster, and what if I want the best answers this machine can
+  /// give.
+  ///
+  /// [LocalModelTier.recommended] is deliberately *not* the largest that fits
+  /// once there are three or more. The largest is the slowest, and picking it
+  /// by default would make the feature feel broken on the very machines that
+  /// can run the most; it is offered as [LocalModelTier.large] instead, plainly
+  /// described as slower.
+  static Future<List<({LocalModelTier tier, LocalModelChoice model})>>
+      tiersHere() async {
+    final fits = await availableHere();
+    if (fits.length == 1) {
+      return [(tier: LocalModelTier.recommended, model: fits.first)];
+    }
+    if (fits.length == 2) {
+      return [
+        (tier: LocalModelTier.small, model: fits.first),
+        (tier: LocalModelTier.recommended, model: fits.last),
+      ];
+    }
+    return [
+      (tier: LocalModelTier.small, model: fits.first),
+      (tier: LocalModelTier.recommended, model: fits[fits.length - 2]),
+      (tier: LocalModelTier.large, model: fits.last),
+    ];
+  }
+
   /// The most capable model this device can actually hold.
   ///
   /// The point of the catalogue: a Mac with 64 GB should be pointed at the 8B
@@ -457,13 +542,15 @@ class LocalModelChoice {
   /// platform and never consulted memory at all, so a Mac Studio was offered
   /// the 1.7B by default — the weakest thing it could possibly run.
   ///
-  /// Largest-that-fits rather than a middle choice, because the thresholds
-  /// already carry the caution: each is set well above the model's resident
-  /// cost so that "fits" means fits beside the OS, the database and the vector
-  /// index, not merely fits.
+  /// Defined as whatever the picker labels [LocalModelTier.recommended], so
+  /// the model selected by default and the row marked "Recommended" can never
+  /// disagree — which they did briefly, this returning the largest that fits
+  /// while the picker recommended one step below it.
   static Future<LocalModelChoice> recommendedHere() async {
-    final offered = await availableHere();
-    return offered.last;
+    final tiers = await tiersHere();
+    return tiers
+        .firstWhere((t) => t.tier == LocalModelTier.recommended)
+        .model;
   }
 
   /// The conservative default, for the moment before memory has been read.

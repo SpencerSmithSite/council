@@ -4,6 +4,7 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:council/src/services/device_memory.dart';
+import 'package:council/src/services/device_storage.dart';
 import 'package:council/src/services/inference/local_model_backend.dart';
 
 /// These run on the host, so on a developer machine they exercise the desktop
@@ -162,13 +163,25 @@ void main() {
       }
     });
 
-    test('it takes the largest that fits, not the first', () async {
+    test('it is never the smallest when the device can do better', () async {
       DeviceMemory.debugSetTotalMb(64000);
       final offered = await LocalModelChoice.availableHere();
       final pick = await LocalModelChoice.recommendedHere();
-      expect(pick, offered.last);
-      expect(pick.ramMb,
-          offered.map((m) => m.ramMb).reduce((a, b) => a > b ? a : b));
+      expect(pick, isNot(offered.first));
+    });
+
+    test('it agrees with the row the picker marks Recommended', () async {
+      // These disagreed once — the default was the largest that fits while
+      // the picker recommended a step below it, so the selected radio and the
+      // "Recommended" label pointed at different models.
+      for (final mb in [3000, 8000, 64000]) {
+        DeviceMemory.debugSetTotalMb(mb);
+        final tiers = await LocalModelChoice.tiersHere();
+        final labelled = tiers
+            .firstWhere((t) => t.tier == LocalModelTier.recommended)
+            .model;
+        expect((await LocalModelChoice.recommendedHere()).id, labelled.id);
+      }
     });
 
     test('a modest desktop is offered something rather than nothing',
@@ -206,6 +219,112 @@ void main() {
         expect(m.minPhoneRamMb, greaterThanOrEqualTo(m.minDeviceRamMb),
             reason: 'a per-app cap is stricter than physical memory, so the '
                 'phone floor can never be the more generous of the two');
+      }
+    });
+  });
+
+  group('the tiers offered to a reader', () {
+    tearDown(() {
+      DeviceMemory.debugSetTotalMb(null, unknown: false);
+      DeviceStorage.debugFreeMb = null;
+    });
+
+    Future<List<({LocalModelTier tier, LocalModelChoice model})>> at(
+        int mb) async {
+      DeviceMemory.debugSetTotalMb(mb);
+      return LocalModelChoice.tiersHere();
+    }
+
+    test('never more than three, so the choice stays a choice', () async {
+      for (final mb in [2048, 3000, 6000, 8000, 16000, 64000]) {
+        expect((await at(mb)).length, inInclusiveRange(1, 3));
+      }
+    });
+
+    test('always includes a recommendation', () async {
+      for (final mb in [2048, 3000, 6000, 8000, 16000, 64000]) {
+        expect((await at(mb)).map((e) => e.tier),
+            contains(LocalModelTier.recommended));
+      }
+    });
+
+    test('tiers run smallest to largest, and are distinct models', () async {
+      final tiers = await at(64000);
+      expect(tiers, hasLength(3));
+      expect(tiers.map((e) => e.tier),
+          [LocalModelTier.small, LocalModelTier.recommended,
+           LocalModelTier.large]);
+      final ram = tiers.map((e) => e.model.ramMb).toList();
+      expect(ram, [...ram]..sort());
+      expect(tiers.map((e) => e.model.id).toSet(), hasLength(3));
+    });
+
+    test('the recommendation is not the heaviest when there is a choice',
+        () async {
+      final tiers = await at(64000);
+      final recommended =
+          tiers.firstWhere((e) => e.tier == LocalModelTier.recommended).model;
+      final large =
+          tiers.firstWhere((e) => e.tier == LocalModelTier.large).model;
+      expect(recommended.ramMb, lessThan(large.ramMb),
+          reason: 'the largest that fits is also the slowest; defaulting to it '
+              'makes the feature feel broken on the machines that can run the '
+              'most');
+    });
+
+    test('every tier offered is one the device can actually hold', () async {
+      for (final mb in [3000, 6000, 8000, 16000, 64000]) {
+        for (final e in await at(mb)) {
+          expect(mb, greaterThanOrEqualTo(e.model.requiredMb));
+        }
+      }
+    });
+  });
+
+  group('the disk check', () {
+    tearDown(() {
+      DeviceStorage.debugFreeMb = null;
+      DeviceStorage.debugUnknownFree = false;
+    });
+
+    test('refuses a model that will not fit in the space left', () async {
+      DeviceStorage.debugFreeMb = 1000; // 1 GB free
+      expect(await LocalModelChoice.qwen3_8b.fitsOnDisk(), isFalse,
+          reason: 'a 4.9 GB download onto a 1 GB disk fails after the bytes '
+              'have been fetched, which on a metered connection is paid for '
+              'nothing');
+    });
+
+    test('leaves headroom rather than filling the disk exactly', () async {
+      const model = LocalModelChoice.qwen3_06b;
+      DeviceStorage.debugFreeMb = model.downloadMb + 10;
+      expect(await model.fitsOnDisk(), isFalse,
+          reason: 'the download lands as a file and is then installed, and a '
+              'disk filled to the last megabyte breaks the OS, not just this '
+              'app');
+      DeviceStorage.debugFreeMb = model.downloadMb + 2000;
+      expect(await model.fitsOnDisk(), isTrue);
+    });
+
+    test('is permissive when free space cannot be read', () async {
+      DeviceStorage.debugUnknownFree = true;
+      expect(await DeviceStorage.hasRoomFor(1 << 20), isTrue,
+          reason: 'refusing a download because a probe failed is worse than '
+              'letting it fail the way it already did');
+    });
+
+    test('every model declares a download size matching its label', () {
+      for (final m in LocalModelChoice.catalogue) {
+        expect(m.downloadMb, greaterThan(0));
+        // The prose label and the number must not drift apart, since one is
+        // shown to the reader and the other decides whether to allow it.
+        final gb = m.downloadMb / 1024;
+        final labelled = m.approximateSize.contains('GB')
+            ? double.parse(m.approximateSize.split(' ').first)
+            : double.parse(m.approximateSize.split(' ').first) / 1024;
+        expect((gb - labelled).abs(), lessThan(0.35),
+            reason: '${m.name}: label says ${m.approximateSize}, '
+                'downloadMb says ${m.downloadMb}');
       }
     });
   });
