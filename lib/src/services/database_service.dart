@@ -43,6 +43,17 @@ class DatabaseService {
   /// remember. Only a rebuild that genuinely reassigns ids advances this.
   static const int idSpace = 1;
 
+  /// The embedding model this build encodes queries with.
+  ///
+  /// Compared against the pack manifest's `embeddingModel` before a fragment's
+  /// vectors are trusted. The two must match: similarity between vectors from
+  /// different models is noise, and nothing else in the pipeline would notice —
+  /// counts and checksums stay correct while retrieval quietly degrades.
+  ///
+  /// Changing this means re-embedding the whole corpus, so it is deliberately
+  /// a constant rather than something derived at runtime.
+  static const String embeddingModel = 'all-MiniLM-L6-v2-int8-384';
+
   Database? _database;
 
   /// Initialize database from bundled asset

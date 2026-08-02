@@ -100,15 +100,35 @@ class PackManifest {
   /// corpus. `tools/build_packs.py` proves that per build and only advances
   /// this number when a rebuild genuinely reassigns an id.
   final int idSpace;
+
+  /// Which embedding model produced the vectors in these packs.
+  ///
+  /// Vectors from two models are not comparable — the similarity between them
+  /// is noise, not a weaker signal — so a pack built with a different model
+  /// than this app encodes queries with must be refused. The failure it
+  /// prevents is silent: every count and checksum would still be correct and
+  /// retrieval would simply start returning irrelevant passages.
+  ///
+  /// Null on catalogues published before this was recorded, which all belong
+  /// to the original model by definition.
+  final String? embeddingModel;
+
   final List<Fragment> fragments;
   final List<Collection> collections;
 
   const PackManifest({
     required this.corpusVersion,
     required this.idSpace,
+    this.embeddingModel,
     required this.fragments,
     required this.collections,
   });
+
+  /// Whether these packs' vectors can be used by an app encoding queries with
+  /// [localModel]. Older catalogues carry no identity and are trusted, because
+  /// they predate any model change.
+  bool embeddingsCompatibleWith(String localModel) =>
+      embeddingModel == null || embeddingModel == localModel;
 
   Fragment? fragment(String id) {
     for (final f in fragments) {
@@ -125,6 +145,7 @@ class PackManifest {
       // releases. Those all belong to the first id space by definition — it
       // was numbered 1 at the build where the ledger began.
       idSpace: json['idSpace'] as int? ?? 1,
+      embeddingModel: json['embeddingModel'] as String?,
       fragments: (json['fragments'] as List)
           .map((f) => Fragment.fromJson(f as Map<String, dynamic>))
           .toList(),

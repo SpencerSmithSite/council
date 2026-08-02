@@ -2800,7 +2800,7 @@ least tolerant of "install a server first". The downloadable path is the larger
 piece and benefits from the picker and prompt-budgeting work the first one
 forces.
 
-## Replacing onnxruntime, eventually (noted 2026-08-02)
+## Replacing onnxruntime — researched and decided (2026-08-02)
 
 Not urgent, and not a bug — embeddings work. But `onnxruntime`'s last pub.dev
 release is **1.4.1, 2024-03-27**, and it is the app's only route to on-device
@@ -2824,3 +2824,40 @@ Options, none costed yet:
   be re-embedded, and `idSpace` and the pack manifest have to carry the model
   identity so an app on the old model cannot silently mix its vectors with new
   ones. That is a corpus-wide migration, not a dependency bump.
+
+### The decision
+
+**Keep `onnxruntime` for embeddings for now, and make replacing it safe rather
+than replacing it.** Researched against the alternatives:
+
+| package | last release |
+|---|---|
+| `flutter_gemma` | 3 days |
+| `llama_cpp_dart` | 7 months |
+| `cactus` | 8 months |
+| `fllama` | ~2 years |
+| `onnxruntime` (current) | 2024-03-27 |
+
+`flutter_gemma` is now a dependency anyway — it is what runs the downloadable
+generation model — and it advertises embeddings, so the runtime for a switch is
+already present and actively maintained. That makes it the obvious destination.
+
+It is not the obvious *next step*, and the reason is the model rather than the
+runtime. Vectors from two embedding models are not interchangeable: the
+similarity between them is noise, not a weaker signal. Swapping the model means
+re-embedding all 445,445 chunks — about 2.4 hours — and, worse, the failure mode
+of getting it wrong is silent. Every count and every checksum would still be
+correct while retrieval quietly returned irrelevant passages. Nothing in the
+pipeline would have caught it.
+
+So what is implemented now is the guard that was missing: the pack manifest
+carries `embeddingModel`, `DatabaseService.embeddingModel` names what the app
+encodes queries with, and `PackManifest.embeddingsCompatibleWith` refuses a pack
+built by a different model. Manifests published before this carry no identity
+and are trusted, because they predate any change.
+
+With that in place the switch is a decision about whether better embeddings are
+worth a corpus rebuild, which is a judgement call, rather than a change that can
+silently corrupt retrieval, which is not. Nothing about the current runtime is
+broken; embeddings work, and Google Play — the one thing that made its 16 KB
+alignment problem urgent — is not planned.
