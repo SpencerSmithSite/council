@@ -440,13 +440,16 @@ will see; both notes come off once these are settled.
       fallback ignored the retrieved passages entirely. Now Qwen 2.5 0.5B on
       Android, verified download → install → load → cited answer. See PLAN.md.
 
-- [ ] **Free disk space is never checked.** The catalogue reasons about memory
-      and says nothing about storage, so a reader with 3 GB free can start the
-      4.9 GB download. It fails loudly rather than silently — the installer
-      errors and the card shows it — but only after the bytes have been fetched,
-      which on a metered connection is a real cost. `DeviceMemory` already owns
-      a platform channel; free space is `StatFs` on Android,
-      `attributesOfFileSystemForPath` on iOS and `statvfs` on desktop.
+- [x] ~~Free disk space is never checked~~ — done 2026-08-02. `DeviceStorage`
+      reads it per platform and the download is refused before any bytes move.
+      Verified on the emulator by filling `/data` to 421 MB free.
+
+- [ ] **The LiteRT-LM native libraries are not 16 KB aligned either.** Android
+      17 shows a compatibility dialog naming `libonnxruntime.so` — already
+      recorded — plus a dozen litertlm libraries, and runs the app in page-size
+      compatible mode. Not a crash, and Google Play is not planned, so this is
+      not urgent; it becomes blocking the moment Play does come into scope, and
+      it now covers two dependencies rather than one.
 
 - [ ] **Check the memory thresholds against real phones.** They are calibrated
       against what the OS reports rather than what the device is sold as, which

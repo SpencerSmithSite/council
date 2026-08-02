@@ -3136,6 +3136,54 @@ been run on real hardware — and they are set cautiously on purpose. Being too
 conservative costs a flagship reader a better model; being too generous costs an
 ordinary reader a multi-gigabyte download that ends in a crash.
 
+## A picker of two or three, and a disk check (2026-08-02)
+
+**Everything that fits is not a useful list.** On a workstation that is four
+entries an order of magnitude apart in both download size and speed, with
+nothing saying which is which — and a parameter count is not a decision anyone
+can make unaided. The picker now answers the three questions a reader actually
+has: what is the sensible choice, what if I want it smaller and faster, and what
+if I want the best answers this machine can give.
+
+`LocalModelTier` labels by *fit*, not by model, which is the point: the same
+weights are the "best answers" option on a mid-range phone and the "smaller and
+faster" one on a Mac Studio. The tier leads the row and the model name sits
+under it, because the tier is what is being chosen between.
+
+**The recommendation is deliberately not the largest that fits** once there are
+three. The largest is also the slowest, and defaulting to it would make the
+feature feel broken on exactly the machines that can run the most; it is offered
+as "Best answers", described plainly as slower.
+
+That change caught a contradiction: `recommendedHere()` still returned the
+largest, so the radio selected by default and the row labelled "Recommended"
+pointed at different models. It is now *defined* as whatever the picker
+recommends, and a test asserts they agree.
+
+### Disk
+
+The catalogue reasoned about memory and said nothing about storage, so a reader
+with 3 GB free could start the 4.9 GB download. It failed loudly rather than
+silently — but only after the bytes had been fetched, which on a metered
+connection is paid for nothing.
+
+`DeviceStorage` reads free space per platform: `StatFs` on Android against the
+directory the model is actually written to (adopted storage makes that different
+from the root volume), `volumeAvailableCapacityForImportantUsage` on iOS because
+the plain free-space key under-reports and would refuse downloads that would
+succeed, and `df`/PowerShell on desktop so the Windows C++ runner needs no
+native code for one number.
+
+Treated differently from memory, and the difference matters: a reader can free
+space and try again but cannot add RAM, so a model too large for the disk stays
+visible with its download blocked and the numbers shown, rather than
+disappearing. It is also not cached — free space is the one device fact that
+changes while the app is open, often *because* the reader has just gone to make
+room, and a stale answer would tell them their effort had not worked.
+
+Verified on the emulator by filling `/data` to 421 MB free: the card explained
+itself, and pressing Download refused before a byte moved.
+
 ### The download was hidden from anyone eligible for Apple Intelligence
 
 `offersPlatformLlm` covered `notEnabled` and `modelNotReady` as well as
