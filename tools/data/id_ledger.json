@@ -1,5 +1,5 @@
 {
- "maxUnitId": 178168,
+ "maxUnitId": 178840,
  "sources": {
   "https://www.newadvent.org/fathers/0622.htm": {
    "min": 4934,
@@ -3822,6 +3822,48 @@
    "max": 178168,
    "count": 108,
    "hash": "0da1f736ba70c689"
+  },
+  "https://www.gutenberg.org/ebooks/56487": {
+   "min": 178169,
+   "max": 178183,
+   "count": 15,
+   "hash": "ffca7ccbe4647cac"
+  },
+  "https://www.gutenberg.org/ebooks/75559": {
+   "min": 178184,
+   "max": 178197,
+   "count": 14,
+   "hash": "230d6e58eece136d"
+  },
+  "https://www.gutenberg.org/ebooks/75590": {
+   "min": 178198,
+   "max": 178212,
+   "count": 15,
+   "hash": "2de5717fa7f09785"
+  },
+  "https://www.gutenberg.org/ebooks/44895": {
+   "min": 178213,
+   "max": 178234,
+   "count": 22,
+   "hash": "7e46f029fa5cb4d3"
+  },
+  "https://www.gutenberg.org/ebooks/37311": {
+   "min": 178235,
+   "max": 178252,
+   "count": 18,
+   "hash": "c819158d345ef10e"
+  },
+  "https://www.gutenberg.org/ebooks/57241": {
+   "min": 178253,
+   "max": 178314,
+   "count": 62,
+   "hash": "c0e9df41b82511b4"
+  },
+  "https://www.gutenberg.org/ebooks/65855": {
+   "min": 178315,
+   "max": 178840,
+   "count": 526,
+   "hash": "92c3e9a0c33191d3"
   }
  },
  "idSpace": 1

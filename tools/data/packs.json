@@ -276,6 +276,18 @@
       ]
     },
     {
+      "id": "f-anabaptist",
+      "traditions": [
+        "anabaptist"
+      ]
+    },
+    {
+      "id": "f-quaker",
+      "traditions": [
+        "quaker"
+      ]
+    },
+    {
       "id": "f-ecumenical",
       "traditions": [
         "ecumenical"
@@ -571,6 +583,24 @@
       "description": "The Tewahedo scriptural canon beyond the books shared with the West. 1 Enoch is scripture in the Ethiopian and Eritrean Orthodox Tewahedo churches, and is here on that basis rather than as a curiosity.",
       "fragments": [
         "f-oriental-orthodox"
+      ]
+    },
+    {
+      "id": "tradition-anabaptist",
+      "kind": "tradition",
+      "name": "Anabaptist",
+      "description": "The Martyrs Mirror \u2014 after the Bible, the book Mennonite households actually held. Martyrology rather than systematics: Menno Simons and the Schleitheim and Dordrecht confessions have no public-domain transcription and are not here.",
+      "fragments": [
+        "f-anabaptist"
+      ]
+    },
+    {
+      "id": "tradition-quaker",
+      "kind": "tradition",
+      "name": "Quaker",
+      "description": "The Religious Society of Friends in its own words: Barclay's Apology, the journals of Fox and Woolman, Penn's No Cross, No Crown, and Sewel's history.",
+      "fragments": [
+        "f-quaker"
       ]
     },
     {
