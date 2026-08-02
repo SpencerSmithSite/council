@@ -63,13 +63,12 @@ class InferenceProvider extends ChangeNotifier {
 
   /// Whether to offer a downloadable model.
   ///
-  /// Suppressed only when the built-in model actually works. Being *eligible*
-  /// for one is not enough: a reader who has left Apple Intelligence switched
-  /// off, or whose model is still downloading, has no on-device generation
-  /// today and should still be offered the alternative.
-  bool get offersLocalModel =>
-      !(_platformLlm?.state.supersedesDownload ?? false) &&
-      LocalModelChoice.runsHere;
+  /// Everywhere the engine runs, including devices that already have a built-in
+  /// model. Having Apple Intelligence is a reason to *default* to it, not a
+  /// reason to withhold the alternative: the built-in model is a fixed, modest
+  /// one, and a reader on a Mac with plenty of memory may well prefer a 4B or
+  /// 8B they choose themselves. Hiding the option meant they could not.
+  bool get offersLocalModel => LocalModelChoice.runsHere;
 
   /// The backend the user selected, constructed fresh so configuration edits
   /// always take effect.
