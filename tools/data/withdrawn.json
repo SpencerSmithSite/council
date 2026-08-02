@@ -1,0 +1,241 @@
+{
+  "_comment": [
+    "Works deliberately withdrawn from the corpus. The New Advent manifest is a",
+    "faithful record of what that archive holds, so nothing is deleted from it \u2014",
+    "these are named here instead, and both the ingester and the completeness",
+    "audit read this file.",
+    "",
+    "Without it a corpus rebuild would re-ingest every one of them and silently",
+    "undo the decision, and audit_completeness.py would report 45 works as a gap",
+    "to be filled rather than as a choice already made.",
+    "",
+    "Withdrawn 2026-08-01. See the audit section in TODO.md for the reasoning."
+  ],
+  "withdrawn": [
+    {
+      "id": "0801",
+      "title": "The Testaments of the Twelve Patriarchs (c. 192)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0804",
+      "title": "Recognitions",
+      "reason": "Pseudo-Clementine, bylined Clement of Rome as though genuine"
+    },
+    {
+      "id": "0805",
+      "title": "History of Joseph the Carpenter (c. 400)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0806",
+      "title": "Arabic Gospel of the Infancy of the Saviour (c. 600)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0807",
+      "title": "Gospel of Nicodemus",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0808",
+      "title": "Clementine Homilies",
+      "reason": "Pseudo-Clementine, bylined Clement of Rome as though genuine"
+    },
+    {
+      "id": "0809",
+      "title": "Report of Pontius Pilate (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0810",
+      "title": "Letter of Pontius Pilate (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0811",
+      "title": "Giving Up of Pontius Pilate (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0812",
+      "title": "Death of Pilate (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0813",
+      "title": "Narrative of Joseph of Arimathea (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0814",
+      "title": "Avenging of the Saviour (c. 700)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0815",
+      "title": "Acts of Peter and Paul (c. 200)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0816",
+      "title": "Acts of Paul and Thecla (c. 180)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0817",
+      "title": "Acts of Barnabas (c. 500)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0818",
+      "title": "Acts of Philip (c. 350)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0819",
+      "title": "Acts of Andrew (c. 260)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0820",
+      "title": "Acts of Andrew and Matthias",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0821",
+      "title": "Acts of Peter and Andrew",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0822",
+      "title": "Acts and Martyrdom of St. Matthew the Apostle (c. 550)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0823",
+      "title": "Acts of Thomas (c. 240)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0824",
+      "title": "Consummation of Thomas the Apostle",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0825",
+      "title": "Acts of Bartholomew (c. 500)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0826",
+      "title": "Acts of Thaddaeus (c. 250)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0827",
+      "title": "Acts of John",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0828",
+      "title": "Apocalypse of Moses (unknown date)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0829",
+      "title": "Apocalypse of Esdras (unknown date)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0831",
+      "title": "Apocalypse of John (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0832",
+      "title": "Assumption of Mary (c. 400)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0835",
+      "title": "The False Decretals (c. 850)",
+      "reason": "the Pseudo-Isidorian forgeries: fabricated papal letters"
+    },
+    {
+      "id": "0846",
+      "title": "Gospel of Thomas (c. 200)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0847",
+      "title": "Protoevangelium of James (c. 150)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0848",
+      "title": "Gospel of Pseudo-Matthew (c. 400)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0849",
+      "title": "Gospel of the Nativity of Mary (unknown date; late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0853",
+      "title": "The Doctrine of Addai (c. 400)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "0862",
+      "title": "The Book of the Laws of Various Countries",
+      "reason": "Bardesanes, a heterodox author"
+    },
+    {
+      "id": "1001",
+      "title": "Gospel of Peter (c. 190)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1003",
+      "title": "Apocalypse of Peter (c. 130)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1004",
+      "title": "The Legend of Barlaam and Josaphat",
+      "reason": "a Christianised retelling of the life of the Buddha"
+    },
+    {
+      "id": "1005",
+      "title": "Apocalypse of the Virgin (unknown date; very late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1006",
+      "title": "Apocalypse of Sedrach (unknown date; very late)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1007",
+      "title": "Testament of Abraham (unknown date)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1008",
+      "title": "Acts of Xanthippe and Polyxena (c. 270)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1009",
+      "title": "Narrative of Zosimus (unknown date)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    },
+    {
+      "id": "1017",
+      "title": "Apocalypse of Paul (c. 380)",
+      "reason": "New Testament apocrypha: received as scripture by no tradition"
+    }
+  ]
+}

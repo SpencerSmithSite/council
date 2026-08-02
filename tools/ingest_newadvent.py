@@ -30,6 +30,7 @@ CACHE = ROOT / ".cache" / "newadvent"
 MANIFEST = ROOT / "tools" / "data" / "newadvent_manifest.json"
 PARTS = ROOT / "tools" / "data" / "newadvent_parts.json"
 UNITS = ROOT / "tools" / "data" / "newadvent_units.json"
+WITHDRAWN = ROOT / "tools" / "data" / "withdrawn.json"
 
 BASE = "https://www.newadvent.org/fathers/"
 INDEX = BASE
@@ -511,8 +512,29 @@ def parse_multipart(work, parts):
     }
 
 
+def withdrawn_ids():
+    """Manifest ids deliberately not in the corpus.
+
+    The manifest stays a faithful record of what New Advent holds, so nothing
+    is struck from it. Works taken out of the corpus on editorial grounds are
+    named in `withdrawn.json` and skipped here instead — without this the next
+    rebuild silently re-ingests them and undoes the decision.
+    """
+    if not WITHDRAWN.exists():
+        return {}
+    entries = json.loads(WITHDRAWN.read_text(encoding="utf-8"))["withdrawn"]
+    return {e["id"]: e for e in entries}
+
+
 def parse_all():
     works = json.loads(MANIFEST.read_text(encoding="utf-8"))
+
+    excluded = withdrawn_ids()
+    if excluded:
+        before = len(works)
+        works = [w for w in works if w["id"] not in excluded]
+        print(f"skipping {before - len(works)} withdrawn works "
+              f"(tools/data/withdrawn.json)")
 
     parts_by_parent = {}
     if PARTS.exists():

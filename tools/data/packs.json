@@ -95,12 +95,6 @@
       ]
     },
     {
-      "id": "f-apocrypha",
-      "authors": [
-        "Apocrypha"
-      ]
-    },
-    {
       "id": "f-calvin",
       "authors": [
         "John Calvin"
@@ -276,6 +270,12 @@
       ]
     },
     {
+      "id": "f-oriental-orthodox",
+      "traditions": [
+        "oriental-orthodox"
+      ]
+    },
+    {
       "id": "f-ecumenical",
       "traditions": [
         "ecumenical"
@@ -313,7 +313,6 @@
         "f-athanasius",
         "f-clement-alexandria",
         "f-ambrose",
-        "f-apocrypha",
         "f-fathers-rest"
       ]
     },
@@ -334,8 +333,7 @@
       "fragments": [
         "f-tertullian",
         "f-origen",
-        "f-clement-alexandria",
-        "f-apocrypha"
+        "f-clement-alexandria"
       ]
     },
     {
@@ -564,6 +562,15 @@
         "f-chrysostom",
         "f-athanasius",
         "f-gregory-nyssa"
+      ]
+    },
+    {
+      "id": "tradition-oriental-orthodox",
+      "kind": "tradition",
+      "name": "Oriental Orthodox",
+      "description": "The Tewahedo scriptural canon beyond the books shared with the West. 1 Enoch is scripture in the Ethiopian and Eritrean Orthodox Tewahedo churches, and is here on that basis rather than as a curiosity.",
+      "fragments": [
+        "f-oriental-orthodox"
       ]
     },
     {

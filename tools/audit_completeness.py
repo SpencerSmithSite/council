@@ -60,6 +60,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "assets" / "theology.db"
 CACHE = ROOT / ".cache" / "newadvent"
 MANIFEST = ROOT / "tools" / "data" / "newadvent_manifest.json"
+WITHDRAWN = ROOT / "tools" / "data" / "withdrawn.json"
 
 # The words a translated edition uses to head a division of a work. Matched
 # only when followed by a number, so "the book of Job" and "in this chapter"
@@ -116,10 +117,21 @@ def unexpanded_hubs(conn):
         )
     }
 
-    findings, absent = [], []
+    # Works taken out of the corpus deliberately. They stay in the manifest,
+    # which records what New Advent holds rather than what we keep, so without
+    # this every one of them reads as a gap to go and fill.
+    excluded = {}
+    if WITHDRAWN.exists():
+        excluded = {e["id"]: e for e in
+                    json.loads(WITHDRAWN.read_text(encoding="utf-8"))["withdrawn"]}
+
+    findings, absent, withheld = [], [], []
     for work in json.loads(MANIFEST.read_text(encoding="utf-8")):
         page = CACHE / f"{work['id']}.html"
         if not page.exists():
+            continue
+        if work["id"] in excluded:
+            withheld.append((work["title"], excluded[work["id"]]["reason"]))
             continue
         entry = stored.get(work["url"])
         if entry is None:
@@ -135,7 +147,7 @@ def unexpanded_hubs(conn):
             findings.append((parts, units, title, work["author"], work["url"]))
 
     findings.sort(reverse=True)
-    return findings, sorted(absent)
+    return findings, sorted(absent), sorted(withheld)
 
 
 def main():
@@ -190,7 +202,7 @@ def main():
         conn.close()
         return
 
-    hubs, absent = checked
+    hubs, absent, withheld = checked
     if not hubs:
         print("Every multi-part New Advent work has its parts ingested.")
     else:
@@ -210,6 +222,16 @@ def main():
         for title, author, url in absent:
             print(f"  {title[:48]:50} {author}")
             print(f"  {'':50} {url}")
+
+    if withheld:
+        print()
+        print(f"{len(withheld)} works are withdrawn on purpose and are not a "
+              f"gap (tools/data/withdrawn.json):\n")
+        reasons = {}
+        for title, reason in withheld:
+            reasons.setdefault(reason, []).append(title)
+        for reason, titles in sorted(reasons.items(), key=lambda kv: -len(kv[1])):
+            print(f"  {len(titles):>3}  {reason}")
 
     conn.close()
 
