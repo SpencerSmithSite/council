@@ -3136,6 +3136,43 @@ been run on real hardware — and they are set cautiously on purpose. Being too
 conservative costs a flagship reader a better model; being too generous costs an
 ordinary reader a multi-gigabyte download that ends in a crash.
 
+## The transcript stopped fighting the reader (2026-08-02)
+
+Reported as the app feeling like it was resisting you: scrolling up while an
+answer streamed snapped straight back to the bottom, so the start of a long
+answer could not be read until it had finished.
+
+Every streamed chunk called `_scrollToBottom()`, which animated to
+`maxScrollExtent` unconditionally. Chunks arrive far faster than the 300 ms
+curve could finish, so each one interrupted the last *and* undid any scrolling
+the reader had done — several times a second.
+
+Following is now conditional: on until the reader scrolls away from the end, on
+again the moment they come back. The moments they caused directly — asking a
+question, opening a thread — still force it, because asking a question is a
+statement that you want to see the answer. Streaming also jumps rather than
+animates, since animating to a target that moves every frame is what made it
+stutter.
+
+**The subtle half is that growing content emits scroll notifications too.**
+While an answer streams, `maxScrollExtent` runs ahead of `pixels` every frame,
+and reading that as "the reader scrolled up" would switch following off a
+moment after switching it on — the same bug inverted. So the decision only
+moves on notifications that arrive during an actual drag or fling.
+
+That rule is [TailFollower], extracted from the screen rather than left inline,
+because it is not obvious and it is exactly the kind of thing that gets
+"simplified" back into the bug. Eight tests cover it, including both
+growing-content traps.
+
+Scrolling away is now sticky, so a "Jump to latest" pill appears while an
+answer is still arriving and the reader has moved off the end — without it,
+getting back means dragging by hand through text that is still growing.
+
+Verified on the device: mid-stream, scrolled to the top of the answer, and the
+position held pixel-identical seven seconds later with the answer still
+arriving.
+
 ## Apple Intelligence on the Mac, and the download offered everywhere (2026-08-02)
 
 **The Mac had Apple Intelligence and Council said it had none.** Two independent
