@@ -2530,6 +2530,18 @@ isn't **16 KB page-size compatible**, so it runs in page-size-compatible mode.
   default). Re-verify the dialog is gone. Defer until we're preparing a Play
   Store submission — it changes nothing for development or sideloaded testing.
 
+**Shelved 2026-08-02: Google Play is not planned.** Distribution is the APK
+download for the foreseeable future, and sideloading has no alignment
+requirement, so nothing here blocks anything. It stays recorded because the
+decision could reverse and the diagnosis would otherwise be redone.
+
+What does *not* go away with it: the `onnxruntime` plugin's last pub.dev release
+is **1.4.1, published 2024-03-27**, so there is nothing to bump to. That is worth
+separating from the Play question — the plugin is the app's only path to on-device
+embeddings, which is half of hybrid search and the reason Council works with no
+network. An unmaintained dependency in that position is a risk on any
+distribution channel.
+
 ## Scaling — the corpus, GitHub, and search as data grows (decided 2026-07-23)
 
 The question that prompted this: if we eventually ship packs for everything in
