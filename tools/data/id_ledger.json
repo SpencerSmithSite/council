@@ -1,5 +1,5 @@
 {
- "maxUnitId": 177952,
+ "maxUnitId": 178168,
  "sources": {
   "https://www.newadvent.org/fathers/0622.htm": {
    "min": 4934,
@@ -481,12 +481,6 @@
    "count": 1045,
    "hash": "bbb09c4a2c0d3fbb"
   },
-  "https://www.newadvent.org/fathers/0862.htm": {
-   "min": 8762,
-   "max": 8779,
-   "count": 18,
-   "hash": "b015459be043d779"
-  },
   "https://www.newadvent.org/fathers/0124.htm": {
    "min": 8780,
    "max": 8800,
@@ -564,18 +558,6 @@
    "max": 9342,
    "count": 15,
    "hash": "0646b76a9fa1fd9c"
-  },
-  "https://www.newadvent.org/fathers/0804.htm": {
-   "min": 9343,
-   "max": 9852,
-   "count": 510,
-   "hash": "4cbcd859766e313d"
-  },
-  "https://www.newadvent.org/fathers/0808.htm": {
-   "min": 9853,
-   "max": 10401,
-   "count": 549,
-   "hash": "a073babca7bf35d4"
   },
   "https://www.newadvent.org/fathers/0411.htm": {
    "min": 10402,
@@ -2101,240 +2083,6 @@
    "count": 7,
    "hash": "9bad9fb1265ae090"
   },
-  "https://www.newadvent.org/fathers/1003.htm": {
-   "min": 22191,
-   "max": 22193,
-   "count": 3,
-   "hash": "26369811a39fe5b0"
-  },
-  "https://www.newadvent.org/fathers/0847.htm": {
-   "min": 22194,
-   "max": 22203,
-   "count": 10,
-   "hash": "204d467fe3244ccf"
-  },
-  "https://www.newadvent.org/fathers/0816.htm": {
-   "min": 22204,
-   "max": 22213,
-   "count": 10,
-   "hash": "404848ad0fb222d6"
-  },
-  "https://www.newadvent.org/fathers/1001.htm": {
-   "min": 22214,
-   "max": 22216,
-   "count": 3,
-   "hash": "e4b2eebd681bf872"
-  },
-  "https://www.newadvent.org/fathers/0801.htm": {
-   "min": 22217,
-   "max": 22228,
-   "count": 12,
-   "hash": "09b16a3918104729"
-  },
-  "https://www.newadvent.org/fathers/0815.htm": {
-   "min": 22229,
-   "max": 22243,
-   "count": 15,
-   "hash": "7e930b0e1fa9d97b"
-  },
-  "https://www.newadvent.org/fathers/0846.htm": {
-   "min": 22244,
-   "max": 22246,
-   "count": 3,
-   "hash": "b14944e5a73e5eb4"
-  },
-  "https://www.newadvent.org/fathers/0823.htm": {
-   "min": 22247,
-   "max": 22250,
-   "count": 4,
-   "hash": "dfb40410f0e7732c"
-  },
-  "https://www.newadvent.org/fathers/0826.htm": {
-   "min": 22251,
-   "max": 22253,
-   "count": 3,
-   "hash": "5abab7dc4fa7c5c2"
-  },
-  "https://www.newadvent.org/fathers/0819.htm": {
-   "min": 22254,
-   "max": 22263,
-   "count": 10,
-   "hash": "0a2534544ef4937d"
-  },
-  "https://www.newadvent.org/fathers/1008.htm": {
-   "min": 22264,
-   "max": 22281,
-   "count": 18,
-   "hash": "093bf6f916343ba1"
-  },
-  "https://www.newadvent.org/fathers/0827.htm": {
-   "min": 22282,
-   "max": 22288,
-   "count": 7,
-   "hash": "32a89d5f7122f90c"
-  },
-  "https://www.newadvent.org/fathers/0818.htm": {
-   "min": 22289,
-   "max": 22291,
-   "count": 3,
-   "hash": "75f58bd34996b1e3"
-  },
-  "https://www.newadvent.org/fathers/1017.htm": {
-   "min": 22292,
-   "max": 22312,
-   "count": 21,
-   "hash": "d241d5e3ad6913f4"
-  },
-  "https://www.newadvent.org/fathers/0853.htm": {
-   "min": 22313,
-   "max": 22325,
-   "count": 13,
-   "hash": "6a63b18522f3aa9b"
-  },
-  "https://www.newadvent.org/fathers/0832.htm": {
-   "min": 22326,
-   "max": 22339,
-   "count": 14,
-   "hash": "489ae13004a45b20"
-  },
-  "https://www.newadvent.org/fathers/0805.htm": {
-   "min": 22340,
-   "max": 22350,
-   "count": 11,
-   "hash": "0f7d619aa450b0d4"
-  },
-  "https://www.newadvent.org/fathers/0848.htm": {
-   "min": 22351,
-   "max": 22392,
-   "count": 42,
-   "hash": "357bff880224ee5b"
-  },
-  "https://www.newadvent.org/fathers/0817.htm": {
-   "min": 22393,
-   "max": 22398,
-   "count": 6,
-   "hash": "365d4130e9d491b2"
-  },
-  "https://www.newadvent.org/fathers/0825.htm": {
-   "min": 22399,
-   "max": 22406,
-   "count": 8,
-   "hash": "53dde1a356aa2e4e"
-  },
-  "https://www.newadvent.org/fathers/0822.htm": {
-   "min": 22407,
-   "max": 22417,
-   "count": 11,
-   "hash": "d06f2f5c9879f20c"
-  },
-  "https://www.newadvent.org/fathers/0806.htm": {
-   "min": 22418,
-   "max": 22434,
-   "count": 17,
-   "hash": "b313ed0a25fbaf9b"
-  },
-  "https://www.newadvent.org/fathers/0814.htm": {
-   "min": 22435,
-   "max": 22440,
-   "count": 6,
-   "hash": "ae9a7b850c4e622c"
-  },
-  "https://www.newadvent.org/fathers/0831.htm": {
-   "min": 22441,
-   "max": 22447,
-   "count": 7,
-   "hash": "dd264c01782fc9a5"
-  },
-  "https://www.newadvent.org/fathers/0828.htm": {
-   "min": 22448,
-   "max": 22454,
-   "count": 7,
-   "hash": "9221c10f7a7bb782"
-  },
-  "https://www.newadvent.org/fathers/0829.htm": {
-   "min": 22455,
-   "max": 22457,
-   "count": 3,
-   "hash": "64fac2c5021897a6"
-  },
-  "https://www.newadvent.org/fathers/1007.htm": {
-   "min": 22458,
-   "max": 22474,
-   "count": 17,
-   "hash": "6a5b5d401a5a7b5d"
-  },
-  "https://www.newadvent.org/fathers/1009.htm": {
-   "min": 22475,
-   "max": 22481,
-   "count": 7,
-   "hash": "5c92424fe29ecb9e"
-  },
-  "https://www.newadvent.org/fathers/0849.htm": {
-   "min": 22482,
-   "max": 22491,
-   "count": 10,
-   "hash": "55768cf765921268"
-  },
-  "https://www.newadvent.org/fathers/0813.htm": {
-   "min": 22492,
-   "max": 22496,
-   "count": 5,
-   "hash": "0349a575c87453af"
-  },
-  "https://www.newadvent.org/fathers/0809.htm": {
-   "min": 22497,
-   "max": 22501,
-   "count": 5,
-   "hash": "7a80f7614e6deb7e"
-  },
-  "https://www.newadvent.org/fathers/0810.htm": {
-   "min": 22502,
-   "max": 22502,
-   "count": 1,
-   "hash": "bba72446828edde3"
-  },
-  "https://www.newadvent.org/fathers/0811.htm": {
-   "min": 22503,
-   "max": 22504,
-   "count": 2,
-   "hash": "b72e2eeaf2326e9e"
-  },
-  "https://www.newadvent.org/fathers/0812.htm": {
-   "min": 22505,
-   "max": 22506,
-   "count": 2,
-   "hash": "96e835027040de17"
-  },
-  "https://www.newadvent.org/fathers/1005.htm": {
-   "min": 22507,
-   "max": 22514,
-   "count": 8,
-   "hash": "5bb5ec8c72c387ec"
-  },
-  "https://www.newadvent.org/fathers/1006.htm": {
-   "min": 22515,
-   "max": 22519,
-   "count": 5,
-   "hash": "674680f9fbd3c421"
-  },
-  "https://www.newadvent.org/fathers/0820.htm": {
-   "min": 22520,
-   "max": 22534,
-   "count": 15,
-   "hash": "42e00d168ba42986"
-  },
-  "https://www.newadvent.org/fathers/0821.htm": {
-   "min": 22535,
-   "max": 22536,
-   "count": 2,
-   "hash": "93fb35cb2501fe51"
-  },
-  "https://www.newadvent.org/fathers/0824.htm": {
-   "min": 22537,
-   "max": 22539,
-   "count": 3,
-   "hash": "eb3abfbb72ec1291"
-  },
   "https://www.newadvent.org/fathers/0714.htm": {
    "min": 22540,
    "max": 22555,
@@ -2346,12 +2094,6 @@
    "max": 22600,
    "count": 45,
    "hash": "6330724a1ee2eeb3"
-  },
-  "https://www.newadvent.org/fathers/1004.htm": {
-   "min": 22601,
-   "max": 22609,
-   "count": 9,
-   "hash": "038eb421ca57ef01"
   },
   "https://www.newadvent.org/fathers/1013.htm": {
    "min": 22610,
@@ -2430,12 +2172,6 @@
    "max": 22712,
    "count": 5,
    "hash": "dbcebfeb146b2ea7"
-  },
-  "https://www.newadvent.org/fathers/0835.htm": {
-   "min": 22713,
-   "max": 22725,
-   "count": 13,
-   "hash": "c1ed5c0151927acb"
   },
   "https://www.ccel.org/ccel/brannan/hstcrcon/cache/hstcrcon.txt": {
    "min": 22914,
@@ -2628,12 +2364,6 @@
    "max": 42673,
    "count": 38,
    "hash": "4c1f05f0fb4d9cee"
-  },
-  "https://www.newadvent.org/fathers/0807.htm": {
-   "min": 42674,
-   "max": 42756,
-   "count": 83,
-   "hash": "29b018fb5aec4223"
   },
   "https://www.newadvent.org/fathers/0850.htm": {
    "min": 42757,
@@ -4086,6 +3816,12 @@
    "max": 177952,
    "count": 383,
    "hash": "4da9a279d955b938"
+  },
+  "https://www.gutenberg.org/ebooks/77935": {
+   "min": 178061,
+   "max": 178168,
+   "count": 108,
+   "hash": "0da1f736ba70c689"
   }
  },
  "idSpace": 1
