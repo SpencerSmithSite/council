@@ -2861,3 +2861,51 @@ worth a corpus rebuild, which is a judgement call, rather than a change that can
 silently corrupt retrieval, which is not. Nothing about the current runtime is
 broken; embeddings work, and Google Play — the one thing that made its 16 KB
 alignment problem urgent — is not planned.
+
+## The iOS floor moved to 16, and why that is a dependency and not a decision
+
+`flutter_gemma` requires **iOS 16**, so `IPHONEOS_DEPLOYMENT_TARGET` went 15.0 →
+16.0 in all three build configurations and the Podfile followed. Recorded here
+because a minimum-OS rise normally reflects a judgement about who is worth
+supporting, and this one does not — it is what the downloadable-model runtime
+demands.
+
+What it costs is close to nothing, which is why it was accepted rather than
+worked around. The devices capped at iOS 15 are the iPhone 6s, 7 and first SE,
+all of which have 2 GB of RAM. The vector index alone is ~170 MB resident, and
+the smallest model offered wants 400 MB beside it; none of them could have run
+the feature that forced the bump. Making the runtime optional to keep those
+three devices on a build that cannot use it would have been cost with no
+beneficiary.
+
+## Apple Intelligence — confirmed working (2026-08-02)
+
+The bridge answers on real hardware. Previously only the *unavailable* branch
+had been exercised, so this closes the one part of the feature that compilation
+could not establish: the framework returns `available`, the stream delivers
+deltas, and grounded answers come back with their citations intact.
+
+Two corrections to what was assumed while building it:
+
+* **The simulator does provide Apple Intelligence.** An iOS 27 simulator on
+  Apple silicon inherits the host Mac's model, so the available path is
+  reachable without a physical device. The earlier note that simulators can
+  only exercise the unavailable branch was wrong.
+* `/Applications/Xcode-beta.app` **does exist** on this host — it is simply
+  incomplete; its `Contents/Developer/Library/PrivateFrameworks` directory is
+  missing, which is why `SimulatorKit` fails to load and the simulator-panel
+  tooling cannot attach. `simctl` still boots devices. The fix remains a
+  complete Xcode plus `sudo xcode-select -s`, which needs the user's password.
+
+### The one bug it surfaced
+
+The coverage notice's action row overflowed by 25 px on an iPhone 17 whenever
+the suggested collection had a long name: `Row(mainAxisSize: min)` holding
+"Browse library" beside "Add Church Fathers · 46.5 MB" is wider than the 354 px
+the notice gets. Replaced with a `Wrap`, so the install button drops to its own
+line instead — the only option that neither truncates the byte count nor hides
+the button, and the size is on the button deliberately, because this is an
+unsolicited suggestion to spend someone's data.
+
+Reproduced before fixing: the old tree at 354 px throws a Flutter layout error
+and the `Wrap` does not.

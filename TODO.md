@@ -434,6 +434,20 @@ will see; both notes come off once these are settled.
       manifest would need to name what has been withdrawn, and the installer to
       drop those fragments and their rows on sync.
 
+- [ ] **The downloadable model path is still unverified end to end.** Apple
+      Intelligence was confirmed working on 2026-08-02, but that is the branch
+      that needs no download. Nobody has yet run the other one on a device:
+      fetch Gemma 3 270M or 1B over the network, watch the progress reporting,
+      and get a grounded answer out of it. The failure modes it would expose —
+      an interrupted download, a model that loads but exhausts memory beside
+      the ~170 MB vector index — are exactly the ones no test covers.
+
+- [ ] **Audit the rest of the chat screen at a narrow width.** The coverage
+      notice overflowed by 25 px because a `Row` held two buttons whose labels
+      interpolate a collection name and a byte count. That shape is not unique
+      to it, and the widths that break are the ones a phone actually has, not
+      the ones a desktop debug run shows.
+
 - [ ] Text-to-speech for a source, offline.
 - [ ] Re-anchor annotations on corpus drift. The quote snapshot is stored and
       not yet used; an annotation whose offsets have moved is currently drawn
