@@ -9,7 +9,14 @@ publish_to: 'none'
 # The counter after the + is what App Store Connect requires to differ on every
 # upload; it only ever goes up, and is never reset when the date changes,
 # because Android's versionCode has to increase regardless of the date.
-version: 2026.7.27+6
+# The single source of truth for the version on every platform. iOS reads it
+# through Info.plist's $(FLUTTER_BUILD_NAME)/$(FLUTTER_BUILD_NUMBER), which
+# `flutter build` writes into ios/Flutter/Generated.xcconfig; Android reads it as
+# flutter.versionName/versionCode. Editing the version in Xcode's General tab
+# does nothing — it sets MARKETING_VERSION and CURRENT_PROJECT_VERSION, which
+# nothing in this project references, so an archive built that way ships the
+# pubspec's numbers regardless of what the tab shows.
+version: 2026.8.2+7
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
