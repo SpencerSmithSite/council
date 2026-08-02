@@ -1,4 +1,8 @@
+#if os(iOS)
 import Flutter
+#else
+import FlutterMacOS
+#endif
 import Foundation
 
 #if canImport(FoundationModels)
@@ -7,11 +11,17 @@ import FoundationModels
 
 /// Bridges Apple's on-device language model to Dart.
 ///
-/// The framework arrived in iOS 26 and the app's deployment target is 15.0, so
-/// every entry point is guarded twice: `canImport` so the app still compiles
-/// against an older SDK, and `#available` so it still launches on an older OS.
-/// Without both, adding this makes the app fail to build or fail to start for
-/// everyone who cannot use it.
+/// Shared by the iOS and macOS runners — one file referenced from both Xcode
+/// projects rather than two copies, because the framework, the availability
+/// rules and the channel contract are identical and a divergence between them
+/// would be invisible until one platform silently stopped offering the model.
+/// Only the Flutter module name differs.
+///
+/// The framework arrived in iOS 26 / macOS 26 and the deployment targets are
+/// older, so every entry point is guarded twice: `canImport` so the app still
+/// compiles against an older SDK, and `#available` so it still launches on an
+/// older OS. Without both, adding this makes the app fail to build or fail to
+/// start for everyone who cannot use it.
 ///
 /// Availability is asked of the framework rather than inferred. A version check
 /// is wrong in both directions — Apple Intelligence needs A17 Pro or newer
@@ -24,8 +34,16 @@ enum FoundationModelsBridge {
     private static let eventChannelName = "site.spencersmith.council/platform_llm_stream"
 
     static func register(with registrar: FlutterPluginRegistrar) {
+        // `messenger` is a method on iOS and a property on macOS. Resolved once
+        // here so the two channel constructions below read identically.
+        #if os(iOS)
+        let messenger = registrar.messenger()
+        #else
+        let messenger = registrar.messenger
+        #endif
+
         let methods = FlutterMethodChannel(
-            name: methodChannelName, binaryMessenger: registrar.messenger())
+            name: methodChannelName, binaryMessenger: messenger)
         methods.setMethodCallHandler { call, result in
             switch call.method {
             case "availability":
@@ -36,7 +54,7 @@ enum FoundationModelsBridge {
         }
 
         let events = FlutterEventChannel(
-            name: eventChannelName, binaryMessenger: registrar.messenger())
+            name: eventChannelName, binaryMessenger: messenger)
         events.setStreamHandler(GenerationStreamHandler())
     }
 
@@ -44,7 +62,7 @@ enum FoundationModelsBridge {
     /// has the framework at all, `available` whether it will answer right now.
     static func availability() -> [String: Any] {
         #if canImport(FoundationModels)
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, *) {
             switch SystemLanguageModel.default.availability {
             case .available:
                 return [
@@ -75,12 +93,12 @@ enum FoundationModelsBridge {
             "supported": false,
             "available": false,
             "reason": "os_too_old",
-            "detail": "Apple's on-device model needs iOS 26 or later.",
+            "detail": Self.tooOldDetail,
         ]
     }
 
     #if canImport(FoundationModels)
-    @available(iOS 26.0, *)
+    @available(iOS 26.0, macOS 26.0, *)
     private static func describe(
         _ reason: SystemLanguageModel.Availability.UnavailableReason
     ) -> String {
@@ -95,17 +113,29 @@ enum FoundationModelsBridge {
     /// Phrased as something the reader can act on. "Not eligible" is final and
     /// should not read like a setting they failed to find; the other two are
     /// fixable and should say how.
-    @available(iOS 26.0, *)
+    @available(iOS 26.0, macOS 26.0, *)
     private static func explain(
         _ reason: SystemLanguageModel.Availability.UnavailableReason
     ) -> String {
         switch reason {
         case .deviceNotEligible:
+            #if os(macOS)
+            return "This Mac does not support Apple Intelligence. It needs "
+                + "Apple silicon."
+            #else
             return "This iPhone does not support Apple Intelligence. It needs "
                 + "an iPhone 15 Pro or newer."
+            #endif
         case .appleIntelligenceNotEnabled:
+            // The settings app is named differently on each platform, and
+            // sending someone to the wrong one is worse than not naming it.
+            #if os(macOS)
+            return "Apple Intelligence is switched off. Turn it on in System "
+                + "Settings \u{2192} Apple Intelligence & Siri."
+            #else
             return "Apple Intelligence is switched off. Turn it on in Settings "
                 + "\u{2192} Apple Intelligence & Siri."
+            #endif
         case .modelNotReady:
             return "Apple Intelligence is still downloading its model. This "
                 + "finishes on its own \u{2014} try again shortly."
@@ -114,6 +144,16 @@ enum FoundationModelsBridge {
         }
     }
     #endif
+
+    /// Named once, because it is returned from both the availability check and
+    /// the generation stream.
+    static var tooOldDetail: String {
+        #if os(macOS)
+        return "Apple's on-device model needs macOS 26 or later."
+        #else
+        return "Apple's on-device model needs iOS 26 or later."
+        #endif
+    }
 }
 
 /// Streams one generation at a time.
@@ -137,7 +177,7 @@ final class GenerationStreamHandler: NSObject, FlutterStreamHandler {
         let system = args["system"] as? String
 
         #if canImport(FoundationModels)
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, *) {
             task = Task {
                 do {
                     let session = system.map { LanguageModelSession(instructions: $0) }
@@ -168,7 +208,7 @@ final class GenerationStreamHandler: NSObject, FlutterStreamHandler {
 
         events(FlutterError(
             code: "unsupported",
-            message: "Apple's on-device model needs iOS 26 or later.",
+            message: FoundationModelsBridge.tooOldDetail,
             details: nil))
         events(FlutterEndOfEventStream)
         return nil

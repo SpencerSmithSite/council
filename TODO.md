@@ -467,6 +467,13 @@ will see; both notes come off once these are settled.
       upstream regression: discrete GPUs crash in the WebGPU/Dawn stack, so it
       may need `PreferredBackend.cpu` there.
 
+- [ ] **Check Apple Intelligence still works on iOS after the shared-file
+      change.** The bridge is now one file compiled into both runners, and only
+      the macOS half has been exercised since. The conditional imports and the
+      `messenger` method-versus-property split are compile-time, so a green iOS
+      build is most of the evidence — but the iOS registration path was edited
+      and has not been run.
+
 - [ ] **Try the downloaded model on iOS.** Only Android has been run end to
       end. The engine, the weights and the Dart are shared, but the download
       path is not: iOS has its own background-download behaviour and its own

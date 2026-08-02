@@ -76,19 +76,18 @@ class AiBackendScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
 
-                      // Offered when the device has no built-in model, which
-                      // is the case this exists for: without it those readers
-                      // have no on-device generation at all, only a server to
-                      // stand up or a key to buy. Phones only — see
-                      // [LocalModelChoice.runsHere].
+                      // Offered wherever the engine runs, built-in model or
+                      // not: Apple Intelligence is a reason to default to it,
+                      // not a reason to withhold a model the reader may prefer.
                       if (inference.offersLocalModel) ...[
                         _Option(
                           id: LocalModelBackend.backendId,
-                          title: 'Download a small model',
+                          title: 'Download a local model',
                           subtitle:
-                              'A ${inference.localModel.approximateSize} '
-                              'one-time download that then runs entirely on '
-                              'this device. Modest, but no account and no key.',
+                              'A one-time download that then runs entirely on '
+                              'this device, with no account and no key. You '
+                              'choose the size — from '
+                              '${inference.localModel.approximateSize} upward.',
                           icon: Icons.download_outlined,
                           selected: inference.backendId ==
                               LocalModelBackend.backendId,

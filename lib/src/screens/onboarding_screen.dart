@@ -335,18 +335,19 @@ class _AiPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
           ],
-          // The counterpart for devices with no built-in model: offered in the
-          // same position, so every reader sees one on-device option first
-          // rather than being sent straight to a server or a credit card.
-          // Phones only — see [LocalModelChoice.runsHere].
+          // Offered on every device the engine runs on, including ones that
+          // already have a built-in model. Having Apple Intelligence is a
+          // reason to default to it, not a reason to withhold a model the
+          // reader might prefer — the built-in one is fixed and modest, and a
+          // Mac with memory to spare can run considerably more.
           if (inference.offersLocalModel) ...[
             _AiOption(
               id: LocalModelBackend.backendId,
-              title: 'Download a small model',
+              title: 'Download a local model',
               subtitle:
-                  'This device has no built-in AI, but a '
-                  '${inference.localModel.approximateSize} one-time download '
-                  'runs entirely on it. Modest, and nothing leaves the device.',
+                  'A one-time download that then runs entirely on this device, '
+                  'with no account and no key. You choose the size — '
+                  'from ${inference.localModel.approximateSize} upward.',
               icon: Icons.download_outlined,
               selected: selected == LocalModelBackend.backendId,
             ),

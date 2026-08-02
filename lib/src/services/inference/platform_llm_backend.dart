@@ -62,18 +62,6 @@ enum PlatformLlmState {
           true,
         _ => false,
       };
-
-  /// Whether the reader has a working on-device model *right now*.
-  ///
-  /// Distinct from [worthOffering], and the distinction matters: the
-  /// downloadable model used to be hidden whenever the platform row was shown,
-  /// which meant an eligible iPhone with Apple Intelligence switched off was
-  /// offered the switch and nothing else. Someone who does not want to turn it
-  /// on was left with a server to stand up or a key to buy, on a device
-  /// perfectly able to run a downloaded model.
-  ///
-  /// So the download is hidden only when the built-in model actually answers.
-  bool get supersedesDownload => this == PlatformLlmState.available;
 }
 
 /// A snapshot of what the platform reported.
@@ -116,14 +104,24 @@ class PlatformLlmBackend implements InferenceBackend {
   @override
   String get id => backendId;
 
+  /// Whether this platform has a bridge to a built-in model at all.
+  ///
+  /// iOS and macOS: Apple's Foundation Models framework is on both, and the
+  /// same Swift file serves each runner. The Mac was left out originally and
+  /// silently reported "no built-in model" on hardware that has Apple
+  /// Intelligence — the gate here said `isIOS` and the macOS runner never
+  /// registered the channel, so both halves had to be wrong for the symptom to
+  /// appear, and both had to be fixed.
+  static bool get bridgedHere => Platform.isIOS || Platform.isMacOS;
+
   @override
   String get displayName =>
-      Platform.isIOS ? 'Apple Intelligence' : 'Built-in model';
+      bridgedHere ? 'Apple Intelligence' : 'Built-in model';
 
   @override
   String get description =>
       'The model already on this device. No account, no key, no download, and '
-      'nothing leaves the phone.';
+      'nothing leaves it.';
 
   @override
   bool get isPrivate => true;
@@ -141,7 +139,7 @@ class PlatformLlmBackend implements InferenceBackend {
       {bool refresh = false}) async {
     if (!refresh && _cached != null) return _cached!;
 
-    if (!Platform.isIOS) {
+    if (!bridgedHere) {
       return _cached = const PlatformLlmAvailability(
         PlatformLlmState.unsupportedPlatform,
         'This platform has no built-in model Council can use yet.',

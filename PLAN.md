@@ -3136,6 +3136,42 @@ been run on real hardware — and they are set cautiously on purpose. Being too
 conservative costs a flagship reader a better model; being too generous costs an
 ordinary reader a multi-gigabyte download that ends in a crash.
 
+## Apple Intelligence on the Mac, and the download offered everywhere (2026-08-02)
+
+**The Mac had Apple Intelligence and Council said it had none.** Two independent
+halves were wrong, which is why it looked like a single stubborn bug: the Dart
+gate read `Platform.isIOS`, and the macOS runner never registered the channel.
+Fixing either alone would have changed nothing.
+
+Apple's Foundation Models framework is on macOS 26+ as well as iOS 26+, with the
+same API. `FoundationModelsBridge.swift` is now shared between the two runners —
+a symlink into `macos/Runner/` rather than a copy, because the framework, the
+availability rules and the channel contract are identical, and a divergence
+between two copies would be invisible until one platform silently stopped
+offering the model. Only three things differ, all handled in-file: the Flutter
+module name, `messenger` being a method on iOS and a property on macOS, and the
+user-facing strings, since "check Settings" and "needs an iPhone 15 Pro" are
+both wrong on a Mac.
+
+Verified on this machine rather than inferred: the framework reports
+`available`, and asked what baptism is through the macOS bridge it answered.
+
+## The downloadable model is offered everywhere
+
+It used to be suppressed whenever the built-in model worked. That was backwards.
+Having Apple Intelligence is a reason to *default* to it, not a reason to
+withhold the alternative: the built-in model is a fixed, modest one, and a Mac
+with memory to spare can run a 4B or 8B the reader picks themselves. Now every
+device the engine covers gets the option and its three tiers, whatever else it
+has.
+
+`supersedesDownload` was deleted rather than left unused — it encoded exactly
+the assumption being removed.
+
+Renamed to "Download a local model": "small" described the only option that
+existed when there was one, and is now false on the tier that exists to be the
+largest the machine can hold.
+
 ## A picker of two or three, and a disk check (2026-08-02)
 
 **Everything that fits is not a useful list.** On a workstation that is four
