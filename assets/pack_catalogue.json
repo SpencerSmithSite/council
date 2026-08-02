@@ -1553,6 +1553,39 @@
         "Oriental Orthodox"
       ]
     },
+    "f-anabaptist": {
+      "authors": [
+        "Thieleman J. van Braght"
+      ],
+      "titles": [
+        "The Bloody Theatre, or Martyrs Mirror of the Defenseless Christians"
+      ],
+      "tags": {},
+      "traditions": [
+        "Anabaptist"
+      ]
+    },
+    "f-quaker": {
+      "authors": [
+        "George Fox",
+        "John Woolman",
+        "Robert Barclay",
+        "William Penn",
+        "William Sewel"
+      ],
+      "titles": [
+        "An Apology for the True Christian Divinity",
+        "No Cross, No Crown",
+        "The History of the Rise, Increase, and Progress of the Christian People Called Quakers",
+        "The Journal of George Fox, Volume 1",
+        "The Journal of George Fox, Volume 2",
+        "The Journal of John Woolman"
+      ],
+      "tags": {},
+      "traditions": [
+        "Quaker"
+      ]
+    },
     "f-ecumenical": {
       "authors": [
         "Councils"
@@ -3878,6 +3911,47 @@
       ],
       "fragments": [
         "f-oriental-orthodox"
+      ]
+    },
+    "tradition-anabaptist": {
+      "name": "Anabaptist",
+      "authors": [
+        "Thieleman J. van Braght"
+      ],
+      "titles": [
+        "The Bloody Theatre, or Martyrs Mirror of the Defenseless Christians"
+      ],
+      "tags": {},
+      "traditions": [
+        "Anabaptist"
+      ],
+      "fragments": [
+        "f-anabaptist"
+      ]
+    },
+    "tradition-quaker": {
+      "name": "Quaker",
+      "authors": [
+        "George Fox",
+        "John Woolman",
+        "Robert Barclay",
+        "William Penn",
+        "William Sewel"
+      ],
+      "titles": [
+        "An Apology for the True Christian Divinity",
+        "No Cross, No Crown",
+        "The History of the Rise, Increase, and Progress of the Christian People Called Quakers",
+        "The Journal of George Fox, Volume 1",
+        "The Journal of George Fox, Volume 2",
+        "The Journal of John Woolman"
+      ],
+      "tags": {},
+      "traditions": [
+        "Quaker"
+      ],
+      "fragments": [
+        "f-quaker"
       ]
     },
     "tradition-methodist": {
