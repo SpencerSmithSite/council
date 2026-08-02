@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/inference/platform_llm_backend.dart';
 import '../services/ollama_service.dart';
 import '../theme/glass_controls.dart';
 
@@ -38,6 +39,28 @@ class AiBackendScreen extends StatelessWidget {
                     children: [
                       _StatusBanner(inference: inference),
                       const SizedBox(height: 16),
+
+                      // First when the device has one. It needs no host, no
+                      // key and no download, so for a reader who qualifies it
+                      // is the shortest route from "no AI" to a grounded
+                      // answer — and it is the only generating backend that
+                      // keeps the app's own privacy claim intact.
+                      if (inference.offersPlatformLlm) ...[
+                        _Option(
+                          id: PlatformLlmBackend.backendId,
+                          title: const PlatformLlmBackend().displayName,
+                          subtitle: const PlatformLlmBackend().description,
+                          icon: Icons.auto_awesome_outlined,
+                          selected: inference.backendId ==
+                              PlatformLlmBackend.backendId,
+                        ),
+                        if (!inference.platformLlmReady)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: _PlatformLlmNotice(inference: inference),
+                          ),
+                        const SizedBox(height: 12),
+                      ],
 
                       _Option(
                         id: 'none',
@@ -541,6 +564,62 @@ class _CloudSettingsState extends State<_CloudSettings> {
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shown when the device supports the built-in model but cannot use it yet —
+/// Apple Intelligence switched off, or its model still downloading.
+///
+/// Both are the reader's to fix and neither is permanent, which is why the row
+/// stays selectable and this explains rather than disables. Hardware that can
+/// never run it does not reach here: the option is not offered at all.
+class _PlatformLlmNotice extends StatelessWidget {
+  final InferenceProvider inference;
+
+  const _PlatformLlmNotice({required this.inference});
+
+  @override
+  Widget build(BuildContext context) {
+    final report = inference.platformLlm;
+    if (report == null) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 20, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(report.detail,
+                    style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 8),
+                // The reader fixes this in iOS Settings and comes back; without
+                // a way to re-ask, the app would still be showing the stale
+                // answer it cached at launch.
+                TextButton(
+                  onPressed: () => inference.refreshPlatformLlm(),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Check again'),
+                ),
+              ],
             ),
           ),
         ],
