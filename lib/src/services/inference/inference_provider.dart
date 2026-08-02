@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cloud_backend.dart';
 import 'inference_backend.dart';
+import 'local_model_backend.dart';
 import 'ollama_backend.dart';
 import 'platform_llm_backend.dart';
 
@@ -21,6 +22,7 @@ class InferenceProvider extends ChangeNotifier {
   static const _ollamaModelKey = 'ollama_model';
   static const _cloudProviderKey = 'cloud_provider';
   static const _cloudModelKey = 'cloud_model';
+  static const _localModelKey = 'local_model';
 
   static const _secure = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -32,6 +34,7 @@ class InferenceProvider extends ChangeNotifier {
   CloudProvider _cloudProvider = CloudProvider.anthropic;
   String _cloudModel = CloudProvider.anthropic.defaultModel;
   String _cloudKey = '';
+  String _localModelId = LocalModelChoice.recommended().id;
 
   BackendStatus? _status;
   bool _isLoaded = false;
@@ -43,6 +46,7 @@ class InferenceProvider extends ChangeNotifier {
   CloudProvider get cloudProvider => _cloudProvider;
   String get cloudModel => _cloudModel;
   bool get hasCloudKey => _cloudKey.isNotEmpty;
+  LocalModelChoice get localModel => LocalModelChoice.byId(_localModelId);
   BackendStatus? get status => _status;
   bool get isLoaded => _isLoaded;
 
@@ -63,6 +67,8 @@ class InferenceProvider extends ChangeNotifier {
     switch (_backendId) {
       case PlatformLlmBackend.backendId:
         return const PlatformLlmBackend();
+      case LocalModelBackend.backendId:
+        return LocalModelBackend(choice: localModel);
       case 'ollama':
         return OllamaBackend(host: _ollamaHost, model: _ollamaModel);
       case 'cloud':
@@ -90,6 +96,8 @@ class InferenceProvider extends ChangeNotifier {
     _cloudModel =
         prefs.getString(_cloudModelKey) ?? _cloudProvider.defaultModel;
     _cloudKey = await _readKey(_cloudProvider);
+    _localModelId =
+        prefs.getString(_localModelKey) ?? LocalModelChoice.recommended().id;
     _platformLlm = await PlatformLlmBackend.availability();
 
     _isLoaded = true;
@@ -163,6 +171,14 @@ class InferenceProvider extends ChangeNotifier {
   Future<void> refreshPlatformLlm() async {
     _platformLlm = await PlatformLlmBackend.availability(refresh: true);
     notifyListeners();
+  }
+
+  Future<void> setLocalModel(String id) async {
+    _localModelId = id;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localModelKey, id);
+    await refreshStatus();
   }
 
   Future<void> refreshStatus() async {

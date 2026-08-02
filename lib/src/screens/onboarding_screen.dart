@@ -6,6 +6,7 @@ import '../services/packs/pack_manifest.dart';
 import '../services/packs/pack_provider.dart';
 import '../services/settings_provider.dart';
 import '../widgets/brand_loader.dart';
+import '../services/inference/local_model_backend.dart';
 import '../services/inference/platform_llm_backend.dart';
 import 'ai_backend_screen.dart';
 
@@ -331,6 +332,22 @@ class _AiPage extends StatelessWidget {
                       const PlatformLlmBackend().description,
               icon: Icons.auto_awesome_outlined,
               selected: selected == PlatformLlmBackend.backendId,
+            ),
+            const SizedBox(height: 10),
+          ],
+          // The counterpart for devices with no built-in model: offered in the
+          // same position, so every reader sees one on-device option first
+          // rather than being sent straight to a server or a credit card.
+          if (!inference.offersPlatformLlm) ...[
+            _AiOption(
+              id: LocalModelBackend.backendId,
+              title: 'Download a small model',
+              subtitle:
+                  'This device has no built-in AI, but a '
+                  '${inference.localModel.approximateSize} one-time download '
+                  'runs entirely on it. Modest, and nothing leaves the device.',
+              icon: Icons.download_outlined,
+              selected: selected == LocalModelBackend.backendId,
             ),
             const SizedBox(height: 10),
           ],

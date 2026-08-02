@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/inference/local_model_backend.dart';
 import '../services/inference/platform_llm_backend.dart';
 import '../services/ollama_service.dart';
 import '../theme/glass_controls.dart';
@@ -72,6 +74,30 @@ class AiBackendScreen extends StatelessWidget {
                         selected: inference.backendId == 'none',
                       ),
                       const SizedBox(height: 12),
+
+                      // Offered when the device has no built-in model, which
+                      // is the case this exists for: without it those readers
+                      // have no on-device generation at all, only a server to
+                      // stand up or a key to buy.
+                      if (!inference.offersPlatformLlm) ...[
+                        _Option(
+                          id: LocalModelBackend.backendId,
+                          title: 'Download a small model',
+                          subtitle:
+                              'A ${inference.localModel.approximateSize} '
+                              'one-time download that then runs entirely on '
+                              'this device. Modest, but no account and no key.',
+                          icon: Icons.download_outlined,
+                          selected: inference.backendId ==
+                              LocalModelBackend.backendId,
+                        ),
+                        if (inference.backendId == LocalModelBackend.backendId)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: _LocalModelSettings(),
+                          ),
+                        const SizedBox(height: 12),
+                      ],
 
                       _Option(
                         id: 'ollama',
@@ -623,6 +649,126 @@ class _PlatformLlmNotice extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Choose which small model to download, and download it.
+///
+/// Shows RAM rather than only disk, because RAM is what decides whether it
+/// runs: the corpus vector index is already resident and the model has to fit
+/// beside it.
+class _LocalModelSettings extends StatefulWidget {
+  const _LocalModelSettings();
+
+  @override
+  State<_LocalModelSettings> createState() => _LocalModelSettingsState();
+}
+
+class _LocalModelSettingsState extends State<_LocalModelSettings> {
+  StreamSubscription<int>? _install;
+  int? _progress;
+  String? _error;
+
+  @override
+  void dispose() {
+    _install?.cancel();
+    super.dispose();
+  }
+
+  void _download(LocalModelChoice choice) {
+    setState(() {
+      _progress = 0;
+      _error = null;
+    });
+    _install?.cancel();
+    _install = choice.install().listen(
+      (p) => setState(() => _progress = p),
+      onError: (Object e) => setState(() {
+        _error = e.toString();
+        _progress = null;
+      }),
+      onDone: () {
+        if (!mounted) return;
+        setState(() => _progress = null);
+        context.read<InferenceProvider>().refreshStatus();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inference = context.watch<InferenceProvider>();
+    final selected = inference.localModel;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RadioGroup<String>(
+              groupValue: selected.id,
+              // Not disabled by passing null — RadioGroup requires a handler —
+              // so the guard is inside: swapping models mid-download would
+              // leave the finished file attached to the wrong choice.
+              onChanged: (v) {
+                if (_progress != null) return;
+                context
+                    .read<InferenceProvider>()
+                    .setLocalModel(v ?? selected.id);
+              },
+              child: Column(
+                children: [
+                  for (final choice in LocalModelChoice.all)
+                    RadioListTile<String>(
+                      value: choice.id,
+                      contentPadding: EdgeInsets.zero,
+                      title:
+                          Text('${choice.name} · ${choice.approximateSize}'),
+                      subtitle: Text(choice.note),
+                      isThreeLine: true,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (_progress != null) ...[
+              LinearProgressIndicator(value: _progress! / 100),
+              const SizedBox(height: 8),
+              Text('Downloading ${selected.name}… $_progress%',
+                  style: Theme.of(context).textTheme.bodySmall),
+            ] else
+              FutureBuilder<bool>(
+                future: selected.isInstalled(),
+                builder: (context, snap) {
+                  final installed = snap.data ?? false;
+                  return Row(
+                    children: [
+                      FilledButton.icon(
+                        onPressed:
+                            installed ? null : () => _download(selected),
+                        icon: Icon(installed
+                            ? Icons.check
+                            : Icons.download_outlined),
+                        label: Text(installed
+                            ? '${selected.name} installed'
+                            : 'Download ${selected.approximateSize}'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12)),
+            ],
+          ],
+        ),
       ),
     );
   }

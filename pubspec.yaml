@@ -47,6 +47,14 @@ dependencies:
   # Secure storage for user-supplied API keys (Keychain / Keystore)
   flutter_secure_storage: ^9.2.2
 
+  # Runs a downloaded small language model on-device, for readers whose phone
+  # has no built-in one. Chosen over the alternatives on maintenance: at the
+  # time of writing fllama's last release was 2024, llama_cpp_dart's and
+  # cactus' were seven months old, and this one was three days old — which
+  # matters more than features for a dependency in the generation path, as the
+  # onnxruntime entry in PLAN.md exists to record.
+  flutter_gemma: ^1.4.2
+
   # Runs the bundled embedding model so a query can be encoded on-device.
   # Supports android, ios, linux, macos and windows — every platform targeted
   # since web was dropped.
