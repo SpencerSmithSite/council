@@ -2891,11 +2891,24 @@ Two corrections to what was assumed while building it:
   Apple silicon inherits the host Mac's model, so the available path is
   reachable without a physical device. The earlier note that simulators can
   only exercise the unavailable branch was wrong.
-* `/Applications/Xcode-beta.app` **does exist** on this host — it is simply
-  incomplete; its `Contents/Developer/Library/PrivateFrameworks` directory is
-  missing, which is why `SimulatorKit` fails to load and the simulator-panel
-  tooling cannot attach. `simctl` still boots devices. The fix remains a
-  complete Xcode plus `sudo xcode-select -s`, which needs the user's password.
+* **The Xcode install is fine; the simulator-panel tooling is out of date.**
+  This was misdiagnosed twice — first as a missing Xcode, then as an incomplete
+  one — so the actual cause is worth stating. Xcode 27.0 (27A5228h) is complete:
+  every SDK present, both simulator runtimes `Ready`, 15.7 GB of them under
+  `/Library/Developer/CoreSimulator/Volumes` where Xcode 15+ keeps them, and the
+  app builds and runs. `SimulatorKit.framework` exists as a real arm64e binary
+  at `Contents/SharedFrameworks/SimulatorKit.framework`. Apple moved the
+  simulator frameworks there out of `Developer/Library/PrivateFrameworks`, which
+  no longer exists in any Xcode of this generation. The panel is built on
+  FBControlCore, which still appends the pre-move path to whatever
+  `xcode-select` reports, so the load fails.
+
+  Nothing on this machine is misconfigured, and `sudo xcode-select -s` would not
+  help — it already points at a working Xcode, and that is the only one
+  installed. Symlinking the old path to the new one would break Xcode's code
+  signature, which is a worse trade than losing screenshots. `simctl` is
+  unaffected, so `flutter run -d <sim>` works and only attach/tap/screenshot are
+  lost.
 
 ### The one bug it surfaced
 
