@@ -6,6 +6,7 @@ import '../services/packs/pack_manifest.dart';
 import '../services/packs/pack_provider.dart';
 import '../services/settings_provider.dart';
 import '../widgets/brand_loader.dart';
+import '../services/inference/platform_llm_backend.dart';
 import 'ai_backend_screen.dart';
 
 /// First run (and, from Settings, any run): three swipeable steps that hand the
@@ -313,6 +314,26 @@ class _AiPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         children: [
+          // Led with, when the device has one. It is the only option here that
+          // is already installed, needs nothing configured, and still keeps
+          // everything on the phone — so for a reader who qualifies it is
+          // strictly the easiest and the most private at once.
+          if (inference.offersPlatformLlm) ...[
+            _AiOption(
+              id: PlatformLlmBackend.backendId,
+              title: inference.platformLlmReady
+                  ? 'Use this device\u2019s built-in AI'
+                  : const PlatformLlmBackend().displayName,
+              subtitle: inference.platformLlmReady
+                  ? 'Your iPhone already has a model built in. No account, no '
+                      'key, no download \u2014 and nothing leaves the phone.'
+                  : inference.platformLlm?.detail ??
+                      const PlatformLlmBackend().description,
+              icon: Icons.auto_awesome_outlined,
+              selected: selected == PlatformLlmBackend.backendId,
+            ),
+            const SizedBox(height: 10),
+          ],
           _AiOption(
             id: 'none',
             title: 'No AI — search only',
