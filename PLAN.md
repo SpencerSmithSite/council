@@ -2530,6 +2530,18 @@ isn't **16 KB page-size compatible**, so it runs in page-size-compatible mode.
   default). Re-verify the dialog is gone. Defer until we're preparing a Play
   Store submission — it changes nothing for development or sideloaded testing.
 
+**Shelved 2026-08-02: Google Play is not planned.** Distribution is the APK
+download for the foreseeable future, and sideloading has no alignment
+requirement, so nothing here blocks anything. It stays recorded because the
+decision could reverse and the diagnosis would otherwise be redone.
+
+What does *not* go away with it: the `onnxruntime` plugin's last pub.dev release
+is **1.4.1, published 2024-03-27**, so there is nothing to bump to. That is worth
+separating from the Play question — the plugin is the app's only path to on-device
+embeddings, which is half of hybrid search and the reason Council works with no
+network. An unmaintained dependency in that position is a risk on any
+distribution channel.
+
 ## Scaling — the corpus, GitHub, and search as data grows (decided 2026-07-23)
 
 The question that prompted this: if we eventually ship packs for everything in
@@ -2719,3 +2731,133 @@ identity lives in the login keychain and moving it into CI means exporting a
 
 Both platforms' `note` fields on the download page exist solely to explain these
 warnings. Both come off when this is done.
+
+## On-device generation — the platform model, and a downloadable one (proposed 2026-08-02)
+
+Council currently offers three backends: none, Ollama, and a cloud provider the
+reader holds a key for. That leaves the default experience — no server, no key —
+as search only. Two additions would give those readers grounded answers without
+either.
+
+**`InferenceBackend` already anticipates this and needs no change.** Its own
+docstring names "the platform's own on-device model" among the backends, and the
+three properties that make such a backend awkward are already on the interface:
+`checkStatus()` exists partly to report "platform model supported on this
+hardware", `contextBudgetChars` exists because "the on-device platform models
+have small context windows", and `isPrivate` is what keeps the privacy
+disclosure honest per backend. Adding either of the below is writing a class,
+not reworking a design.
+
+### Apple's Foundation Models framework
+
+Apple ships a ~3-billion-parameter model on the device and exposes it to
+third-party apps through the **Foundation Models** framework. No key, no
+network, no download, and nothing leaves the phone — which is the same claim the
+rest of the app makes, so this is the one generation path that does not weaken
+it.
+
+**Availability is the part to get right, and it is not a version test.** The
+framework arrived in **iOS 26**, not 27, and the real gate is Apple
+Intelligence support: A17 Pro or later on iPhone, M-series on iPad and Mac.
+Gating on the OS version alone is wrong in both directions — it would exclude
+working iOS 26 devices, and it would offer the backend on an iOS 27 iPhone too
+old to run it. The check belongs in `checkStatus()`, asking the framework
+whether the model is available and surfacing its own reason when it is not,
+which is exactly what `BackendStatus.unavailable(detail)` is for.
+
+Cost: a Swift platform channel, since there is no Flutter binding. Bounded work.
+The context window is small — a few thousand tokens — so `contextBudgetChars`
+will be far below the cloud backends', and retrieval will need to send fewer
+passages rather than truncated ones.
+
+### A downloadable small model for everything else
+
+For Android, older iPhones, and desktop, the equivalent is shipping no model but
+offering to fetch one: a 0.6–4 B parameter instruct model, quantised, run
+locally. Qwen 3's smaller sizes are the obvious candidates, and the pack
+machinery already solves the hard part — a catalogue of downloadable artefacts
+with sizes and checksums, installed on request, is precisely what
+`pack_service.dart` does for corpus fragments.
+
+Two constraints decide the sizes offered, and both are RAM rather than disk. The
+vector index is already ~170 MB resident (`VectorIndex.load` holds every
+embedding), so a model has to fit *beside* it: a 4-bit 0.6 B model is a few
+hundred megabytes, a 4 B is a few gigabytes and is a desktop-only option.
+Second, this needs a generation runtime, which the app does not have — the
+`onnxruntime` plugin here does embeddings only. llama.cpp through FFI with GGUF
+weights is the well-trodden route.
+
+Set expectations in the picker rather than in a support thread: a 1 B model
+grounded in retrieved text is genuinely useful for summarising and comparing
+passages the app has already found, and is not close to a hosted frontier model.
+`description` on the interface is where that sentence goes.
+
+### Sequencing
+
+Apple's framework first: no runtime to integrate, no download to manage, no
+model licensing to check, and it covers the newest hardware — where readers are
+least tolerant of "install a server first". The downloadable path is the larger
+piece and benefits from the picker and prompt-budgeting work the first one
+forces.
+
+## Replacing onnxruntime — researched and decided (2026-08-02)
+
+Not urgent, and not a bug — embeddings work. But `onnxruntime`'s last pub.dev
+release is **1.4.1, 2024-03-27**, and it is the app's only route to on-device
+embeddings, which is half of hybrid search and the reason Council works with no
+network. An unmaintained dependency in that position should have a known exit.
+
+There is no upstream fix for anything that goes wrong with it — an ABI change on
+a future Android or macOS, a security issue, or the 16 KB alignment problem that
+would matter again if Google Play ever came back into scope.
+
+Options, none costed yet:
+
+- **Vendor a current ONNX Runtime build** behind the same plugin API. Smallest
+  change: the model and the calling code stay as they are.
+- **Call ONNX Runtime through Dart FFI directly**, dropping the plugin. More
+  work, but removes the abandoned layer rather than patching under it.
+- **Change the embedding model as well as the runtime.** Qwen 3 publishes open
+  embedding models that would likely outperform all-MiniLM-L6-v2. This is the
+  expensive option and the reason to think about it early rather than late:
+  changing the model invalidates every stored vector, so the whole corpus must
+  be re-embedded, and `idSpace` and the pack manifest have to carry the model
+  identity so an app on the old model cannot silently mix its vectors with new
+  ones. That is a corpus-wide migration, not a dependency bump.
+
+### The decision
+
+**Keep `onnxruntime` for embeddings for now, and make replacing it safe rather
+than replacing it.** Researched against the alternatives:
+
+| package | last release |
+|---|---|
+| `flutter_gemma` | 3 days |
+| `llama_cpp_dart` | 7 months |
+| `cactus` | 8 months |
+| `fllama` | ~2 years |
+| `onnxruntime` (current) | 2024-03-27 |
+
+`flutter_gemma` is now a dependency anyway — it is what runs the downloadable
+generation model — and it advertises embeddings, so the runtime for a switch is
+already present and actively maintained. That makes it the obvious destination.
+
+It is not the obvious *next step*, and the reason is the model rather than the
+runtime. Vectors from two embedding models are not interchangeable: the
+similarity between them is noise, not a weaker signal. Swapping the model means
+re-embedding all 445,445 chunks — about 2.4 hours — and, worse, the failure mode
+of getting it wrong is silent. Every count and every checksum would still be
+correct while retrieval quietly returned irrelevant passages. Nothing in the
+pipeline would have caught it.
+
+So what is implemented now is the guard that was missing: the pack manifest
+carries `embeddingModel`, `DatabaseService.embeddingModel` names what the app
+encodes queries with, and `PackManifest.embeddingsCompatibleWith` refuses a pack
+built by a different model. Manifests published before this carry no identity
+and are trusted, because they predate any change.
+
+With that in place the switch is a decision about whether better embeddings are
+worth a corpus rebuild, which is a judgement call, rather than a change that can
+silently corrupt retrieval, which is not. Nothing about the current runtime is
+broken; embeddings work, and Google Play — the one thing that made its 16 KB
+alignment problem urgent — is not planned.

@@ -69,6 +69,21 @@ CATALOGUE_PATH = ROOT / "assets" / "pack_catalogue.json"
 LEDGER_PATH = ROOT / "tools" / "data" / "id_ledger.json"
 DIST = ROOT / "dist" / "packs"
 
+# Which model produced every vector in these packs, and therefore which model a
+# query must be encoded with to be comparable to them.
+#
+# Vectors from two different embedding models are not interchangeable — cosine
+# similarity between them is noise, not a weak signal — so an app holding one
+# model's vectors must refuse a pack built with another's. Nothing recorded this
+# until now, which made replacing the embedding model unsafe in a way that would
+# not have surfaced as an error: retrieval would simply have started returning
+# irrelevant passages, with every count and checksum still correct.
+#
+# Recording it does not make the switch cheap. Changing this value invalidates
+# all 445,445 stored vectors and requires a full re-embed. It makes the switch
+# *safe*, which is the part that has to exist first.
+EMBEDDING_MODEL = "all-MiniLM-L6-v2-int8-384"
+
 # Must match DatabaseService.corpusVersion. This governs the *bundled* database:
 # the app throws away its installed copy and unpacks the new one when this
 # changes. It ships inside the binary, so it can only ever change with a release.
@@ -593,6 +608,7 @@ def main():
     manifest = {
         "corpusVersion": CORPUS_VERSION,
         "idSpace": id_space,
+        "embeddingModel": EMBEDDING_MODEL,
         "fragments": [built[f["id"]] for f in fragments if f["id"] in built],
         "collections": [
             {

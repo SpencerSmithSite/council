@@ -12,7 +12,7 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-01 · corpus v16 · 643 sources, 102,692 units, 457.4 M
+*Last verified: 2026-08-02 · corpus v17 · 650 sources, 103,364 units, 471.1 M
 characters · all three audits clean except the three noted at the bottom.*
 
 ---
@@ -50,11 +50,17 @@ copyright constraint.
 
 ---
 
-## Under review — held on doctrinal rather than textual grounds (2026-08-01)
+## Removed on doctrinal rather than textual grounds — done in v16 (2026-08-01)
 
 Every removal above was for a defect in the *text*: interleaved works, unsourced
-précis, or copyright. This is the first proposed cut on what a work **is**, and
-the audit below is what the corpus actually holds. No decision is recorded yet.
+précis, or copyright. This was the first cut on what a work **is**.
+
+**Decided and executed.** All 45 below were removed and `f-apocrypha` dropped
+from `packs.json`; 1 Enoch was added in their place. `tools/prune_apocrypha.py`
+holds the selection rules and refuses to run if the corpus has drifted from
+them, and `tools/data/withdrawn.json` is what stops a rebuild quietly restoring
+them. The audit that follows is kept because it is the reasoning, and because
+two of its findings are the kind that get re-assumed otherwise.
 
 **There are no Gnostic texts in the corpus.** Gospel of Mary, Judas, Philip,
 Truth, Pistis Sophia and the rest of the Nag Hammadi library are all absent, and
@@ -107,13 +113,13 @@ against this material and are useless without knowing what they answer. Nor the
 deuterocanon, which is canon for Catholics and the Orthodox and is already here
 inside the Douay-Rheims, Brenton's Septuagint and the WEB.
 
-**1 Enoch and Jubilees are absent and should be added.** Both are canon in the
+**1 Enoch was added in the same pass; Jubilees was not.** Both are canon in the
 Ethiopian Orthodox Tewahedo and Eritrean Orthodox Tewahedo churches, so on the
-corpus's own stated principle — hold what a tradition actually receives as
-scripture — their absence is a gap, not a policy. R. H. Charles' translations
-(*The Book of Enoch*, 1912; *The Book of Jubilees*, 1902/1917) are pre-1929 and
-public domain in the United States. Adding them would also be the first content
-either Tewahedo church has in the corpus at all.
+corpus's own principle — hold what a tradition actually receives as scripture —
+their absence was a gap rather than a policy. 1 Enoch is now in from R. H.
+Charles' 1917 translation via Gutenberg's proofread transcription, and is the
+corpus's first Oriental Orthodox content. Jubilees has no such transcription and
+is listed under *Wanted, with no clean text anywhere* above.
 
 ---
 
@@ -150,6 +156,14 @@ either Tewahedo church has in the corpus at all.
   Prayer, which `SOURCES.md` once marked "(ingested)". See *Don't have*.
 - **Eastern Orthodox** — Philaret of Moscow's *Longer Catechism* (608 of its 611
   questions), the Confession of Dositheus, and the *Book of Needs*.
+- **Oriental Orthodox** — 1 Enoch, canon in the Ethiopian and Eritrean Tewahedo
+  churches (Charles, SPCK 1917). Added 2026-08-01, corpus v16.
+- **Quaker** — Barclay's *Apology* in its fifteen propositions, both volumes of
+  Fox's *Journal*, Penn's *No Cross, No Crown*, Woolman's *Journal*, and Sewel's
+  *History*. Added 2026-08-02, corpus v17.
+- **Anabaptist** — van Braght's *Martyrs Mirror*, 526 accounts, and **only**
+  that: see *Wanted, with no clean text anywhere*. Martyrology, not systematics,
+  and the collection description says so.
 
 Each of these is text, not summary, and each has `source_url`, translator and
 edition on the source row.
@@ -179,6 +193,40 @@ from Ted Hildebrandt's 2007 digitisation, corroborated psalm by psalm against
 the Victorian printings at a median of 97%.
 
 What is left in the table is genuinely unresolved, and mostly small.
+
+---
+
+## Wanted, with no clean text anywhere — searched, not merely absent
+
+These are not "not yet attempted". Each was looked for and the search failed, so
+what follows is a record of **where it was looked** — the point is that the next
+attempt should start somewhere new rather than repeat this. Every one of them is
+out of copyright; the obstacle is transcription quality, not rights.
+
+The bar they fail is the corpus's oldest one: a proofread transcription, not a
+scan. `ingest_gutenberg.py` states the reason — archive.org's OCR of this
+material runs about one error per hundred characters, and in an app whose whole
+purpose is quoting a source accurately that is a regression, not a shortcut. It
+is also the defect that got eight works deleted in *Shouldn't have* above.
+
+| wanted | why it matters | searched | date |
+|---|---|---|---|
+| **Menno Simons**, *Complete Works* (Funk, 1871) | The Anabaptist theologian. Without him the tradition has no systematics at all | Gutenberg: nothing under any title. CCEL: `/ccel/menno` 404s, `/ccel/simons` returns an error page rather than an author index | 2026-08-01 |
+| **Schleitheim Confession** (1527) | The founding Anabaptist confession — believers' baptism, the ban, non-resistance, the sword | Gutenberg: 0 results | 2026-08-01 |
+| **Dordrecht Confession** (1632) | The Mennonite confession, still confessionally binding | Gutenberg: 0 results | 2026-08-01 |
+| **The Book of Jubilees** (R. H. Charles, 1902) | Canon in the Ethiopian and Eritrean Tewahedo churches, exactly as 1 Enoch is — the two belong together | Gutenberg: 0 results for *Jubilees*, *Little Genesis*, or Charles as translator | 2026-08-01 |
+
+**Routes worth trying next**, none yet attempted: Schaff's *Creeds of Christendom*
+vol. 3 may carry Dordrecht, and CCEL has a `schaff` author index the survey tool
+already knows how to walk; the Mennonite and Quaker archives that have digitised
+their own confessional documents may have transcriptions rather than scans; and
+a scan is only unusable *uncorrected* — `ingest_owen.py` and `ingest_treasury.py`
+both exist because a text was rescued by corroborating it against a second
+witness, which is the same move available here.
+
+Three of the four are Anabaptist, which is why the tradition ships as the
+*Martyrs Mirror* alone. That is stated in the collection's own description and on
+the Sources page, so a reader sees a known gap rather than a claim of coverage.
 
 ---
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../services/inference/cloud_backend.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/inference/local_model_backend.dart';
+import '../services/inference/platform_llm_backend.dart';
 import '../services/ollama_service.dart';
 import '../theme/glass_controls.dart';
 
@@ -39,6 +42,28 @@ class AiBackendScreen extends StatelessWidget {
                       _StatusBanner(inference: inference),
                       const SizedBox(height: 16),
 
+                      // First when the device has one. It needs no host, no
+                      // key and no download, so for a reader who qualifies it
+                      // is the shortest route from "no AI" to a grounded
+                      // answer — and it is the only generating backend that
+                      // keeps the app's own privacy claim intact.
+                      if (inference.offersPlatformLlm) ...[
+                        _Option(
+                          id: PlatformLlmBackend.backendId,
+                          title: const PlatformLlmBackend().displayName,
+                          subtitle: const PlatformLlmBackend().description,
+                          icon: Icons.auto_awesome_outlined,
+                          selected: inference.backendId ==
+                              PlatformLlmBackend.backendId,
+                        ),
+                        if (!inference.platformLlmReady)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: _PlatformLlmNotice(inference: inference),
+                          ),
+                        const SizedBox(height: 12),
+                      ],
+
                       _Option(
                         id: 'none',
                         title: 'No AI — search only',
@@ -49,6 +74,30 @@ class AiBackendScreen extends StatelessWidget {
                         selected: inference.backendId == 'none',
                       ),
                       const SizedBox(height: 12),
+
+                      // Offered when the device has no built-in model, which
+                      // is the case this exists for: without it those readers
+                      // have no on-device generation at all, only a server to
+                      // stand up or a key to buy.
+                      if (!inference.offersPlatformLlm) ...[
+                        _Option(
+                          id: LocalModelBackend.backendId,
+                          title: 'Download a small model',
+                          subtitle:
+                              'A ${inference.localModel.approximateSize} '
+                              'one-time download that then runs entirely on '
+                              'this device. Modest, but no account and no key.',
+                          icon: Icons.download_outlined,
+                          selected: inference.backendId ==
+                              LocalModelBackend.backendId,
+                        ),
+                        if (inference.backendId == LocalModelBackend.backendId)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: _LocalModelSettings(),
+                          ),
+                        const SizedBox(height: 12),
+                      ],
 
                       _Option(
                         id: 'ollama',
@@ -544,6 +593,182 @@ class _CloudSettingsState extends State<_CloudSettings> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Shown when the device supports the built-in model but cannot use it yet —
+/// Apple Intelligence switched off, or its model still downloading.
+///
+/// Both are the reader's to fix and neither is permanent, which is why the row
+/// stays selectable and this explains rather than disables. Hardware that can
+/// never run it does not reach here: the option is not offered at all.
+class _PlatformLlmNotice extends StatelessWidget {
+  final InferenceProvider inference;
+
+  const _PlatformLlmNotice({required this.inference});
+
+  @override
+  Widget build(BuildContext context) {
+    final report = inference.platformLlm;
+    if (report == null) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 20, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(report.detail,
+                    style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 8),
+                // The reader fixes this in iOS Settings and comes back; without
+                // a way to re-ask, the app would still be showing the stale
+                // answer it cached at launch.
+                TextButton(
+                  onPressed: () => inference.refreshPlatformLlm(),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Check again'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Choose which small model to download, and download it.
+///
+/// Shows RAM rather than only disk, because RAM is what decides whether it
+/// runs: the corpus vector index is already resident and the model has to fit
+/// beside it.
+class _LocalModelSettings extends StatefulWidget {
+  const _LocalModelSettings();
+
+  @override
+  State<_LocalModelSettings> createState() => _LocalModelSettingsState();
+}
+
+class _LocalModelSettingsState extends State<_LocalModelSettings> {
+  StreamSubscription<int>? _install;
+  int? _progress;
+  String? _error;
+
+  @override
+  void dispose() {
+    _install?.cancel();
+    super.dispose();
+  }
+
+  void _download(LocalModelChoice choice) {
+    setState(() {
+      _progress = 0;
+      _error = null;
+    });
+    _install?.cancel();
+    _install = choice.install().listen(
+      (p) => setState(() => _progress = p),
+      onError: (Object e) => setState(() {
+        _error = e.toString();
+        _progress = null;
+      }),
+      onDone: () {
+        if (!mounted) return;
+        setState(() => _progress = null);
+        context.read<InferenceProvider>().refreshStatus();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inference = context.watch<InferenceProvider>();
+    final selected = inference.localModel;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RadioGroup<String>(
+              groupValue: selected.id,
+              // Not disabled by passing null — RadioGroup requires a handler —
+              // so the guard is inside: swapping models mid-download would
+              // leave the finished file attached to the wrong choice.
+              onChanged: (v) {
+                if (_progress != null) return;
+                context
+                    .read<InferenceProvider>()
+                    .setLocalModel(v ?? selected.id);
+              },
+              child: Column(
+                children: [
+                  for (final choice in LocalModelChoice.all)
+                    RadioListTile<String>(
+                      value: choice.id,
+                      contentPadding: EdgeInsets.zero,
+                      title:
+                          Text('${choice.name} · ${choice.approximateSize}'),
+                      subtitle: Text(choice.note),
+                      isThreeLine: true,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (_progress != null) ...[
+              LinearProgressIndicator(value: _progress! / 100),
+              const SizedBox(height: 8),
+              Text('Downloading ${selected.name}… $_progress%',
+                  style: Theme.of(context).textTheme.bodySmall),
+            ] else
+              FutureBuilder<bool>(
+                future: selected.isInstalled(),
+                builder: (context, snap) {
+                  final installed = snap.data ?? false;
+                  return Row(
+                    children: [
+                      FilledButton.icon(
+                        onPressed:
+                            installed ? null : () => _download(selected),
+                        icon: Icon(installed
+                            ? Icons.check
+                            : Icons.download_outlined),
+                        label: Text(installed
+                            ? '${selected.name} installed'
+                            : 'Download ${selected.approximateSize}'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12)),
+            ],
+          ],
+        ),
       ),
     );
   }

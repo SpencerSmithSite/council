@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cloud_backend.dart';
 import 'inference_backend.dart';
+import 'local_model_backend.dart';
 import 'ollama_backend.dart';
+import 'platform_llm_backend.dart';
 
 /// Owns the user's choice of inference backend and its configuration.
 ///
@@ -20,6 +22,7 @@ class InferenceProvider extends ChangeNotifier {
   static const _ollamaModelKey = 'ollama_model';
   static const _cloudProviderKey = 'cloud_provider';
   static const _cloudModelKey = 'cloud_model';
+  static const _localModelKey = 'local_model';
 
   static const _secure = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -31,9 +34,11 @@ class InferenceProvider extends ChangeNotifier {
   CloudProvider _cloudProvider = CloudProvider.anthropic;
   String _cloudModel = CloudProvider.anthropic.defaultModel;
   String _cloudKey = '';
+  String _localModelId = LocalModelChoice.recommended().id;
 
   BackendStatus? _status;
   bool _isLoaded = false;
+  PlatformLlmAvailability? _platformLlm;
 
   String get backendId => _backendId;
   String get ollamaHost => _ollamaHost;
@@ -41,13 +46,29 @@ class InferenceProvider extends ChangeNotifier {
   CloudProvider get cloudProvider => _cloudProvider;
   String get cloudModel => _cloudModel;
   bool get hasCloudKey => _cloudKey.isNotEmpty;
+  LocalModelChoice get localModel => LocalModelChoice.byId(_localModelId);
   BackendStatus? get status => _status;
   bool get isLoaded => _isLoaded;
+
+  /// What the device's own model reported, or null before the first check.
+  PlatformLlmAvailability? get platformLlm => _platformLlm;
+
+  /// Whether to show the built-in model in the picker. False on hardware that
+  /// can never run it, so those readers are not given a row they cannot use.
+  bool get offersPlatformLlm => _platformLlm?.state.worthOffering ?? false;
+
+  /// True when the device can generate answers right now with nothing
+  /// installed and no key — the case onboarding should lead with.
+  bool get platformLlmReady => _platformLlm?.isAvailable ?? false;
 
   /// The backend the user selected, constructed fresh so configuration edits
   /// always take effect.
   InferenceBackend get backend {
     switch (_backendId) {
+      case PlatformLlmBackend.backendId:
+        return const PlatformLlmBackend();
+      case LocalModelBackend.backendId:
+        return LocalModelBackend(choice: localModel);
       case 'ollama':
         return OllamaBackend(host: _ollamaHost, model: _ollamaModel);
       case 'cloud':
@@ -75,6 +96,9 @@ class InferenceProvider extends ChangeNotifier {
     _cloudModel =
         prefs.getString(_cloudModelKey) ?? _cloudProvider.defaultModel;
     _cloudKey = await _readKey(_cloudProvider);
+    _localModelId =
+        prefs.getString(_localModelKey) ?? LocalModelChoice.recommended().id;
+    _platformLlm = await PlatformLlmBackend.availability();
 
     _isLoaded = true;
     notifyListeners();
@@ -139,6 +163,21 @@ class InferenceProvider extends ChangeNotifier {
     } else {
       await _secure.write(key: name, value: _cloudKey);
     }
+    await refreshStatus();
+  }
+
+  /// Re-ask the platform, for a reader returning from iOS Settings having just
+  /// switched Apple Intelligence on.
+  Future<void> refreshPlatformLlm() async {
+    _platformLlm = await PlatformLlmBackend.availability(refresh: true);
+    notifyListeners();
+  }
+
+  Future<void> setLocalModel(String id) async {
+    _localModelId = id;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localModelKey, id);
     await refreshStatus();
   }
 
