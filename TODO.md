@@ -423,6 +423,15 @@ will see; both notes come off once these are settled.
 
 ## App work
 
+- [ ] **Bump the version in `pubspec.yaml`, never in Xcode.** `Info.plist` reads
+      `$(FLUTTER_BUILD_NAME)`/`$(FLUTTER_BUILD_NUMBER)`, which `flutter build`
+      writes from the pubspec; Android reads the same source. Xcode's General
+      tab edits `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, which nothing
+      references — so an archive uploaded after editing there ships the old
+      numbers while the tab shows the new ones. Those two settings now resolve
+      to the Flutter variables, so the tab can no longer disagree with what is
+      built.
+
 - [ ] **A withdrawn fragment is never uninstalled.** `installCollection` walks
       the fragments a collection *declares* in the current manifest, so one that
       has been dropped from every collection is simply never visited again. When
