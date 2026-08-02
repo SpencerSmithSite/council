@@ -12,7 +12,7 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-07-27 · corpus v15 · 687 sources, 104,115 units, 460.1 M
+*Last verified: 2026-08-01 · corpus v16 · 643 sources, 102,692 units, 457.4 M
 characters · all three audits clean except the three noted at the bottom.*
 
 ---
@@ -374,6 +374,17 @@ will see; both notes come off once these are settled.
       than in the repo.
 
 ## App work
+
+- [ ] **A withdrawn fragment is never uninstalled.** `installCollection` walks
+      the fragments a collection *declares* in the current manifest, so one that
+      has been dropped from every collection is simply never visited again. When
+      `f-apocrypha` was withdrawn in corpus v16, that removed the forty works
+      from every new install and every fresh download — and left them in place
+      for every reader who already had the Church Fathers or Ante-Nicene Writers
+      collection. Presence was made not to imply currency, for good reason; what
+      is missing is the opposite direction, absence implying removal. The
+      manifest would need to name what has been withdrawn, and the installer to
+      drop those fragments and their rows on sync.
 
 - [ ] Text-to-speech for a source, offline.
 - [ ] Re-anchor annotations on corpus drift. The quote snapshot is stored and
