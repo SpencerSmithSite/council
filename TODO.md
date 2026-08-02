@@ -434,13 +434,27 @@ will see; both notes come off once these are settled.
       manifest would need to name what has been withdrawn, and the installer to
       drop those fragments and their rows on sync.
 
-- [ ] **The downloadable model path is still unverified end to end.** Apple
-      Intelligence was confirmed working on 2026-08-02, but that is the branch
-      that needs no download. Nobody has yet run the other one on a device:
-      fetch Gemma 3 270M or 1B over the network, watch the progress reporting,
-      and get a grounded answer out of it. The failure modes it would expose —
-      an interrupted download, a model that loads but exhausts memory beside
-      the ~170 MB vector index — are exactly the ones no test covers.
+- [x] ~~The downloadable model path is unverified end to end~~ — done
+      2026-08-02, and it took three fixes: no engine was registered, the Gemma
+      weights turned out to be gated behind a HuggingFace token, and the 135M
+      fallback ignored the retrieved passages entirely. Now Qwen 2.5 0.5B on
+      Android, verified download → install → load → cited answer. See PLAN.md.
+
+- [ ] **Try the downloaded model on iOS.** Only Android has been run end to
+      end. The engine, the weights and the Dart are shared, but the download
+      path is not: iOS has its own background-download behaviour and its own
+      memory ceiling, and this model wants ~700 MB beside the ~170 MB vector
+      index. Apple Intelligence covers the newest iPhones, so this path is for
+      exactly the older ones with least headroom.
+
+- [ ] **Reconsider a smaller option once one is worth offering.** Removing
+      SmolLM 135M leaves 550 MB as the floor, which is a lot on a metered
+      connection. Nothing ungated and smaller is currently good enough — the
+      test is whether it will summarise a retrieved passage rather than
+      free-associate. Qwen 3 0.6B is the obvious candidate, but it ships only
+      as `.litertlm`, so it would mean adding `flutter_gemma_litertlm`
+      alongside MediaPipe or replacing it. That engine also supports desktop,
+      which would reopen the downloadable model on macOS, Windows and Linux.
 
 - [ ] **Audit the rest of the chat screen at a narrow width.** The coverage
       notice overflowed by 25 px because a `Row` held two buttons whose labels

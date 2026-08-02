@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_gemma_mediapipe/flutter_gemma_mediapipe.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'src/services/database_service.dart';
 import 'src/services/settings_provider.dart';
 import 'src/services/inference/inference_provider.dart';
+import 'src/services/inference/local_model_backend.dart';
 import 'src/services/search/semantic_search.dart';
 import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
@@ -59,6 +62,8 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
   late final Future<TheologyApp> _app = _bootstrap();
 
   Future<TheologyApp> _bootstrap() async {
+    await _initialiseLocalModelRuntime();
+
     // Initialize database
     final dbService = DatabaseService();
     await dbService.initialize();
@@ -98,6 +103,31 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
       settings: settings,
       inference: inference,
     );
+  }
+
+  /// Registers the engine that runs a downloaded model.
+  ///
+  /// `flutter_gemma` has been a core package with no engine of its own since
+  /// 1.0: without both this call and the `flutter_gemma_mediapipe` dependency,
+  /// the first download fails with "FlutterGemma not initialized" and the
+  /// downloadable-model backend is dead on arrival. Skipped on desktop, where
+  /// MediaPipe does not exist and the backend is not offered.
+  ///
+  /// Cheap — it wires up a registry and touches no weights — but deliberately
+  /// awaited before anything else, because it must be in place before any
+  /// screen can reach the model settings.
+  Future<void> _initialiseLocalModelRuntime() async {
+    if (!LocalModelChoice.runsHere) return;
+    try {
+      await FlutterGemma.initialize(
+        inferenceEngines: const [MediaPipeEngine()],
+      );
+    } catch (e) {
+      // A reader who is not using a downloaded model should still get a
+      // working library, so this must not be able to fail the launch. The
+      // backend's own checkStatus reports the problem if they do try to use it.
+      debugPrint('Local model runtime unavailable: $e');
+    }
   }
 
   @override

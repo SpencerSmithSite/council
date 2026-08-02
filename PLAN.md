@@ -2922,3 +2922,62 @@ unsolicited suggestion to spend someone's data.
 
 Reproduced before fixing: the old tree at 354 px throws a Flutter layout error
 and the `Wrap` does not.
+
+## The downloadable model, made to actually work (2026-08-02)
+
+Verified end to end on the Android emulator: download → install → load →
+grounded answer with citations. Asked what baptism is, Qwen 2.5 0.5B returned
+the Westminster Larger Catechism's definition, cited [1]–[6]. Three separate
+faults had to be fixed to get there, and each was invisible until the one
+before it was cleared.
+
+**1. No engine was registered.** `flutter_gemma` has been a *core* package
+since 1.0 — it registers no inference engine by itself, and `initialize()` must
+be called with the engines the app ships. Neither was present, so the first
+download failed with `Bad state: FlutterGemma not initialized`. Fixed by adding
+`flutter_gemma_mediapipe` (the engine that reads `.task`, which is the format
+these weights ship in) and awaiting `FlutterGemma.initialize` during bootstrap.
+
+The failure is worth noting as a class: the package resolved, compiled, and
+analysed clean while being incapable of running a model. Nothing short of
+running it on a device would have caught it.
+
+**2. The Gemma weights are gated.** With the engine registered, the download
+got as far as `DownloadException: Authentication required (HTTP 401)`. Both
+`litert-community` Gemma repositories are gated, so fetching them needs a
+HuggingFace account and a token — which is precisely what this backend promises
+readers they will not need. Embedding a shared token in the app would put a
+credential in a client binary and make the feature one revocation away from
+breaking for everybody; mirroring the weights would mean hosting 550 MB under
+someone else's licence.
+
+Replaced with Apache-2.0, ungated weights. Qwen was also what was wanted from
+the start. The cost is real and is recorded rather than hidden: Qwen 2.5 0.5B
+is a weaker model than Gemma 3 1B would have been. It is still the right trade,
+because a model requiring a signup is not an option this backend can offer.
+
+**3. The 135M was worse than nothing.** SmolLM 135M was to be the 170 MB option
+for older phones. Asked what baptism is, with the Westminster catechisms and
+Aquinas retrieved and in front of it, it produced advice about learning a
+foreign language. Not a weak answer — no engagement with the passages at all,
+which is the single thing this backend exists to do. Removed. The honest floor
+is now 550 MB and one model, which is better than a cheap option that
+discredits the feature.
+
+### Also settled here
+
+* **Phones only.** `flutter_gemma_mediapipe` declares android and ios; there is
+  no desktop `.task` support. The download was being offered on macOS, Windows
+  and Linux, where it could never have loaded. Gated on
+  `LocalModelChoice.runsHere`, with `checkStatus` explaining itself for a
+  settings file carried over from a phone. Desktop keeps Ollama, which is a
+  better answer there anyway.
+* **`ModelType` is per model.** It was hardcoded `gemmaIt` from when both
+  choices were Gemma; it is now carried on `LocalModelChoice`.
+* **GPU on Android** needs four `uses-native-library` entries in the manifest.
+  Without them the OpenCL loader cannot reach the vendor driver on Android 12+
+  and the engine falls back to WebGPU, which hard-freezes some Mali GPUs. All
+  marked `required="false"`, so a device without OpenCL still runs on the CPU.
+* **A stale model id is harmless.** `byId` falls back to the first choice, so
+  the `gemma3-1b` left in preferences resolved cleanly instead of crashing.
+  Confirmed on the device rather than assumed.

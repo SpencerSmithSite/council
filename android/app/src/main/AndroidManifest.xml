@@ -37,6 +37,16 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Lets a downloaded model run on the GPU. Without these the OpenCL
+             loader cannot dlopen the vendor driver on Android 12+, and the
+             engine falls back to WebGPU — which is not merely slower: it
+             hard-freezes some Mali GPUs. All optional, so a device with no
+             OpenCL still installs and runs on the CPU. -->
+        <uses-native-library android:name="libvndksupport.so" android:required="false"/>
+        <uses-native-library android:name="libOpenCL.so" android:required="false"/>
+        <uses-native-library android:name="libOpenCL-car.so" android:required="false"/>
+        <uses-native-library android:name="libOpenCL-pixel.so" android:required="false"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
