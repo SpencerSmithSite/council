@@ -169,6 +169,25 @@ class LocalModelChoice {
   /// wrong for each of them.
   final ModelType modelType;
 
+  /// What a *phone* needs, or null if this model is desktop-only.
+  ///
+  /// Separate from [minDeviceRamMb] because the same number cannot serve both.
+  /// A desktop may page and is limited by physical memory; iOS and Android cap
+  /// what a single app may hold at well under the physical amount, and going
+  /// over means the OS kills the app rather than swapping. So a 16 GB phone
+  /// reports 16 GB and still cannot hold a 6 GB model, while a 16 GB laptop
+  /// can.
+  ///
+  /// A ceiling, not a floor: the small models stay available everywhere, so a
+  /// 4 GB Linux machine is offered the one that runs on it instead of being
+  /// told nothing fits.
+  ///
+  /// The phone figures are deliberately cautious and are the least-evidenced
+  /// numbers here — only the 0.6B has been run on real hardware. Being too
+  /// conservative costs a flagship reader a better model; being too generous
+  /// costs an ordinary reader a multi-gigabyte download that ends in a crash.
+  final int? minPhoneRamMb;
+
   /// The container format, which decides which engine will accept the model.
   ///
   /// Explicit because both `installModel` and `createModel` default it to
@@ -192,6 +211,7 @@ class LocalModelChoice {
     required this.note,
     required this.modelType,
     required this.fileType,
+    this.minPhoneRamMb,
   });
 
   Future<bool> isInstalled() async {
@@ -282,8 +302,10 @@ class LocalModelChoice {
         'qwen3_0_6b_mixed_int4.litertlm',
     approximateSize: '500 MB',
     ramMb: 700,
-    // Admits a nominal 3 GB phone, excludes a 2 GB one.
+    // Admits a nominal 3 GB phone, excludes a 2 GB one. Verified: it runs on
+    // a device reporting 3,967 MB.
     minDeviceRamMb: 2600,
+    minPhoneRamMb: 2600,
     maxTokens: 2048,
     contextBudgetChars: 3000,
     modelType: ModelType.qwen3,
@@ -301,8 +323,11 @@ class LocalModelChoice {
         'Qwen3_1.7B.litertlm',
     approximateSize: '2.1 GB',
     ramMb: 2400,
-    // Admits a nominal 6 GB phone.
+    // Admits a nominal 6 GB desktop; on a phone it wants a nominal 12 GB,
+    // because 2.4 GB resident has to fit inside a per-app cap rather than
+    // inside physical memory.
     minDeviceRamMb: 5000,
+    minPhoneRamMb: 11000,
     maxTokens: 2048,
     contextBudgetChars: 4000,
     modelType: ModelType.qwen3,
@@ -319,7 +344,8 @@ class LocalModelChoice {
         'resolve/main/qwen3_4b_instruct_2507_mixed_int4.litertlm',
     approximateSize: '2.7 GB',
     ramMb: 3200,
-    // Admits a nominal 8 GB machine.
+    // Desktop only: 3.2 GB resident is beyond what a phone will let one app
+    // hold, whatever its physical memory says.
     minDeviceRamMb: 7000,
     maxTokens: 4096,
     contextBudgetChars: 6000,
@@ -337,7 +363,7 @@ class LocalModelChoice {
         'qwen3_8b_mixed_int4.litertlm',
     approximateSize: '4.9 GB',
     ramMb: 6000,
-    // Admits a nominal 16 GB machine.
+    // Admits a nominal 16 GB machine. Desktop only, as above.
     minDeviceRamMb: 14000,
     maxTokens: 4096,
     contextBudgetChars: 8000,
@@ -365,9 +391,8 @@ class LocalModelChoice {
   /// a 4.9 GB model is reasonable on a desktop and absurd on a phone, and a
   /// picker showing all four everywhere would mostly be offering downloads
   /// that cannot run.
-  static List<LocalModelChoice> get all => _isDesktop
-      ? const [qwen3_17b, qwen3_4b, qwen3_8b]
-      : const [qwen3_06b, qwen3_17b];
+  static List<LocalModelChoice> get all =>
+      catalogue.where((m) => _isDesktop || m.minPhoneRamMb != null).toList();
 
   static bool get _isDesktop =>
       Platform.isMacOS || Platform.isWindows || Platform.isLinux;
@@ -386,13 +411,17 @@ class LocalModelChoice {
   static Future<List<LocalModelChoice>> availableHere() async {
     final total = await DeviceMemory.totalMb();
     if (total == null) return all;
-    final fits = all.where((m) => total >= m.minDeviceRamMb).toList();
+    final fits = all.where((m) => total >= m.requiredMb).toList();
     return fits.isEmpty ? [all.first] : fits;
   }
 
+  /// What this model asks for on the platform it is running on.
+  int get requiredMb =>
+      LocalModelChoice._isDesktop ? minDeviceRamMb : (minPhoneRamMb ?? 1 << 30);
+
   /// Whether this device has the memory this model asks for. Permissive when
   /// the amount cannot be read — see [DeviceMemory.totalMb].
-  Future<bool> fitsThisDevice() => DeviceMemory.meets(minDeviceRamMb);
+  Future<bool> fitsThisDevice() => DeviceMemory.meets(requiredMb);
 
   /// Resolved against the whole catalogue, not the platform's shortlist, so a
   /// choice made on another device is recognised rather than silently reset.
@@ -420,11 +449,29 @@ class LocalModelChoice {
       Platform.isWindows ||
       Platform.isLinux;
 
-  /// What to recommend on this device.
+  /// The most capable model this device can actually hold.
   ///
-  /// Physical memory is not readable portably from Dart, so within a platform
-  /// this errs toward the smaller model rather than guessing high — being
-  /// handed one that runs badly is worse than being handed one that is merely
-  /// modest, and the reader can pick a larger one deliberately.
+  /// The point of the catalogue: a Mac with 64 GB should be pointed at the 8B
+  /// and a 3 GB Android at the 0.6B, without either reader having to know that
+  /// a picker exists. This previously returned the *smallest* option for the
+  /// platform and never consulted memory at all, so a Mac Studio was offered
+  /// the 1.7B by default — the weakest thing it could possibly run.
+  ///
+  /// Largest-that-fits rather than a middle choice, because the thresholds
+  /// already carry the caution: each is set well above the model's resident
+  /// cost so that "fits" means fits beside the OS, the database and the vector
+  /// index, not merely fits.
+  static Future<LocalModelChoice> recommendedHere() async {
+    final offered = await availableHere();
+    return offered.last;
+  }
+
+  /// The conservative default, for the moment before memory has been read.
+  ///
+  /// [InferenceProvider] needs a value at construction and the memory probe is
+  /// asynchronous, so this is the smallest — being briefly under-ambitious
+  /// costs a reader nothing, while briefly claiming a model the device cannot
+  /// hold would show them a download they should not start. Replaced by
+  /// [recommendedHere] as soon as `load()` completes.
   static LocalModelChoice recommended() => all.first;
 }

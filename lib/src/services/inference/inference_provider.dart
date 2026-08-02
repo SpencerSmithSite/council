@@ -106,8 +106,13 @@ class InferenceProvider extends ChangeNotifier {
     _cloudModel =
         prefs.getString(_cloudModelKey) ?? _cloudProvider.defaultModel;
     _cloudKey = await _readKey(_cloudProvider);
-    _localModelId =
-        prefs.getString(_localModelKey) ?? LocalModelChoice.recommended().id;
+    // Only when the reader has not chosen: an explicit pick is theirs to keep,
+    // including a smaller model than the device could manage. Otherwise the
+    // recommendation is made from what this machine can actually hold, so a
+    // powerful desktop is pointed at a capable model without anyone having to
+    // discover the picker.
+    _localModelId = prefs.getString(_localModelKey) ??
+        (await LocalModelChoice.recommendedHere()).id;
     _platformLlm = await PlatformLlmBackend.availability();
 
     _isLoaded = true;

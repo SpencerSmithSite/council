@@ -54,11 +54,13 @@ void main() {
   });
 
   group('resolving a stored id', () {
-    test('finds a model this platform does not itself offer', () {
+    test('finds every model in the catalogue, offered here or not', () {
       // The case this exists for: chosen on a desktop, opened on a phone.
-      final elsewhere = LocalModelChoice.catalogue
-          .firstWhere((m) => !LocalModelChoice.all.contains(m));
-      expect(LocalModelChoice.byId(elsewhere.id).id, elsewhere.id);
+      // Asserted over the whole catalogue rather than by hunting for one this
+      // platform excludes, because on a desktop nothing is excluded.
+      for (final m in LocalModelChoice.catalogue) {
+        expect(LocalModelChoice.byId(m.id).id, m.id);
+      }
     });
 
     test('falls back to the recommendation for an id since removed', () {
@@ -121,11 +123,100 @@ void main() {
     });
   });
 
-  test('desktop is offered larger models than a phone', () {
+  group('the recommendation matches the machine', () {
+    tearDown(() => DeviceMemory.debugSetTotalMb(null, unknown: false));
+
+    // The whole point of a catalogue: a workstation and an old phone should
+    // not be pointed at the same model. This previously returned the smallest
+    // option for the platform whatever the device had, so a 64 GB Mac was
+    // recommended the 1.7B — the weakest thing it could run.
+    Future<String> recommendedAt(int mb) async {
+      DeviceMemory.debugSetTotalMb(mb);
+      return (await LocalModelChoice.recommendedHere()).name;
+    }
+
+    test('more memory earns a more capable model', () async {
+      final small = await recommendedAt(3000);
+      final large = await recommendedAt(64000);
+      expect(small, isNot(large));
+      final smallRam = LocalModelChoice.catalogue
+          .firstWhere((m) => m.name == small)
+          .ramMb;
+      final largeRam = LocalModelChoice.catalogue
+          .firstWhere((m) => m.name == large)
+          .ramMb;
+      expect(largeRam, greaterThan(smallRam));
+    });
+
+    test('the recommendation is always one the device can hold', () async {
+      for (final mb in [2048, 3000, 6000, 8000, 16000, 64000]) {
+        DeviceMemory.debugSetTotalMb(mb);
+        final pick = await LocalModelChoice.recommendedHere();
+        final offered = await LocalModelChoice.availableHere();
+        expect(offered, contains(pick));
+        // Below the floor nothing fits and the smallest is shown with a
+        // warning; above it, the pick must genuinely fit.
+        if (offered.length > 1 || mb >= LocalModelChoice.all.first.minDeviceRamMb) {
+          expect(mb, greaterThanOrEqualTo(pick.minDeviceRamMb));
+        }
+      }
+    });
+
+    test('it takes the largest that fits, not the first', () async {
+      DeviceMemory.debugSetTotalMb(64000);
+      final offered = await LocalModelChoice.availableHere();
+      final pick = await LocalModelChoice.recommendedHere();
+      expect(pick, offered.last);
+      expect(pick.ramMb,
+          offered.map((m) => m.ramMb).reduce((a, b) => a > b ? a : b));
+    });
+
+    test('a modest desktop is offered something rather than nothing',
+        () async {
+      // 4 GB Linux box. The 0.6B runs there; being told the 1.7B is too big
+      // and offered no alternative was the old behaviour.
+      DeviceMemory.debugSetTotalMb(4000);
+      final offered = await LocalModelChoice.availableHere();
+      expect(offered, isNotEmpty);
+      expect(await offered.first.fitsThisDevice(), isTrue,
+          reason: 'the smallest model must be reachable on every platform, '
+              'not just on phones');
+    });
+
+    test('the heaviest models are never offered on a phone', () async {
+      DeviceMemory.debugSetTotalMb(64000);
+      final offered = await LocalModelChoice.availableHere();
+      final phone = Platform.isAndroid || Platform.isIOS;
+      for (final m in offered) {
+        if (phone) {
+          expect(m.minPhoneRamMb, isNotNull,
+              reason: 'phones cap what one app may hold well below physical '
+                  'memory, so a 16 GB phone still cannot hold a 6 GB model');
+        }
+      }
+      if (!phone) {
+        expect(offered, contains(LocalModelChoice.qwen3_8b));
+      }
+    });
+
+    test('a phone needs more headroom than a desktop for the same model',
+        () async {
+      for (final m in LocalModelChoice.catalogue) {
+        if (m.minPhoneRamMb == null) continue;
+        expect(m.minPhoneRamMb, greaterThanOrEqualTo(m.minDeviceRamMb),
+            reason: 'a per-app cap is stricter than physical memory, so the '
+                'phone floor can never be the more generous of the two');
+      }
+    });
+  });
+
+  test('the platform decides the ceiling, not the floor', () {
     if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) return;
-    expect(LocalModelChoice.all, isNot(contains(LocalModelChoice.qwen3_06b)),
-        reason: 'the 0.6B exists for phones; a desktop should be offered '
-            'something that uses the memory it has');
+    // The heaviest model is desktop-only, because a phone's per-app memory cap
+    // sits far below its physical RAM.
     expect(LocalModelChoice.all, contains(LocalModelChoice.qwen3_8b));
+    // But the smallest stays available everywhere: a 4 GB Linux machine should
+    // be offered the model that runs on it, not told nothing fits.
+    expect(LocalModelChoice.all, contains(LocalModelChoice.qwen3_06b));
   });
 }
