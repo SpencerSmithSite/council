@@ -15,6 +15,7 @@ import '../services/inference/inference_provider.dart';
 import 'content_detail_screen.dart';
 import '../theme/glass.dart';
 import '../theme/glass_controls.dart';
+import '../widgets/tail_follower.dart';
 
 // ContextPassage is defined in ollama_service.dart
 
@@ -126,7 +127,8 @@ class ChatScreenState extends State<ChatScreen> {
         ..addAll(stored.map(ChatMessage.fromStored));
       _restoring = false;
     });
-    _scrollToBottom();
+    _tail.reattach();
+    _scrollToBottom(force: true);
   }
 
   /// Begin a new thread, keeping the old one in the history.
@@ -162,7 +164,8 @@ class ChatScreenState extends State<ChatScreen> {
       _gapQuestion = null;
       _restoring = false;
     });
-    _scrollToBottom();
+    _tail.reattach();
+    _scrollToBottom(force: true);
   }
 
   /// The thread to write to, created if this is the first message in it.
@@ -203,7 +206,10 @@ class ChatScreenState extends State<ChatScreen> {
     });
 
     _messageController.clear();
-    _scrollToBottom();
+    // Forced, and it also re-arms following: asking a question is a statement
+    // that you want to see the answer.
+    _tail.reattach();
+    _scrollToBottom(force: true);
 
     // Worked out before retrieval runs, from the question rather than from
     // its results: the whole point is to describe sources that are *absent*,
@@ -380,7 +386,7 @@ class ChatScreenState extends State<ChatScreen> {
           generated: true,
         );
       });
-      _scrollToBottom();
+      _scrollToBottom(animate: false);
     }
 
     if (_cancelled && mounted && buffer.isNotEmpty) {
@@ -440,14 +446,41 @@ class ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _scrollToBottom() {
+  /// Whether new content should pull the view along with it, and the rule for
+  /// deciding. See [TailFollower] — the logic is subtle enough to be worth
+  /// testing on its own.
+  final TailFollower _tail = TailFollower();
+
+  bool get _followTail => _tail.following;
+
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (_tail.handle(notification)) setState(() {});
+    return false;
+  }
+
+  /// Bring the view to the newest content.
+  ///
+  /// [force] is for the moments the reader caused directly — sending a message,
+  /// opening a thread — where going to the end is the answer whatever they were
+  /// looking at before. Streaming does not force: it follows only if they are
+  /// already at the end.
+  ///
+  /// Streaming also jumps rather than animates. Chunks arrive far faster than a
+  /// 300 ms curve can finish, so animating meant every chunk interrupting the
+  /// last one; jumping tracks the growing text smoothly instead of stuttering.
+  void _scrollToBottom({bool force = false, bool animate = true}) {
+    if (!force && !_followTail) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
+      if (!_scrollController.hasClients) return;
+      final target = _scrollController.position.maxScrollExtent;
+      if (animate) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          target,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
+      } else {
+        _scrollController.jumpTo(target);
       }
     });
   }
@@ -539,7 +572,11 @@ class ChatScreenState extends State<ChatScreen> {
                   ? const SizedBox.shrink()
                   : _messages.isEmpty
                       ? _buildEmptyState(context)
-                      : ListView.builder(
+                      : Stack(
+                          children: [
+                            NotificationListener<ScrollNotification>(
+                              onNotification: _onScrollNotification,
+                              child: ListView.builder(
                           controller: _scrollController,
                           // Dragging the transcript puts the keyboard away. On
                           // iOS there is otherwise no gesture that does, and a
@@ -564,6 +601,27 @@ class ChatScreenState extends State<ChatScreen> {
                               showsDisclaimer: index == _disclaimerIndex,
                             );
                           },
+                              ),
+                            ),
+                            // Only while there is something to miss. Scrolling
+                            // back by hand through an answer that is still
+                            // growing is the one thing that got harder when the
+                            // transcript stopped dragging the reader along.
+                            if (!_followTail && _isLoading)
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: floatingBottomInset(context) + 8,
+                                child: Center(
+                                  child: _JumpToLatestButton(
+                                    onTap: () {
+                                      setState(_tail.reattach);
+                                      _scrollToBottom(force: true);
+                                    },
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
             ),
           ],
@@ -1226,4 +1284,47 @@ class ChatMessage {
             ? null
             : stored.citations.map(Citation.fromJson).toList(),
       );
+}
+/// A way back to the end of a streaming answer.
+///
+/// Exists because following was made conditional: once the reader scrolls up to
+/// read the start of a long answer, nothing brings them back, and on a phone
+/// that is a lot of dragging past text that is still growing. Shown only while
+/// an answer is arriving and only when they have actually scrolled away — a
+/// permanent button would be clutter, since the transcript follows on its own
+/// the rest of the time.
+class _JumpToLatestButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _JumpToLatestButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.secondaryContainer,
+      shape: StadiumBorder(
+        side: BorderSide(color: scheme.primary.withValues(alpha: 0.45)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_downward, size: 16, color: scheme.primary),
+              const SizedBox(width: 6),
+              Text(
+                'Jump to latest',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: scheme.onSecondaryContainer),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
