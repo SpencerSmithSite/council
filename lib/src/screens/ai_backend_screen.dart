@@ -673,6 +673,10 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
   int? _progress;
   String? _error;
 
+  /// Bumped whenever the weights appear or disappear, to re-run the
+  /// installed-check that decides which buttons this card shows.
+  int _installChanged = 0;
+
   @override
   void dispose() {
     _install?.cancel();
@@ -693,10 +697,57 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
       }),
       onDone: () {
         if (!mounted) return;
-        setState(() => _progress = null);
+        setState(() {
+          _progress = null;
+          _installChanged++;
+        });
         context.read<InferenceProvider>().refreshStatus();
       },
     );
+  }
+
+  /// Delete the weights, after asking.
+  ///
+  /// Confirmed rather than immediate because it is not undoable in any cheap
+  /// sense: getting the model back means downloading it again, which is the
+  /// half-gigabyte the reader was trying to reclaim.
+  Future<void> _remove(LocalModelChoice choice) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${choice.name}?'),
+        content: Text(
+          'This frees about ${choice.approximateSize} on this device. '
+          'Council will fall back to search-only answers until you choose '
+          'another option, and getting the model back means downloading it '
+          'again.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await choice.uninstall();
+      if (!mounted) return;
+      setState(() {
+        _installChanged++;
+        _error = null;
+      });
+      context.read<InferenceProvider>().refreshStatus();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'Could not remove ${choice.name}: $e');
+    }
   }
 
   @override
@@ -752,10 +803,19 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
                   style: Theme.of(context).textTheme.bodySmall),
             ] else
               FutureBuilder<bool>(
+                // Keyed on the removal counter so deleting the weights
+                // re-runs the check; without it the button would keep
+                // reporting the model as installed until the screen is left.
+                key: ValueKey('${selected.id}-$_installChanged'),
                 future: selected.isInstalled(),
                 builder: (context, snap) {
                   final installed = snap.data ?? false;
-                  return Row(
+                  // Wrap, not Row: "Qwen 3 0.6B installed" beside "Remove"
+                  // is wider than a narrow phone gives this card.
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       FilledButton.icon(
                         onPressed:
@@ -767,6 +827,15 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
                             ? '${selected.name} installed'
                             : 'Download ${selected.approximateSize}'),
                       ),
+                      // Only once there is something to remove. Half a
+                      // gigabyte the reader cannot account for or reclaim is
+                      // not a reasonable thing to leave on their device.
+                      if (installed)
+                        TextButton.icon(
+                          onPressed: () => _remove(selected),
+                          icon: const Icon(Icons.delete_outline),
+                          label: const Text('Remove'),
+                        ),
                     ],
                   );
                 },

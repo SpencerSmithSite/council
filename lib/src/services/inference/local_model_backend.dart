@@ -48,12 +48,13 @@ class LocalModelBackend implements InferenceBackend {
 
   @override
   Future<BackendStatus> checkStatus() async {
-    // Reachable only through a settings file carried over from a phone, since
-    // the option is not offered here — but silence would look like a bug.
+    // Not reachable on any platform Council ships today; kept so that a future
+    // target which the engine does not cover fails with a sentence rather than
+    // with silence.
     if (!LocalModelChoice.runsHere) {
       return const BackendStatus.unavailable(
-        'Downloaded models run on Android and iOS only. On this machine, '
-        'Ollama gives you a better model for the same privacy.',
+        'A downloaded model cannot run on this platform. Ollama or an API key '
+        'will work here.',
       );
     }
     if (!await choice.isInstalled()) {
@@ -110,6 +111,7 @@ class _LocalModelRuntime {
     await _model?.close();
     _model = await FlutterGemmaPlugin.instance.createModel(
       modelType: choice.modelType,
+      fileType: choice.fileType,
       maxTokens: choice.maxTokens,
       // Capped because a second KV cache beside a multi-gigabyte model is how
       // a phone runs out of memory mid-answer.
@@ -159,6 +161,16 @@ class LocalModelChoice {
   /// wrong for each of them.
   final ModelType modelType;
 
+  /// The container format, which decides which engine will accept the model.
+  ///
+  /// Explicit because both `installModel` and `createModel` default it to
+  /// `ModelFileType.task`, and the engine registry matches on it exactly: with
+  /// LiteRT-LM the only registered engine, a `.litertlm` file left declared as
+  /// `task` downloads and installs perfectly and then fails at the first
+  /// question with "No inference engine can handle this model". The package
+  /// README's advice to use `task` for `.litertlm` predates this enum value.
+  final ModelFileType fileType;
+
   const LocalModelChoice({
     required this.id,
     required this.name,
@@ -171,6 +183,7 @@ class LocalModelChoice {
     required this.contextBudgetChars,
     required this.note,
     required this.modelType,
+    required this.fileType,
   });
 
   Future<bool> isInstalled() async {
@@ -181,12 +194,25 @@ class LocalModelChoice {
     }
   }
 
+  /// Delete the downloaded weights.
+  ///
+  /// Half a gigabyte the reader can no longer account for is not something to
+  /// leave on a phone with no way to remove it, and "reinstall the app" is not
+  /// an answer when doing so also discards their library, notes and highlights.
+  Future<void> uninstall() async {
+    // Unloaded first: the runtime holds the file open, and on Windows deleting
+    // it underneath a live handle fails outright rather than quietly.
+    await _LocalModelRuntime.instance.unload();
+    await FlutterGemma.uninstallModel(fileName);
+  }
+
   /// Download and install, reporting progress 0-100.
   Stream<int> install() {
     final progress = StreamController<int>();
     () async {
       try {
-        await FlutterGemma.installModel(modelType: modelType)
+        await FlutterGemma.installModel(
+                modelType: modelType, fileType: fileType)
             .fromNetwork(url)
             .withProgress(progress.add)
             .install();
@@ -216,62 +242,155 @@ class LocalModelChoice {
   /// would be a credential in a client binary, one revocation away from
   /// breaking for everyone.
   ///
-  /// Qwen 2.5 0.5B is a weaker model than Gemma 3 1B would have been. That is
-  /// the real cost, and it is worth it, because the alternatives were shipping
-  /// a token, mirroring 550 MB of someone else's weights under their licence,
-  /// or asking every reader to sign up before they can use the feature.
+  /// Every model on offer, across all platforms.
   ///
-  /// There is deliberately only one. SmolLM 135M was offered here as a 170 MB
-  /// option for older phones and was removed after being tried on a device:
-  /// asked what baptism is, with the Westminster catechisms and Aquinas
-  /// retrieved and in front of it, it answered with advice about learning a
-  /// foreign language. It is not that it answered badly — it did not attend to
-  /// the passages at all, which is the one thing this backend exists to do.
-  /// A reader spending 170 MB to get that is worse served than a reader told
-  /// the honest floor is 550 MB.
-  static const List<LocalModelChoice> all = [
-    LocalModelChoice(
-      id: 'qwen2.5-0.5b',
-      name: 'Qwen 2.5 0.5B',
-      fileName: 'Qwen2.5-0.5B-Instruct_multi-prefill-seq_q8_ekv1280.task',
-      url: 'https://huggingface.co/litert-community/Qwen2.5-0.5B-Instruct/'
-          'resolve/main/'
-          'Qwen2.5-0.5B-Instruct_multi-prefill-seq_q8_ekv1280.task',
-      approximateSize: '550 MB',
-      ramMb: 700,
-      minDeviceRamMb: 4000,
-      maxTokens: 1280,
-      contextBudgetChars: 3000,
-      modelType: ModelType.qwen,
-      note: 'Small enough for a phone, and large enough to stay with the '
-          'passages Council retrieves. Best at summarising and comparing '
-          'those; a hosted model is still better for open-ended questions.',
-    ),
+  /// Qwen throughout, and deliberately so: it publishes at every size from
+  /// 0.6B to 8B under Apache-2.0 with no gate, which means one family can
+  /// cover a phone and a desktop workstation without the picker turning into
+  /// a tour of unrelated projects. Gemma was the original choice and is not
+  /// usable here at all — its repositories are gated behind a HuggingFace
+  /// account, which is exactly what this backend promises readers they will
+  /// not need.
+  ///
+  /// All `.litertlm`, the format LiteRT-LM reads, because LiteRT-LM is the
+  /// only engine covering desktop as well as phones. MediaPipe reads `.task`
+  /// and is Android and iOS only.
+  ///
+  /// Qwen 3 rather than 3.5 or 3.6, which do exist upstream: neither has a
+  /// LiteRT build, and 3.5 starts at 4B while 3.6 starts at 27B, so even
+  /// converted they would miss the phone end entirely. Worth re-checking when
+  /// `litert-community` catches up.
+  ///
+  /// SmolLM 135M was offered here as a 170 MB option for older phones and was
+  /// removed after being tried on a device: asked what baptism is, with the
+  /// Westminster catechisms and Aquinas retrieved and in front of it, it
+  /// answered with advice about learning a foreign language. It did not attend
+  /// to the passages at all, which is the one thing this backend exists to do.
+  static const LocalModelChoice qwen3_06b = LocalModelChoice(
+    id: 'qwen3-0.6b',
+    name: 'Qwen 3 0.6B',
+    fileName: 'qwen3_0_6b_mixed_int4.litertlm',
+    url: 'https://huggingface.co/litert-community/Qwen3-0.6B/resolve/main/'
+        'qwen3_0_6b_mixed_int4.litertlm',
+    approximateSize: '500 MB',
+    ramMb: 700,
+    minDeviceRamMb: 4000,
+    maxTokens: 2048,
+    contextBudgetChars: 3000,
+    modelType: ModelType.qwen3,
+    fileType: ModelFileType.litertlm,
+    note: 'Small enough for any recent phone. Good at summarising and '
+        'comparing the passages Council retrieves; a hosted model is still '
+        'better for open-ended questions.',
+  );
+
+  static const LocalModelChoice qwen3_17b = LocalModelChoice(
+    id: 'qwen3-1.7b',
+    name: 'Qwen 3 1.7B',
+    fileName: 'Qwen3_1.7B.litertlm',
+    url: 'https://huggingface.co/litert-community/Qwen3-1.7B/resolve/main/'
+        'Qwen3_1.7B.litertlm',
+    approximateSize: '2.1 GB',
+    ramMb: 2400,
+    minDeviceRamMb: 8000,
+    maxTokens: 2048,
+    contextBudgetChars: 4000,
+    modelType: ModelType.qwen3,
+    fileType: ModelFileType.litertlm,
+    note: 'Noticeably better reasoning than the 0.6B. Only worth it on a '
+        'phone with plenty of memory to spare.',
+  );
+
+  static const LocalModelChoice qwen3_4b = LocalModelChoice(
+    id: 'qwen3-4b-2507',
+    name: 'Qwen 3 4B Instruct',
+    fileName: 'qwen3_4b_instruct_2507_mixed_int4.litertlm',
+    url: 'https://huggingface.co/litert-community/Qwen3-4B-Instruct-2507/'
+        'resolve/main/qwen3_4b_instruct_2507_mixed_int4.litertlm',
+    approximateSize: '2.7 GB',
+    ramMb: 3200,
+    minDeviceRamMb: 8000,
+    maxTokens: 4096,
+    contextBudgetChars: 6000,
+    modelType: ModelType.qwen3,
+    fileType: ModelFileType.litertlm,
+    note: 'The best balance on a desktop. Handles a longer question and more '
+        'retrieved text than the smaller two.',
+  );
+
+  static const LocalModelChoice qwen3_8b = LocalModelChoice(
+    id: 'qwen3-8b',
+    name: 'Qwen 3 8B',
+    fileName: 'qwen3_8b_mixed_int4.litertlm',
+    url: 'https://huggingface.co/litert-community/Qwen3-8B/resolve/main/'
+        'qwen3_8b_mixed_int4.litertlm',
+    approximateSize: '4.9 GB',
+    ramMb: 6000,
+    minDeviceRamMb: 16000,
+    maxTokens: 4096,
+    contextBudgetChars: 8000,
+    modelType: ModelType.qwen3,
+    fileType: ModelFileType.litertlm,
+    note: 'The most capable option, and the heaviest. For a machine with '
+        'memory to spare, where it approaches what a hosted model gives you.',
+  );
+
+  /// Every model, for resolving a stored id whatever device wrote it.
+  ///
+  /// A reader who picked the 4B on a laptop and opens the same account's
+  /// settings on a phone must not hit a lookup failure; [byId] resolves
+  /// against this and [recommended] decides what is sensible here.
+  static const List<LocalModelChoice> catalogue = [
+    qwen3_06b,
+    qwen3_17b,
+    qwen3_4b,
+    qwen3_8b,
   ];
 
-  static LocalModelChoice byId(String id) =>
-      all.firstWhere((m) => m.id == id, orElse: () => all.first);
+  /// What to offer on this device, smallest first.
+  ///
+  /// Split because the sizes that make sense differ by an order of magnitude:
+  /// a 4.9 GB model is reasonable on a desktop and absurd on a phone, and a
+  /// picker showing all four everywhere would mostly be offering downloads
+  /// that cannot run.
+  static List<LocalModelChoice> get all => _isDesktop
+      ? const [qwen3_17b, qwen3_4b, qwen3_8b]
+      : const [qwen3_06b, qwen3_17b];
+
+  static bool get _isDesktop =>
+      Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+
+  /// Resolved against the whole catalogue, not the platform's shortlist, so a
+  /// choice made on another device is recognised rather than silently reset.
+  /// Falls back to what this device would recommend when the id is unknown —
+  /// a model removed in a later version, most likely.
+  static LocalModelChoice byId(String id) => catalogue.firstWhere(
+        (m) => m.id == id,
+        orElse: recommended,
+      );
 
   /// Whether a downloaded model can run on this platform at all.
   ///
-  /// Both models above ship as `.task`, which is MediaPipe's format, and
-  /// `flutter_gemma_mediapipe` declares android and ios only — there is no
-  /// desktop `.task` support to fall back to. Offering the download on macOS,
-  /// Windows or Linux would mean a reader spending 550 MB on a file that
-  /// cannot be loaded.
+  /// Every platform Council targets, now that LiteRT-LM is the engine. Ollama
+  /// is still the better answer on a desktop, but it is only a better answer
+  /// for someone who has it — this exists for the reader who does not, and
+  /// sending them off to install a server was the gap.
   ///
-  /// Desktop is not left without an on-device option: Ollama is trivial to
-  /// install there and is better than either of these models. Running `.task`
-  /// on desktop would mean the `.litertlm` engine, a second native runtime and
-  /// a different pair of weights — real work, for a platform that already has
-  /// the better answer.
-  static bool get runsHere => Platform.isAndroid || Platform.isIOS;
+  /// The architecture caveats match what the download page already promises:
+  /// LiteRT-LM covers macOS on Apple silicon (not Intel), Windows x64 (not
+  /// arm64) and Linux on both, and those are exactly the builds shipped.
+  static bool get runsHere =>
+      Platform.isAndroid ||
+      Platform.isIOS ||
+      Platform.isMacOS ||
+      Platform.isWindows ||
+      Platform.isLinux;
 
   /// What to recommend on this device.
   ///
-  /// Physical memory is not readable portably from Dart, so this errs toward
-  /// the smaller model rather than guessing high — being handed a model that
-  /// runs badly is worse than being handed one that is merely modest, and the
-  /// reader can pick the larger one deliberately.
+  /// Physical memory is not readable portably from Dart, so within a platform
+  /// this errs toward the smaller model rather than guessing high — being
+  /// handed one that runs badly is worse than being handed one that is merely
+  /// modest, and the reader can pick a larger one deliberately.
   static LocalModelChoice recommended() => all.first;
 }

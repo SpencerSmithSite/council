@@ -57,13 +57,13 @@ dependencies:
 
   # The engine that actually runs the weights. `flutter_gemma` is only a core
   # since 1.0 and registers no engine on its own, so without this every
-  # download failed with "FlutterGemma not initialized". MediaPipe is the one
-  # that reads `.task`, which is the format both offered models ship in.
+  # download failed with "FlutterGemma not initialized".
   #
-  # It declares android and ios only — there is no desktop `.task` support at
-  # all — which is why the downloadable model is offered on phones alone. The
-  # desktop answer is Ollama, which is a better one there anyway.
-  flutter_gemma_mediapipe: ^1.0.4
+  # LiteRT-LM rather than the MediaPipe engine because it is the only one that
+  # covers desktop as well as phones: it reads `.litertlm` on android, ios,
+  # macOS, Windows and Linux, where MediaPipe reads `.task` on android and ios
+  # alone. One engine and one model on five platforms.
+  flutter_gemma_litertlm: ^1.3.1
 
   # Runs the bundled embedding model so a query can be encoded on-device.
   # Supports android, ios, linux, macos and windows — every platform targeted
