@@ -2682,3 +2682,40 @@ Still deferred:
   annotation whose offsets no longer match is currently rendered where the
   offsets say. Searching for the stored text and re-anchoring is the fix, and
   costs nothing until a corpus rebuild actually moves something.
+
+## Desktop release signing (not started, blocked on purchases)
+
+The 2026.7.27 release ships installers for both desktop platforms, and a reader
+on either sees an operating-system warning the first time they run one. Neither
+is a bug in the build; both are the absence of a paid identity, which is why
+they are recorded here rather than fixed.
+
+**macOS is nearly there.** The DMG is signed with the Developer ID Application
+certificate for team `Y2Q5JVG8X5` and built with the hardened runtime enabled,
+so `codesign --verify --deep --strict` passes and the whole chain resolves to
+the Apple Root CA. What is missing is notarisation — Apple's own scan — so
+`spctl --assess` returns `rejected: Unnotarized Developer ID` and Gatekeeper
+declines a plain double-click. The download page tells the reader to right-click
+and choose Open, which works, but it is an apology rather than a fix.
+Notarising needs an app-specific password or an App Store Connect API key, then
+`notarytool submit --wait` and `stapler staple` on the DMG itself. Stapling the
+`.app` inside the DMG instead is the trap: the ticket has to be attached to the
+artefact that is actually downloaded.
+
+**Windows needs a certificate bought first.** The Inno Setup installer is
+unsigned, so SmartScreen shows "Windows protected your PC" and hides the run
+button behind *More info*. An OV code-signing certificate clears this only after
+the binary accrues download reputation, which a low-volume release may never do;
+an EV certificate carries reputation immediately. That difference — not the
+signature itself — is what is being paid for, and it is the reason to decide
+deliberately rather than buy the cheaper one by default.
+
+When there is a certificate, signing belongs in CI rather than on a laptop: a
+`signtool` step in the Windows job of `.github/workflows/release-desktop.yml`,
+placed after ISCC and before the release upload, reading the certificate from
+repository secrets. The macOS side stays local for now, because the signing
+identity lives in the login keychain and moving it into CI means exporting a
+`.p12` into secrets — worth doing only if desktop releases stop being occasional.
+
+Both platforms' `note` fields on the download page exist solely to explain these
+warnings. Both come off when this is done.
