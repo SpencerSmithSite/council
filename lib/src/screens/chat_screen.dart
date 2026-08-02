@@ -969,10 +969,16 @@ class _CoverageNoticeState extends State<_CoverageNotice> {
               style: text.labelSmall,
             ),
           ] else
+            // Wrap, not Row: the install label carries both a collection name
+            // and a byte count, and long names on a narrow phone push the pair
+            // past the notice's width. Wrapping to a second line is the only
+            // option that neither truncates the size nor hides the button.
             Align(
               alignment: Alignment.centerRight,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 4,
+                runSpacing: 4,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.push(
@@ -981,7 +987,6 @@ class _CoverageNoticeState extends State<_CoverageNotice> {
                     ),
                     child: const Text('Browse library'),
                   ),
-                  const SizedBox(width: 4),
                   FilledButton.tonal(
                     onPressed: _install,
                     // The size is shown on the button because this is an
