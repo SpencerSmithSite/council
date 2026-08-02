@@ -119,6 +119,23 @@ ThemeData _build(AppPalette palette, PlatformFamily family) {
         TargetPlatform.linux: ZoomPageTransitionsBuilder(),
       },
     ),
+    // Without this, a determinate progress bar shows no progress at all.
+    //
+    // Material 3 paints the unfilled part of a `LinearProgressIndicator` in
+    // `colorScheme.secondaryContainer`, and `ColorScheme`'s constructor falls
+    // that back to `secondary` when it is not given. The hand-built palettes
+    // set `secondary` to the same accent as `primary` — reasonably, since these
+    // are one-accent designs — so the track came out identical to the fill and
+    // every bar rendered as a solid accent line whatever its value. A 500 MB
+    // download looked the same at 14% as at 99%.
+    //
+    // Fixed here rather than per palette so it holds for every theme and every
+    // bar, and stated explicitly rather than relying on which colour role
+    // Material happens to reach for next.
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      linearTrackColor: scheme.surfaceContainerHighest,
+      circularTrackColor: Colors.transparent,
+    ),
     dividerTheme: DividerThemeData(
       color: palette.separator,
       // A hairline. Material's default 1.0 reads as a rule; Apple's separators

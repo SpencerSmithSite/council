@@ -339,7 +339,7 @@ class _AiPage extends StatelessWidget {
           // same position, so every reader sees one on-device option first
           // rather than being sent straight to a server or a credit card.
           // Phones only — see [LocalModelChoice.runsHere].
-          if (!inference.offersPlatformLlm && LocalModelChoice.runsHere) ...[
+          if (inference.offersLocalModel) ...[
             _AiOption(
               id: LocalModelBackend.backendId,
               title: 'Download a small model',

@@ -62,6 +62,18 @@ enum PlatformLlmState {
           true,
         _ => false,
       };
+
+  /// Whether the reader has a working on-device model *right now*.
+  ///
+  /// Distinct from [worthOffering], and the distinction matters: the
+  /// downloadable model used to be hidden whenever the platform row was shown,
+  /// which meant an eligible iPhone with Apple Intelligence switched off was
+  /// offered the switch and nothing else. Someone who does not want to turn it
+  /// on was left with a server to stand up or a key to buy, on a device
+  /// perfectly able to run a downloaded model.
+  ///
+  /// So the download is hidden only when the built-in model actually answers.
+  bool get supersedesDownload => this == PlatformLlmState.available;
 }
 
 /// A snapshot of what the platform reported.

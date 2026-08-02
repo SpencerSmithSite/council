@@ -61,6 +61,16 @@ class InferenceProvider extends ChangeNotifier {
   /// installed and no key — the case onboarding should lead with.
   bool get platformLlmReady => _platformLlm?.isAvailable ?? false;
 
+  /// Whether to offer a downloadable model.
+  ///
+  /// Suppressed only when the built-in model actually works. Being *eligible*
+  /// for one is not enough: a reader who has left Apple Intelligence switched
+  /// off, or whose model is still downloading, has no on-device generation
+  /// today and should still be offered the alternative.
+  bool get offersLocalModel =>
+      !(_platformLlm?.state.supersedesDownload ?? false) &&
+      LocalModelChoice.runsHere;
+
   /// The backend the user selected, constructed fresh so configuration edits
   /// always take effect.
   InferenceBackend get backend {

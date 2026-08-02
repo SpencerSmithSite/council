@@ -80,8 +80,7 @@ class AiBackendScreen extends StatelessWidget {
                       // have no on-device generation at all, only a server to
                       // stand up or a key to buy. Phones only — see
                       // [LocalModelChoice.runsHere].
-                      if (!inference.offersPlatformLlm &&
-                          LocalModelChoice.runsHere) ...[
+                      if (inference.offersLocalModel) ...[
                         _Option(
                           id: LocalModelBackend.backendId,
                           title: 'Download a small model',
@@ -677,6 +676,12 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
   /// installed-check that decides which buttons this card shows.
   int _installChanged = 0;
 
+  /// Held in a field rather than created in `build`, so the memory check runs
+  /// once instead of on every rebuild — and, more importantly, so a rebuild
+  /// mid-download does not restart it and flash the list back to a spinner.
+  late final Future<List<LocalModelChoice>> _offered =
+      LocalModelChoice.availableHere();
+
   @override
   void dispose() {
     _install?.cancel();
@@ -761,40 +766,81 @@ class _LocalModelSettingsState extends State<_LocalModelSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // A radio group of one is a control that cannot be operated, so
-            // the single-model case is described rather than offered.
-            if (LocalModelChoice.all.length == 1) ...[
-              Text('${selected.name} · ${selected.approximateSize}',
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Text(selected.note,
-                  style: Theme.of(context).textTheme.bodyMedium),
-            ] else
-              RadioGroup<String>(
-                groupValue: selected.id,
-                // Not disabled by passing null — RadioGroup requires a handler
-                // — so the guard is inside: swapping models mid-download would
-                // leave the finished file attached to the wrong choice.
-                onChanged: (v) {
-                  if (_progress != null) return;
-                  context
-                      .read<InferenceProvider>()
-                      .setLocalModel(v ?? selected.id);
-                },
-                child: Column(
-                  children: [
-                    for (final choice in LocalModelChoice.all)
-                      RadioListTile<String>(
-                        value: choice.id,
-                        contentPadding: EdgeInsets.zero,
-                        title:
-                            Text('${choice.name} · ${choice.approximateSize}'),
-                        subtitle: Text(choice.note),
-                        isThreeLine: true,
-                      ),
-                  ],
-                ),
-              ),
+            // Only the models this device has the memory for. Offering one it
+            // cannot hold means a multi-gigabyte download that ends in the OS
+            // killing the app.
+            FutureBuilder<List<LocalModelChoice>>(
+              future: _offered,
+              builder: (context, snap) {
+                final offered = snap.data;
+                if (offered == null) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: LinearProgressIndicator(),
+                  );
+                }
+                // A radio group of one is a control that cannot be operated,
+                // so a single choice is described rather than offered.
+                if (offered.length == 1) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${offered.first.name} · '
+                          '${offered.first.approximateSize}',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      Text(offered.first.note,
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  );
+                }
+                return RadioGroup<String>(
+                  groupValue: selected.id,
+                  // Not disabled by passing null — RadioGroup requires a
+                  // handler — so the guard is inside: swapping models
+                  // mid-download would leave the finished file attached to the
+                  // wrong choice.
+                  onChanged: (v) {
+                    if (_progress != null) return;
+                    context
+                        .read<InferenceProvider>()
+                        .setLocalModel(v ?? selected.id);
+                  },
+                  child: Column(
+                    children: [
+                      for (final choice in offered)
+                        RadioListTile<String>(
+                          value: choice.id,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                              '${choice.name} · ${choice.approximateSize}'),
+                          subtitle: Text(choice.note),
+                          isThreeLine: true,
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            // Said plainly rather than by hiding the card: a reader whose
+            // phone is under the floor should know that is why, not be left
+            // with a download that fails later.
+            FutureBuilder<bool>(
+              future: selected.fitsThisDevice(),
+              builder: (context, snap) {
+                if (snap.data != false) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '${selected.name} asks for more memory than this device '
+                    'has. It would download and then fail to load — Ollama or '
+                    'an API key will work here instead.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error),
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 8),
             if (_progress != null) ...[
               LinearProgressIndicator(value: _progress! / 100),
