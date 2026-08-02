@@ -2981,3 +2981,72 @@ discredits the feature.
 * **A stale model id is harmless.** `byId` falls back to the first choice, so
   the `gemma3-1b` left in preferences resolved cleanly instead of crashing.
   Confirmed on the device rather than assumed.
+
+## One engine, one family, five platforms (2026-08-02)
+
+Three asks, and the third turned the first two inside out: offer removal of a
+downloaded model; offer the download on desktop too, for readers who do not
+have Ollama or do not want to learn it; and standardise on Qwen, which
+publishes at every size.
+
+**MediaPipe cannot do that, so LiteRT-LM replaced it.** MediaPipe reads `.task`
+on Android and iOS only. LiteRT-LM reads `.litertlm` on Android, iOS, macOS,
+Windows and Linux — so the whole "phones only" restriction added earlier the
+same day was not a fact about the problem, it was a fact about the engine
+chosen. Swapping it removes the restriction, drops a dependency rather than
+adding one, and leaves a single native runtime to reason about.
+
+**The trap in that swap.** `ModelFileType` has a distinct `litertlm` value, and
+both `installModel` and `createModel` default the parameter to
+`ModelFileType.task`. A `.litertlm` file left on the default downloads, installs
+and reports itself installed — and then fails at the first question with "No
+inference engine can handle this model (ModelFileType.task)". The package README
+still says to use `task` for `.litertlm`; that advice predates the enum value.
+Carried on `LocalModelChoice` now, so it cannot drift from the filename, and
+asserted in `test/local_model_catalogue_test.dart`.
+
+Worth noting the shape, because it is the second instance in a day: both this
+and the missing engine registration produced a build that compiled, analysed
+clean, downloaded successfully and was incapable of answering. The only thing
+that catches this class of fault is running it.
+
+### The ladder
+
+Qwen throughout, which was the point — one family covers 0.6B to 8B under
+Apache-2.0 with no gate, so the picker does not become a tour of unrelated
+projects. What a device is offered is a subset of the catalogue, because the
+sensible sizes differ by an order of magnitude:
+
+| | offered | recommended |
+|---|---|---|
+| phone | 0.6B (500 MB), 1.7B (2.1 GB) | 0.6B |
+| desktop | 1.7B, 4B Instruct (2.7 GB), 8B (4.9 GB) | 1.7B |
+
+`byId` resolves against the full catalogue rather than the platform's
+shortlist, so a model chosen on a laptop is recognised on a phone instead of
+silently resetting.
+
+**Not Qwen 3.5 or 3.6, and this was checked rather than assumed.** Both exist
+upstream — 3.5 at 4B/9B/27B/122B, 3.6 at 27B/35B — and neither has a LiteRT or
+MediaPipe conversion. Even converted, 3.5 starts at 4B and 3.6 at 27B, so both
+miss the phone end entirely. Qwen 3 is the newest line that reaches 0.6B. Worth
+re-checking when `litert-community` catches up.
+
+### Removal
+
+`uninstall()` unloads the runtime before deleting, because the engine holds the
+file open and on Windows deleting underneath a live handle fails outright. The
+button appears only when there is something to remove, and confirms first: it
+is not undoable in any cheap sense, since getting the model back means
+re-downloading the gigabytes the reader was trying to reclaim.
+
+### Verified, and not
+
+Verified on the Android emulator: download, install, **remove**, re-download,
+and a grounded answer citing all six retrieved sources — Qwen 3 0.6B synthesises
+across them rather than quoting one, which the 2.5 0.5B did not.
+
+macOS builds and launches with the engine registered, and `flutter test` runs
+on the host so the desktop half of the catalogue is covered by assertions. What
+is **not** verified is a desktop download and generation: that is a 2.1 GB fetch
+and needs the app driven by hand. Same for iOS.

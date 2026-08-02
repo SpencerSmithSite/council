@@ -440,21 +440,32 @@ will see; both notes come off once these are settled.
       fallback ignored the retrieved passages entirely. Now Qwen 2.5 0.5B on
       Android, verified download → install → load → cited answer. See PLAN.md.
 
+- [ ] **Download and run a model on a desktop, by hand.** macOS builds, launches
+      with LiteRT-LM registered, and the desktop half of the catalogue is
+      covered by host-run tests — but nobody has actually fetched the 2.1 GB
+      1.7B on a Mac and asked it a question. Windows and Linux have not been
+      built at all since the engine changed, and Windows carries a known
+      upstream regression: discrete GPUs crash in the WebGPU/Dawn stack, so it
+      may need `PreferredBackend.cpu` there.
+
 - [ ] **Try the downloaded model on iOS.** Only Android has been run end to
       end. The engine, the weights and the Dart are shared, but the download
       path is not: iOS has its own background-download behaviour and its own
-      memory ceiling, and this model wants ~700 MB beside the ~170 MB vector
+      memory ceiling, and even the 0.6B wants ~700 MB beside the ~170 MB vector
       index. Apple Intelligence covers the newest iPhones, so this path is for
       exactly the older ones with least headroom.
 
-- [ ] **Reconsider a smaller option once one is worth offering.** Removing
-      SmolLM 135M leaves 550 MB as the floor, which is a lot on a metered
-      connection. Nothing ungated and smaller is currently good enough — the
-      test is whether it will summarise a retrieved passage rather than
-      free-associate. Qwen 3 0.6B is the obvious candidate, but it ships only
-      as `.litertlm`, so it would mean adding `flutter_gemma_litertlm`
-      alongside MediaPipe or replacing it. That engine also supports desktop,
-      which would reopen the downloadable model on macOS, Windows and Linux.
+- [ ] **Re-check Qwen 3.5 / 3.6 in LiteRT format.** Both exist upstream and
+      neither has a LiteRT or MediaPipe conversion, which is the only reason
+      the app is on Qwen 3. 3.5 starts at 4B and 3.6 at 27B, so a conversion
+      would help desktop before it helped phones — the 0.6B rung has no
+      successor announced.
+
+- [ ] **`LiteRtTopKMetalSampler` is not bundled on macOS.** The Podfile phase
+      the package requires copies three accelerator dylibs; upstream ships only
+      two, so that one logs a warning and is skipped. Nothing has visibly
+      failed, but it means a sampling path is falling back. Worth checking
+      whether it matters once a model has actually been run on a Mac.
 
 - [ ] **Audit the rest of the chat screen at a narrow width.** The coverage
       notice overflowed by 25 px because a `Row` held two buttons whose labels

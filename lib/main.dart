@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
-import 'package:flutter_gemma_mediapipe/flutter_gemma_mediapipe.dart';
+import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -108,10 +108,14 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
   /// Registers the engine that runs a downloaded model.
   ///
   /// `flutter_gemma` has been a core package with no engine of its own since
-  /// 1.0: without both this call and the `flutter_gemma_mediapipe` dependency,
-  /// the first download fails with "FlutterGemma not initialized" and the
-  /// downloadable-model backend is dead on arrival. Skipped on desktop, where
-  /// MediaPipe does not exist and the backend is not offered.
+  /// 1.0: without both this call and an engine package, the first download
+  /// fails with "FlutterGemma not initialized" and the downloadable-model
+  /// backend is dead on arrival.
+  ///
+  /// LiteRT-LM rather than MediaPipe, because it is the only one of the two
+  /// that runs on desktop as well as phones. That is what lets one engine and
+  /// one model cover all five platforms instead of a mobile pair and a desktop
+  /// pair drifting apart.
   ///
   /// Cheap — it wires up a registry and touches no weights — but deliberately
   /// awaited before anything else, because it must be in place before any
@@ -120,7 +124,7 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
     if (!LocalModelChoice.runsHere) return;
     try {
       await FlutterGemma.initialize(
-        inferenceEngines: const [MediaPipeEngine()],
+        inferenceEngines: const [LiteRtLmEngine()],
       );
     } catch (e) {
       // A reader who is not using a downloaded model should still get a
