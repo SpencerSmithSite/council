@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:council/src/services/device_memory.dart';
 import 'package:council/src/services/inference/local_model_backend.dart';
 
 /// These run on the host, so on a developer machine they exercise the desktop
@@ -72,6 +73,52 @@ void main() {
         reason: 'LiteRT-LM covers android, ios, macOS, Windows and Linux. '
             'If this fails the host is a platform the engine does not '
             'support, and the option should be hidden rather than broken.');
+  });
+
+  group('the memory gate', () {
+    tearDown(() => DeviceMemory.debugSetTotalMb(null, unknown: false));
+
+    test('hides a model the device cannot hold', () async {
+      // A 2 GB phone — an iPhone 8, which can install Council because iOS 16
+      // is both its ceiling and the app's floor.
+      DeviceMemory.debugSetTotalMb(2048);
+      final offered = await LocalModelChoice.availableHere();
+      final fitting =
+          LocalModelChoice.all.where((m) => m.minDeviceRamMb <= 2048);
+      if (fitting.isEmpty) {
+        // Nothing fits: exactly one is shown so the card can say why, and it
+        // is honest about not fitting.
+        expect(offered, hasLength(1));
+        expect(await offered.first.fitsThisDevice(), isFalse);
+      } else {
+        for (final m in offered) {
+          expect(m.minDeviceRamMb, lessThanOrEqualTo(2048),
+              reason: 'offering a model that cannot load means a '
+                  'multi-gigabyte download ending in the OS killing the app');
+        }
+      }
+    });
+
+    test('never offers nothing, so the screen can explain itself', () async {
+      DeviceMemory.debugSetTotalMb(512);
+      final offered = await LocalModelChoice.availableHere();
+      expect(offered, hasLength(1));
+      expect(await offered.first.fitsThisDevice(), isFalse,
+          reason: 'the card shows why rather than vanishing');
+    });
+
+    test('offers everything the platform has when memory is ample', () async {
+      DeviceMemory.debugSetTotalMb(32768);
+      expect(await LocalModelChoice.availableHere(), LocalModelChoice.all);
+    });
+
+    test('is permissive when the amount cannot be read', () async {
+      DeviceMemory.debugSetTotalMb(null, unknown: true);
+      expect(await DeviceMemory.meets(999999), isTrue,
+          reason: 'unknown must not be treated as too little — hiding the '
+              'feature from a device that merely failed to answer is worse '
+              'than offering one it might not run');
+    });
   });
 
   test('desktop is offered larger models than a phone', () {

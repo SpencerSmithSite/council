@@ -3050,3 +3050,55 @@ macOS builds and launches with the engine registered, and `flutter test` runs
 on the host so the desktop half of the catalogue is covered by assertions. What
 is **not** verified is a desktop download and generation: that is a 2.1 GB fetch
 and needs the app driven by hand. Same for iOS.
+
+## Three faults found by asking who the feature is actually for (2026-08-02)
+
+### Progress bars showed no progress, app-wide
+
+A 500 MB download rendered an identical solid bar at 14% and at 56%. Sampling
+the pixels settled what staring at the widget could not: the whole bar was one
+colour, `#7AA2F7`, end to end. The value was never wrong — the *track* was being
+painted in the same colour as the fill.
+
+Material 3 paints the unfilled part of a `LinearProgressIndicator` in
+`colorScheme.secondaryContainer`, and `ColorScheme`'s constructor falls that back
+to `secondary` when it is not supplied. All three hand-built palettes set
+`secondary` to the same accent as `primary` — reasonable for one-accent designs
+— so track and fill came out identical. This affected **every** progress bar in
+the app, including pack downloads, in every theme.
+
+Fixed once in `_build` with an explicit `linearTrackColor`, rather than in each
+palette: stating the colour beats depending on which role Material reaches for
+next. Verified by measuring the painted run — 291 px of 911 at 32%, 564 px at
+62%.
+
+### `minDeviceRamMb` was decoration
+
+Every model declared one and nothing read it. A 2 GB iPhone 8 — which can
+install Council, since iOS 16 is both its ceiling and the app's floor — was
+offered the 2.1 GB model that declares a need for 8 GB. It would have downloaded
+in full and then been killed by the OS, and those phones are precisely who this
+feature exists for, since Apple Intelligence covers the new ones.
+
+`DeviceMemory` now reads physical memory per platform, and `availableHere()`
+filters on it. Unknown is treated as permissive rather than as "too little":
+hiding the feature from a device that merely failed to answer is worse than
+offering one it might not run. When nothing fits, the smallest is shown anyway
+with a line saying why, so the card explains itself instead of vanishing.
+
+**The thresholds were wrong on first contact, in the instructive direction.**
+They were written against nominal sizes, but the OS reports less than the device
+is sold as — a 4 GB Android reports 3,967 MB — so a 4 GB emulator that had
+already generated an answer with the 0.6B was told it lacked the memory for it.
+Each is now set about a tier below the nominal size it is meant to admit.
+
+### The download was hidden from anyone eligible for Apple Intelligence
+
+`offersPlatformLlm` covered `notEnabled` and `modelNotReady` as well as
+`available`, and the downloadable model was hidden whenever it was true. So an
+eligible iPhone with Apple Intelligence switched **off** was shown the switch and
+nothing else: a reader who did not want to turn it on was left with a server to
+stand up or a key to buy, on a device perfectly able to run a downloaded model.
+
+Split into `supersedesDownload`, true only for `available`. Being *eligible* for
+a built-in model is not the same as having one that answers.

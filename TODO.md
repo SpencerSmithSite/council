@@ -440,6 +440,14 @@ will see; both notes come off once these are settled.
       fallback ignored the retrieved passages entirely. Now Qwen 2.5 0.5B on
       Android, verified download → install → load → cited answer. See PLAN.md.
 
+- [ ] **Check the memory thresholds against real phones.** They are calibrated
+      against what the OS reports rather than what the device is sold as, which
+      was measured on exactly one machine — a 4 GB Android emulator reporting
+      3,967 MB. The 0.6B admits a nominal 3 GB phone and the 1.7B a nominal
+      6 GB one; both numbers are judgement, not measurement, and the cost of
+      being too strict is silently hiding the feature from someone who could
+      use it.
+
 - [ ] **Download and run a model on a desktop, by hand.** macOS builds, launches
       with LiteRT-LM registered, and the desktop half of the catalogue is
       covered by host-run tests — but nobody has actually fetched the 2.1 GB

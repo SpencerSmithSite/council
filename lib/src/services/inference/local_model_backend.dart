@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
 
+import '../device_memory.dart';
 import 'inference_backend.dart';
 
 /// A small open-weights model the reader downloads once and then runs locally.
@@ -145,10 +146,17 @@ class LocalModelChoice {
   /// Rough resident cost of the weights, in megabytes.
   final int ramMb;
 
-  /// Least device memory this is sensible on, in megabytes. Deliberately well
-  /// above [ramMb] — the OS, Flutter, the corpus database and the vector index
-  /// are all resident too, and a model that just barely fits is a model that
-  /// gets the app killed under memory pressure.
+  /// Least device memory this is sensible on, in megabytes. Deliberately above
+  /// [ramMb] — the OS, Flutter, the corpus database and the vector index are
+  /// all resident too, and a model that just barely fits is one that gets the
+  /// app killed under memory pressure.
+  ///
+  /// Compared against what the OS *reports*, which is materially less than what
+  /// the device is sold as: a 4 GB Android reports about 3,967 MB, because the
+  /// kernel reserves the rest. These were first written against the marketing
+  /// figures and immediately mis-fired — a 4 GB emulator that had already run
+  /// the 0.6B was told it did not have the memory for it. Each is set roughly a
+  /// tier below the nominal size it is meant to admit.
   final int minDeviceRamMb;
 
   final int maxTokens;
@@ -274,7 +282,8 @@ class LocalModelChoice {
         'qwen3_0_6b_mixed_int4.litertlm',
     approximateSize: '500 MB',
     ramMb: 700,
-    minDeviceRamMb: 4000,
+    // Admits a nominal 3 GB phone, excludes a 2 GB one.
+    minDeviceRamMb: 2600,
     maxTokens: 2048,
     contextBudgetChars: 3000,
     modelType: ModelType.qwen3,
@@ -292,7 +301,8 @@ class LocalModelChoice {
         'Qwen3_1.7B.litertlm',
     approximateSize: '2.1 GB',
     ramMb: 2400,
-    minDeviceRamMb: 8000,
+    // Admits a nominal 6 GB phone.
+    minDeviceRamMb: 5000,
     maxTokens: 2048,
     contextBudgetChars: 4000,
     modelType: ModelType.qwen3,
@@ -309,7 +319,8 @@ class LocalModelChoice {
         'resolve/main/qwen3_4b_instruct_2507_mixed_int4.litertlm',
     approximateSize: '2.7 GB',
     ramMb: 3200,
-    minDeviceRamMb: 8000,
+    // Admits a nominal 8 GB machine.
+    minDeviceRamMb: 7000,
     maxTokens: 4096,
     contextBudgetChars: 6000,
     modelType: ModelType.qwen3,
@@ -326,7 +337,8 @@ class LocalModelChoice {
         'qwen3_8b_mixed_int4.litertlm',
     approximateSize: '4.9 GB',
     ramMb: 6000,
-    minDeviceRamMb: 16000,
+    // Admits a nominal 16 GB machine.
+    minDeviceRamMb: 14000,
     maxTokens: 4096,
     contextBudgetChars: 8000,
     modelType: ModelType.qwen3,
@@ -359,6 +371,28 @@ class LocalModelChoice {
 
   static bool get _isDesktop =>
       Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+
+  /// [all], minus anything this device does not have the memory for.
+  ///
+  /// [all] is what the platform *could* run; this is what this machine can.
+  /// Without it `minDeviceRamMb` was decoration: a 2 GB phone was offered the
+  /// 2.1 GB model, which would have downloaded in full and then been killed by
+  /// the OS — and old phones are precisely who this feature is for, since the
+  /// built-in model covers the new ones.
+  ///
+  /// Never returns empty. If nothing fits, the smallest is offered anyway with
+  /// [fitsThisDevice] false, so the screen can say plainly that it is more than
+  /// the device has rather than hiding the feature and explaining nothing.
+  static Future<List<LocalModelChoice>> availableHere() async {
+    final total = await DeviceMemory.totalMb();
+    if (total == null) return all;
+    final fits = all.where((m) => total >= m.minDeviceRamMb).toList();
+    return fits.isEmpty ? [all.first] : fits;
+  }
+
+  /// Whether this device has the memory this model asks for. Permissive when
+  /// the amount cannot be read — see [DeviceMemory.totalMb].
+  Future<bool> fitsThisDevice() => DeviceMemory.meets(minDeviceRamMb);
 
   /// Resolved against the whole catalogue, not the platform's shortlist, so a
   /// choice made on another device is recognised rather than silently reset.
