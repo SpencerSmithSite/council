@@ -423,14 +423,26 @@ will see; both notes come off once these are settled.
 
 ## App work
 
-- [ ] **The Android APK doubled to 195 MB.** It was 107 MB at 2026.7.27; the
-      LiteRT-LM native libraries account for the difference, and they are
-      lopsided — 124 MB of `arm64-v8a` against 28 MB of `armeabi-v7a` and 22 MB
-      of `x86_64`. A universal APK still ships, because the page promises
-      "Android 7 or later" and splitting would either break that or need the
-      page to hand out the right ABI. `--split-per-abi` would put arm64 at
-      roughly 154 MB and the 32-bit build near 58 MB; worth doing if the size
-      starts costing installs.
+- [x] ~~Consider splitting the Android APK per ABI~~ — decided against,
+      2026-08-02. Reach matters more than size: a universal APK installs on
+      every device the app supports, and any split either breaks the "Android 7
+      or later" promise for 32-bit devices or asks someone on a phone to know
+      their CPU architecture. Play Store apps get this for free from app
+      bundles; a direct download has no store to choose for it.
+
+- [ ] **Drop the Qualcomm NPU libraries if the APK needs to shrink.** This is
+      the lever that costs no device support, unlike an ABI split. Ten `libQnn*`
+      files total **50.4 MB** of the 124.3 MB of `arm64-v8a` native code —
+      including four Hexagon DSP skeletons, one per Snapdragon generation
+      (V73/V75/V79/V81) at ~10.5 MB each. They accelerate the downloaded model
+      on Snapdragon NPUs; every Pixel and Exynos device carries all four and
+      uses none, and the model still runs on CPU and GPU without them. Worth
+      checking whether `flutter_gemma_litertlm` allows excluding them before
+      touching anything else.
+
+      For reference, what the 195 MB is made of: `arm64-v8a` 124.3 MB,
+      `armeabi-v7a` 27.6 MB, `x86_64` 21.9 MB. Within arm64: Qualcomm 50.4,
+      LiteRT-LM 39.9, onnxruntime 13.5, engine and Dart 20.4.
 
 - [ ] **Bump the version in `pubspec.yaml`, never in Xcode.** `Info.plist` reads
       `$(FLUTTER_BUILD_NAME)`/`$(FLUTTER_BUILD_NUMBER)`, which `flutter build`
