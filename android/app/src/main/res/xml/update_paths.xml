@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The one directory the update downloader writes to.
+
+     `files-path` is the app's internal files directory, which is what
+     path_provider's getApplicationSupportDirectory returns on Android, and
+     `updates/` is the subdirectory UpdateService stages into. Scoped to that
+     one folder rather than to the whole files directory: this provider exists
+     to expose a single APK to the package installer, and there is no reason for
+     it to be able to expose the reader's library or notes as well. -->
+<paths>
+    <files-path name="updates" path="updates/" />
+</paths>

@@ -14,6 +14,7 @@ import 'src/services/search/semantic_search.dart';
 import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
 import 'src/services/packs/pack_service.dart';
+import 'src/services/updates/update_provider.dart';
 import 'src/screens/chat_history_screen.dart';
 import 'src/screens/chat_screen.dart';
 import 'src/screens/notes_screen.dart';
@@ -25,6 +26,7 @@ import 'src/theme/app_theme.dart';
 import 'src/theme/glass.dart';
 import 'src/theme/glass_controls.dart';
 import 'src/widgets/brand_loader.dart';
+import 'src/widgets/update_sheet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -208,6 +210,12 @@ class TheologyApp extends StatelessWidget {
         ChangeNotifierProvider<SettingsProvider>.value(value: settings),
         ChangeNotifierProvider<InferenceProvider>.value(value: inference),
         ChangeNotifierProvider<PackProvider>.value(value: packs),
+        // Constructed here rather than in the bootstrap because it must not
+        // touch the network before the first frame: the launch check is
+        // deliberately something that happens *behind* a usable app.
+        ChangeNotifierProvider<UpdateProvider>(
+          create: (_) => UpdateProvider(),
+        ),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
@@ -285,6 +293,25 @@ enum _Area {
 
 class _MainScreenState extends State<MainScreen> {
   _Area _area = _Area.ask;
+
+  @override
+  void initState() {
+    super.initState();
+    // After the first frame, not during it: this is a network call, and the
+    // reader is here to read rather than to wait for one. It says nothing at
+    // all unless a newer build exists — no spinner, no error on a device with
+    // no connection.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+  }
+
+  Future<void> _checkForUpdate() async {
+    final updates = context.read<UpdateProvider>();
+    await updates.checkOnLaunch(
+      enabled: context.read<SettingsProvider>().autoCheckUpdates,
+    );
+    if (!mounted || updates.release == null) return;
+    await UpdateSheet.show(context);
+  }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 

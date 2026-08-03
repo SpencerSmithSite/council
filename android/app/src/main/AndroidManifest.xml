@@ -5,6 +5,14 @@
          fail on exactly the builds users install. -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Lets the app hand a downloaded update to the package installer.
+         Council is distributed as a direct APK download and not through Google
+         Play, so nothing else can tell a reader a new build exists or install
+         it for them. Requesting the install is all this grants: the reader
+         still has to allow this app to install unknown apps, and still has to
+         confirm in the system installer. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
     <application
         android:label="Council"
         android:name="${applicationName}"
@@ -37,6 +45,28 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Hands the downloaded APK to the package installer. A file:// URI
+             throws FileUriExposedException on Nougat and later — which is every
+             device this app runs on — so the installer has to be given a
+             content:// URI from a provider instead.
+
+             Its own authority rather than a plugin's: share_plus declares a
+             FileProvider too, and two providers cannot claim one authority
+             without the install failing at build time.
+
+             Not exported, and it grants read access per-URI for the one intent
+             that carries it, so nothing else on the device can read the app's
+             files through it. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/update_paths" />
+        </provider>
 
         <!-- Lets a downloaded model run on the GPU. Without these the OpenCL
              loader cannot dlopen the vendor driver on Android 12+, and the
