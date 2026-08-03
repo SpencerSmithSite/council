@@ -57,3 +57,13 @@ tools/data/treasury_units.json
 
 # Local Python environment for the corpus tools (onnxruntime, numpy).
 .venv/
+
+# Release artefacts, built locally and uploaded to a GitHub release. Never
+# committed: the APK alone is ~195 MB, past GitHub's 100 MB file limit, and a
+# binary in git history cannot be removed without rewriting it. `git add -A`
+# swept these in once — hence the explicit patterns rather than trusting care.
+Council-android.apk
+Council-macos.dmg
+Council-windows-setup.exe
+Council-linux-x86_64.AppImage
+Council-linux-amd64.deb

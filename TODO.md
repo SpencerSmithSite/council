@@ -423,6 +423,15 @@ will see; both notes come off once these are settled.
 
 ## App work
 
+- [ ] **The Android APK doubled to 195 MB.** It was 107 MB at 2026.7.27; the
+      LiteRT-LM native libraries account for the difference, and they are
+      lopsided — 124 MB of `arm64-v8a` against 28 MB of `armeabi-v7a` and 22 MB
+      of `x86_64`. A universal APK still ships, because the page promises
+      "Android 7 or later" and splitting would either break that or need the
+      page to hand out the right ABI. `--split-per-abi` would put arm64 at
+      roughly 154 MB and the 32-bit build near 58 MB; worth doing if the size
+      starts costing installs.
+
 - [ ] **Bump the version in `pubspec.yaml`, never in Xcode.** `Info.plist` reads
       `$(FLUTTER_BUILD_NAME)`/`$(FLUTTER_BUILD_NUMBER)`, which `flutter build`
       writes from the pubspec; Android reads the same source. Xcode's General
