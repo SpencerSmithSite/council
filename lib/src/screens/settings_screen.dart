@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/database_service.dart';
 import '../services/settings_provider.dart';
 import '../services/inference/inference_provider.dart';
+import '../services/updates/update_provider.dart';
+import '../widgets/update_sheet.dart';
 import '../theme/glass_controls.dart';
 import '../theme/inset_group.dart';
 import '../theme/themes.dart';
@@ -183,6 +187,10 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
 
+          const SizedBox(height: 22),
+
+          const _UpdatesGroup(),
+
           const SizedBox(height: 28),
 
           // Two whole-app actions, iOS-style: centred text on their own cells.
@@ -218,6 +226,90 @@ class SettingsScreen extends StatelessWidget {
 
           const Center(child: _AboutFooter()),
     ];
+  }
+}
+
+/// Whether to look for a newer Council, and the version this one is.
+///
+/// The version was not shown anywhere before, which made every bug report begin
+/// with working out which build the reader had.
+class _UpdatesGroup extends StatefulWidget {
+  const _UpdatesGroup();
+
+  @override
+  State<_UpdatesGroup> createState() => _UpdatesGroupState();
+}
+
+class _UpdatesGroupState extends State<_UpdatesGroup> {
+  @override
+  void initState() {
+    super.initState();
+    // Only reads the installed version; it does not check the network.
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.read<UpdateProvider>().loadCurrentVersion());
+  }
+
+  Future<void> _checkNow() async {
+    final updates = context.read<UpdateProvider>();
+    await updates.check();
+    if (!mounted) return;
+    if (updates.release != null) {
+      await UpdateSheet.show(context);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Council is up to date.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final updates = context.watch<UpdateProvider>();
+    final scheme = Theme.of(context).colorScheme;
+    final version = updates.currentVersion;
+
+    return InsetGroup(
+      header: 'Updates',
+      // Named rather than vague: on iOS the app cannot install anything, and
+      // saying so here saves a reader wondering why their Mac updates itself
+      // and their iPhone sends them to TestFlight.
+      footer: Platform.isIOS
+          ? 'Council checks for a new version at launch and offers to open '
+              'TestFlight. Apps on iPhone and iPad cannot install updates '
+              'themselves.'
+          : 'Council checks for a new version at launch. Nothing is downloaded '
+              'until you say so, and every download is checked against the '
+              'published checksum before it is installed.',
+      children: [
+        SwitchListTile.adaptive(
+          secondary: const Icon(Icons.system_update_outlined),
+          title: const Text('Check for updates automatically'),
+          value: settings.autoCheckUpdates,
+          onChanged: settings.setAutoCheckUpdates,
+          // The adaptive switch is a Cupertino switch on Apple, whose "on"
+          // track defaults to system green and ignores the palette.
+          activeTrackColor: scheme.primary,
+        ),
+        ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('Version'),
+          subtitle: Text(version == null
+              ? 'Reading…'
+              : version.build == 0
+                  ? version.name
+                  : '${version.name} (build ${version.build})'),
+          trailing: updates.busy
+              ? const SizedBox(
+                  width: 20, height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))
+              : TextButton(
+                  onPressed: _checkNow,
+                  child: const Text('Check now'),
+                ),
+        ),
+      ],
+    );
   }
 }
 

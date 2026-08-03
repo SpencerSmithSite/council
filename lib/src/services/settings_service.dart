@@ -12,6 +12,7 @@ class SettingsService {
   static const String _themeIdKey = 'theme_id';
   static const String _fontSizeKey = 'font_size';
   static const String _showCitationsKey = 'show_citations';
+  static const String _autoCheckUpdatesKey = 'auto_check_updates';
 
   Future<SharedPreferences> get _prefs async => await SharedPreferences.getInstance();
 
@@ -117,7 +118,24 @@ class SettingsService {
     final prefs = await _prefs;
     await prefs.setBool(_showCitationsKey, show);
   }
-  
+
+  /// Whether to look for a newer Council at launch.
+  ///
+  /// On by default, and that default is the point. Council is a direct download
+  /// everywhere but iOS — no Play Store, no Mac App Store, no package manager —
+  /// so nothing tells a reader a new build exists. Off by default would leave
+  /// most installs sitting on whatever version they first downloaded, which is
+  /// what was happening before this existed.
+  Future<bool> getAutoCheckUpdates() async {
+    final prefs = await _prefs;
+    return prefs.getBool(_autoCheckUpdatesKey) ?? true;
+  }
+
+  Future<void> setAutoCheckUpdates(bool value) async {
+    final prefs = await _prefs;
+    await prefs.setBool(_autoCheckUpdatesKey, value);
+  }
+
   /// Clear all settings
   Future<void> clearAll() async {
     final prefs = await _prefs;
@@ -127,5 +145,6 @@ class SettingsService {
     await prefs.remove(_themeIdKey);
     await prefs.remove(_fontSizeKey);
     await prefs.remove(_showCitationsKey);
+    await prefs.remove(_autoCheckUpdatesKey);
   }
 }

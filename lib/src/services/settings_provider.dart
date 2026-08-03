@@ -16,6 +16,7 @@ class SettingsProvider extends ChangeNotifier {
   String _themeId = kDefaultThemeId;
   double _fontScale = 1.0;
   bool _showCitations = true;
+  bool _autoCheckUpdates = true;
   bool _isLoaded = false;
   bool _hasOnboarded = false;
 
@@ -32,6 +33,10 @@ class SettingsProvider extends ChangeNotifier {
 
   double get fontScale => _fontScale;
   bool get showCitations => _showCitations;
+
+  /// Whether to look for a newer Council at launch. On unless turned off — see
+  /// [SettingsService.getAutoCheckUpdates] for why that default is deliberate.
+  bool get autoCheckUpdates => _autoCheckUpdates;
 
   /// False on first launch, and only then.
   bool get hasOnboarded => _hasOnboarded;
@@ -53,6 +58,7 @@ class SettingsProvider extends ChangeNotifier {
     _themeId = await _settings.getThemeId() ?? kDefaultThemeId;
     _fontScale = await _settings.getFontSize();
     _showCitations = await _settings.getShowCitations();
+    _autoCheckUpdates = await _settings.getAutoCheckUpdates();
     _hasOnboarded = await _settings.getHasOnboarded();
     _isLoaded = true;
     notifyListeners();
@@ -82,6 +88,12 @@ class SettingsProvider extends ChangeNotifier {
     _showCitations = show;
     notifyListeners();
     await _settings.setShowCitations(show);
+  }
+
+  Future<void> setAutoCheckUpdates(bool value) async {
+    _autoCheckUpdates = value;
+    notifyListeners();
+    await _settings.setAutoCheckUpdates(value);
   }
 
   Future<void> resetAll() async {

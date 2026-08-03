@@ -529,6 +529,33 @@ will see; both notes come off once these are settled.
       to it, and the widths that break are the ones a phone actually has, not
       the ones a desktop debug run shows.
 
+- [ ] **Verify the update hand-off on Windows and Linux.** Both are written and
+      neither has been run: Windows starts the Inno installer detached and then
+      calls `exit(0)`, and Linux marks the AppImage executable and opens its
+      folder. The download and checksum halves are covered by the host-run
+      suite, but the hand-off is the part with no test — and on Windows the
+      failure mode is the app quitting without an installer appearing.
+
+- [ ] **Open TestFlight from a real iPhone.** The simulator has no TestFlight,
+      so the store branch has been exercised only as far as the check: the
+      manifest parses, the iOS entry is found, and the button says "Open
+      TestFlight". Whether `launchUrl` reaches the app rather than Safari is
+      untested on hardware.
+
+- [ ] **The Android APK is signed with the debug keystore, and updates depend on
+      that not changing.** `build.gradle.kts` still carries the template's
+      `signingConfig = signingConfigs.getByName("debug")` for release builds.
+      Android refuses to install an update signed with a different key, so a
+      keystore regenerated or a release cut on another machine would make every
+      in-app update fail with a signature mismatch — after the reader had
+      downloaded 200 MB. This was a latent problem before; the updater makes it
+      one people will actually hit.
+
+- [ ] **Remember `updates.json` when cutting a release.** The version, URL,
+      byte count and sha256 all live there as well as on the download page, and
+      the app reads only the former. `npm run check:council` in the site repo
+      fails if the two disagree; nothing runs it automatically yet.
+
 - [ ] Text-to-speech for a source, offline.
 - [ ] Re-anchor annotations on corpus drift. The quote snapshot is stored and
       not yet used; an annotation whose offsets have moved is currently drawn

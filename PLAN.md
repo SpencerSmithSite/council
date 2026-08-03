@@ -3267,3 +3267,120 @@ stand up or a key to buy, on a device perfectly able to run a downloaded model.
 
 Split into `supersedesDownload`, true only for `available`. Being *eligible* for
 a built-in model is not the same as having one that answers.
+
+## The app can now tell you it is out of date (2026-08-02)
+
+**Council had no way to say a new version existed.** On four of its five
+platforms it is a direct download — no Play Store, no Mac App Store, no apt —
+so nothing on the device was ever going to mention it. A reader found out by
+happening to visit the download page again, which for most people means never.
+Every fix in this file shipped to whoever downloaded after it and to nobody
+else.
+
+The app now checks at launch, and offers what it finds.
+
+### The manifest, and why it is not the GitHub API
+
+`https://www.spencersmith.site/council/updates.json` states, per platform, the
+current version, the URL, the exact byte count and the sha256 of the installer.
+
+Not the releases API, and not `releases/latest/download/...` either: **app
+releases in this repository are marked pre-release**, so `releases/latest`
+resolves to the corpus content releases — which is exactly what `PackService`
+depends on and must keep doing. There is no stable "latest" URL for the app to
+follow. A static file on the site is also one request with no rate limit, which
+matters when every launch makes it.
+
+It restates what `download.js` already says, which is drift waiting to happen,
+and the drift is quiet in the worst way: the page would offer a build no
+installed app ever updates itself to, and neither file would look wrong.
+`scripts/check-council-release.mjs` in the site repo settles it — it *evaluates*
+the page's `PLATFORMS` array rather than pattern-matching it, so reformatting
+cannot break the check, and compares every version, URL and size, reporting all
+disagreements rather than the first.
+
+### The checksum is the load-bearing part
+
+This feature downloads an executable and hands it to the operating system to
+run with the reader's own privileges. That is a different risk from a content
+pack, and the checksum is the only thing that separates a genuine installer
+from a truncated download, a proxy serving something else, or a substituted
+file. So:
+
+- a platform entry with no sha256, a malformed one, or a plain-`http` URL is
+  **dropped at parse time** rather than offered hopefully;
+- a download whose bytes do not hash to the published value is deleted and
+  reported, never handed on;
+- the manifest's checksums are GitHub's own per-asset digests, and they were
+  verified rather than trusted: the macOS disk image was downloaded and hashed
+  locally and matched the digest and the byte count exactly.
+
+### Dates are not strings
+
+`AppVersion` parses `2026.8.2+7` into numbers because the obvious shortcut is
+wrong in a way that hides for most of a month: `'2026.8.2'.compareTo('2026.8.10')`
+is positive, so a string comparison decides the tenth is *older* than the second
+and every reader stops being offered updates until the next month rolls over.
+The same trap sits at `2026.9.1` versus `2026.10.1`. The date parts decide and
+the build counter only breaks a tie, so a rebuild of the same day is still an
+update.
+
+### Checked automatically; downloaded on request
+
+The setting is "check for updates automatically", on by default, and that
+default is the whole point — off by default would leave most installs sitting on
+whatever they first downloaded.
+
+**The download is one tap, not automatic.** The Android package is nearly 200 MB,
+and starting that unasked on whatever connection a phone happens to be using —
+quite possibly metered, quite possibly roaming — is a real cost taken without
+permission. The sheet states the version and the size before anything moves.
+The launch check itself is silent about everything except finding something: no
+spinner, no error on a device with no network, because it was not asked for.
+
+Free space is checked before the bytes rather than after, which is the lesson
+the model download taught the hard way.
+
+### Handing over, which is where the platforms differ
+
+No platform lets a running application replace itself in place, so the honest
+design is fetch, prove, hand over, get out of the way.
+
+- **Android** needs native code and is the only one that does: the package
+  installer will not take a file path, only a `content://` URI from a
+  FileProvider, and only from an Activity. Since Oreo it also needs the reader
+  to have allowed this app to install unknown apps — and without that the intent
+  does *nothing*: no dialog, no error, no installer. So the native side checks
+  first and opens that settings page, which is the difference between an update
+  that works and a button that appears to be broken.
+- **macOS** is sandboxed, so spawning `/usr/bin/open` is not reliable.
+  url_launcher goes through NSWorkspace, which is an out-of-process request to
+  LaunchServices and is allowed to open a file inside the app's own container.
+- **Windows** cannot overwrite a loaded executable, so the installer is started
+  detached and the app quits. The button says "Install and quit" for that
+  reason.
+- **Linux** gets no pretence of an installation. A running AppImage is a mounted
+  image of the very file that would have to be replaced, so the new one is made
+  executable and its folder opened.
+- **iOS** cannot install anything, itself least of all, so it opens TestFlight.
+
+### Verified on devices, not assumed
+
+Everything in Phase 11 through the model work says the same thing: the faults
+here compile, analyse clean, download successfully and only fail on hardware.
+`integration_test/update_flow_test.dart` runs against the real manifest and the
+real release.
+
+- **Android emulator:** the published manifest parsed, an older build was
+  offered 2026.8.2, the running build was offered nothing, the real 195 MB APK
+  downloaded and matched its published sha256, and — with
+  `appops set … REQUEST_INSTALL_PACKAGES allow` — `UpdateInstaller.install`
+  returned `handedOff`, meaning FileProvider produced a URI the package
+  installer accepted. That last step has no unit-test equivalent: a wrong
+  authority or a path missing from `update_paths.xml` throws there and nowhere
+  earlier.
+- **macOS:** the real 56 MB disk image downloaded, verified, and NSWorkspace
+  mounted it from inside the sandbox.
+
+A tampered byte was tested too, in the unit suite: the download is deleted and
+the sheet says so, with no Install button anywhere.
