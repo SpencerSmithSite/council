@@ -512,12 +512,38 @@ will see; both notes come off once these are settled.
       reads it per platform and the download is refused before any bytes move.
       Verified on the emulator by filling `/data` to 421 MB free.
 
-- [ ] **The LiteRT-LM native libraries are not 16 KB aligned either.** Android
-      17 shows a compatibility dialog naming `libonnxruntime.so` — already
-      recorded — plus a dozen litertlm libraries, and runs the app in page-size
-      compatible mode. Not a crash, and Google Play is not planned, so this is
-      not urgent; it becomes blocking the moment Play does come into scope, and
-      it now covers two dependencies rather than one.
+- [ ] **Five libraries are not 16 KB aligned — measured, 2026-08-11.** The
+      compatibility dialog Android shows is not evidence of which: it named
+      twenty libraries, and nineteen of those lines read "Unknown error", which
+      means the checker could not read the file rather than that the file is
+      wrong. `libflutter.so`, `libsqlite3.so`, `libLiteRtLm.so` and every LiteRT
+      accelerator it complained about are aligned.
+
+      `tools/check_alignment.sh` reads the ELF headers instead. Of 25 arm64
+      libraries, 20 are aligned to 16 KB or better and five are at 4 KB:
+
+      | library | size | why it is not simply fixed |
+      |---|---:|---|
+      | `libQnnHtpV73Skel.so` | 10.3 MB | Qualcomm Hexagon DSP skeleton |
+      | `libQnnHtpV75Skel.so` | 10.3 MB | " |
+      | `libQnnHtpV79Skel.so` | 10.5 MB | " |
+      | `libQnnHtpV81Skel.so` | 11.3 MB | " |
+      | `libonnxruntime.so` | 13.5 MB | pub 1.4.1, 2024-03-27, unmaintained |
+
+      Alignment is set at link time by whoever compiled the binary, so a
+      prebuilt library cannot be realigned here — the only fixes are a newer
+      upstream or dropping the dependency. **Four of the five are the Hexagon
+      skeletons the entry above already proposes removing**, so that one change
+      closes 42.4 MB of download and four-fifths of this at once, leaving
+      `libonnxruntime.so`, whose exit PLAN.md already holds.
+
+      Still not urgent — page-size compatible mode is a warning and a small
+      performance cost, not a crash, and Google Play is not planned. What has
+      changed is that it is now measured rather than guessed at, and
+      `.github/workflows/android-libraries.yml` fails on a *new* misaligned
+      library whenever a dependency or the Android build moves. The guarantee
+      worth having is not "everything is aligned" but "nothing is misaligned
+      that we have not already decided about".
 
 - [ ] **Check the memory thresholds against real phones.** They are calibrated
       against what the OS reports rather than what the device is sold as, which
