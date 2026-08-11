@@ -3384,3 +3384,51 @@ real release.
 
 A tampered byte was tested too, in the unit suite: the download is deleted and
 the sheet says so, with no Install button anywhere.
+
+## What stands between here and an official release (2026-08-11)
+
+2026.8.2+7 is published as a pre-release with installers for four platforms and
+TestFlight for the fifth. What separates that from a release called official is
+not a feature. It is that on two platforms the operating system still warns the
+reader that Council might be dangerous, and on a third the app was signed with a
+key that cannot be used again.
+
+**Android signing is done, and it was the only irreversible one.** Release
+builds carried the Flutter template's debug `signingConfig`, so the published
+APK is signed with the debug keystore. Android refuses an update signed with a
+different key than the installed copy, which makes this unlike every other item
+here: it cannot be fixed in a later build for anyone who installed the earlier
+one. It is now a real 4096-bit key read from a git-ignored `key.properties`,
+with the certificate fingerprint recorded in `TODO.md` and a release build
+*failing* rather than falling back to debug — the fallback being what shipped
+the problem in the first place, silently.
+
+The cost is one-time and lands on the pre-release's users: the properly signed
+build will not install over a debug-signed one. They uninstall and reinstall
+once, and through the in-app updater that looks like a broken update rather than
+a key change. So the download page has to say so — and that line lands *with*
+the release cut, never before it, because the page must not describe a build
+that is not published.
+
+**The other two are purchases, and stay open.** Notarising the macOS DMG needs
+an app-specific password or an App Store Connect API key; signing the Windows
+installer needs a certificate, where OV and EV differ in whether SmartScreen
+reputation is immediate or accrued. Both are described in *Desktop release
+signing* above and neither has changed. They are the release's remaining
+blockers in the sense that they decide what the reader sees on first run, and
+shipping without them is a defensible choice — the download page's `note` fields
+already explain both warnings — but it should be a decision rather than an
+oversight.
+
+**Hardware verification, as of 2026-08-06.** An Android phone, a Mac, an iPhone
+and an iPad were all run by hand: the app launches and the AI features work.
+What is still unrun is the Windows and Linux update hand-off, and a desktop
+model download. Both are accepted for now rather than closed, which is a
+different thing from being unknown.
+
+**What the app itself gained on the way here.** Ask now opens on a new
+conversation rather than on the middle of the last one; a citation leads into
+the work it came from, at the section quoted; and two overflows were fixed at
+320 px and the largest font size, both of which removed a control the reader
+needed — the Stop button during generation, and the composer itself. Read and
+Library were audited the same way and are clean.
