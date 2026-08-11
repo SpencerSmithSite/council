@@ -1,0 +1,30 @@
+# Copy to `android/key.properties` and fill in. That file is git-ignored and
+# must stay that way — it holds the passwords to the publishing key.
+#
+# CREATING THE KEYSTORE (once, ever):
+#
+#   keytool -genkey -v -keystore ~/Keys/council-release.jks \
+#     -keyalg RSA -keysize 4096 -validity 10000 -alias council
+#
+# keytool prompts for the two passwords; nothing writes them down for you. Put
+# the keystore outside this repository — anywhere inside it is one `git add -A`
+# away from being published.
+#
+# THEN BACK IT UP, somewhere that is not this machine. Android will not install
+# an update signed with a different key than the installed copy, so losing this
+# file strands every reader who ever installed Council: no re-signing, no
+# recovery, nothing to do but ask them to uninstall and start again. It is the
+# single least replaceable file in the project.
+#
+# VERIFYING A BUILD is signed with it:
+#
+#   apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+#
+# The SHA-256 fingerprint it prints must match every release, forever. Record it
+# alongside the backup so a future build can be checked against it rather than
+# against memory.
+
+storeFile=/Users/you/Keys/council-release.jks
+storePassword=
+keyAlias=council
+keyPassword=

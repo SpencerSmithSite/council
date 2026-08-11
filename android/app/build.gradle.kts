@@ -1,7 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// The release signing key, read from `android/key.properties`, which is
+// git-ignored and must stay that way.
+//
+// Android refuses to install an update signed with a different key than the
+// installed copy, so this file is not a build detail: it is the only thing that
+// lets a reader who downloaded 200 MB ever receive a second version. Losing the
+// keystore means every existing install is stranded permanently — no
+// re-signing, no recovery, only uninstall and reinstall by hand.
+//
+// See `key.properties.example` for the four values, and back the keystore up
+// somewhere that is not this machine.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
 }
 
 android {
@@ -25,11 +43,30 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (!keystoreProperties.isEmpty) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Fails the build rather than falling back to the debug key. The
+            // fallback is what shipped the published pre-release, and a
+            // debug-signed APK cannot be updated over: the mistake is invisible
+            // at build time and permanent by the time anyone notices.
+            signingConfig = signingConfigs.findByName("release")
+                ?: throw GradleException(
+                    "No release signing key. Copy android/key.properties.example " +
+                        "to android/key.properties and fill in the keystore this " +
+                        "app is published with — see the file for how to create " +
+                        "one. Never sign a published build with the debug key."
+                )
         }
     }
 }
