@@ -462,19 +462,27 @@ will see; both notes come off once these are settled.
       their CPU architecture. Play Store apps get this for free from app
       bundles; a direct download has no store to choose for it.
 
-- [ ] **Drop the Qualcomm NPU libraries if the APK needs to shrink.** This is
-      the lever that costs no device support, unlike an ABI split. Ten `libQnn*`
-      files total **50.4 MB** of the 124.3 MB of `arm64-v8a` native code —
-      including four Hexagon DSP skeletons, one per Snapdragon generation
-      (V73/V75/V79/V81) at ~10.5 MB each. They accelerate the downloaded model
-      on Snapdragon NPUs; every Pixel and Exynos device carries all four and
-      uses none, and the model still runs on CPU and GPU without them. Worth
-      checking whether `flutter_gemma_litertlm` allows excluding them before
-      touching anything else.
+- [x] **Dropped the Qualcomm Hexagon skeletons** — done 2026-08-11. A
+      `packaging { jniLibs { excludes } }` rule on `**/libQnnHtpV*Skel.so`.
+      **The release APK went from 195.3 MB to 160.5 MB**, and arm64 from 25
+      native libraries to 21.
 
-      For reference, what the 195 MB is made of: `arm64-v8a` 124.3 MB,
-      `armeabi-v7a` 27.6 MB, `x86_64` 21.9 MB. Within arm64: Qualcomm 50.4,
-      LiteRT-LM 39.9, onnxruntime 13.5, engine and Dart 20.4.
+      The four are one per Snapdragon generation (V73/V75/V79/V81) at ~10.5 MB
+      each. They accelerate the downloaded model on a Qualcomm NPU; every Pixel
+      and Exynos device carried all four and used none, and LiteRT falls back to
+      GPU and CPU without them — which is what every non-Snapdragon device was
+      already doing. They were also four of the five libraries in the app that
+      are not 16 KB aligned, so this is the same change twice over.
+
+      **The rest of the QNN set stays**: the stubs and `libQnnSystem` are 8 MB
+      rather than 42, they are aligned, and on a device whose vendor ships its
+      own skeletons under `/vendor` they are the half that still works.
+
+      - [ ] **Still to confirm on a Snapdragon phone**: that the downloaded
+            model loads and answers. Every other device class is unaffected by
+            construction — they never loaded these — but the Snapdragon path is
+            the one thing this change can break, and it cannot be tested
+            anywhere else.
 
 - [x] **Bump the version in `pubspec.yaml`, never in Xcode** — enforced
       2026-08-02. `Info.plist` reads
@@ -519,23 +527,21 @@ will see; both notes come off once these are settled.
       wrong. `libflutter.so`, `libsqlite3.so`, `libLiteRtLm.so` and every LiteRT
       accelerator it complained about are aligned.
 
-      `tools/check_alignment.sh` reads the ELF headers instead. Of 25 arm64
-      libraries, 20 are aligned to 16 KB or better and five are at 4 KB:
+      `tools/check_alignment.sh` reads the ELF headers instead. It found five at
+      4 KB out of 25 arm64 libraries; **four of them were the Hexagon skeletons,
+      now excluded from the APK entirely** (see above), which leaves one:
 
       | library | size | why it is not simply fixed |
       |---|---:|---|
-      | `libQnnHtpV73Skel.so` | 10.3 MB | Qualcomm Hexagon DSP skeleton |
-      | `libQnnHtpV75Skel.so` | 10.3 MB | " |
-      | `libQnnHtpV79Skel.so` | 10.5 MB | " |
-      | `libQnnHtpV81Skel.so` | 11.3 MB | " |
       | `libonnxruntime.so` | 13.5 MB | pub 1.4.1, 2024-03-27, unmaintained |
 
       Alignment is set at link time by whoever compiled the binary, so a
       prebuilt library cannot be realigned here — the only fixes are a newer
-      upstream or dropping the dependency. **Four of the five are the Hexagon
-      skeletons the entry above already proposes removing**, so that one change
-      closes 42.4 MB of download and four-fifths of this at once, leaving
-      `libonnxruntime.so`, whose exit PLAN.md already holds.
+      upstream or dropping the dependency. There is no newer `onnxruntime` on
+      pub, so this one waits on the exit PLAN.md already holds: `flutter_gemma`
+      as the destination, gated on re-embedding the corpus, with the
+      `embeddingModel` guard already in place so the switch cannot silently
+      corrupt retrieval.
 
       Still not urgent — page-size compatible mode is a warning and a small
       performance cost, not a crash, and Google Play is not planned. What has
