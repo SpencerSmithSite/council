@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -119,6 +120,13 @@ class DatabaseService {
     }
     return _database!;
   }
+
+  /// Read the corpus from a database the caller opened.
+  ///
+  /// Lets a screen be driven against a handful of rows in memory, instead of
+  /// against the bundled 400 MB asset that [initialize] installs.
+  @visibleForTesting
+  void useForTesting(Database db) => _database = db;
   
   /// Build an FTS5 MATCH expression from natural-language input.
   ///

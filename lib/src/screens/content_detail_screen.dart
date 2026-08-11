@@ -6,6 +6,7 @@ import '../reader/passage_reader.dart';
 import '../services/database_service.dart';
 import '../services/bookmark_service.dart';
 import '../services/recently_viewed_service.dart';
+import 'source_reader_screen.dart';
 
 class ContentDetailScreen extends StatefulWidget {
   final int? sourceId;
@@ -189,8 +190,16 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
           const SizedBox(height: 12),
           _Provenance(content: content),
 
+          if (content['source_id'] is int) ...[
+            const SizedBox(height: 8),
+            _ReadInContext(
+              onTap: () => _openInSource(content['source_id'] as int,
+                  content['source_title'] as String?),
+            ),
+          ],
+
           const SizedBox(height: 16),
-          
+
           // Content. Tappable by verse or paragraph, like the reader — a
           // passage reached from a search result or a citation should be able
           // to be marked up in the same way as one reached by reading to it.
@@ -365,11 +374,79 @@ Shared from Council app'''.trim();
     }
   }
   
+  /// Open the whole work, at this passage.
+  ///
+  /// A citation shows what was quoted; the objection to a quotation is almost
+  /// always about what surrounds it. The reader lands on this very section
+  /// rather than on the work's first page, with the pager ready to move either
+  /// way through it.
+  void _openInSource(int sourceId, String? sourceTitle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SourceReaderScreen(
+          sourceId: sourceId,
+          // 71 units carry a source_id with no row in `sources`, so the title
+          // can genuinely be missing. The work is still readable straight
+          // through; only its name is unknown.
+          title: (sourceTitle?.isNotEmpty ?? false) ? sourceTitle! : 'Source',
+          initialUnitId: widget.contentId,
+        ),
+      ),
+    );
+  }
+
   void _navigateToContent(int contentId) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ContentDetailScreen(contentId: contentId),
+      ),
+    );
+  }
+}
+
+/// The way out of the citation and into the work it was taken from.
+///
+/// Sits directly under the provenance card because it answers the question
+/// that card raises: having been told where a passage comes from, the next
+/// thing wanted is to see it there. Deliberately an ordinary tappable row and
+/// not a link on the source's name — the name in the card is being read as
+/// evidence, and evidence that moves when touched is harder to read.
+class _ReadInContext extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _ReadInContext({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: scheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            children: [
+              Icon(Icons.menu_book_outlined, size: 18, color: scheme.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Read in context',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: scheme.primary,
+                      ),
+                ),
+              ),
+              Icon(Icons.chevron_right, size: 18, color: scheme.primary),
+            ],
+          ),
+        ),
       ),
     );
   }

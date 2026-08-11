@@ -5,6 +5,100 @@ All notable changes to Council will be documented in this file.
 Versions are the release date (`YYYY.M.D`) plus a build counter. Entries below
 `30.0.0` predate that scheme and are left as they were written.
 
+## [2026.8.2+7] - 2026-08-02
+
+### The app can answer on its own, and can tell you it is out of date
+
+**Council no longer needs a server to think.** Until this build, generation
+meant Ollama running on a machine on the same network — which is a reasonable
+ask of someone with a desktop and no ask at all that a phone can meet. The
+library was offline-first and the answers were not.
+
+- **Apple Intelligence, where the device already has a model.** On iOS 26 and
+  macOS 26 hardware that supports it, Council uses Apple's Foundation Models
+  framework: nothing to download, nothing to configure, and the answer is
+  generated on the device with its citations intact. Confirmed on real
+  hardware rather than inferred from a compiling build.
+- **A model you can download, everywhere else.** Qwen 3 under Apache-2.0, run
+  by LiteRT-LM — one engine and one model family across all five platforms
+  instead of a mobile pair and a desktop pair drifting apart. A phone is
+  offered 0.6B (500 MB) or 1.7B (2.1 GB); a desktop is offered 1.7B, 4B
+  Instruct (2.7 GB) or 8B (4.9 GB).
+- **The picker is sized to the machine, not to the marketing.** What is offered
+  is filtered by the memory the OS actually reports and the recommendation
+  follows the same measurement, so a 3 GB phone is not shown a model that will
+  be killed the moment it loads. Free disk is checked before a byte moves, and
+  the download is refused with a number rather than failing at 98%.
+- **Downloads show real progress**, and a model can be removed again — the
+  runtime is unloaded before the file is deleted, because the engine holds it
+  open and on Windows that deletion fails outright otherwise.
+- **Ollama still works exactly as before.** This adds backends; it removes
+  none.
+
+**And Council now knows when it is out of date.** On four of its five platforms
+it is a direct download, so nothing on the device was ever going to mention a
+new version — a reader found out by happening to visit the download page again,
+which for most people means never. It now checks at launch, says nothing at all
+unless a newer build exists, and offers it. The installer's sha256 is published
+alongside it and verified before the file is ever handed to the OS; a download
+whose bytes do not match is deleted and the reader is told, with no way to
+install it anyway. iOS opens TestFlight instead, since a direct download is not
+a thing that platform permits.
+
+### Reading
+
+- **The transcript no longer fights you while an answer streams.** It followed
+  the tail unconditionally, so scrolling up to read the beginning of a long
+  answer was undone a few times a second. Following is now conditional, with a
+  *Jump to latest* button back down — shown only while an answer is arriving and
+  only once you have actually scrolled away.
+- **The coverage notice no longer overflows on a narrow phone.** Its action row
+  held two buttons whose labels interpolate a collection name and a byte count,
+  and on an iPhone 17 that ran 25 px past the edge.
+- **Status banners honour the chosen theme** instead of painting themselves in
+  fixed colours that only suited the default one.
+
+### Corpus — the apocrypha decision, and two traditions that were absent
+
+**471.1 M characters across 650 sources**, up from 460.1 M — after a removal
+larger than the addition.
+
+- **45 works were withdrawn on doctrinal rather than textual grounds**, which is
+  the first cut this corpus has made on what a work *is* rather than on whether
+  its text is genuine. The infancy and Pilate gospels, the apocryphal Acts and
+  Apocalypses, the False Decretals, the Pseudo-Clementines, Barlaam and
+  Josaphat. `tools/prune_apocrypha.py` holds the selection rules and refuses to
+  run if the corpus has drifted from them. The Apostolic Fathers stay — they are
+  sub-apostolic and orthodox, not apocryphal — as do the refutations that exist
+  to argue against this material, and the deuterocanon, which is canon for
+  Catholics and the Orthodox and is already inside the Douay-Rheims, Brenton and
+  the WEB.
+- **1 Enoch was added in their place** (Charles, SPCK 1917), canon in the
+  Ethiopian and Eritrean Tewahedo churches and the corpus's first Oriental
+  Orthodox text. On the corpus's own principle — hold what a tradition actually
+  receives as scripture — its absence was a gap rather than a policy.
+- **Quaker, from nothing:** Barclay's *Apology* in its fifteen propositions,
+  both volumes of Fox's *Journal*, Penn's *No Cross, No Crown*, Woolman's
+  *Journal* and Sewel's *History*.
+- **Anabaptist, from nothing — and only van Braght's *Martyrs Mirror***, 526
+  accounts. Schleitheim, Dordrecht and Menno Simons were searched for and none
+  has a proofread transcription anywhere, so the tradition ships as martyrology
+  without systematics, and the collection's own description says so rather than
+  implying coverage.
+
+### Build
+
+- **The Android APK stays universal.** Splitting per ABI would have cut the
+  download, and it either breaks the "Android 7 or later" promise for 32-bit
+  devices or asks someone on a phone to know their CPU architecture. Play Store
+  apps get this for free from app bundles; a direct download has no store to
+  choose for it, so reach wins over size.
+- **Xcode's version fields can no longer disagree with the build.**
+  `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` now resolve to the Flutter
+  variables, so editing them in Xcode's General tab cannot produce an archive
+  that ships one version while the tab shows another. The version lives in
+  `pubspec.yaml` and nowhere else.
+
 ## [2026.7.27+6] - 2026-07-27
 
 ### Corpus — John Owen, the Treasury of David, and 30 M characters removed

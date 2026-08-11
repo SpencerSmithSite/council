@@ -161,12 +161,6 @@ class ChatHistoryService {
     return rows.isEmpty ? null : Conversation.fromRow(rows.first);
   }
 
-  /// The conversation to reopen on launch, or null if there is none.
-  Future<Conversation?> mostRecent() async {
-    final all = await conversations(limit: 1);
-    return all.isEmpty ? null : all.first;
-  }
-
   Future<Conversation> createConversation({
     String title = 'New conversation',
     PinnedPassage? passage,

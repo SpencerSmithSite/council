@@ -21,11 +21,21 @@ class SourceReaderScreen extends StatefulWidget {
   /// Which section to open at. When null, resumes where the reader stopped.
   final int? initialIndex;
 
+  /// Open at the section holding this content unit, wherever it falls.
+  ///
+  /// What a citation knows is the passage's id, not its position in the work,
+  /// and the position is a property of the ordering rather than of the unit —
+  /// so it is resolved here, against the same list the pager walks, instead of
+  /// being computed by every caller against an ordering it would have to
+  /// duplicate. Takes precedence over [initialIndex] and over the saved place.
+  final int? initialUnitId;
+
   const SourceReaderScreen({
     super.key,
     required this.sourceId,
     required this.title,
     this.initialIndex,
+    this.initialUnitId,
   });
 
   @override
@@ -67,9 +77,22 @@ class _SourceReaderScreenState extends State<SourceReaderScreen> {
     // Resume where this work was left, unless a specific section was asked
     // for. Always opening at section one is tolerable for a short confession
     // and useless for a Bible of 1,189 chapters.
-    final start = widget.initialIndex ??
-        await _settings.getReadingPosition(widget.sourceId);
+    //
+    // A named unit that is not in the list — a citation kept across a pack
+    // change that dropped the passage — falls through to the saved place
+    // rather than to nothing.
+    final asked = _indexOfUnit(sections) ?? widget.initialIndex;
+    final start =
+        asked ?? await _settings.getReadingPosition(widget.sourceId);
     await _open(start.clamp(0, sections.length - 1));
+  }
+
+  /// Where [SourceReaderScreen.initialUnitId] sits in the running order.
+  int? _indexOfUnit(List<Map<String, dynamic>> sections) {
+    final wanted = widget.initialUnitId;
+    if (wanted == null) return null;
+    final index = sections.indexWhere((s) => s['id'] == wanted);
+    return index < 0 ? null : index;
   }
 
   Future<void> _open(int index) async {

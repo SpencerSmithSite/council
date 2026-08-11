@@ -282,15 +282,20 @@ Ordered by how badly the absence distorts an answer.
       and states no rights, and a translation of unknown date cannot be
       assumed public domain. Henry Cole's 1823 translation is public domain;
       the route in is an edition that says so.
-- [ ] **Pentecostal, Oriental Orthodox, Assyrian** — traditions with a row in
-      the database and nothing in it. Pentecostalism's defining documents are
-      20th-century and in copyright; the honest route is the pre-1929
-      antecedents (the *Apostolic Faith* periodicals, Azusa Street) or saying
-      plainly that the tradition is not covered.
-- [ ] **Anabaptist, Mennonite, Quaker** — absent. Schleitheim (1527) and the
-      Dordrecht Confession (1632) are public domain; Woolman's *Journal*
-      (Gutenberg 37311) and Penn's *No Cross, No Crown* (44895) are there for
-      the taking.
+- [ ] **Pentecostal and Assyrian** — traditions with a row in the database and
+      nothing in it. Pentecostalism's defining documents are 20th-century and in
+      copyright; the honest route is the pre-1929 antecedents (the *Apostolic
+      Faith* periodicals, Azusa Street) or saying plainly that the tradition is
+      not covered. **Oriental Orthodox** is no longer one of these — 1 Enoch
+      landed in v16 — but one work is a presence, not coverage.
+- [x] **Anabaptist, Mennonite, Quaker** — done for two of the three, 2026-08-02,
+      corpus v17. Quaker is now Barclay's *Apology*, both volumes of Fox's
+      *Journal*, Penn's *No Cross, No Crown*, Woolman's *Journal* and Sewel's
+      *History*; Anabaptist is van Braght's *Martyrs Mirror* and only that.
+      Schleitheim, Dordrecht and Menno Simons were all searched for and none has
+      a proofread transcription anywhere — they are recorded above under
+      *Wanted, with no clean text anywhere*, which is where the next attempt
+      should start.
 - [ ] **Restorationist and Adventist** — absent, and freely available.
       Ellen White, *The Great Controversy* (Gutenberg 25833); the
       Campbell–Stone documents.
@@ -319,9 +324,11 @@ and in `~/Documents/council research/research/acquisition-roadmap.md`.
 2. [x] **John Owen from the Goold edition** — done, and the *Treasury of David*
        with it. Both were rights-or-text refusals with a route in, and the route
        worked. `ingest_owen.py`, `ingest_treasury.py`.
-3. [ ] Anabaptist and Quaker — the largest tradition-shaped hole that is not
-       blocked by copyright, and the largest remaining win. Schleitheim,
-       Dordrecht, Menno Simons, Barclay's *Apology*, Fox's *Journal*.
+3. [x] Anabaptist and Quaker — done 2026-08-02, corpus v17, as far as it can be.
+       Barclay, Fox, Penn, Woolman and Sewel are in, and the *Martyrs Mirror*
+       with them. Schleitheim, Dordrecht and Menno Simons turned out not to be a
+       copyright problem but a transcription one, and moved to *Wanted, with no
+       clean text anywhere* rather than being finished here.
 4. [ ] The Scottish Prayer Book (1912) — cached, public domain, and the nearest
        thing to a liturgy this corpus can currently reach. Needs gates that
        separate the services from the lectionary tables.
@@ -444,7 +451,8 @@ will see; both notes come off once these are settled.
       `armeabi-v7a` 27.6 MB, `x86_64` 21.9 MB. Within arm64: Qualcomm 50.4,
       LiteRT-LM 39.9, onnxruntime 13.5, engine and Dart 20.4.
 
-- [ ] **Bump the version in `pubspec.yaml`, never in Xcode.** `Info.plist` reads
+- [x] **Bump the version in `pubspec.yaml`, never in Xcode** — enforced
+      2026-08-02. `Info.plist` reads
       `$(FLUTTER_BUILD_NAME)`/`$(FLUTTER_BUILD_NUMBER)`, which `flutter build`
       writes from the pubspec; Android reads the same source. Xcode's General
       tab edits `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, which nothing
@@ -453,16 +461,21 @@ will see; both notes come off once these are settled.
       to the Flutter variables, so the tab can no longer disagree with what is
       built.
 
-- [ ] **A withdrawn fragment is never uninstalled.** `installCollection` walks
-      the fragments a collection *declares* in the current manifest, so one that
-      has been dropped from every collection is simply never visited again. When
-      `f-apocrypha` was withdrawn in corpus v16, that removed the forty works
-      from every new install and every fresh download — and left them in place
-      for every reader who already had the Church Fathers or Ante-Nicene Writers
-      collection. Presence was made not to imply currency, for good reason; what
-      is missing is the opposite direction, absence implying removal. The
-      manifest would need to name what has been withdrawn, and the installer to
-      drop those fragments and their rows on sync.
+- [x] ~~A withdrawn fragment is never uninstalled~~ — **intended, decided
+      2026-08-06.** `install` walks the fragments a collection *declares* in the
+      current manifest, so one dropped from every collection is never visited
+      again. When `f-apocrypha` was withdrawn in corpus v16 that removed the
+      forty works from every new install and every fresh download, and left them
+      in place for every reader who already had the Church Fathers or
+      Ante-Nicene Writers collection.
+
+      That asymmetry stays. Presence not implying currency is a correctness
+      rule — a reader holding a passage the corpus has since fixed should get
+      the fix. Absence implying removal is a different thing entirely: it is
+      reaching onto someone's device and taking text off it because the
+      catalogue changed its mind. An editorial decision here should govern what
+      the app *ships*, not what a reader already has. Text stays until they
+      remove the collection themselves.
 
 - [x] ~~The downloadable model path is unverified end to end~~ — done
       2026-08-02, and it took three fixes: no engine was registered, the Gemma
@@ -523,11 +536,41 @@ will see; both notes come off once these are settled.
       failed, but it means a sampling path is falling back. Worth checking
       whether it matters once a model has actually been run on a Mac.
 
-- [ ] **Audit the rest of the chat screen at a narrow width.** The coverage
-      notice overflowed by 25 px because a `Row` held two buttons whose labels
-      interpolate a collection name and a byte count. That shape is not unique
-      to it, and the widths that break are the ones a phone actually has, not
-      the ones a desktop debug run shows.
+- [x] **Audit the rest of the chat screen at a narrow width** — done
+      2026-08-06, and it found two more, both only at the largest font size on
+      the narrowest phone (320 px, 1.5×, an iPhone SE):
+
+      - The **"Thinking…" row overflowed by 52 px**, and what went off the edge
+        was the **Stop** button — the one control that has to stay reachable
+        while a long generation runs. A free-sized `Text` followed by a
+        `Spacer` gave the label everything and the button nothing; the label is
+        now `Expanded` and ellipsizes.
+      - The **coverage notice pushed the composer off the bottom** by 140 px.
+        The notice is taller than the display on its own at that size, and a
+        `Column` that cannot give way answers that by evicting whatever is
+        last — leaving the reader told their library is thin with no way to ask
+        anything else. It is now `Flexible` and scrolls inside itself.
+
+      `test/narrow_width_test.dart` holds the screen at 320 px at both 1.0×
+      and 1.5× with a pinned passage, three citations carrying corpus-length
+      source titles, and the notice actually on screen. An overflow throws
+      during paint, so the tests need assert nothing about layout — they only
+      have to get hostile content in front of the renderer.
+
+- [x] **Read and Library at a narrow width too** — done 2026-08-06, and both
+      are clean at 320 px and 1.5×, so the two faults above were the whole of
+      it. Covered in the same file, against the real catalogue rather than a
+      fixture: the collection names under test are the ones that ship, each
+      row carrying a megabyte count, because the labels that break are the ones
+      interpolating a name and a size.
+
+      Two things the tests had to do before they meant anything, both of which
+      would have made them pass for the wrong reason. Shelf sections start
+      collapsed, so pumping Read renders headings and no works at all — the
+      test expands one and checks a source title is on screen. And a list lays
+      out only what it paints, so a name that breaks the layout twenty rows
+      down never gets the chance to; both lists are now scrolled the whole way
+      through.
 
 - [ ] **Verify the update hand-off on Windows and Linux.** Both are written and
       neither has been run: Windows starts the Inno installer detached and then
@@ -542,14 +585,42 @@ will see; both notes come off once these are settled.
       TestFlight". Whether `launchUrl` reaches the app rather than Safari is
       untested on hardware.
 
-- [ ] **The Android APK is signed with the debug keystore, and updates depend on
-      that not changing.** `build.gradle.kts` still carries the template's
-      `signingConfig = signingConfigs.getByName("debug")` for release builds.
-      Android refuses to install an update signed with a different key, so a
-      keystore regenerated or a release cut on another machine would make every
-      in-app update fail with a signature mismatch — after the reader had
-      downloaded 200 MB. This was a latent problem before; the updater makes it
-      one people will actually hit.
+- [x] **The Android APK is signed with a real release key** — done 2026-08-06.
+      `build.gradle.kts` reads `android/key.properties` (git-ignored; see
+      `key.properties.example`) and a release build with no key **fails** rather
+      than falling back to the debug key, which is how the debug-signed
+      pre-release got out in the first place.
+
+      **The certificate every future release must match:**
+
+      ```
+      SHA-256  84615e60dd6dd5fd601b23accdca38c23c43ae7a8f85fc2e3d0e1c02f702e927
+      SHA-1    7b1fea4481b49a061b44524cd863f5e927ee9614
+      DN       CN=SpencerSmith, OU=SpencerSmithSite, O=SpencerSmithSite, L=US, ST=OH, C=US
+      RSA 4096, alias `council`
+      ```
+
+      Check a build against it before publishing, rather than against memory:
+
+      ```bash
+      ~/Library/Android/sdk/build-tools/36.0.0/apksigner verify --print-certs \
+        build/app/outputs/flutter-apk/app-release.apk
+      ```
+
+      Signed v2-only, which is correct here: v2 is verified by every Android
+      from 7.0 and `minSdk` is 24, so no device that can install Council needs
+      the v1 signature. (v3 is off, so key *rotation* is not available later.
+      That mitigates a compromised key, not a lost one — the backup is still the
+      only thing standing between a lost keystore and stranding every install.)
+
+- [ ] **Say on the download page that this release cannot update over the
+      pre-release.** The published 2026.8.2 APK is debug-signed, so Android will
+      refuse to install the properly-signed build over it — the reader sees a
+      failed install, and through the in-app updater it looks like the update
+      is broken rather than like a one-time key change. They have to uninstall
+      and reinstall once. This needs a line in the release notes and on
+      `download.html`, and it is only true of the Android pre-release: no other
+      platform is affected.
 
 - [ ] **Remember `updates.json` when cutting a release.** The version, URL,
       byte count and sha256 all live there as well as on the download page, and
