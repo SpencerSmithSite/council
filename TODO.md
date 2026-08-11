@@ -478,11 +478,30 @@ will see; both notes come off once these are settled.
       rather than 42, they are aligned, and on a device whose vendor ships its
       own skeletons under `/vendor` they are the half that still works.
 
-      - [ ] **Still to confirm on a Snapdragon phone**: that the downloaded
-            model loads and answers. Every other device class is unaffected by
-            construction — they never loaded these — but the Snapdragon path is
-            the one thing this change can break, and it cannot be tested
-            anywhere else.
+      **Verified on the emulator, 2026-08-11** — a Pixel_10 AVD, Android 17,
+      arm64, `PAGE_SIZE 16384`, which is the configuration that raises the
+      compatibility dialog. The signed release APK installed, launched, and
+      downloaded Qwen 3 0.6B, which loaded and answered "Compare views on
+      baptism" citing six sources. No crash, no `dlopen failed`, nothing fatal
+      in logcat across the whole run.
+
+      What LiteRT says when the accelerator is not there is the useful part:
+
+      ```
+      W litert : [npu_registry.cc:34] NPU accelerator could not be
+                 loaded and registered: kLiteRtStatusErrorInvalidArgument
+      ```
+
+      A warning, and it carried on to generate. That is the fallback behaving
+      as the entry above assumed rather than as it hoped.
+
+      - [ ] **Still to confirm on a Snapdragon phone.** The emulator has no
+            Hexagon DSP, so it never took the NPU path either way — it proves
+            the fallback works, not that a device where `libQnnHtpV75Stub.so`
+            finds a vendor-supplied skeleton under `/vendor` degrades as
+            gracefully. The registry code is the same and it warns rather than
+            throws, so this is now a small risk rather than an unknown one, but
+            it is not closed.
 
 - [x] **Bump the version in `pubspec.yaml`, never in Xcode** — enforced
       2026-08-02. `Info.plist` reads
