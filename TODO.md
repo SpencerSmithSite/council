@@ -17,6 +17,31 @@ characters · all three audits clean except the three noted at the bottom.*
 
 ---
 
+## Before the official release
+
+2026.8.2+7 is published as a **pre-release**. What stands between that and a
+release called official is distribution trust, not features — an installer the
+operating system does not warn about. The detail for each is further down; this
+is the index, so the gate is in one place.
+
+- [x] **Android signing** — done 2026-08-06. The only one of these that could
+      not have been fixed afterwards. See *App work*.
+- [ ] **Notarise the macOS DMG** — needs an app-specific password or an App
+      Store Connect API key. See *Release signing*.
+- [ ] **Sign the Windows installer** — needs a code-signing certificate bought
+      first, and OV vs EV is a decision, not a formality. See *Release signing*.
+- [ ] **Say on the download page that the Android pre-release cannot be updated
+      over.** Lands *with* the release cut, not before — the page must never
+      describe a build that is not published yet. See *App work*.
+
+**Verified by hand, 2026-08-06:** a physical Android phone, a Mac, an iPhone
+and an iPad all run the app with the AI features working. The gaps that remain
+— the Windows and Linux update hand-off, a desktop model download — are
+accepted rather than closed, and are listed under *App work* so they stay
+visible rather than forgotten.
+
+---
+
 ## Shouldn't have — removed, and why
 
 Do not re-add any of these. Each was in the app and each was worse than the gap
