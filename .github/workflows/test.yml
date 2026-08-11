@@ -1,0 +1,60 @@
+# Analyse and test on every push and pull request.
+#
+# The suite encodes things nobody would notice breaking by reading a diff: that
+# Ask opens on a new conversation rather than the middle of the last one, that
+# a citation opens its work at the section quoted, that the Stop button does not
+# fall off a 320 px screen. Those only hold if something runs them, and "someone
+# remembers to" stops being true the moment work is spread over months.
+#
+# Deliberately not a release job. It builds nothing and publishes nothing —
+# `release-desktop.yml` does that, on request, and this must stay cheap enough
+# to run on every push without anyone weighing whether it is worth it.
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # Matches release-desktop.yml. A test run on a different toolchain than the
+  # one releases are cut with proves less than it appears to.
+  FLUTTER_VERSION: "3.44.8"
+
+jobs:
+  test:
+    name: Analyse and test
+    runs-on: ubuntu-latest
+    # The suite takes well under a minute; anything approaching this is a hang,
+    # and a hung job holds a runner until GitHub's own six-hour ceiling.
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      # assets/model/model_quantized.onnx is gitignored but declared in
+      # pubspec.yaml, so a fresh checkout cannot build its asset bundle at all —
+      # every test that reads an asset fails on `No file or variants found for
+      # asset`, for a reason that has nothing to do with the change under test.
+      # See the same step in release-desktop.yml.
+      - name: Fetch the embedding model
+        run: bash tools/fetch_model.sh
+
+      - run: flutter pub get
+
+      # The whole package, integration_test included. It cannot run here — it
+      # needs a device — but it can still be kept compiling, and code that is
+      # never analysed is where the rot starts.
+      - run: flutter analyze
+
+      - run: flutter test
