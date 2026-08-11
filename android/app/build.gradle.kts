@@ -43,6 +43,27 @@ android {
         versionName = flutter.versionName
     }
 
+    // The Hexagon DSP skeletons are not shipped.
+    //
+    // `flutter_gemma_litertlm` bundles four of them, one per Snapdragon
+    // generation (V73/V75/V79/V81), and they are 42.4 MB of a 125 MB arm64
+    // payload — a third of the native code in the app, carried by every Pixel
+    // and Exynos device on earth to be used by none of them. They exist to run
+    // the downloadable model on a Qualcomm NPU; without them LiteRT falls back
+    // to GPU and CPU, which is what every non-Snapdragon device does anyway.
+    //
+    // They are also four of the five libraries in the app that are not 16 KB
+    // aligned, and being prebuilt they cannot be fixed here — only dropped.
+    //
+    // The rest of the QNN set stays. The stubs and `libQnnSystem` are aligned,
+    // they are 8 MB rather than 42, and on devices whose vendor ships its own
+    // skeletons under /vendor they are the half that still works.
+    packaging {
+        jniLibs {
+            excludes += setOf("**/libQnnHtpV*Skel.so")
+        }
+    }
+
     signingConfigs {
         if (!keystoreProperties.isEmpty) {
             create("release") {

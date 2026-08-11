@@ -28,16 +28,13 @@ APK="${1:-build/app/outputs/flutter-apk/app-release.apk}"
 #   libonnxruntime.so     the embedding runtime, pub release 1.4.1 (2024-03-27)
 #                         and unmaintained. PLAN.md holds the exit: flutter_gemma
 #                         is the destination, gated on re-embedding the corpus.
-#   libQnnHtpV*Skel.so    Qualcomm Hexagon DSP skeletons, one per Snapdragon
-#                         generation, 42.4 MB between them. Every non-Snapdragon
-#                         device carries all four and uses none, so these are
-#                         candidates for removal rather than for alignment.
+# The four Qualcomm Hexagon DSP skeletons used to be here and are now excluded
+# from the APK entirely (see android/app/build.gradle.kts). They are deliberately
+# *not* listed below: if a change puts them back, this should fail rather than
+# wave through 42 MB and four misaligned libraries that were already decided
+# about once.
 ALLOWED=(
   libonnxruntime.so
-  libQnnHtpV73Skel.so
-  libQnnHtpV75Skel.so
-  libQnnHtpV79Skel.so
-  libQnnHtpV81Skel.so
 )
 
 # 16 KB. A library aligned to more (the Flutter engine uses 64 KB) is fine.
