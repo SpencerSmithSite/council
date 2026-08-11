@@ -56,18 +56,34 @@ android {
 
     buildTypes {
         release {
-            // Fails the build rather than falling back to the debug key. The
-            // fallback is what shipped the published pre-release, and a
-            // debug-signed APK cannot be updated over: the mistake is invisible
-            // at build time and permanent by the time anyone notices.
+            // Null when there is no key, rather than a failure here. Gradle
+            // configures every build type on every build, so throwing at this
+            // point failed `flutter run` and every debug build on any machine
+            // without the keystore — a fresh clone, or CI. The build is still
+            // not allowed to *finish* unsigned; that is enforced below, where
+            // it is known whether a release is actually being built.
             signingConfig = signingConfigs.findByName("release")
-                ?: throw GradleException(
-                    "No release signing key. Copy android/key.properties.example " +
-                        "to android/key.properties and fill in the keystore this " +
-                        "app is published with — see the file for how to create " +
-                        "one. Never sign a published build with the debug key."
-                )
         }
+    }
+}
+
+// No release without the real key — and no falling back to the debug one.
+//
+// The fallback is what shipped the published pre-release, and a debug-signed
+// APK cannot be updated over: Android refuses an update signed with a different
+// key, so the mistake is invisible at build time and permanent by the time
+// anyone notices. Checked against the task graph rather than at configuration,
+// so it speaks up when a release is genuinely being built and stays silent for
+// everything else.
+gradle.taskGraph.whenReady {
+    val releasing = allTasks.any { it.name.contains("Release", ignoreCase = true) }
+    if (releasing && keystoreProperties.isEmpty) {
+        throw GradleException(
+            "No release signing key. Copy android/key.properties.example to " +
+                "android/key.properties and fill in the keystore this app is " +
+                "published with — see the file for how to create one. Never " +
+                "sign a published build with the debug key."
+        )
     }
 }
 
