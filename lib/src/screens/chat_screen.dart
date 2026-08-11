@@ -29,8 +29,8 @@ class ChatScreen extends StatefulWidget {
   /// reopening it later still shows what "this" was.
   final PinnedPassage? passage;
 
-  /// An existing conversation to reopen. When null, the Ask tab resumes the
-  /// most recent one and a standalone screen starts a fresh thread.
+  /// An existing conversation to reopen. When null the screen starts a fresh
+  /// thread; past ones are reached through the history list.
   final int? conversationId;
 
   const ChatScreen({
@@ -97,19 +97,18 @@ class ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  /// Put back whatever thread this screen should be showing.
+  /// Put back the thread this screen was asked to show, if any.
   ///
-  /// The Ask tab reopens the most recent conversation, because a research
-  /// session that survives closing the app is the whole point of keeping
-  /// history at all. A screen opened from a selected passage always starts
-  /// fresh — the reader asked about *this* verse, not about whatever they were
-  /// discussing last week.
+  /// Only an explicitly named conversation is restored — one chosen from the
+  /// history list. Opening the app lands on an empty Ask tab rather than on
+  /// whatever was being discussed last week: the blank composer is the
+  /// invitation to ask, and a reader who wants the old thread back knows to go
+  /// looking for it. Nothing is lost either way, since every thread is kept in
+  /// the history.
   Future<void> _restore() async {
     Conversation? conversation;
     if (widget.conversationId != null) {
       conversation = await _history.conversation(widget.conversationId!);
-    } else if (!widget.standalone && widget.passage == null) {
-      conversation = await _history.mostRecent();
     }
 
     if (conversation == null) {
@@ -515,16 +514,26 @@ class ChatScreenState extends State<ChatScreen> {
           // they are about the question being asked, not about what has already
           // been said, and they travel with the bar when the keyboard lifts it.
           if (_gaps.isNotEmpty && !_isLoading)
-            _CoverageNotice(
-              gaps: _gaps,
-              onInstalled: () {
-                final question = _gapQuestion;
-                setState(() {
-                  _gaps = const [];
-                  _gapQuestion = null;
-                });
-                if (question != null) _sendMessage(question: question);
-              },
+            // Flexible, and scrolling inside: at the largest font size on the
+            // narrowest phone this notice is taller than the display on its
+            // own, and a Column that cannot give way answers that by pushing
+            // the composer off the bottom of the screen — which leaves the
+            // reader being told their library is thin with no way to ask
+            // anything else. The notice yields; the composer never does.
+            Flexible(
+              child: SingleChildScrollView(
+                child: _CoverageNotice(
+                  gaps: _gaps,
+                  onInstalled: () {
+                    final question = _gapQuestion;
+                    setState(() {
+                      _gaps = const [];
+                      _gapQuestion = null;
+                    });
+                    if (question != null) _sendMessage(question: question);
+                  },
+                ),
+              ),
             ),
 
           if (_isLoading)
@@ -538,8 +547,17 @@ class ChatScreenState extends State<ChatScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   const SizedBox(width: 12),
-                  Text(_cancelled ? 'Stopping…' : 'Thinking…'),
-                  const Spacer(),
+                  // Expanded rather than a Spacer after a free-sized Text:
+                  // at the largest font size the label and the button together
+                  // are wider than a 320 px phone, and it was the label that
+                  // won — pushing Stop off the edge, which is the one control
+                  // here that has to stay reachable.
+                  Expanded(
+                    child: Text(
+                      _cancelled ? 'Stopping…' : 'Thinking…',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   TextButton(
                     onPressed: _cancelled
                         ? null

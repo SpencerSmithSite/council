@@ -388,9 +388,9 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
 
-          // Top-right: settings, and — on Ask only — a compose button, since
-          // starting a fresh thread is the one action that has nowhere else to
-          // live now that conversations persist across launches.
+          // Top-right: settings, and — on Ask only — a compose button. Launch
+          // already lands on an empty thread, so this is for putting the
+          // current one away mid-session and starting over.
           Positioned(
             top: top + 8,
             right: AppleMetrics.edgeInset,
