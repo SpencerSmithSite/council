@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi' show Abi;
 import 'dart:io';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
@@ -50,13 +51,10 @@ class LocalModelBackend implements InferenceBackend {
 
   @override
   Future<BackendStatus> checkStatus() async {
-    // Not reachable on any platform Council ships today; kept so that a future
-    // target which the engine does not cover fails with a sentence rather than
-    // with silence.
-    if (!LocalModelChoice.runsHere) {
-      return const BackendStatus.unavailable(
-        'A downloaded model cannot run on this platform. Ollama or an API key '
-        'will work here.',
+    final blocked = LocalModelChoice.unsupportedReason;
+    if (blocked != null) {
+      return BackendStatus.unavailable(
+        '$blocked Ollama or an API key will work here.',
       );
     }
     if (!await choice.isInstalled()) {
@@ -70,8 +68,26 @@ class LocalModelBackend implements InferenceBackend {
 
   @override
   Stream<String> generate({required String prompt, String? system}) async* {
-    final model = await _LocalModelRuntime.instance.model(choice);
-    final session = await model.openSession();
+    // Refused here as well as in [checkStatus], because a backend the reader
+    // chose before this was gated properly is still their stored setting, and
+    // it would otherwise be the engine that objects — in its own words, about
+    // ABIs and MediaPipe formats, in the middle of an answer.
+    final blocked = LocalModelChoice.unsupportedReason;
+    if (blocked != null) {
+      throw InferenceException('$blocked Ollama or an API key will work here.');
+    }
+
+    final InferenceModel model;
+    final InferenceModelSession session;
+    try {
+      model = await _LocalModelRuntime.instance.model(choice);
+      session = await model.openSession();
+    } catch (e) {
+      // Loading sat outside the try below, so anything the engine threw while
+      // opening the weights reached the reader verbatim.
+      throw InferenceException('The downloaded model could not be loaded: $e');
+    }
+
     try {
       // The system prompt is prepended rather than sent separately: these
       // models are small and inconsistent about honouring a separate system
@@ -481,22 +497,84 @@ class LocalModelChoice {
         orElse: recommended,
       );
 
-  /// Whether a downloaded model can run on this platform at all.
+  /// The architectures LiteRT-LM actually ships a runtime for.
   ///
-  /// Every platform Council targets, now that LiteRT-LM is the engine. Ollama
-  /// is still the better answer on a desktop, but it is only a better answer
-  /// for someone who has it — this exists for the reader who does not, and
-  /// sending them off to install a server was the gap.
+  /// Android arm64 only — a `.litertlm` model cannot load in a 32-bit process,
+  /// and the app's own `armeabi-v7a` slice carries no LiteRT at all. macOS on
+  /// Apple silicon, not Intel. Windows on x64, not arm64. Linux on both.
+  static const Set<Abi> _runnableAbis = {
+    Abi.androidArm64,
+    Abi.iosArm64,
+    Abi.macosArm64,
+    Abi.windowsX64,
+    Abi.linuxX64,
+    Abi.linuxArm64,
+  };
+
+  /// Whether a downloaded model can run on this device at all.
   ///
-  /// The architecture caveats match what the download page already promises:
-  /// LiteRT-LM covers macOS on Apple silicon (not Intel), Windows x64 (not
-  /// arm64) and Linux on both, and those are exactly the builds shipped.
-  static bool get runsHere =>
-      Platform.isAndroid ||
-      Platform.isIOS ||
-      Platform.isMacOS ||
-      Platform.isWindows ||
-      Platform.isLinux;
+  /// The architecture, not the platform. This used to ask only whether the OS
+  /// was one Council targets, which is a different question and answers it
+  /// wrongly on any device running a 32-bit build: `Platform.isAndroid` is true
+  /// there, so the feature was offered, half a gigabyte was downloaded, and the
+  /// failure arrived at the first question as a plugin exception about ABIs.
+  /// A Galaxy A13 5G found this. The caveats in the doc comment were real and
+  /// simply were not enforced — an Intel Mac had the same hole.
+  static bool get runsHere => runsOn(Abi.current());
+
+  /// Taken as an argument rather than read from the process, so that every
+  /// device class this has to get right can be asserted on one machine. The
+  /// bug it exists to prevent was invisible on the only architecture the
+  /// developer's machines have.
+  static bool runsOn(Abi abi) => _runnableAbis.contains(abi);
+
+  /// Why a downloaded model cannot run here, in a sentence for the reader.
+  /// Null when it can.
+  ///
+  /// Specific about *this* device rather than generically apologetic, because
+  /// the reader's next move differs: on a 32-bit phone nothing will ever make
+  /// it work, and Ollama or an API key is the whole answer.
+  static String? get unsupportedReason => reasonFor(Abi.current());
+
+  /// The reason for an arbitrary architecture. Pure, for the same reason
+  /// [runsOn] is.
+  ///
+  /// The OS is read off the [Abi] rather than from [Platform], so this says
+  /// "this Mac has an Intel processor" on a machine that is neither.
+  static String? reasonFor(Abi abi) {
+    if (runsOn(abi)) return null;
+
+    if (abi == Abi.androidArm || abi == Abi.androidIA32) {
+      return 'This device runs 32-bit Android, and a downloaded model needs a '
+          '64-bit processor.';
+    }
+    if (abi == Abi.androidX64) {
+      return 'A downloaded model needs a 64-bit Arm device, and this one is '
+          'x86.';
+    }
+    if (abi == Abi.macosX64) {
+      return 'A downloaded model needs Apple silicon, and this Mac has an '
+          'Intel processor.';
+    }
+    if (abi == Abi.windowsArm64 || abi == Abi.windowsIA32) {
+      return 'A downloaded model needs a 64-bit Intel or AMD processor, and '
+          'this PC is not one.';
+    }
+    return 'A downloaded model cannot run on this device.';
+  }
+
+  /// Everything in the catalogue whose weights are on this device.
+  ///
+  /// Needed where the feature is *not* offered: a reader who downloaded a model
+  /// before this was gated properly still has the file, and hiding the section
+  /// would leave half a gigabyte they can neither use nor reclaim.
+  static Future<List<LocalModelChoice>> installedHere() async {
+    final found = <LocalModelChoice>[];
+    for (final model in catalogue) {
+      if (await model.isInstalled()) found.add(model);
+    }
+    return found;
+  }
 
   /// Whether this model's download will fit in the space left on the device.
   Future<bool> fitsOnDisk() => DeviceStorage.hasRoomFor(downloadMb);
