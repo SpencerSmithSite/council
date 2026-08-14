@@ -545,8 +545,14 @@ class LocalModelChoice {
     if (runsOn(abi)) return null;
 
     if (abi == Abi.androidArm || abi == Abi.androidIA32) {
-      return 'This device runs 32-bit Android, and a downloaded model needs a '
-          '64-bit processor.';
+      // Deliberately blames the software, because on the phones this actually
+      // happens to the software is what is at fault. The Galaxy A13 5G has a
+      // 64-bit MediaTek Dimensity 700 and shipped with a 32-bit kernel; a
+      // reader told their processor was too old would be told something untrue
+      // about hardware they cannot change either way.
+      return 'This device runs a 32-bit version of Android, and a downloaded '
+          'model needs a 64-bit one. On some phones that is a limit of the '
+          'system software rather than the processor.';
     }
     if (abi == Abi.androidX64) {
       return 'A downloaded model needs a 64-bit Arm device, and this one is '

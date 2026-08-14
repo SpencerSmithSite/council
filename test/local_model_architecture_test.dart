@@ -50,8 +50,13 @@ void main() {
     });
 
     test('names the actual obstacle, not a generic apology', () {
+      // The software, not the processor: the Galaxy A13 5G that found this
+      // has a 64-bit chip and a 32-bit kernel, and telling its owner their
+      // hardware was too old would be false.
       expect(LocalModelChoice.reasonFor(Abi.androidArm),
-          contains('32-bit Android'));
+          contains('32-bit version of Android'));
+      expect(LocalModelChoice.reasonFor(Abi.androidArm),
+          contains('system software'));
       expect(LocalModelChoice.reasonFor(Abi.macosX64), contains('Apple'));
       // One sentence covers Windows on Arm and 32-bit x86 alike, so it names
       // what is needed rather than what the machine is.
