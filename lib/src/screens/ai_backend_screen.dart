@@ -98,6 +98,15 @@ class AiBackendScreen extends StatelessWidget {
                             child: _LocalModelSettings(),
                           ),
                         const SizedBox(height: 12),
+                      ] else ...[
+                        // Said rather than hidden. A device that cannot run one
+                        // is exactly where a missing option looks like a bug,
+                        // and a reader who downloaded a model before this was
+                        // gated properly still has the file — hiding the
+                        // section would leave them half a gigabyte they can
+                        // neither use nor reclaim.
+                        const _LocalModelUnavailable(),
+                        const SizedBox(height: 12),
                       ],
 
                       _Option(
@@ -1018,6 +1027,141 @@ class TierTitle extends StatelessWidget {
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       ],
+    );
+  }
+}
+
+/// Shown in place of the downloaded-model option on a device that cannot run
+/// one.
+///
+/// Two jobs. It says why — specifically, because "a downloaded model needs a
+/// 64-bit processor and this phone is 32-bit" is actionable where a missing
+/// row is just confusing. And it offers to remove weights that are already
+/// here, which is not hypothetical: the gate used to test the platform rather
+/// than the architecture, so a reader could download half a gigabyte onto a
+/// device that was never going to run it.
+class _LocalModelUnavailable extends StatefulWidget {
+  const _LocalModelUnavailable();
+
+  @override
+  State<_LocalModelUnavailable> createState() => _LocalModelUnavailableState();
+}
+
+class _LocalModelUnavailableState extends State<_LocalModelUnavailable> {
+  int _removed = 0;
+  String? _error;
+
+  Future<void> _remove(LocalModelChoice choice) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${choice.name}?'),
+        content: Text(
+          'This frees about ${choice.approximateSize} on this device. It '
+          'cannot run here, so nothing is lost by removing it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await choice.uninstall();
+      if (!mounted) return;
+      setState(() {
+        _removed++;
+        _error = null;
+      });
+      context.read<InferenceProvider>().refreshStatus();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'Could not remove ${choice.name}: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final reason = LocalModelChoice.unsupportedReason;
+    if (reason == null) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.download_outlined,
+                  size: 18, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Downloaded models are not available on this device',
+                  style: text.bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text('$reason Ollama or an API key will work here.',
+              style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+
+          // Only if there is something to reclaim.
+          FutureBuilder<List<LocalModelChoice>>(
+            key: ValueKey(_removed),
+            future: LocalModelChoice.installedHere(),
+            builder: (context, snap) {
+              final installed = snap.data ?? const <LocalModelChoice>[];
+              if (installed.isEmpty) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  for (final choice in installed)
+                    Wrap(
+                      spacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text('${choice.name} is downloaded and unused',
+                            style: text.bodySmall),
+                        TextButton.icon(
+                          onPressed: () => _remove(choice),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: Text(
+                              'Remove and free ${choice.approximateSize}'),
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
+
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(_error!,
+                style: text.bodySmall?.copyWith(color: scheme.error)),
+          ],
+        ],
+      ),
     );
   }
 }
