@@ -307,6 +307,15 @@ Ordered by how badly the absence distorts an answer.
       and states no rights, and a translation of unknown date cannot be
       assumed public domain. Henry Cole's 1823 translation is public domain;
       the route in is an edition that says so.
+- [x] ~~A local model for 32-bit Android~~ — **declined, 2026-08-11.** A path
+      exists: MediaPipe's `tasks-genai` ships a real 18.3 MB `armeabi-v7a`
+      engine and `flutter_gemma_mediapipe` reaches it. It would cost a second
+      engine, a second model format and a second catalogue, permanently, for a
+      shrinking device class, to deliver generation nobody expects to be usable
+      at that speed. PLAN.md holds the reasoning. A device that cannot run one
+      does not get one; the app now says so before the download rather than
+      after it.
+
 - [ ] **Pentecostal and Assyrian** — traditions with a row in the database and
       nothing in it. Pentecostalism's defining documents are 20th-century and in
       copyright; the honest route is the pre-1929 antecedents (the *Apostolic

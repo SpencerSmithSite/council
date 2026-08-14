@@ -3433,6 +3433,44 @@ the work it came from, at the section quoted; and two overflows were fixed at
 needed — the Stop button during generation, and the composer itself. Read and
 Library were audited the same way and are clean.
 
+## 32-bit Android gets no local model, and that is the answer (2026-08-11)
+
+A Galaxy A13 5G was offered the downloadable model, spent 500 MB on it, and got
+a plugin exception about ABIs at the first question. The gate tested the
+operating system rather than the architecture, so every 32-bit Android build
+satisfied it; LiteRT-LM is arm64-only there. Fixed, with the reason now stated
+before the download rather than after it.
+
+**The device is not the fault of its owner.** The A13 5G has a 64-bit MediaTek
+Dimensity 700 and shipped with a 32-bit kernel — Samsung's choice, unchangeable
+by any update. So the message names the operating system, not the processor: a
+reader told their hardware is too old would be told something false about a
+phone they cannot do anything about.
+
+### A path exists, and was declined
+
+Worth recording because the plugin's own error suggests it, so anyone reading
+that message will find it and cost themselves an afternoon.
+
+`com.google.mediapipe:tasks-genai` really does ship a 32-bit engine —
+`libllm_inference_engine_jni.so` is 18.3 MB in `armeabi-v7a`, against 25.4 MB in
+`arm64-v8a`, so it is a real implementation and not a stub — and
+`flutter_gemma_mediapipe` exists on pub to reach it. MediaPipe's natives could
+be excluded from `arm64-v8a` the same way the Hexagon skeletons are, so arm64
+readers would pay nothing and only the 32-bit slice would grow.
+
+**Not doing it.** It would add a second inference engine, a second model format
+(`.task` rather than `.litertlm`, which in practice means Gemma rather than
+Qwen), a second catalogue and a second code path — permanently, for a device
+class Google is phasing out — in exchange for generation that a 32-bit ARMv7
+process on a 4 GB phone would run without dotprod, beside a 170 MB vector index,
+at a speed nobody has measured and no one expects to be good.
+
+A device that cannot run a local model simply does not get one. Ollama, an API
+key, and the whole offline library, search and citations remain, which is most
+of what Council is. Saying so plainly is a better answer than a 550 MB download
+that produces a paragraph in a minute.
+
 ## Qwen 3 was thinking out loud into the transcript (2026-08-11)
 
 Asked to compare views on baptism, the downloadable model answered with several
