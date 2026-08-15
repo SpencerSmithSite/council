@@ -3470,3 +3470,100 @@ A device that cannot run a local model simply does not get one. Ollama, an API
 key, and the whole offline library, search and citations remain, which is most
 of what Council is. Saying so plainly is a better answer than a 550 MB download
 that produces a paragraph in a minute.
+
+## Qwen 3 was thinking out loud into the transcript (2026-08-11)
+
+Asked to compare views on baptism, the downloadable model answered with several
+paragraphs of its own scratch work before the answer — "First, looking at source
+[1], it talks about John the Baptist… So, the key points are…" — and only then
+reached "1. John the Baptist's Role in Preaching". Qwen 3 is a hybrid reasoning
+model and thinks out loud before answering, which is normal; putting the
+thinking in front of the reader is not.
+
+**The markers were there the whole time.** Two explanations were open — that the
+model emitted no `<think>` tags, so the reasoning could not be separated, or
+that it emitted them and nothing stripped them — and the transcript could not
+settle it, because `MarkdownBody` drops unknown HTML tags. The tags were being
+rendered to nothing, so the scratch work arrived looking exactly like prose. The
+one place the difference is visible is the raw token stream, and printing it
+settled it in one run: the stream opens `"<think>"`, `"\n"`, `"Okay"`, `","`,
+`" the"`, `" user"`, and closes the block with `"</think>"` before the real
+answer. Emitted, and not stripped.
+
+**Why nothing stripped them.** `flutter_gemma` does strip them — inside
+`InferenceChat`, along with appending Qwen 3's `/no_think` switch. Council drives
+a bare `openSession` instead, deliberately, because the RAG prompt is the whole
+conversation and a chat object would add history management this backend does
+not want. Every layer that would have caught this sits in the path not taken.
+`openSession` does take `enableThinking`, but false does not mean "off" — it
+means `flutter_gemma` sends no `enable_thinking` hint at all, leaving the model
+bundle's own template to decide, and Qwen 3's template thinks by default.
+
+**Fixed at both ends, because they do different jobs.** `/no_think` is appended
+to the prompt, which stops the thinking from being generated; `ReasoningFilter`
+strips the markers from the stream, which stops anything that is generated
+anyway from reaching the reader. The first is a soft switch a small model can
+ignore, so it cannot be the only defence; the second cannot recover the wasted
+tokens, so it is not a substitute for the first.
+
+Both were measured on the real weights rather than assumed, and `/no_think`
+turned out to be worth having on its own:
+
+| | chunks emitted | generation |
+|---|---|---|
+| bare session, as shipped | 652 | 9,150 ms / 6,144 ms |
+| with `/no_think` | 190 | 1,990 ms / 2,259 ms |
+
+The chunk counts are the figure to trust — they were identical across both runs.
+The times are from a cold and a warm run of the same test and are given as a
+range rather than a headline, because a 2.7×–4.6× spread is a fact about how
+warm the engine was, not about the change. What is stable is that the model was
+generating **3.4× as many tokens** as the reader ever saw. The answer stayed
+grounded and cited across the change.
+
+**The filter handles two marker shapes, not one.** `<think>…</think>` is what
+Qwen 3 emits. But when LiteRT-LM reports reasoning on a separate
+`channels.thought` field instead, `SdkTextExtractor` rewrites it into Gemma's
+`<|channel>thought…<channel|>` form — and `flutter_gemma`'s own Qwen filter only
+looks for `<think>`, so that shape leaks even on the path that filters. Which
+one arrives is a property of the model bundle and the engine build, so both are
+handled.
+
+Filtering happens per chunk rather than on the finished string, because the
+answer streams into the transcript as it arrives — filtering at the end would
+mean the reader watches the reasoning appear and then vanish. Markers split
+across chunk boundaries are the normal case, not an edge one: the raw stream
+above delivers `<think>` and `\n` as separate chunks. So anything that could
+still turn out to be the start of a marker is held back until the next chunk
+settles it, which is at most a few characters.
+
+**One shape is knowingly not handled.** A template that *prefills* the opening
+marker would make the closer the model's first emitted token, with the reasoning
+already unmarked ahead of it — `flutter_gemma` handles that for DeepSeek.
+Catching it in a stream would mean withholding the start of every answer until a
+closer arrived or was ruled out, paying a visible stall on every question against
+a shape the real 0.6B does not produce. The marker is still dropped if it appears;
+only the prose ahead of it gets through. Pinned as a passing test rather than
+left to be rediscovered.
+
+**Verified against real weights, not fixtures.**
+`integration_test/local_model_reasoning_test.dart` downloads the 0.6B and runs
+it on macOS, and is opt-in because it fetches 500 MB:
+
+    flutter test integration_test/local_model_reasoning_test.dart -d macos \
+      --dart-define=RUN_LOCAL_MODEL=true --dart-define=PRINT_RAW_OUTPUT=true
+
+It asserts twice over: that no markers survive, and that the answer does not
+*open in the reasoning register* — which is the assertion that would have caught
+the reported bug even with the markers rendered invisible. A second test drives
+the bare session with nothing suppressing it, so the filter is shown to be
+removing something real rather than passing against a model that never thought.
+The chunk-boundary cases are covered on the host in
+`test/reasoning_filter_test.dart`, which feeds the stream a character at a time.
+
+`LOG_RAW_MODEL_OUTPUT=true` on a debug build prints the raw stream from the app
+itself, which is the diagnostic this was found with and the one to reach for
+first next time an answer looks wrong in a way the transcript cannot explain.
+
+Scoped to the downloadable backend. Apple Intelligence, Ollama and the cloud
+providers are untouched, as are retrieval and citations.

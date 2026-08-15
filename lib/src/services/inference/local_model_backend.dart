@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi' show Abi;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 import '../device_memory.dart';
 import '../device_storage.dart';
 import 'inference_backend.dart';
+import 'reasoning_filter.dart';
 
 /// A small open-weights model the reader downloads once and then runs locally.
 ///
@@ -66,6 +69,18 @@ class LocalModelBackend implements InferenceBackend {
     return BackendStatus.available('${choice.name}, running on this device.');
   }
 
+  /// Whether the raw token stream should be printed as it arrives.
+  ///
+  /// Off unless asked for, and debug-only regardless. What made the reasoning
+  /// leak hard to diagnose is that the markers around it are invisible once
+  /// rendered — `MarkdownBody` drops unknown HTML tags — so the transcript
+  /// cannot be used as evidence of what the model actually emitted. This is
+  /// the only way to see that:
+  ///
+  ///     flutter run -d macos --dart-define=LOG_RAW_MODEL_OUTPUT=true
+  static const bool logRawOutput =
+      bool.fromEnvironment('LOG_RAW_MODEL_OUTPUT');
+
   @override
   Stream<String> generate({required String prompt, String? system}) async* {
     // Refused here as well as in [checkStatus], because a backend the reader
@@ -96,13 +111,63 @@ class LocalModelBackend implements InferenceBackend {
       final text = system == null || system.isEmpty
           ? prompt
           : '$system\n\n$prompt';
-      await session.addQueryChunk(Message.text(text: text, isUser: true));
-      yield* session.getResponseAsync();
+      await session.addQueryChunk(
+        Message.text(text: _withNoThinkSwitch(text), isUser: true),
+      );
+
+      var answered = false;
+      yield* ReasoningFilter.strip(_traced(session.getResponseAsync()))
+          .map((chunk) {
+        if (chunk.trim().isNotEmpty) answered = true;
+        return chunk;
+      });
+
+      // Everything the model produced was reasoning it never finished. Saying
+      // so is the honest outcome: there is no answer being withheld, and an
+      // empty bubble would read as the app having broken rather than the
+      // model having run out of room.
+      if (!answered) {
+        yield 'The model spent its whole answer working through the sources '
+            'and never reached a conclusion. Ask again, or try a narrower '
+            'question.';
+      }
     } catch (e) {
       throw InferenceException('The downloaded model failed to answer: $e');
     } finally {
       await session.close();
     }
+  }
+
+  /// The prompt, with this model's "answer directly" switch appended.
+  ///
+  /// Qwen 3 reasons by default, and the settings that would turn that off are
+  /// both out of reach here. `openSession` takes `enableThinking`, but leaving
+  /// it false only means `flutter_gemma` sends *no* `enable_thinking` hint at
+  /// all — the model bundle's own template then applies, and Qwen 3's defaults
+  /// to thinking. The other lever, `/no_think`, is appended by `InferenceChat`,
+  /// which this backend deliberately bypasses.
+  ///
+  /// So it is appended here, matching what `InferenceChat` does. It works, and
+  /// is worth having for the tokens alone: measured on the 0.6B, the same
+  /// question generated 652 chunks without it and 190 with, so roughly three
+  /// quarters of what the model produced was scratch work nobody would read.
+  ///
+  /// [ReasoningFilter] still runs behind it rather than instead of it. This is
+  /// a soft switch the template honours, not a decoding constraint, and a
+  /// small model can ignore it — and whether a given `.litertlm` bundle
+  /// implements the switch at all is a property of the bundle. The filter is
+  /// what makes the reader's experience independent of both.
+  String _withNoThinkSwitch(String text) =>
+      choice.modelType == ModelType.qwen3 ? '$text /no_think' : text;
+
+  /// [chunks], printed verbatim when [logRawOutput] is set. Identity otherwise.
+  Stream<String> _traced(Stream<String> chunks) {
+    if (!logRawOutput || !kDebugMode) return chunks;
+    debugPrint('[local_model] raw stream begins (${choice.id})');
+    return chunks.map((chunk) {
+      debugPrint('[local_model] raw chunk: ${jsonEncode(chunk)}');
+      return chunk;
+    });
   }
 
   @override
