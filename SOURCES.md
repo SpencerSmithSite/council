@@ -645,10 +645,36 @@ coverage.
 
 ### 10. Oriental Orthodox, Assyrian, and the rest
 
-`oriental-orthodox` is defined and empty. Coptic, Ethiopian, Syriac and
-Armenian material in English translation is thin, scattered, and often modern.
-Realistically this needs a dedicated search rather than a line in a plan, and
-should be scoped honestly before being promised.
+**The Church of the East branch is open as of 2026-08-30**, and not by the route
+this section expected. It had been queued against archive.org scans, needing the
+two-witness method; English Wikisource turned out to hold **Badger's *The
+Nestorians and their Rituals*, volume II** fully transcribed and `PD-old`, so it
+went in as proofread text. What it is — an Anglican chaplain's examination of
+the church's doctrine, arranged against the Thirty-Nine Articles and built out
+of long quotations from that church's own service books — is recorded on the
+source and in the pack description rather than left for a reader to discover.
+
+Two things this branch still wants, both blocked on text and not on rights:
+
+- **Abdisho bar Berika, *The Marganitha*** (Book of the Pearl) — the church's
+  own doctrinal manual. Wikisource's page is 1,028 characters of stub; no full
+  transcription has been found.
+- **Nestorius, *The Bazaar of Heracleides*** (Driver & Hodgson, 1925) — scans
+  and raw OCR only, with no clean transcription to corroborate against, so the
+  two-witness method has only one witness.
+
+Also worth recording, because it is invisible from the tradition counts: **the
+East Syriac liturgy is already in the app**, as *The Liturgy of the Blessed
+Apostles* in the Ante-Nicene Fathers, filed under Early Church. It was not
+re-filed to this branch, and the reason is structural rather than editorial —
+see the phase note in `PLAN.md`: moving a source between traditions moves it
+between fragments, and fragments are only disjoint within a single build, so a
+reader holding the old fragment would collide on install.
+
+`oriental-orthodox` is still one work. Coptic, Ethiopian, Syriac and Armenian
+material in English translation is thin, scattered, and often modern. The
+located exception is the **Kebra Nagast** (Budge, 1922) — see the copyright
+audit above.
 
 ## Immediate next steps
 
