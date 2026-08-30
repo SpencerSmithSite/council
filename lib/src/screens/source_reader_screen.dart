@@ -260,6 +260,25 @@ class _ContentsSheetState extends State<_ContentsSheet> {
   /// is the same list with headings in it.
   static const double _usefulRatio = 0.5;
 
+  /// Whether this work is shown as books-with-chapter-chips or as a flat list.
+  ///
+  /// Decided once, from the *whole* work, rather than per keystroke from
+  /// whatever the filter currently matches. Measuring the filtered set made the
+  /// presentation depend on the query: "prove" matches Proverbs' 31 chapters and
+  /// grouped, while "Corinth" matches 29 and fell back to a flat list — so the
+  /// same Bible changed shape depending on which book you went looking for.
+  /// Whether a work *has* books is a fact about the work, not about the search.
+  late final bool _groups = _shouldGroup();
+
+  bool _shouldGroup() {
+    final stems = <String>{};
+    for (final section in widget.sections) {
+      stems.add(_stemOf(section['title'] as String? ?? ''));
+    }
+    return widget.sections.length > 30 &&
+        stems.length <= widget.sections.length * _usefulRatio;
+  }
+
   @override
   void dispose() {
     _filter.dispose();
@@ -281,13 +300,6 @@ class _ContentsSheetState extends State<_ContentsSheet> {
         matches.add(i);
       }
     }
-
-    final stems = <String>{};
-    for (final i in matches) {
-      stems.add(_stemOf(widget.sections[i]['title'] as String? ?? ''));
-    }
-    final grouped = matches.length > 30 &&
-        stems.length <= matches.length * _usefulRatio;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -320,7 +332,7 @@ class _ContentsSheetState extends State<_ContentsSheet> {
           Expanded(
             child: matches.isEmpty
                 ? const Center(child: Text('Nothing matches.'))
-                : grouped
+                : _groups
                     ? _grouped(controller, matches)
                     : _flat(controller, matches),
           ),
@@ -365,15 +377,23 @@ class _ContentsSheetState extends State<_ContentsSheet> {
       itemBuilder: (context, position) {
         final stem = order[position];
         final members = byStem[stem]!;
-        final holdsCurrent = members.contains(widget.current);
+        // Opened when it holds where the reader is, so the sheet lands on their
+        // place rather than at the top of the book — and when the filter has
+        // narrowed to a single book, since naming a book is itself a request to
+        // see inside it.
+        final expanded = members.contains(widget.current) || order.length == 1;
 
         return ExpansionTile(
+          // Keyed by book, not by row: without this the tile at a given position
+          // keeps its open/closed state as the filter changes the book standing
+          // there, so opening Genesis and then searching left some unrelated
+          // book hanging open. The expansion intent is in the key too, so a
+          // group that becomes the only match reopens rather than staying shut.
+          key: ValueKey('$stem/$expanded'),
           title: Text(stem),
           subtitle: Text('${members.length} sections',
               style: Theme.of(context).textTheme.labelSmall),
-          // Opened when it holds where the reader is, so the sheet lands on
-          // their place rather than at the top of the book.
-          initiallyExpanded: holdsCurrent,
+          initiallyExpanded: expanded,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
