@@ -2,8 +2,6 @@
 
 An offline-first Flutter app for Christian theology research. Browse a curated library of primary sources, search with full-text search, and ask theological questions with AI-powered answers grounded in the texts — all running locally on your device.
 
-![Council home screen](screenshots/home.png)
-
 ## What it does
 
 Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **687 works and 460 million characters**.
@@ -20,7 +18,8 @@ First download — **Creeds & Confessions**, 8.9 MB:
 - Lutheran, Reformed, Catholic, Anglican, Baptist, Methodist and Eastern
   Orthodox standards
 
-Downloadable from **Settings → Library**:
+Downloadable from the **Browse** tab, or from Settings → Library → Manage
+content:
 
 | Collection | Works | Download |
 |---|---|---|
@@ -55,28 +54,37 @@ The full library spans:
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
 - Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, and more)
 
-Not covered, and deliberately not faked: Pentecostal and Oriental Orthodox,
-whose defining documents are 20th-century and in copyright. See `SOURCES.md`.
-- Modern theology (Barth, C.S. Lewis, Schaeffer, Tozer, Packer, Sproul)
-- Biblical texts (Sermon on the Mount, Gospel of John, Hebrews, James, the Parables)
+It stops where the public domain does. Modern theology is not here — no Barth,
+Lewis, Packer or Sproul — and neither are Pentecostal and Oriental Orthodox,
+whose defining documents are 20th-century and in copyright. Nothing is
+generated to fill those gaps; `tools/prune_bylined_sources.py` exists because
+some of it once was, and was removed. See `SOURCES.md`.
 
-The **Chat** screen uses RAG (retrieval-augmented generation): your question is matched against the library by full-text search *and* semantic search over on-device embeddings, the results are fused, and the passages are passed to whichever model you have configured — or shown on their own, if you would rather not use AI at all.
+The **Ask** tab uses RAG (retrieval-augmented generation): your question is matched against the library by full-text search *and* semantic search over on-device embeddings, the results are fused, and the passages are passed to whichever model you have configured — or shown on their own, if you would rather not use AI at all.
 
 ## Running the app
 
-**Prerequisites:**
-- [Flutter](https://flutter.dev/docs/get-started/install) (3.x+)
-- [Ollama](https://ollama.com/) running locally with at least one model pulled (default: `llama3.2`)
+All you need is [Flutter](https://flutter.dev/docs/get-started/install) (3.x+):
 
 ```bash
-# Pull a model if you haven't already
-ollama pull llama3.2
-
-# Run the app
-flutter run -d macos
+flutter run -d macos    # or ios, android, linux, windows
 ```
 
-The app connects to Ollama at `http://localhost:11434` and uses the first model Ollama reports. Making the host and model configurable is tracked in [PLAN.md](PLAN.md).
+Nothing else is required to read. The King James Version is bundled, search is
+local, and the app works offline with no AI configured at all.
+
+Answers need a backend, chosen during onboarding or later from Settings → AI.
+A reader who has chosen nothing starts on whichever of the first two the device
+can offer:
+
+- **This device's built-in AI** — Apple Intelligence, on an iPhone or Mac that
+  has it. Nothing to install, no account, no key.
+- **A downloaded local model** — one download, then it runs on-device. You pick
+  the size; a 32-bit phone is not offered one, because it cannot run it.
+- **[Ollama](https://ollama.com/)** — a model on this machine or one reached
+  over your network. Host and model are both configurable.
+- **Your own API key** — Claude, ChatGPT, Gemini or Grok, billed to your own
+  account. The only option that sends a question off the device.
 
 ## Tech stack
 
@@ -85,8 +93,8 @@ The app connects to Ollama at `http://localhost:11434` and uses the first model 
 | UI framework | Flutter (Dart) — Material 3 |
 | Database | SQLite via `sqflite`, bundled as an asset |
 | Full-text search | SQLite FTS5 |
-| AI inference | [Ollama](https://ollama.com/) (local, streaming) |
-| RAG retrieval | FTS5 + tag-based hybrid search |
+| AI inference | Apple Foundation Models, on-device weights via `flutter_gemma`, [Ollama](https://ollama.com/), or a cloud API key |
+| RAG retrieval | FTS5 fused with semantic search over on-device embeddings |
 | State management | `provider` |
 | Persistence | `shared_preferences` (bookmarks, reading position, settings) |
 | Markdown rendering | `flutter_markdown` |
