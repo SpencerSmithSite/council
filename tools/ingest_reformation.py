@@ -49,6 +49,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -188,9 +189,23 @@ FIELD_LINE = re.compile(r"^\s*([A-Z][A-Za-z()/ .]*?):\s*(.*)$")
 
 # --- rights ------------------------------------------------------------------
 
-# US public domain. Everything published before this year is free; almost
-# nothing after it is. Same cutoff SOURCES.md states for the corpus at large.
-PD_CUTOFF = 1929
+# US public domain: published works enter it 95 years after publication, on the
+# 1st of January. Derived rather than written down, because a hard-coded year is
+# wrong every January and nothing reminds you. It had been 1929, set when that
+# was right; by 2026 the true line was 1931 and two years of publishing had been
+# refused for no reason at all.
+#
+# Reproducibility is the objection, and it is the wrong way round here: a work
+# refused in 2025 and admitted in 2027 is not the tool being inconsistent, it is
+# the copyright expiring. Every source records the rights statement it was
+# admitted under, so a decision can always be read back.
+#
+# The test below compares this against a *death* year as well as a publication
+# year, which is deliberately conservative: an author who died the year before
+# the line cannot have published after it, while one who died after it may have
+# published either side. That conservatism is the point — this fallback only
+# runs when the archive has stated nothing.
+PD_CUTOFF = date.today().year - 95
 
 # Authors who wrote in English. For these, the author's own death date settles
 # the question: there is no translator whose separate copyright could still be
