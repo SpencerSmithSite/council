@@ -4003,3 +4003,118 @@ anywhere. Renewal is checkable per title in the Stanford Copyright Renewal
 Database, which is behind a bot challenge and cannot be scripted from here.
 It is a manual lookup, and nothing may be claimed on this basis until someone
 does it.
+
+## A Wikisource ingester, and what it brought (2026-08-30)
+
+The tool `TODO.md` item 6b had been asking for. It was the right next thing for a
+reason that has nothing to do with any one document: five works were already
+*located* and waiting behind a fetch nobody had written, so the leverage was in
+the fetcher rather than in another search.
+
+What it landed: **Vatican I and thirty Leonine encyclicals** into a Catholic
+tradition that held Aquinas, Trent and à Kempis and no papal magisterium at all,
+and **the Dordrecht Confession and the complete works of Menno Simons** into an
+Anabaptist tradition that was the *Martyrs Mirror* and nothing else — a
+martyrology with no confession and no systematics, as its own pack description
+had to keep admitting. 40 works, 525 units, 2.04 M characters.
+
+### Wikisource states a work's licence once, on the work
+
+`SOURCES.md` already recorded that Wikisource states its terms per page and that
+the terms differ per page. What it did not record is where: **a multi-page work
+carries its licence template on the root page, and every chapter under it
+carries none.** The first implementation asked each chapter and got "no
+public-domain category" for 44 of 46 pages — the two exceptions being the two
+single-page works. Reading the chapter would have refused every multi-page work
+in the archive.
+
+The rights gate is a category match rather than a guess, and the category is
+recorded verbatim on each source, so a reader can see which claim admitted the
+work — `PD-old`, `PD-anon-US`, `PD-US`.
+
+### Three parsing defects, and the same lesson under each
+
+* **Headings were being dropped.** The first version read only `<p>` elements,
+  and the Dordrecht Confession states each of its eighteen articles as an
+  `<h2>`. It arrived as five untitled runs of prose — a confession with no
+  articles. Reading the headings gives nineteen units, each named. The rule the
+  corpus already had is *cut where the document says its sections begin*, and
+  this was throwing away the document saying so.
+* **`<style>` blocks live inside the content and read as text.** Strip tags
+  naively and every document ends with `.wst-smallrefs{font-size:83%...}` as a
+  closing paragraph. Elements are removed before tags are.
+* **The scans' line wrapping survived inside paragraphs** — 9,689 breaks — so
+  units would have wrapped where a Victorian compositor wrapped. Collapsed;
+  paragraph boundaries survive because they are `<p>` elements, not newlines.
+
+### The size floor was the gate making the error it exists to prevent
+
+`MIN_PAGE_CHARS` was set to 2,000 to catch the failure this tool was written
+for: Wikimedia answers a throttled request with HTML, and HTML parses as *a page
+with no text* rather than as an error. At 2,000 it refused six of the Vatican
+decrees' fourteen chapters, which are 900–1,900 characters because **a conciliar
+chapter is short**. The gate was mistaking a brief document for a failed fetch,
+which is its own failure mode pointed backwards.
+
+It is now 200, and throttling is caught where it actually shows: `json.loads`
+raises on an HTML body, so `api` retries and returns None. Catch the failure at
+the point where it is unambiguous, not by a proxy that a legitimate document can
+trip.
+
+### The documents were asked what they are called
+
+The Benziger collection titles the encyclicals in English — "The Condition of
+the Working Classes" — and nobody searches for that. Each opens with its own
+dateline, "Encyclical Letter Rerum Novarum, May 15, 1891", so the Latin incipit
+and the year are parsed out of the text rather than typed in: *Rerum Novarum*,
+*Æterni Patris*, *Immortale Dei*, *Providentissimus Deus*, *Satis Cognitum*,
+*Apostolicæ Curæ*. Twenty-two of the thirty carry a date the record would
+otherwise not have had.
+
+The Vatican decrees needed the reverse fix. They set a chapter's number and its
+subject as separate lines, and only the number reads as a heading, so twelve
+chapters arrived titled "I", "II", "III", "IV" across three constitutions —
+twelve units with four names between them. A unit titled only by a numeral now
+takes the short line printed under it, which is how
+"IV. Concerning the Infallible Teaching of the Roman Pontiff" gets its name.
+
+### Transcription quality was measured, and the first measurement was wrong
+
+These are transcriptions of scans, and this corpus refuses raw OCR:
+`ingest_gutenberg.py` records archive.org's OCR of this material at about one
+error per hundred characters. So the question had to be answered with a number.
+
+**The first attempt at a number was useless and worth recording as such.**
+Counting words absent from `/usr/share/dict/words` gave 483–586 per 10,000 for
+the new material — and 568 for Calvin's *Institutes*, 724 for *The Great
+Controversy*, and **923 for the Westminster Confession**, all of which are
+already in the corpus. The dictionary has no inflections, so "called", "having"
+and "duties" all count as misses and the measure cannot tell a scanning error
+from an ordinary English word. What it does say, and this is worth keeping, is
+that **the new texts score no worse than what the corpus already ships.**
+
+The measure that discriminates is narrower: the residue of two specific scanner
+failures visible in this material — the "li" ligature read as "h" (*hght* for
+light, *pubhc* for public) and "it"/"th" read as "d" (*wdth* for with). Both
+produce non-words, so a hit is a hit. Measured: **Leo XIII 4.3 per 10,000 words,
+Menno Simons 0.1, Dordrecht and the Vatican decrees 0.0** — against roughly 580
+for the raw OCR this project already refused.
+
+It is a floor rather than the true rate, and the code says so: a scanner that
+turns "modern" into "modem" produces a real word this will never see. It is
+still the right thing to gate on, because it can be checked rather than
+asserted. Every source carries its own measurement in `notes`, so a reader who
+finds a mangled word can see that the transcription was checked and how far.
+
+### Taking the whole collection rather than the famous parts
+
+Twenty-two of Leo XIII's thirty subpages are the encyclicals anyone would name.
+The rest are occasional letters — on the Philippines, on Columbus, to the
+American hierarchy. All thirty are taken, because curating the others out would
+be an editorial judgement about what Leo XIII "really" wrote, and the collection
+is the thing that was published. The work ids came off Wikisource's own index,
+which is the same rule `survey_ccel.py` exists to enforce.
+
+Two pages were dropped and both for stated reasons: "The Education of Children"
+renders as twelve characters — the page exists and the transcription does not —
+and the earlier list carried "The Christian Constitution of States" twice.

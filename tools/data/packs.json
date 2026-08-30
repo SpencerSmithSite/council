@@ -240,6 +240,12 @@
       ]
     },
     {
+      "id": "f-leo-xiii",
+      "authors": [
+        "Pope Leo XIII"
+      ]
+    },
+    {
       "id": "f-catholic",
       "traditions": [
         "catholic"
@@ -509,12 +515,22 @@
       ]
     },
     {
+      "id": "author-leo-xiii",
+      "kind": "author",
+      "name": "Leo XIII",
+      "description": "All thirty encyclicals and letters of the Benziger collection: Rerum Novarum on labour and capital, Aeterni Patris on the study of Aquinas, Providentissimus Deus on scripture, Satis Cognitum on the unity of the Church, Immortale Dei on the Christian constitution of states, and the occasional letters with them.",
+      "fragments": [
+        "f-leo-xiii"
+      ]
+    },
+    {
       "id": "tradition-catholic",
       "kind": "tradition",
       "name": "Catholic",
-      "description": "The Council of Trent and the Catholic sources in the library, together with the Latin fathers the tradition rests on.",
+      "description": "Trent's canons and decrees and the First Vatican Council's dogmatic constitutions \u2014 Dei Filius and Pastor Aeternus, including the definition of papal infallibility \u2014 with all thirty of Leo XIII's encyclicals and letters: Rerum Novarum on labour and capital, Aeterni Patris on Aquinas, Providentissimus Deus on scripture, Satis Cognitum on the unity of the Church. Aquinas's complete Summa and the Latin fathers the tradition rests on come with it. Vatican II and the Catechism are in copyright and are not here.",
       "fragments": [
         "f-catholic",
+        "f-leo-xiii",
         "f-aquinas",
         "f-augustine",
         "f-ambrose",
@@ -601,7 +617,7 @@
       "id": "tradition-anabaptist",
       "kind": "tradition",
       "name": "Anabaptist",
-      "description": "The Martyrs Mirror \u2014 after the Bible, the book Mennonite households actually held. Martyrology rather than systematics: the Dordrecht Confession and the complete works of Menno Simons were located on Wikisource in August 2026 and are not ingested yet; the Schleitheim Confession has no public-domain transcription anywhere that has been found.",
+      "description": "The Dordrecht Confession of 1632, article by article, and the complete works of Menno Simons \u2014 The True Christian Faith, the Reply to Gellius Faber, the Conversion, and the epistles \u2014 with van Braght's Martyrs Mirror, which after the Bible is the book Mennonite households actually held. The Schleitheim Confession is the one gap: no public-domain English transcription of it has been found.",
       "fragments": [
         "f-anabaptist"
       ]

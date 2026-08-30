@@ -628,9 +628,17 @@ coverage.
   replies — and not a chapter list. That check matters here specifically,
   because two sources already in the corpus turned out to hold New Advent index
   pages rather than text.
-- **Council of Trent** — already ingested. **Vatican I** — public domain, and
-  as of 2026-08-30 located rather than merely assumed: English Wikisource
-  carries *The Decrees of the Vatican Council* and *Petri Privilegium*.
+- **Council of Trent** — already ingested. **Vatican I** — **ingested
+  2026-08-30** from English Wikisource, `ingest_wikisource.py`: the dogmatic
+  constitutions *Dei Filius* and *Pastor Aeternus* as their prologues and
+  chapters, the definition of papal infallibility among them. *Petri
+  Privilegium* — Manning's three pastoral letters on the council — is on the
+  same archive and was not taken: it is a book about the council rather than
+  the council's acts.
+- **Leo XIII, thirty encyclicals and letters** — ingested the same day, from
+  the Benziger collection of 1903. The Catholic tradition had held Aquinas,
+  Trent and à Kempis and no papal magisterium whatever. The Latin incipits and
+  the dates were parsed out of each document's own dateline rather than typed.
 - **Vatican II and the Catechism** — © Libreria Editrice Vaticana, **not
   shippable**. This is the gap that cannot be closed by finding a better
   archive.

@@ -12,9 +12,9 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-30 · 669 sources, 105,677 units, 482.5 M characters ·
-456,396 chunks and 456,396 vectors · 7 branches and 31 traditions, 15 of them
-holding text · 47 fragments, 300.6 MB published · all three audits clean except
+*Last verified: 2026-08-30 · 709 sources, 106,202 units, 484.6 M characters ·
+458,350 chunks and 458,350 vectors · 7 branches and 31 traditions, 15 of them
+holding text · 48 fragments, 301.9 MB published · all three audits clean except
 the three noted at the bottom.*
 
 *Two version numbers, and they are not the same one. `CORPUS_VERSION` is
@@ -189,7 +189,13 @@ is listed under *Wanted, with no clean text anywhere* above.
 - **Ecumenical councils** — the acts themselves: creeds, canons and synodal
   letters for all seven ecumenical councils and eleven local synods.
 - **Catholic** — the Summa Theologiae, complete; Trent's canons and decrees;
-  à Kempis, *The Imitation of Christ*.
+  à Kempis, *The Imitation of Christ*. Then, from 2026-08-30, the magisterium
+  the tradition had none of: the **First Vatican Council's** dogmatic
+  constitutions *Dei Filius* and *Pastor Aeternus*, including the definition of
+  papal infallibility, and all thirty of **Leo XIII's** encyclicals and letters
+  — *Rerum Novarum*, *Æterni Patris*, *Providentissimus Deus*, *Satis
+  Cognitum*, *Immortale Dei*. `ingest_wikisource.py`. Vatican II and the
+  Catechism are © Libreria Editrice Vaticana and are the gap no archive closes.
 - **Reformed** — Westminster Confession, Shorter and Larger Catechisms, Belgic,
   Heidelberg, Canons of Dordt, Scots Confession. Then, from 2026-07-26:
   Calvin's *Institutes* and 45 volumes of his commentaries; Matthew Henry's
@@ -217,9 +223,12 @@ is listed under *Wanted, with no clean text anywhere* above.
 - **Quaker** — Barclay's *Apology* in its fifteen propositions, both volumes of
   Fox's *Journal*, Penn's *No Cross, No Crown*, Woolman's *Journal*, and Sewel's
   *History*. Added 2026-08-02, corpus v17.
-- **Anabaptist** — van Braght's *Martyrs Mirror*, 526 accounts, and **only**
-  that: see *Wanted, with no clean text anywhere*. Martyrology, not systematics,
-  and the collection description says so.
+- **Anabaptist** — the **Dordrecht Confession of 1632**, article by article,
+  and the **complete works of Menno Simons** — *The True Christian Faith*, the
+  *Reply to Gellius Faber*, the *Conversion*, the epistles — added 2026-08-30
+  from Wikisource, with van Braght's *Martyrs Mirror* and its 526 accounts. The
+  tradition had been a martyrology with no confession and no systematics; it now
+  has both. Schleitheim is the one gap left.
 - **Adventist** — Ellen G. White: four of the five Conflict of the Ages volumes
   (*The Story of Prophets and Kings*, *The Desire of Ages*, *The Acts of the
   Apostles*, *The Great Controversy*) and *Steps to Christ*. 968 units, 5.0 M
@@ -554,14 +563,15 @@ and in `~/Documents/council research/research/acquisition-roadmap.md`.
 6a. [ ] **Wesley's Notes on the New Testament** — CCEL, public domain, and the
        cheapest correction available: it is the only item on this list that a
        shipped pack description had already promised.
-6b. [ ] **A Wikisource ingester.** Three of this corpus's longest-standing gaps
-       were closed by one archive it had never queried, and four more documents
-       are sitting there behind the same fetch. The API is stable and returns
-       proofread text, but it rate-limits hard — 3 s between calls and a
-       descriptive User-Agent, or it returns HTML errors that parse as empty
-       rather than as failures. That failure mode is the reason to write a tool
-       rather than fetch by hand: a silently-empty page looks exactly like a
-       page with no text.
+6b. [x] **A Wikisource ingester** — done 2026-08-30, `ingest_wikisource.py`,
+       and it brought Vatican I, thirty Leonine encyclicals, the Dordrecht
+       Confession and the complete Menno Simons with it. Two things it learned
+       that the next archive tool should not have to relearn: a multi-page work
+       states its licence **once, on the root page**, so asking the chapter
+       returns "no licence" for 44 pages in 46; and a size floor meant to catch
+       throttled responses will refuse short real documents — it threw out six
+       of the Vatican decrees' fourteen chapters before it was lowered.
+       Throttling is caught precisely by `json.loads` failing on an HTML body.
 6c. [x] **Decide the missing tradition rows** — done 2026-08-30 with the
        taxonomy, and spent the same day: Adventist and Holiness are ingested.
 6d. [ ] **Brethren, Moravian and Hussite — surveyed, and thin.** CCEL author
@@ -630,6 +640,12 @@ each needs either a proofread transcription or the two-witness route
       `christiansystem010camp`) — recorded above as "not found" after Gutenberg
       and Wikisource; it is on archive.org. *The Christian Baptist* 1823–30
       (`the-christian-baptist-1823-1830`) with it.
+**Three of these landed the same day.** Vatican I, the Dordrecht Confession and
+the complete works of Menno Simons were all reachable through Wikisource rather
+than through a scan, so they went in as text rather than waiting for the
+two-witness route — see *Have*. What remains below is the archive.org material,
+which still needs a proofread transcription or corroboration against a printing.
+
 - [ ] **Moravian / Waldensian / Hussite.** Hus, *De Ecclesia* (D. S. Schaff,
       1915, `deecclesiachurch00husj`), and Morland's *History of the Evangelical
       Churches of the Valleys of Piemont* (1658, `historyofevangel00morl`),
