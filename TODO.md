@@ -334,10 +334,10 @@ rendered English text.
 
 | found | where | size | what it closes |
 |---|---|---|---|
-| **Dordrecht Confession of Faith** (1632) | Wikisource, *Dordrecht Confession of Faith* | 29,459 ch | The Mennonite confession. Anabaptist currently ships the *Martyrs Mirror* alone |
-| **Menno Simons**, 9 works | Wikisource, *The Complete Works of Menno Simons/* | 1,042,206 ch | Anabaptist systematics, absent entirely. Includes *The True Christian Faith* (147 K) and the *Reply to Gellius Faber* (445 K) |
-| **Declaration and Address of the Christian Association of Washington** (Thomas Campbell, 1809) | Wikisource | — | The founding document of the Restoration Movement, a tradition with no row in the database |
-| **The Decrees of the Vatican Council**; *Petri Privilegium* | Wikisource | — | Vatican I in English, named in `SOURCES.md` §9 as public domain and never fetched |
+| ~~**Dordrecht Confession of Faith** (1632)~~ **ingested 2026-08-30** | Wikisource | 29,459 ch | The Mennonite confession. 19 units, article by article |
+| ~~**Menno Simons**, 9 works~~ **ingested 2026-08-30**, 8 of the 9 | Wikisource, *The Complete Works of Menno Simons/* | 1,042,206 ch | Anabaptist systematics, which the tradition had none of. *The Education of Children* renders as twelve characters and was left out |
+| **Declaration and Address of the Christian Association of Washington** (Thomas Campbell, 1809) | Wikisource | 160,942 ch | The founding document of the Restoration Movement. The tradition row now exists; the document is still not ingested — it is tagged *not backed by a scanned copy* and carries no headings at all |
+| ~~**The Decrees of the Vatican Council**~~ **ingested 2026-08-30** | Wikisource | 41,000 ch | Vatican I in English. *Petri Privilegium* was **not** taken: Manning's pastorals are a book about the council, not its acts |
 | **The Apocrypha and Pseudepigrapha of the Old Testament** (R. H. Charles, 1913), Vol. II | Wikisource | — | The route to the **Book of Jubilees** — Tewahedo canon, and the pairing 1 Enoch has been missing |
 | **Wesley's Notes on the Whole Bible** | CCEL `wesley/notes`, `Rights: Public Domain` | — | The other half of Methodism's doctrinal standard. The Methodist pack's description claimed it while the corpus did not hold it; the description was corrected 2026-08-30 |
 | **Schaff**, *Creeds of Christendom* I, II, III | CCEL `schaff/creeds1-3`, PD, CCEL-*Proofed* | 4.47 MB (vol. III) | Vol. III ingested in part — see below. Vols I and II unexamined; II is the Greek and Latin creeds and is the likely route to more Orthodox and Catholic confessional material |
@@ -510,11 +510,12 @@ Ordered by how badly the absence distorts an answer.
 - [x] **Anabaptist, Mennonite, Quaker** — done for two of the three, 2026-08-02,
       corpus v17. Quaker is now Barclay's *Apology*, both volumes of Fox's
       *Journal*, Penn's *No Cross, No Crown*, Woolman's *Journal* and Sewel's
-      *History*; Anabaptist is van Braght's *Martyrs Mirror* and only that.
-      Schleitheim, Dordrecht and Menno Simons were all searched for and none has
-      a proofread transcription anywhere — they are recorded above under
-      *Wanted, with no clean text anywhere*, which is where the next attempt
-      should start.
+      *History*; Anabaptist was van Braght's *Martyrs Mirror* and only that.
+      **That last clause stopped being true on 2026-08-30**: the Dordrecht
+      Confession and the complete works of Menno Simons were found on
+      Wikisource and ingested, and only Schleitheim is still without a
+      proofread transcription anywhere. The claim that none of the three could
+      be found had been made after searching Gutenberg and CCEL alone.
 - [x] **Adventist** — done 2026-08-30, and from CCEL rather than the Gutenberg
       route recorded here: CCEL carries five Ellen G. White works where
       Gutenberg has two. See *Have*.
@@ -561,11 +562,12 @@ and in `~/Documents/council research/research/acquisition-roadmap.md`.
 2. [x] **John Owen from the Goold edition** — done, and the *Treasury of David*
        with it. Both were rights-or-text refusals with a route in, and the route
        worked. `ingest_owen.py`, `ingest_treasury.py`.
-3. [x] Anabaptist and Quaker — done 2026-08-02, corpus v17, as far as it can be.
-       Barclay, Fox, Penn, Woolman and Sewel are in, and the *Martyrs Mirror*
-       with them. Schleitheim, Dordrecht and Menno Simons turned out not to be a
-       copyright problem but a transcription one, and moved to *Wanted, with no
-       clean text anywhere* rather than being finished here.
+3. [x] Anabaptist and Quaker — done 2026-08-02, corpus v17, and finished on
+       2026-08-30. Barclay, Fox, Penn, Woolman and Sewel are in with the
+       *Martyrs Mirror*, and the Dordrecht Confession and complete Menno Simons
+       joined them from Wikisource. "As far as it can be" was written when
+       Gutenberg and CCEL were the only archives searched; Schleitheim alone
+       remains unfound.
 4. [ ] The Scottish Prayer Book (1912) — cached, public domain, and the nearest
        thing to a liturgy this corpus can currently reach. Needs gates that
        separate the services from the lectionary tables.
@@ -617,9 +619,10 @@ Found 2026-08-30, fixed the same day. Running it after the Adventist and
 Holiness ingest tagged **57,578 units that had nothing to do with that ingest**:
 the Reformation and Baptist expansions went in untagged, so Calvin, Owen,
 Spurgeon, Matthew Henry, Edwards and Gill were invisible to tag search — one of
-the three engines fused in `searchForRAG`. 88,237 of 105,677 units now carry a
-tag; the remaining 17,446 match no keyword, which is an outcome rather than an
-omission.
+the three engines fused in `searchForRAG`. 88,831 of 106,312 units now carry a
+tag; the remaining 17,481 match no keyword, which is an outcome rather than an
+omission. (The counts moved twice more the same day, with the Wikisource
+ingests; the ratio did not.)
 
 It also falsified the pack coverage notice, which measures what a reader holds
 against what exists: "what exists" was being counted over the patristic corpus
@@ -781,7 +784,7 @@ python3 tools/build_packs.py --write
 ```
 
 Two of those lines carry a warning rather than a preference. **`--incremental`
-on the embeddings**, without which the table is truncated and all 456,396
+on the embeddings**, without which the table is truncated and all 458,717
 vectors are recomputed — 136 minutes, and it has happened. **`.venv/bin/python`
 for that one command**, because `onnxruntime` is not in the system interpreter
 and the failure is a `ModuleNotFoundError` after the chunk build has already

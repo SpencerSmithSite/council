@@ -4204,3 +4204,34 @@ that inspects the title has to run before anything else edits the title.
 The same pass drops a heading left dangling on a function word — the
 heading-chaining had glued a title page into `THE NESTORIANS — AND`, which is
 not a section name. Where that happens the page label stands alone.
+
+### A documentation audit, because four ingests in one day outrun the prose
+
+Run after the Church of the East landed, against the database rather than by
+reading. The counts in `TODO.md`'s header and `README.md`'s collection table
+were correct — every one of the sixteen table rows matched the manifest — and
+the errors were all of one kind: **claims written in the present tense that
+were true when written and were overtaken by a later ingest the same day.**
+
+* The *Found by survey* table still described the Dordrecht Confession, Menno
+  Simons and the Vatican decrees as located-but-not-ingested, hours after all
+  three went in.
+* Two entries still said Schleitheim, Dordrecht and Menno Simons had no
+  proofread transcription anywhere. That had been written after searching
+  Gutenberg and CCEL alone, and two of the three were on Wikisource.
+* Three section headings in `SOURCES.md` stated past conditions as present
+  facts — "Baptist — a defined tradition with nothing in it", when Baptist is
+  82 sources and the second-largest tradition in the corpus; "Eastern
+  Orthodox — 0.004 M characters", when it is 0.575 M.
+* Two live figures had been overtaken: the tag-coverage ratio and the vector
+  count in the publishing checklist's `--incremental` warning.
+
+**Dated phase notes were deliberately left alone.** The ones in this file say
+653 sources, 47 fragments, 456,396 chunks, and they should: a phase note is a
+record of a build, and rewriting its numbers to match today would destroy the
+only account of what each change actually cost.
+
+The distinction is the thing worth keeping. **A history keeps its numbers; a
+ledger has to be re-checked against the database.** `TODO.md` and the priority
+plan in `SOURCES.md` are ledgers and were audited against `theology.db`;
+`PLAN.md` is a history and was not touched.
