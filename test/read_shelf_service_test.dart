@@ -29,7 +29,7 @@ void main() {
 
   test('opening a section is arranging', () async {
     await shelf.applyDefaultCollapse({'Catholic', 'Reformed'});
-    await shelf.toggleCollapsed('Catholic');
+    await shelf.setCollapsed({'Reformed'});
 
     expect(await shelf.collapsed(), {'Reformed'});
     expect(await shelf.hasArrangedSections(), isTrue);
@@ -44,13 +44,16 @@ void main() {
   });
 
   test('pinning and starring are independent of each other', () async {
-    await shelf.togglePinned(970);
-    await shelf.toggleStarred(41);
+    await shelf.setPinned({970});
+    await shelf.setStarred({41});
 
     expect(await shelf.pinned(), {970});
     expect(await shelf.starred(), {41});
 
-    expect(await shelf.togglePinned(970), isEmpty);
+    // Unpinning the only pinned work leaves the starred set untouched: they
+    // are separate keys, not two flags on one record.
+    await shelf.setPinned({});
+    expect(await shelf.pinned(), isEmpty);
     expect(await shelf.starred(), {41});
   });
 }

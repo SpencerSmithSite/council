@@ -15,6 +15,7 @@ import 'src/services/packs/pack_catalogue.dart';
 import 'src/services/packs/pack_provider.dart';
 import 'src/services/packs/pack_service.dart';
 import 'src/services/updates/update_provider.dart';
+import 'src/screens/bookmarks_screen.dart';
 import 'src/screens/chat_history_screen.dart';
 import 'src/screens/chat_screen.dart';
 import 'src/screens/notes_screen.dart';
@@ -353,6 +354,13 @@ class _MainScreenState extends State<MainScreen> {
           setState(() => _area = area);
           Navigator.pop(context);
         },
+        onOpenBookmarks: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BookmarksScreen()),
+          );
+        },
         onOpenNotes: () {
           Navigator.pop(context);
           Navigator.push(
@@ -424,19 +432,28 @@ class _MainScreenState extends State<MainScreen> {
 /// The navigation sidebar: the three primary areas, then the reader's own
 /// material below a rule.
 ///
-/// Notes and Chat history are deliberately *not* areas. An area is a place the
-/// app can sit in; these two are lists you go into, take something out of, and
-/// come back from — Notes opens an editor, and picking a conversation puts it
-/// in the Ask tab rather than becoming a fourth destination of its own.
+/// Bookmarks, Notes and Chat history are deliberately *not* areas. An area is a
+/// place the app can sit in; these three are lists you go into, take something
+/// out of, and come back from — a bookmark opens the passage it marks, Notes
+/// opens an editor, and picking a conversation puts it in the Ask tab rather
+/// than becoming a fourth destination of its own.
+///
+/// Bookmarks sits with them rather than in the Read tab's header, where it used
+/// to live. Read is a shelf of *works*; a bookmark points at a passage inside
+/// one. Putting the list of saved passages behind a button on the shelf made it
+/// look like a way to filter the shelf, which it never was — that button is now
+/// the starred-works filter, which is what readers were reaching for.
 class _NavigationDrawer extends StatelessWidget {
   final _Area current;
   final ValueChanged<_Area> onSelect;
+  final VoidCallback onOpenBookmarks;
   final VoidCallback onOpenNotes;
   final VoidCallback onOpenHistory;
 
   const _NavigationDrawer({
     required this.current,
     required this.onSelect,
+    required this.onOpenBookmarks,
     required this.onOpenNotes,
     required this.onOpenHistory,
   });
@@ -473,6 +490,12 @@ class _NavigationDrawer extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 12, 20, 8),
               child: Divider(height: 1),
+            ),
+            _DrawerRow(
+              icon: AppIcons.bookmark,
+              title: 'Bookmarks',
+              selected: false,
+              onTap: onOpenBookmarks,
             ),
             _DrawerRow(
               icon: AppIcons.notes,
