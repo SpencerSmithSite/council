@@ -1,3869 +1,5358 @@
 {
- "maxUnitId": 178840,
+ "format": 2,
+ "maxUnitId": 181153,
  "sources": {
-  "https://www.newadvent.org/fathers/0622.htm": {
+  "553": {
+   "url": "https://www.newadvent.org/fathers/0622.htm",
+   "title": "Epistles on the Arian Heresy and the Deposition of Arius",
    "min": 4934,
    "max": 4939,
    "count": 6,
    "hash": "9054acc2cf7de394"
   },
-  "https://www.newadvent.org/fathers/0618.htm": {
+  "554": {
+   "url": "https://www.newadvent.org/fathers/0618.htm",
+   "title": "Of the Manicheans",
    "min": 4940,
    "max": 4965,
    "count": 26,
    "hash": "5b2d6b6325eeb7a5"
   },
-  "https://www.newadvent.org/fathers/3404.htm": {
+  "555": {
+   "url": "https://www.newadvent.org/fathers/3404.htm",
+   "title": "On the Christian Faith (De fide)",
    "min": 4966,
    "max": 5141,
    "count": 176,
    "hash": "63dd9844d6edf89c"
   },
-  "https://www.newadvent.org/fathers/3402.htm": {
+  "556": {
+   "url": "https://www.newadvent.org/fathers/3402.htm",
+   "title": "On the Holy Spirit",
    "min": 5142,
    "max": 5195,
    "count": 54,
    "hash": "f4ec58a9d27cea61"
   },
-  "https://www.newadvent.org/fathers/3405.htm": {
+  "557": {
+   "url": "https://www.newadvent.org/fathers/3405.htm",
+   "title": "On the Mysteries",
    "min": 5196,
    "max": 5205,
    "count": 10,
    "hash": "b010ebc10d309943"
   },
-  "https://www.newadvent.org/fathers/3401.htm": {
+  "558": {
+   "url": "https://www.newadvent.org/fathers/3401.htm",
+   "title": "On the Duties of the Clergy",
    "min": 5206,
    "max": 5307,
    "count": 102,
    "hash": "f41223d2e68b290d"
   },
-  "https://www.newadvent.org/fathers/3407.htm": {
+  "559": {
+   "url": "https://www.newadvent.org/fathers/3407.htm",
+   "title": "Concerning Virgins",
    "min": 5308,
    "max": 5333,
    "count": 26,
    "hash": "a218292c8df7bb93"
   },
-  "https://www.newadvent.org/fathers/3408.htm": {
+  "560": {
+   "url": "https://www.newadvent.org/fathers/3408.htm",
+   "title": "Concerning Widows",
    "min": 5334,
    "max": 5349,
    "count": 16,
    "hash": "6d133b8c220cfe16"
   },
-  "https://www.newadvent.org/fathers/3410.htm": {
+  "561": {
+   "url": "https://www.newadvent.org/fathers/3410.htm",
+   "title": "Memorial of Symmachus",
    "min": 5350,
    "max": 5354,
    "count": 5,
    "hash": "b3ce53c875f47367"
   },
-  "https://www.newadvent.org/fathers/3411.htm": {
+  "562": {
+   "url": "https://www.newadvent.org/fathers/3411.htm",
+   "title": "Sermon against Auxentius",
    "min": 5355,
    "max": 5365,
    "count": 11,
    "hash": "b55b7a87658f82d7"
   },
-  "https://www.newadvent.org/fathers/3409.htm": {
+  "563": {
+   "url": "https://www.newadvent.org/fathers/3409.htm",
+   "title": "Letters",
    "min": 5366,
    "max": 5454,
    "count": 89,
    "hash": "190a56aafc55e19c"
   },
-  "https://www.newadvent.org/fathers/3701.htm": {
+  "564": {
+   "url": "https://www.newadvent.org/fathers/3701.htm",
+   "title": "Demonstrations",
    "min": 5455,
    "max": 5531,
    "count": 77,
    "hash": "4941cbc089d6970a"
   },
-  "https://www.newadvent.org/fathers/0616.htm": {
+  "565": {
+   "url": "https://www.newadvent.org/fathers/0616.htm",
+   "title": "Acts of the Disputation with the Heresiarch Manes",
    "min": 5532,
    "max": 5588,
    "count": 57,
    "hash": "e90dd079a8c471b0"
   },
-  "https://www.newadvent.org/fathers/1012.htm": {
+  "566": {
+   "url": "https://www.newadvent.org/fathers/1012.htm",
+   "title": "The Apology",
    "min": 5589,
    "max": 5600,
    "count": 12,
    "hash": "0800c3280e0b2ed8"
   },
-  "https://www.newadvent.org/fathers/0631.htm": {
+  "567": {
+   "url": "https://www.newadvent.org/fathers/0631.htm",
+   "title": "Against the Heathen",
    "min": 5601,
    "max": 5769,
    "count": 169,
    "hash": "0f1e4a8ee106ae51"
   },
-  "https://www.newadvent.org/fathers/2801.htm": {
+  "568": {
+   "url": "https://www.newadvent.org/fathers/2801.htm",
+   "title": "Against the Heathen",
    "min": 5770,
    "max": 5772,
    "count": 3,
    "hash": "9d47576b0f702f2c"
   },
-  "https://www.newadvent.org/fathers/2802.htm": {
+  "569": {
+   "url": "https://www.newadvent.org/fathers/2802.htm",
+   "title": "On the Incarnation of the Word",
    "min": 5773,
    "max": 5829,
    "count": 57,
    "hash": "faeb01011252e018"
   },
-  "https://www.newadvent.org/fathers/2803.htm": {
+  "570": {
+   "url": "https://www.newadvent.org/fathers/2803.htm",
+   "title": "Deposition of Arius",
    "min": 5830,
    "max": 5833,
    "count": 4,
    "hash": "1bf43003a59df378"
   },
-  "https://www.newadvent.org/fathers/2821.htm": {
+  "571": {
+   "url": "https://www.newadvent.org/fathers/2821.htm",
+   "title": "Statement of Faith",
    "min": 5834,
    "max": 5835,
    "count": 2,
    "hash": "54de29877ddf91be"
   },
-  "https://www.newadvent.org/fathers/2805.htm": {
+  "572": {
+   "url": "https://www.newadvent.org/fathers/2805.htm",
+   "title": "On Luke 10:22 (Matthew 11:27)",
    "min": 5836,
    "max": 5840,
    "count": 5,
    "hash": "b042d65b2c7ab8d3"
   },
-  "https://www.newadvent.org/fathers/2807.htm": {
+  "573": {
+   "url": "https://www.newadvent.org/fathers/2807.htm",
+   "title": "Circular Letter",
    "min": 5841,
    "max": 5847,
    "count": 7,
    "hash": "8f2d0ec16c369dc3"
   },
-  "https://www.newadvent.org/fathers/2809.htm": {
+  "574": {
+   "url": "https://www.newadvent.org/fathers/2809.htm",
+   "title": "De Decretis",
    "min": 5848,
    "max": 5854,
    "count": 7,
    "hash": "1ad2fed42a1cf08c"
   },
-  "https://www.newadvent.org/fathers/2810.htm": {
+  "575": {
+   "url": "https://www.newadvent.org/fathers/2810.htm",
+   "title": "De Sententia Dionysii",
    "min": 5855,
    "max": 5870,
    "count": 16,
    "hash": "0feaf20b1ff63074"
   },
-  "https://www.newadvent.org/fathers/2811.htm": {
+  "576": {
+   "url": "https://www.newadvent.org/fathers/2811.htm",
+   "title": "Vita S. Antoni (Life of St. Anthony)",
    "min": 5871,
    "max": 5915,
    "count": 45,
    "hash": "a8c2677cd0cf477c"
   },
-  "https://www.newadvent.org/fathers/2812.htm": {
+  "577": {
+   "url": "https://www.newadvent.org/fathers/2812.htm",
+   "title": "Ad Episcopus Aegypti et Libyae",
    "min": 5916,
    "max": 5932,
    "count": 17,
    "hash": "f50613120d3ebec3"
   },
-  "https://www.newadvent.org/fathers/2813.htm": {
+  "578": {
+   "url": "https://www.newadvent.org/fathers/2813.htm",
+   "title": "Apologia ad Constantium",
    "min": 5933,
    "max": 5953,
    "count": 21,
    "hash": "99d60f969b1efc9f"
   },
-  "https://www.newadvent.org/fathers/2814.htm": {
+  "579": {
+   "url": "https://www.newadvent.org/fathers/2814.htm",
+   "title": "Apologia de Fuga",
    "min": 5954,
    "max": 5968,
    "count": 15,
    "hash": "91f9a801f04c760a"
   },
-  "https://www.newadvent.org/fathers/2815.htm": {
+  "580": {
+   "url": "https://www.newadvent.org/fathers/2815.htm",
+   "title": "Historia Arianorum",
    "min": 5969,
    "max": 6042,
    "count": 74,
    "hash": "8937eb4a893d80cc"
   },
-  "https://www.newadvent.org/fathers/2816.htm": {
+  "581": {
+   "url": "https://www.newadvent.org/fathers/2816.htm",
+   "title": "Four Discourses Against the Arians",
    "min": 6043,
    "max": 6080,
    "count": 38,
    "hash": "042ce6418b744b88"
   },
-  "https://www.newadvent.org/fathers/2817.htm": {
+  "582": {
+   "url": "https://www.newadvent.org/fathers/2817.htm",
+   "title": "De Synodis",
    "min": 6081,
    "max": 6083,
    "count": 3,
    "hash": "f21a6069f5690966"
   },
-  "https://www.newadvent.org/fathers/2818.htm": {
+  "583": {
+   "url": "https://www.newadvent.org/fathers/2818.htm",
+   "title": "Tomus ad Antiochenos",
    "min": 6084,
    "max": 6088,
    "count": 5,
    "hash": "97bbaf621ab787ed"
   },
-  "https://www.newadvent.org/fathers/2819.htm": {
+  "584": {
+   "url": "https://www.newadvent.org/fathers/2819.htm",
+   "title": "Ad Afros Epistola Synodica",
    "min": 6089,
    "max": 6095,
    "count": 7,
    "hash": "6e1cf24bd6da6dda"
   },
-  "https://www.newadvent.org/fathers/2820.htm": {
+  "585": {
+   "url": "https://www.newadvent.org/fathers/2820.htm",
+   "title": "Historia Acephala",
    "min": 6096,
    "max": 6103,
    "count": 8,
    "hash": "73c5610c5b6bcf5a"
   },
-  "https://www.newadvent.org/fathers/2806.htm": {
+  "586": {
+   "url": "https://www.newadvent.org/fathers/2806.htm",
+   "title": "Letters",
    "min": 41207,
    "max": 41317,
    "count": 111,
    "hash": "a776017dcc9161d7"
   },
-  "https://www.newadvent.org/fathers/0205.htm": {
+  "587": {
+   "url": "https://www.newadvent.org/fathers/0205.htm",
+   "title": "A Plea for the Christians",
    "min": 6204,
    "max": 6240,
    "count": 37,
    "hash": "0e517add75e7fdbc"
   },
-  "https://www.newadvent.org/fathers/0206.htm": {
+  "588": {
+   "url": "https://www.newadvent.org/fathers/0206.htm",
+   "title": "The Resurrection of the Dead",
    "min": 6241,
    "max": 6265,
    "count": 25,
    "hash": "039275d32f815100"
   },
-  "https://www.newadvent.org/fathers/1101.htm": {
+  "589": {
+   "url": "https://www.newadvent.org/fathers/1101.htm",
+   "title": "Confessions",
    "min": 39983,
    "max": 40258,
    "count": 276,
    "hash": "09045c7fd1ea1d5a"
   },
-  "https://www.newadvent.org/fathers/1102.htm": {
+  "590": {
+   "url": "https://www.newadvent.org/fathers/1102.htm",
+   "title": "Letters",
    "min": 35781,
    "max": 36326,
    "count": 546,
    "hash": "289c2e922d3d5bec"
   },
-  "https://www.newadvent.org/fathers/1201.htm": {
+  "591": {
+   "url": "https://www.newadvent.org/fathers/1201.htm",
+   "title": "City of God",
    "min": 34499,
    "max": 35163,
    "count": 665,
    "hash": "e07265cbc0d96cdf"
   },
-  "https://www.newadvent.org/fathers/1202.htm": {
+  "592": {
+   "url": "https://www.newadvent.org/fathers/1202.htm",
+   "title": "Christian Doctrine",
    "min": 40495,
    "max": 40648,
    "count": 154,
    "hash": "80cf57f3004ae57e"
   },
-  "https://www.newadvent.org/fathers/1301.htm": {
+  "593": {
+   "url": "https://www.newadvent.org/fathers/1301.htm",
+   "title": "On the Holy Trinity",
    "min": 6278,
    "max": 6504,
    "count": 227,
    "hash": "b9ee22d9953abd39"
   },
-  "https://www.newadvent.org/fathers/1302.htm": {
+  "594": {
+   "url": "https://www.newadvent.org/fathers/1302.htm",
+   "title": "The Enchiridion",
    "min": 6505,
    "max": 6508,
    "count": 4,
    "hash": "06d555f01b9e5bb6"
   },
-  "https://www.newadvent.org/fathers/1303.htm": {
+  "595": {
+   "url": "https://www.newadvent.org/fathers/1303.htm",
+   "title": "On the Catechising of the Uninstructed",
    "min": 6509,
    "max": 6536,
    "count": 28,
    "hash": "b9bfde3af18b6ca4"
   },
-  "https://www.newadvent.org/fathers/1304.htm": {
+  "596": {
+   "url": "https://www.newadvent.org/fathers/1304.htm",
+   "title": "On Faith and the Creed",
    "min": 6537,
    "max": 6547,
    "count": 11,
    "hash": "6a7a652307e8a8eb"
   },
-  "https://www.newadvent.org/fathers/1305.htm": {
+  "597": {
+   "url": "https://www.newadvent.org/fathers/1305.htm",
+   "title": "Concerning Faith of Things Not Seen",
    "min": 6548,
    "max": 6555,
    "count": 8,
    "hash": "62d8cc6da07b79a1"
   },
-  "https://www.newadvent.org/fathers/1306.htm": {
+  "598": {
+   "url": "https://www.newadvent.org/fathers/1306.htm",
+   "title": "On the Profit of Believing",
    "min": 6556,
    "max": 6578,
    "count": 23,
    "hash": "7a399776bf94bb8a"
   },
-  "https://www.newadvent.org/fathers/1307.htm": {
+  "599": {
+   "url": "https://www.newadvent.org/fathers/1307.htm",
+   "title": "On the Creed: A Sermon to Catechumens",
    "min": 6579,
    "max": 6586,
    "count": 8,
    "hash": "53d5e3e877c60ea3"
   },
-  "https://www.newadvent.org/fathers/1308.htm": {
+  "600": {
+   "url": "https://www.newadvent.org/fathers/1308.htm",
+   "title": "On Continence",
    "min": 6587,
    "max": 6606,
    "count": 20,
    "hash": "a659e4b9169d3ebb"
   },
-  "https://www.newadvent.org/fathers/1309.htm": {
+  "601": {
+   "url": "https://www.newadvent.org/fathers/1309.htm",
+   "title": "On the Good of Marriage",
    "min": 6607,
    "max": 6627,
    "count": 21,
    "hash": "99e1d45a0f12acda"
   },
-  "https://www.newadvent.org/fathers/1310.htm": {
+  "602": {
+   "url": "https://www.newadvent.org/fathers/1310.htm",
+   "title": "On Holy Virginity",
    "min": 6628,
    "max": 6657,
    "count": 30,
    "hash": "034bdb89f1eb0fb7"
   },
-  "https://www.newadvent.org/fathers/1311.htm": {
+  "603": {
+   "url": "https://www.newadvent.org/fathers/1311.htm",
+   "title": "On the Good of Widowhood",
    "min": 6658,
    "max": 6675,
    "count": 18,
    "hash": "2a13da5b0bccd036"
   },
-  "https://www.newadvent.org/fathers/1312.htm": {
+  "604": {
+   "url": "https://www.newadvent.org/fathers/1312.htm",
+   "title": "On Lying",
    "min": 6676,
    "max": 6702,
    "count": 27,
    "hash": "c4fc976807093651"
   },
-  "https://www.newadvent.org/fathers/1313.htm": {
+  "605": {
+   "url": "https://www.newadvent.org/fathers/1313.htm",
+   "title": "To Consentius: Against Lying",
    "min": 6703,
    "max": 6727,
    "count": 25,
    "hash": "b0a6e4e4d3d6a659"
   },
-  "https://www.newadvent.org/fathers/1314.htm": {
+  "606": {
+   "url": "https://www.newadvent.org/fathers/1314.htm",
+   "title": "On the Work of Monks",
    "min": 6728,
    "max": 6750,
    "count": 23,
    "hash": "d14b0880c8069eb1"
   },
-  "https://www.newadvent.org/fathers/1315.htm": {
+  "607": {
+   "url": "https://www.newadvent.org/fathers/1315.htm",
+   "title": "On Patience",
    "min": 6751,
    "max": 6764,
    "count": 14,
    "hash": "7850e7df4c3205c5"
   },
-  "https://www.newadvent.org/fathers/1316.htm": {
+  "608": {
+   "url": "https://www.newadvent.org/fathers/1316.htm",
+   "title": "On Care to be Had For the Dead",
    "min": 6765,
    "max": 6779,
    "count": 15,
    "hash": "9a4d715d105d334e"
   },
-  "https://www.newadvent.org/fathers/1401.htm": {
+  "609": {
+   "url": "https://www.newadvent.org/fathers/1401.htm",
+   "title": "On the Morals of the Catholic Church",
    "min": 6780,
    "max": 6814,
    "count": 35,
    "hash": "09a1c787d67b18ee"
   },
-  "https://www.newadvent.org/fathers/1402.htm": {
+  "610": {
+   "url": "https://www.newadvent.org/fathers/1402.htm",
+   "title": "On the Morals of the Manichaeans",
    "min": 6815,
    "max": 6834,
    "count": 20,
    "hash": "1e6be38049dfc41e"
   },
-  "https://www.newadvent.org/fathers/1403.htm": {
+  "611": {
+   "url": "https://www.newadvent.org/fathers/1403.htm",
+   "title": "On Two Souls, Against the Manichaeans",
    "min": 6835,
    "max": 6849,
    "count": 15,
    "hash": "965a14d969bfb84f"
   },
-  "https://www.newadvent.org/fathers/1404.htm": {
+  "612": {
+   "url": "https://www.newadvent.org/fathers/1404.htm",
+   "title": "Acts or Disputation Against Fortunatus the Manichaean",
    "min": 6850,
    "max": 6866,
    "count": 17,
    "hash": "82254b7b3d96b508"
   },
-  "https://www.newadvent.org/fathers/1405.htm": {
+  "613": {
+   "url": "https://www.newadvent.org/fathers/1405.htm",
+   "title": "Against the Epistle of Manichaeus Called Fundamental",
    "min": 6867,
    "max": 6909,
    "count": 43,
    "hash": "e3265cdad8f4853c"
   },
-  "https://www.newadvent.org/fathers/1406.htm": {
+  "614": {
+   "url": "https://www.newadvent.org/fathers/1406.htm",
+   "title": "Reply to Faustus the Manichaean",
    "min": 6910,
    "max": 7157,
    "count": 248,
    "hash": "f43c689ae8ebba3b"
   },
-  "https://www.newadvent.org/fathers/1407.htm": {
+  "615": {
+   "url": "https://www.newadvent.org/fathers/1407.htm",
+   "title": "Concerning the Nature of Good, Against the Manichaeans",
    "min": 7158,
    "max": 7205,
    "count": 48,
    "hash": "b59e846e7bb62595"
   },
-  "https://www.newadvent.org/fathers/1408.htm": {
+  "616": {
+   "url": "https://www.newadvent.org/fathers/1408.htm",
+   "title": "On Baptism, Against the Donatists",
    "min": 7206,
    "max": 7410,
    "count": 205,
    "hash": "eb3c69311978732e"
   },
-  "https://www.newadvent.org/fathers/1409.htm": {
+  "617": {
+   "url": "https://www.newadvent.org/fathers/1409.htm",
+   "title": "Answer to Letters of Petilian, Bishop of Cirta",
    "min": 7411,
    "max": 7607,
    "count": 197,
    "hash": "ac56f24285ddc3b9"
   },
-  "https://www.newadvent.org/fathers/1501.htm": {
+  "618": {
+   "url": "https://www.newadvent.org/fathers/1501.htm",
+   "title": "Merits and Remission of Sin, and Infant Baptism",
    "min": 7608,
    "max": 7759,
    "count": 152,
    "hash": "b5e2038158e637e4"
   },
-  "https://www.newadvent.org/fathers/1502.htm": {
+  "619": {
+   "url": "https://www.newadvent.org/fathers/1502.htm",
+   "title": "On the Spirit and the Letter",
    "min": 7760,
    "max": 7825,
    "count": 66,
    "hash": "f5647532aa23c468"
   },
-  "https://www.newadvent.org/fathers/1503.htm": {
+  "620": {
+   "url": "https://www.newadvent.org/fathers/1503.htm",
+   "title": "On Nature and Grace",
    "min": 7826,
    "max": 7909,
    "count": 84,
    "hash": "c2532a9b351aadb7"
   },
-  "https://www.newadvent.org/fathers/1504.htm": {
+  "621": {
+   "url": "https://www.newadvent.org/fathers/1504.htm",
+   "title": "On Man's Perfection in Righteousness",
    "min": 7910,
    "max": 7930,
    "count": 21,
    "hash": "a416d8aedceeabde"
   },
-  "https://www.newadvent.org/fathers/1505.htm": {
+  "622": {
+   "url": "https://www.newadvent.org/fathers/1505.htm",
+   "title": "On the Proceedings of Pelagius",
    "min": 7931,
    "max": 7997,
    "count": 67,
    "hash": "0a65e1019ab689b9"
   },
-  "https://www.newadvent.org/fathers/1507.htm": {
+  "623": {
+   "url": "https://www.newadvent.org/fathers/1507.htm",
+   "title": "On Marriage and Concupiscence",
    "min": 40769,
    "max": 40872,
    "count": 104,
    "hash": "c34f0b0900f123c6"
   },
-  "https://www.newadvent.org/fathers/1508.htm": {
+  "624": {
+   "url": "https://www.newadvent.org/fathers/1508.htm",
+   "title": "On the Soul and its Origin",
    "min": 40649,
    "max": 40768,
    "count": 120,
    "hash": "bdd81af8b5881a5c"
   },
-  "https://www.newadvent.org/fathers/1509.htm": {
+  "625": {
+   "url": "https://www.newadvent.org/fathers/1509.htm",
+   "title": "Against Two Letters of the Pelagians",
    "min": 8000,
    "max": 8124,
    "count": 125,
    "hash": "bb103320cc686a19"
   },
-  "https://www.newadvent.org/fathers/1510.htm": {
+  "626": {
+   "url": "https://www.newadvent.org/fathers/1510.htm",
+   "title": "On Grace and Free Will",
    "min": 8125,
    "max": 8170,
    "count": 46,
    "hash": "c4b95b24d0ab3a82"
   },
-  "https://www.newadvent.org/fathers/1513.htm": {
+  "627": {
+   "url": "https://www.newadvent.org/fathers/1513.htm",
+   "title": "On Rebuke and Grace",
    "min": 8171,
    "max": 8220,
    "count": 50,
    "hash": "4e90807a89d9c289"
   },
-  "https://www.newadvent.org/fathers/1602.htm": {
+  "628": {
+   "url": "https://www.newadvent.org/fathers/1602.htm",
+   "title": "The Harmony of the Gospels",
    "min": 39734,
    "max": 39982,
    "count": 249,
    "hash": "fe8b514bf60dad97"
   },
-  "https://www.newadvent.org/fathers/1603.htm": {
+  "629": {
+   "url": "https://www.newadvent.org/fathers/1603.htm",
+   "title": "Sermons on Selected Lessons of the New Testament",
    "min": 8225,
    "max": 8677,
    "count": 453,
    "hash": "27c342708c5ac811"
   },
-  "https://www.newadvent.org/fathers/1701.htm": {
+  "630": {
+   "url": "https://www.newadvent.org/fathers/1701.htm",
+   "title": "Tractates on the Gospel of John",
    "min": 35164,
    "max": 35780,
    "count": 617,
    "hash": "53cb4488428ea192"
   },
-  "https://www.newadvent.org/fathers/1702.htm": {
+  "631": {
+   "url": "https://www.newadvent.org/fathers/1702.htm",
+   "title": "Homilies on the First Epistle of John",
    "min": 8679,
    "max": 8760,
    "count": 82,
    "hash": "91edf70ad4da349d"
   },
-  "https://www.newadvent.org/fathers/1801.htm": {
+  "632": {
+   "url": "https://www.newadvent.org/fathers/1801.htm",
+   "title": "The Enarrations, or Expositions, on the Psalms",
    "min": 33454,
    "max": 34498,
    "count": 1045,
    "hash": "bbb09c4a2c0d3fbb"
   },
-  "https://www.newadvent.org/fathers/0124.htm": {
+  "634": {
+   "url": "https://www.newadvent.org/fathers/0124.htm",
+   "title": "Epistle of Barnabas",
    "min": 8780,
    "max": 8800,
    "count": 21,
    "hash": "a6d4700a0040fe54"
   },
-  "https://www.newadvent.org/fathers/3203.htm": {
+  "635": {
+   "url": "https://www.newadvent.org/fathers/3203.htm",
+   "title": "De Spiritu Sancto",
    "min": 8801,
    "max": 8830,
    "count": 30,
    "hash": "20b32569de46377c"
   },
-  "https://www.newadvent.org/fathers/3201.htm": {
+  "636": {
+   "url": "https://www.newadvent.org/fathers/3201.htm",
+   "title": "Nine Homilies of Hexaemeron",
    "min": 8831,
    "max": 8903,
    "count": 73,
    "hash": "33b5a3042aee7451"
   },
-  "https://www.newadvent.org/fathers/3202.htm": {
+  "637": {
+   "url": "https://www.newadvent.org/fathers/3202.htm",
+   "title": "Letters",
    "min": 39300,
    "max": 39733,
    "count": 434,
    "hash": "dc350810ef58e9fe"
   },
-  "https://www.newadvent.org/fathers/0510.htm": {
+  "638": {
+   "url": "https://www.newadvent.org/fathers/0510.htm",
+   "title": "Fragments",
    "min": 8905,
    "max": 8907,
    "count": 3,
    "hash": "81443b4fe87be3a9"
   },
-  "https://www.newadvent.org/fathers/0207.htm": {
+  "639": {
+   "url": "https://www.newadvent.org/fathers/0207.htm",
+   "title": "Who is the Rich Man That Shall Be Saved?",
    "min": 8908,
    "max": 8928,
    "count": 21,
    "hash": "e94dcb2daff42e8e"
   },
-  "https://www.newadvent.org/fathers/0208.htm": {
+  "640": {
+   "url": "https://www.newadvent.org/fathers/0208.htm",
+   "title": "Exhortation to the Heathen",
    "min": 8929,
    "max": 8981,
    "count": 53,
    "hash": "ecf57eb86c3b5d9e"
   },
-  "https://www.newadvent.org/fathers/0209.htm": {
+  "641": {
+   "url": "https://www.newadvent.org/fathers/0209.htm",
+   "title": "The Instructor",
    "min": 8982,
    "max": 9019,
    "count": 38,
    "hash": "b43cd51d5f04b877"
   },
-  "https://www.newadvent.org/fathers/0210.htm": {
+  "642": {
+   "url": "https://www.newadvent.org/fathers/0210.htm",
+   "title": "The Stromata, or Miscellanies",
    "min": 9020,
    "max": 9174,
    "count": 155,
    "hash": "31168905d75ea8d7"
   },
-  "https://www.newadvent.org/fathers/0211.htm": {
+  "643": {
+   "url": "https://www.newadvent.org/fathers/0211.htm",
+   "title": "Fragments",
    "min": 9175,
    "max": 9242,
    "count": 68,
    "hash": "2f79a27608b45a01"
   },
-  "https://www.newadvent.org/fathers/1010.htm": {
+  "644": {
+   "url": "https://www.newadvent.org/fathers/1010.htm",
+   "title": "First Epistle",
    "min": 9243,
    "max": 9307,
    "count": 65,
    "hash": "40bfe5404ec34327"
   },
-  "https://www.newadvent.org/fathers/1011.htm": {
+  "645": {
+   "url": "https://www.newadvent.org/fathers/1011.htm",
+   "title": "Second Epistle",
    "min": 9308,
    "max": 9327,
    "count": 20,
    "hash": "66f59e76d42112fc"
   },
-  "https://www.newadvent.org/fathers/0803.htm": {
+  "646": {
+   "url": "https://www.newadvent.org/fathers/0803.htm",
+   "title": "Two Epistles Concerning Virginity",
    "min": 9328,
    "max": 9342,
    "count": 15,
    "hash": "0646b76a9fa1fd9c"
   },
-  "https://www.newadvent.org/fathers/0411.htm": {
+  "649": {
+   "url": "https://www.newadvent.org/fathers/0411.htm",
+   "title": "Writings",
    "min": 10402,
    "max": 10480,
    "count": 79,
    "hash": "b56addea0fe6f96d"
   },
-  "https://www.newadvent.org/fathers/0505.htm": {
+  "650": {
+   "url": "https://www.newadvent.org/fathers/0505.htm",
+   "title": "The Life and Passion of Cyprian",
    "min": 10481,
    "max": 10491,
    "count": 11,
    "hash": "b899bd116853be3c"
   },
-  "https://www.newadvent.org/fathers/0506.htm": {
+  "651": {
+   "url": "https://www.newadvent.org/fathers/0506.htm",
+   "title": "The Epistles of Cyprian",
    "min": 41318,
    "max": 41545,
    "count": 228,
    "hash": "26003ac80d338658"
   },
-  "https://www.newadvent.org/fathers/0507.htm": {
+  "652": {
+   "url": "https://www.newadvent.org/fathers/0507.htm",
+   "title": "The Treatises of Cyprian",
    "min": 40900,
    "max": 41206,
    "count": 307,
    "hash": "877c22a38a659f25"
   },
-  "https://www.newadvent.org/fathers/0508.htm": {
+  "653": {
+   "url": "https://www.newadvent.org/fathers/0508.htm",
+   "title": "The Seventh Council of Carthage",
    "min": 10849,
    "max": 10861,
    "count": 13,
    "hash": "fc9d53053da43ac7"
   },
-  "https://www.newadvent.org/fathers/3101.htm": {
+  "654": {
+   "url": "https://www.newadvent.org/fathers/3101.htm",
+   "title": "Catechetical Lectures",
    "min": 10862,
    "max": 11058,
    "count": 197,
    "hash": "a68ab69e9dcb1c16"
   },
-  "https://www.newadvent.org/fathers/0713.htm": {
+  "655": {
+   "url": "https://www.newadvent.org/fathers/0713.htm",
+   "title": "Against the Sabellians",
    "min": 11059,
    "max": 11060,
    "count": 2,
    "hash": "3244ee397ec23655"
   },
-  "https://www.newadvent.org/fathers/0632.htm": {
+  "656": {
+   "url": "https://www.newadvent.org/fathers/0632.htm",
+   "title": "Epistles and Epistolary Fragments",
    "min": 11061,
    "max": 11075,
    "count": 15,
    "hash": "87040adc3440cda5"
   },
-  "https://www.newadvent.org/fathers/0613.htm": {
+  "657": {
+   "url": "https://www.newadvent.org/fathers/0613.htm",
+   "title": "Exegetical Fragments",
    "min": 11076,
    "max": 11079,
    "count": 4,
    "hash": "4d02ba79dc9fadfe"
   },
-  "https://www.newadvent.org/fathers/0612.htm": {
+  "658": {
+   "url": "https://www.newadvent.org/fathers/0612.htm",
+   "title": "Miscellaneous Fragments",
    "min": 11080,
    "max": 11084,
    "count": 5,
    "hash": "0ba35912530c2bd9"
   },
-  "https://www.newadvent.org/fathers/3703.htm": {
+  "659": {
+   "url": "https://www.newadvent.org/fathers/3703.htm",
+   "title": "On the Nativity of Christ in the Flesh",
    "min": 11085,
    "max": 11103,
    "count": 19,
    "hash": "a141594184e7f30e"
   },
-  "https://www.newadvent.org/fathers/3704.htm": {
+  "660": {
+   "url": "https://www.newadvent.org/fathers/3704.htm",
+   "title": "For the Feast of the Epiphany",
    "min": 11104,
    "max": 11118,
    "count": 15,
    "hash": "dfe5afba5bef67ce"
   },
-  "https://www.newadvent.org/fathers/3705.htm": {
+  "661": {
+   "url": "https://www.newadvent.org/fathers/3705.htm",
+   "title": "On the Faith (\"The Pearl\")",
    "min": 11119,
    "max": 11125,
    "count": 7,
    "hash": "d35da6255a0bc07e"
   },
-  "https://www.newadvent.org/fathers/3706.htm": {
+  "662": {
+   "url": "https://www.newadvent.org/fathers/3706.htm",
+   "title": "On Our Lord",
    "min": 11126,
    "max": 11153,
    "count": 28,
    "hash": "4fa809e6986004fa"
   },
-  "https://www.newadvent.org/fathers/3707.htm": {
+  "663": {
+   "url": "https://www.newadvent.org/fathers/3707.htm",
+   "title": "On Admonition and Repentance",
    "min": 11154,
    "max": 11161,
    "count": 8,
    "hash": "52495a0f006ed376"
   },
-  "https://www.newadvent.org/fathers/3708.htm": {
+  "664": {
+   "url": "https://www.newadvent.org/fathers/3708.htm",
+   "title": "On the Sinful Woman",
    "min": 11162,
    "max": 11167,
    "count": 6,
    "hash": "e39fd4d1fa3b21d9"
   },
-  "https://www.newadvent.org/fathers/2501.htm": {
+  "665": {
+   "url": "https://www.newadvent.org/fathers/2501.htm",
+   "title": "Church History",
    "min": 11168,
    "max": 11423,
    "count": 256,
    "hash": "20ba9b958f36ef3b"
   },
-  "https://www.newadvent.org/fathers/2502.htm": {
+  "666": {
+   "url": "https://www.newadvent.org/fathers/2502.htm",
+   "title": "Life of Constantine",
    "min": 11424,
    "max": 11696,
    "count": 273,
    "hash": "33ad27cc2b8282f4"
   },
-  "https://www.newadvent.org/fathers/2503.htm": {
+  "667": {
+   "url": "https://www.newadvent.org/fathers/2503.htm",
+   "title": "Oration of Constantine \"to the Assembly of the Saints\"",
    "min": 11697,
    "max": 11722,
    "count": 26,
    "hash": "367ff654e01071a6"
   },
-  "https://www.newadvent.org/fathers/2504.htm": {
+  "668": {
+   "url": "https://www.newadvent.org/fathers/2504.htm",
+   "title": "Oration in Praise of Constantine",
    "min": 11723,
    "max": 11741,
    "count": 19,
    "hash": "f3f7c372dcc19de9"
   },
-  "https://www.newadvent.org/fathers/2804.htm": {
+  "669": {
+   "url": "https://www.newadvent.org/fathers/2804.htm",
+   "title": "Letter on the Council of Nicaea",
    "min": 11742,
    "max": 11744,
    "count": 3,
    "hash": "81b08c5e81b573fa"
   },
-  "https://www.newadvent.org/fathers/2719.htm": {
+  "670": {
+   "url": "https://www.newadvent.org/fathers/2719.htm",
+   "title": "Illustrious Men (Supplement to Jerome)",
    "min": 11745,
    "max": 11843,
    "count": 99,
    "hash": "5f36393053c551df"
   },
-  "https://www.newadvent.org/fathers/3601.htm": {
+  "671": {
+   "url": "https://www.newadvent.org/fathers/3601.htm",
+   "title": "Pastoral Rule",
    "min": 11844,
    "max": 11910,
    "count": 67,
    "hash": "bea77f360b309efc"
   },
-  "https://www.newadvent.org/fathers/3602.htm": {
+  "672": {
+   "url": "https://www.newadvent.org/fathers/3602.htm",
+   "title": "Register of Letters",
    "min": 37829,
    "max": 38398,
    "count": 570,
    "hash": "03213b9cad1808df"
   },
-  "https://www.newadvent.org/fathers/3102.htm": {
+  "673": {
+   "url": "https://www.newadvent.org/fathers/3102.htm",
+   "title": "Orations",
    "min": 11912,
    "max": 12235,
    "count": 324,
    "hash": "f18ccbc3dbe15ded"
   },
-  "https://www.newadvent.org/fathers/2901.htm": {
+  "674": {
+   "url": "https://www.newadvent.org/fathers/2901.htm",
+   "title": "Against Eunomius",
    "min": 12236,
    "max": 12346,
    "count": 111,
    "hash": "2a9c3638d72c28a6"
   },
-  "https://www.newadvent.org/fathers/2902.htm": {
+  "675": {
+   "url": "https://www.newadvent.org/fathers/2902.htm",
+   "title": "Answer to Eunomius' Second Book",
    "min": 12347,
    "max": 12418,
    "count": 72,
    "hash": "532f40c0a603204a"
   },
-  "https://www.newadvent.org/fathers/2903.htm": {
+  "676": {
+   "url": "https://www.newadvent.org/fathers/2903.htm",
+   "title": "On the Holy Spirit (Against the Followers of Macedonius)",
    "min": 12419,
    "max": 12430,
    "count": 12,
    "hash": "e299af60d7c887f4"
   },
-  "https://www.newadvent.org/fathers/2904.htm": {
+  "677": {
+   "url": "https://www.newadvent.org/fathers/2904.htm",
+   "title": "On the Holy Trinity, and of the Godhead of the Holy Spirit (To Eustathius)",
    "min": 12431,
    "max": 12434,
    "count": 4,
    "hash": "875a1ce11c457a72"
   },
-  "https://www.newadvent.org/fathers/2905.htm": {
+  "678": {
+   "url": "https://www.newadvent.org/fathers/2905.htm",
+   "title": "On \"Not Three Gods\" (To Ablabius)",
    "min": 12435,
    "max": 12442,
    "count": 8,
    "hash": "38582f3d6b16525d"
   },
-  "https://www.newadvent.org/fathers/2906.htm": {
+  "679": {
+   "url": "https://www.newadvent.org/fathers/2906.htm",
+   "title": "On the Faith (To Simplicius)",
    "min": 12443,
    "max": 12445,
    "count": 3,
    "hash": "a8dbdb9dce4d86a3"
   },
-  "https://www.newadvent.org/fathers/2907.htm": {
+  "680": {
+   "url": "https://www.newadvent.org/fathers/2907.htm",
+   "title": "On Virginity",
    "min": 12446,
    "max": 12469,
    "count": 24,
    "hash": "436c637170dccc51"
   },
-  "https://www.newadvent.org/fathers/2912.htm": {
+  "681": {
+   "url": "https://www.newadvent.org/fathers/2912.htm",
+   "title": "On Infants' Early Deaths",
    "min": 12470,
    "max": 12475,
    "count": 6,
    "hash": "207f6fe6050b6461"
   },
-  "https://www.newadvent.org/fathers/2913.htm": {
+  "682": {
+   "url": "https://www.newadvent.org/fathers/2913.htm",
+   "title": "On Pilgrimages",
    "min": 12476,
    "max": 12476,
    "count": 1,
    "hash": "bd903fb3a47dc7a5"
   },
-  "https://www.newadvent.org/fathers/2914.htm": {
+  "683": {
+   "url": "https://www.newadvent.org/fathers/2914.htm",
+   "title": "On the Making of Man",
    "min": 12477,
    "max": 12508,
    "count": 32,
    "hash": "821a84a33c1d9a03"
   },
-  "https://www.newadvent.org/fathers/2915.htm": {
+  "684": {
+   "url": "https://www.newadvent.org/fathers/2915.htm",
+   "title": "On the Soul and the Resurrection",
    "min": 12509,
    "max": 12541,
    "count": 33,
    "hash": "4f08eb1aff0916fc"
   },
-  "https://www.newadvent.org/fathers/2908.htm": {
+  "685": {
+   "url": "https://www.newadvent.org/fathers/2908.htm",
+   "title": "The Great Catechism",
    "min": 12542,
    "max": 12545,
    "count": 4,
    "hash": "fbf440d7cce69937"
   },
-  "https://www.newadvent.org/fathers/2909.htm": {
+  "686": {
+   "url": "https://www.newadvent.org/fathers/2909.htm",
+   "title": "Funeral Oration on Meletius",
    "min": 12546,
    "max": 12548,
    "count": 3,
    "hash": "b31dfa37e9545395"
   },
-  "https://www.newadvent.org/fathers/2910.htm": {
+  "687": {
+   "url": "https://www.newadvent.org/fathers/2910.htm",
+   "title": "On the Baptism of Christ (Sermon for the Day of Lights)",
    "min": 12549,
    "max": 12554,
    "count": 6,
    "hash": "329d7765d8f8e13e"
   },
-  "https://www.newadvent.org/fathers/2911.htm": {
+  "688": {
+   "url": "https://www.newadvent.org/fathers/2911.htm",
+   "title": "Letters",
    "min": 12555,
    "max": 12580,
    "count": 26,
    "hash": "0b2b840f0dca6579"
   },
-  "https://www.newadvent.org/fathers/0601.htm": {
+  "689": {
+   "url": "https://www.newadvent.org/fathers/0601.htm",
+   "title": "A Declaration of Faith",
    "min": 12581,
    "max": 12581,
    "count": 1,
    "hash": "07cebd39cfec20e2"
   },
-  "https://www.newadvent.org/fathers/0602.htm": {
+  "690": {
+   "url": "https://www.newadvent.org/fathers/0602.htm",
+   "title": "A Metaphrase of the Book of Ecclesiastes",
    "min": 12582,
    "max": 12593,
    "count": 12,
    "hash": "d40c58b16cfca10b"
   },
-  "https://www.newadvent.org/fathers/0603.htm": {
+  "691": {
+   "url": "https://www.newadvent.org/fathers/0603.htm",
+   "title": "Canonical Epistle",
    "min": 12594,
    "max": 12604,
    "count": 11,
    "hash": "ac186a402b0cdc58"
   },
-  "https://www.newadvent.org/fathers/0604.htm": {
+  "692": {
+   "url": "https://www.newadvent.org/fathers/0604.htm",
+   "title": "The Oration and Panegyric Addressed to Origen",
    "min": 12605,
    "max": 12623,
    "count": 19,
    "hash": "7ffe092df6324977"
   },
-  "https://www.newadvent.org/fathers/0605.htm": {
+  "693": {
+   "url": "https://www.newadvent.org/fathers/0605.htm",
+   "title": "A Sectional Confession of Faith",
    "min": 12624,
    "max": 12647,
    "count": 24,
    "hash": "d289c85a2fd9b891"
   },
-  "https://www.newadvent.org/fathers/0606.htm": {
+  "694": {
+   "url": "https://www.newadvent.org/fathers/0606.htm",
+   "title": "On the Trinity",
    "min": 12648,
    "max": 12648,
    "count": 1,
    "hash": "0c33032f20fd2d45"
   },
-  "https://www.newadvent.org/fathers/0607.htm": {
+  "695": {
+   "url": "https://www.newadvent.org/fathers/0607.htm",
+   "title": "Twelve Topics on the Faith",
    "min": 12649,
    "max": 12660,
    "count": 12,
    "hash": "1e6928daafd61f70"
   },
-  "https://www.newadvent.org/fathers/0608.htm": {
+  "696": {
+   "url": "https://www.newadvent.org/fathers/0608.htm",
+   "title": "On the Subject of the Soul",
    "min": 12661,
    "max": 12668,
    "count": 8,
    "hash": "da4123d4c42fb854"
   },
-  "https://www.newadvent.org/fathers/0609.htm": {
+  "697": {
+   "url": "https://www.newadvent.org/fathers/0609.htm",
+   "title": "Four Homilies",
    "min": 12669,
    "max": 12678,
    "count": 10,
    "hash": "1fe613166c794581"
   },
-  "https://www.newadvent.org/fathers/0610.htm": {
+  "698": {
+   "url": "https://www.newadvent.org/fathers/0610.htm",
+   "title": "On All the Saints",
    "min": 12679,
    "max": 12679,
    "count": 1,
    "hash": "faede421b54ca41d"
   },
-  "https://www.newadvent.org/fathers/0611.htm": {
+  "699": {
+   "url": "https://www.newadvent.org/fathers/0611.htm",
+   "title": "On Matthew 6:22-23",
    "min": 12680,
    "max": 12680,
    "count": 1,
    "hash": "c01244a217535403"
   },
-  "https://www.newadvent.org/fathers/0201.htm": {
+  "700": {
+   "url": "https://www.newadvent.org/fathers/0201.htm",
+   "title": "The Pastor (or \"The Shepherd\")",
    "min": 40873,
    "max": 40899,
    "count": 27,
    "hash": "008463fd40b84901"
   },
-  "https://www.newadvent.org/fathers/3301.htm": {
+  "701": {
+   "url": "https://www.newadvent.org/fathers/3301.htm",
+   "title": "On the Councils, or the Faith of the Easterns",
    "min": 12684,
    "max": 12727,
    "count": 44,
    "hash": "2ef1d8d95fde675b"
   },
-  "https://www.newadvent.org/fathers/3302.htm": {
+  "702": {
+   "url": "https://www.newadvent.org/fathers/3302.htm",
+   "title": "On the Trinity",
    "min": 12728,
    "max": 13007,
    "count": 280,
    "hash": "86162545872e33db"
   },
-  "https://www.newadvent.org/fathers/3303.htm": {
+  "703": {
+   "url": "https://www.newadvent.org/fathers/3303.htm",
+   "title": "Homilies on the Psalms",
    "min": 13008,
    "max": 13029,
    "count": 22,
    "hash": "b8322a00c65e9914"
   },
-  "https://www.newadvent.org/fathers/0501.htm": {
+  "704": {
+   "url": "https://www.newadvent.org/fathers/0501.htm",
+   "title": "The Refutation of All Heresies",
    "min": 13030,
    "max": 13279,
    "count": 250,
    "hash": "ff4297115f0421cf"
   },
-  "https://www.newadvent.org/fathers/0502.htm": {
+  "705": {
+   "url": "https://www.newadvent.org/fathers/0502.htm",
+   "title": "Some Exegetical Fragments of Hippolytus",
    "min": 13280,
    "max": 13297,
    "count": 18,
    "hash": "5bbe82697ac88cfc"
   },
-  "https://www.newadvent.org/fathers/0503.htm": {
+  "706": {
+   "url": "https://www.newadvent.org/fathers/0503.htm",
+   "title": "Expository Treatise Against the Jews",
    "min": 13298,
    "max": 13301,
    "count": 4,
    "hash": "2d099fbd204fad20"
   },
-  "https://www.newadvent.org/fathers/0520.htm": {
+  "707": {
+   "url": "https://www.newadvent.org/fathers/0520.htm",
+   "title": "Against Plato, On the Cause of the Universe",
    "min": 13302,
    "max": 13303,
    "count": 2,
    "hash": "5d529f080300af70"
   },
-  "https://www.newadvent.org/fathers/0521.htm": {
+  "708": {
+   "url": "https://www.newadvent.org/fathers/0521.htm",
+   "title": "Against the Heresy of Noetus",
    "min": 13304,
    "max": 13311,
    "count": 8,
    "hash": "03eb1059ce173334"
   },
-  "https://www.newadvent.org/fathers/0523.htm": {
+  "709": {
+   "url": "https://www.newadvent.org/fathers/0523.htm",
+   "title": "Discourse on the Holy Theophany",
    "min": 13312,
    "max": 13316,
    "count": 5,
    "hash": "1a39fc470a727804"
   },
-  "https://www.newadvent.org/fathers/0516.htm": {
+  "710": {
+   "url": "https://www.newadvent.org/fathers/0516.htm",
+   "title": "The Antichrist",
    "min": 13317,
    "max": 13339,
    "count": 23,
    "hash": "172dc99dbf45cfec"
   },
-  "https://www.newadvent.org/fathers/0504.htm": {
+  "711": {
+   "url": "https://www.newadvent.org/fathers/0504.htm",
+   "title": "The End of the World (Pseudonymous)",
    "min": 13340,
    "max": 13388,
    "count": 49,
    "hash": "3b659ee414f5f2cd"
   },
-  "https://www.newadvent.org/fathers/0524.htm": {
+  "712": {
+   "url": "https://www.newadvent.org/fathers/0524.htm",
+   "title": "The Apostles and the Disciples (Pseudonymous)",
    "min": 13389,
    "max": 13391,
    "count": 3,
    "hash": "ef925aba6d006e02"
   },
-  "https://www.newadvent.org/fathers/0104.htm": {
+  "713": {
+   "url": "https://www.newadvent.org/fathers/0104.htm",
+   "title": "Epistle to the Ephesians",
    "min": 13392,
    "max": 13413,
    "count": 22,
    "hash": "cbe6e0aa4ad72492"
   },
-  "https://www.newadvent.org/fathers/0105.htm": {
+  "714": {
+   "url": "https://www.newadvent.org/fathers/0105.htm",
+   "title": "Epistle to the Magnesians",
    "min": 13414,
    "max": 13429,
    "count": 16,
    "hash": "88e529e252d16846"
   },
-  "https://www.newadvent.org/fathers/0106.htm": {
+  "715": {
+   "url": "https://www.newadvent.org/fathers/0106.htm",
+   "title": "Epistle to the Trallians",
    "min": 13430,
    "max": 13443,
    "count": 14,
    "hash": "6c6ba5459961af80"
   },
-  "https://www.newadvent.org/fathers/0107.htm": {
+  "716": {
+   "url": "https://www.newadvent.org/fathers/0107.htm",
+   "title": "Epistle to the Romans",
    "min": 13444,
    "max": 13454,
    "count": 11,
    "hash": "9940e61ee3ecbc6c"
   },
-  "https://www.newadvent.org/fathers/0108.htm": {
+  "717": {
+   "url": "https://www.newadvent.org/fathers/0108.htm",
+   "title": "Epistle to the Philadelphians",
    "min": 13455,
    "max": 13466,
    "count": 12,
    "hash": "66331ab427636e20"
   },
-  "https://www.newadvent.org/fathers/0109.htm": {
+  "718": {
+   "url": "https://www.newadvent.org/fathers/0109.htm",
+   "title": "Epistle to the Smyrn\u00e6ans",
    "min": 13467,
    "max": 13480,
    "count": 14,
    "hash": "1127027794d1ea61"
   },
-  "https://www.newadvent.org/fathers/0110.htm": {
+  "719": {
+   "url": "https://www.newadvent.org/fathers/0110.htm",
+   "title": "Epistle to Polycarp",
    "min": 13481,
    "max": 13489,
    "count": 9,
    "hash": "fcf13be49146464e"
   },
-  "https://www.newadvent.org/fathers/0123.htm": {
+  "720": {
+   "url": "https://www.newadvent.org/fathers/0123.htm",
+   "title": "The Martyrdom of Ignatius",
    "min": 13490,
    "max": 13496,
    "count": 7,
    "hash": "14fd6ebf38d80e64"
   },
-  "https://www.newadvent.org/fathers/0114.htm": {
+  "721": {
+   "url": "https://www.newadvent.org/fathers/0114.htm",
+   "title": "The Spurious Epistles",
    "min": 13497,
    "max": 13506,
    "count": 10,
    "hash": "96e610e7101a42ca"
   },
-  "https://www.newadvent.org/fathers/0103.htm": {
+  "722": {
+   "url": "https://www.newadvent.org/fathers/0103.htm",
+   "title": "Adversus haereses",
    "min": 38399,
    "max": 38807,
    "count": 409,
    "hash": "ef3ff5fc2cc39c3e"
   },
-  "https://www.newadvent.org/fathers/0134.htm": {
+  "723": {
+   "url": "https://www.newadvent.org/fathers/0134.htm",
+   "title": "Fragments from the Lost Writings of Irenaeus",
    "min": 13512,
    "max": 13566,
    "count": 55,
    "hash": "ec4ac1732a72f131"
   },
-  "https://www.newadvent.org/fathers/3001.htm": {
+  "724": {
+   "url": "https://www.newadvent.org/fathers/3001.htm",
+   "title": "Letters",
    "min": 37004,
    "max": 37460,
    "count": 457,
    "hash": "61b5a6cf57a50a58"
   },
-  "https://www.newadvent.org/fathers/3007.htm": {
+  "725": {
+   "url": "https://www.newadvent.org/fathers/3007.htm",
+   "title": "The Perpetual Virginity of Blessed Mary",
    "min": 13568,
    "max": 13583,
    "count": 16,
    "hash": "9ebce3fe6d317ef2"
   },
-  "https://www.newadvent.org/fathers/3004.htm": {
+  "726": {
+   "url": "https://www.newadvent.org/fathers/3004.htm",
+   "title": "To Pammachius Against John of Jerusalem",
    "min": 13584,
    "max": 13611,
    "count": 28,
    "hash": "5e505502e6bfba7d"
   },
-  "https://www.newadvent.org/fathers/3005.htm": {
+  "727": {
+   "url": "https://www.newadvent.org/fathers/3005.htm",
+   "title": "The Dialogue Against the Luciferians",
    "min": 13612,
    "max": 13630,
    "count": 19,
    "hash": "4df0205dfac9df0e"
   },
-  "https://www.newadvent.org/fathers/3006.htm": {
+  "728": {
+   "url": "https://www.newadvent.org/fathers/3006.htm",
+   "title": "The Life of Malchus, the Captive Monk",
    "min": 13631,
    "max": 13636,
    "count": 6,
    "hash": "aab479426653d1b0"
   },
-  "https://www.newadvent.org/fathers/3003.htm": {
+  "729": {
+   "url": "https://www.newadvent.org/fathers/3003.htm",
+   "title": "The Life of S. Hilarion",
    "min": 13637,
    "max": 13654,
    "count": 18,
    "hash": "df9a19a88dc9e198"
   },
-  "https://www.newadvent.org/fathers/3008.htm": {
+  "730": {
+   "url": "https://www.newadvent.org/fathers/3008.htm",
+   "title": "The Life of Paulus the First Hermit",
    "min": 13655,
    "max": 13661,
    "count": 7,
    "hash": "c2b713242f518277"
   },
-  "https://www.newadvent.org/fathers/3010.htm": {
+  "731": {
+   "url": "https://www.newadvent.org/fathers/3010.htm",
+   "title": "Against Vigilantius",
    "min": 13662,
    "max": 13671,
    "count": 10,
    "hash": "948ee4d277f459d1"
   },
-  "https://www.newadvent.org/fathers/3011.htm": {
+  "732": {
+   "url": "https://www.newadvent.org/fathers/3011.htm",
+   "title": "Against the Pelagians",
    "min": 13672,
    "max": 13721,
    "count": 50,
    "hash": "797974d9e6d686f6"
   },
-  "https://www.newadvent.org/fathers/3002.htm": {
+  "733": {
+   "url": "https://www.newadvent.org/fathers/3002.htm",
+   "title": "Prefaces",
    "min": 13722,
    "max": 13729,
    "count": 8,
    "hash": "c737913905c194ed"
   },
-  "https://www.newadvent.org/fathers/2708.htm": {
+  "734": {
+   "url": "https://www.newadvent.org/fathers/2708.htm",
+   "title": "De Viris Illustribus (Illustrious Men)",
    "min": 13730,
    "max": 13864,
    "count": 135,
    "hash": "a0baaf27aa15cb50"
   },
-  "https://www.newadvent.org/fathers/2710.htm": {
+  "735": {
+   "url": "https://www.newadvent.org/fathers/2710.htm",
+   "title": "Apology for himself against the Books of Rufinus",
    "min": 13865,
    "max": 13947,
    "count": 83,
    "hash": "d09ff835976c7c39"
   },
-  "https://www.newadvent.org/fathers/3304.htm": {
+  "736": {
+   "url": "https://www.newadvent.org/fathers/3304.htm",
+   "title": "Exposition of the Faith",
    "min": 13948,
    "max": 14048,
    "count": 101,
    "hash": "f8368eabd2e41ecf"
   },
-  "https://www.newadvent.org/fathers/3507.htm": {
+  "737": {
+   "url": "https://www.newadvent.org/fathers/3507.htm",
+   "title": "Institutes",
    "min": 14049,
    "max": 14316,
    "count": 268,
    "hash": "507f424fbba3deef"
   },
-  "https://www.newadvent.org/fathers/3508.htm": {
+  "738": {
+   "url": "https://www.newadvent.org/fathers/3508.htm",
+   "title": "Conferences",
    "min": 38808,
    "max": 39299,
    "count": 492,
    "hash": "946af9039c31c9af"
   },
-  "https://www.newadvent.org/fathers/3509.htm": {
+  "739": {
+   "url": "https://www.newadvent.org/fathers/3509.htm",
+   "title": "On the Incarnation of the Lord (Against Nestorius)",
    "min": 14318,
    "max": 14429,
    "count": 112,
    "hash": "1948d6296fbbf2e7"
   },
-  "https://www.newadvent.org/fathers/2001.htm": {
+  "740": {
+   "url": "https://www.newadvent.org/fathers/2001.htm",
+   "title": "Homilies on the Gospel of St. Matthew",
    "min": 14430,
    "max": 15281,
    "count": 852,
    "hash": "96f180858717cc73"
   },
-  "https://www.newadvent.org/fathers/2101.htm": {
+  "741": {
+   "url": "https://www.newadvent.org/fathers/2101.htm",
+   "title": "Homilies on Acts",
    "min": 15282,
    "max": 15508,
    "count": 227,
    "hash": "ab6cc27ed1356f52"
   },
-  "https://www.newadvent.org/fathers/2102.htm": {
+  "742": {
+   "url": "https://www.newadvent.org/fathers/2102.htm",
+   "title": "Homilies on Romans",
    "min": 15509,
    "max": 15738,
    "count": 230,
    "hash": "cc42901e7673fda0"
   },
-  "https://www.newadvent.org/fathers/2201.htm": {
+  "743": {
+   "url": "https://www.newadvent.org/fathers/2201.htm",
+   "title": "Homilies on First Corinthians",
    "min": 37461,
    "max": 37828,
    "count": 368,
    "hash": "2514e4400cd4c927"
   },
-  "https://www.newadvent.org/fathers/2202.htm": {
+  "744": {
+   "url": "https://www.newadvent.org/fathers/2202.htm",
+   "title": "Homilies on Second Corinthians",
    "min": 15740,
    "max": 15958,
    "count": 219,
    "hash": "465cb04e7b0790fc"
   },
-  "https://www.newadvent.org/fathers/2301.htm": {
+  "745": {
+   "url": "https://www.newadvent.org/fathers/2301.htm",
+   "title": "Homilies on Ephesians",
    "min": 15959,
    "max": 16127,
    "count": 169,
    "hash": "dbeebe65ea01715b"
   },
-  "https://www.newadvent.org/fathers/2302.htm": {
+  "746": {
+   "url": "https://www.newadvent.org/fathers/2302.htm",
+   "title": "Homilies on Philippians",
    "min": 16128,
    "max": 16228,
    "count": 101,
    "hash": "a2d7c907885ec250"
   },
-  "https://www.newadvent.org/fathers/2303.htm": {
+  "747": {
+   "url": "https://www.newadvent.org/fathers/2303.htm",
+   "title": "Homilies on Colossians",
    "min": 16229,
    "max": 16323,
    "count": 95,
    "hash": "e7c2b4c2056e1e91"
   },
-  "https://www.newadvent.org/fathers/2304.htm": {
+  "748": {
+   "url": "https://www.newadvent.org/fathers/2304.htm",
+   "title": "Homilies on First Thessalonians",
    "min": 16324,
    "max": 16405,
    "count": 82,
    "hash": "8dbd8326c26a215d"
   },
-  "https://www.newadvent.org/fathers/2305.htm": {
+  "749": {
+   "url": "https://www.newadvent.org/fathers/2305.htm",
+   "title": "Homilies on Second Thessalonians",
    "min": 16406,
    "max": 16441,
    "count": 36,
    "hash": "bd6e22c7e1188ce0"
   },
-  "https://www.newadvent.org/fathers/2306.htm": {
+  "750": {
+   "url": "https://www.newadvent.org/fathers/2306.htm",
+   "title": "Homilies on First Timothy",
    "min": 16442,
    "max": 16541,
    "count": 100,
    "hash": "e57e27a9267f0615"
   },
-  "https://www.newadvent.org/fathers/2307.htm": {
+  "751": {
+   "url": "https://www.newadvent.org/fathers/2307.htm",
+   "title": "Homilies on Second Timothy",
    "min": 16542,
    "max": 16603,
    "count": 62,
    "hash": "10262f49117a2d51"
   },
-  "https://www.newadvent.org/fathers/2308.htm": {
+  "752": {
+   "url": "https://www.newadvent.org/fathers/2308.htm",
+   "title": "Homilies on Titus",
    "min": 16604,
    "max": 16642,
    "count": 39,
    "hash": "11a22c526a2e3c88"
   },
-  "https://www.newadvent.org/fathers/2309.htm": {
+  "753": {
+   "url": "https://www.newadvent.org/fathers/2309.htm",
+   "title": "Homilies on Philemon",
    "min": 16643,
    "max": 16663,
    "count": 21,
    "hash": "ecd4bb46c533da1e"
   },
-  "https://www.newadvent.org/fathers/2310.htm": {
+  "754": {
+   "url": "https://www.newadvent.org/fathers/2310.htm",
+   "title": "Commentary on Galatians",
    "min": 16664,
    "max": 16731,
    "count": 68,
    "hash": "0625676837065457"
   },
-  "https://www.newadvent.org/fathers/2401.htm": {
+  "755": {
+   "url": "https://www.newadvent.org/fathers/2401.htm",
+   "title": "Homilies on the Gospel of John",
    "min": 36327,
    "max": 37003,
    "count": 677,
    "hash": "57ceffa91a73825b"
   },
-  "https://www.newadvent.org/fathers/2402.htm": {
+  "756": {
+   "url": "https://www.newadvent.org/fathers/2402.htm",
+   "title": "Homilies on the Epistle to the Hebrews",
    "min": 16733,
    "max": 16932,
    "count": 200,
    "hash": "15fe2e91ebba943f"
   },
-  "https://www.newadvent.org/fathers/1901.htm": {
+  "757": {
+   "url": "https://www.newadvent.org/fathers/1901.htm",
+   "title": "Homilies on the Statues",
    "min": 16933,
    "max": 17141,
    "count": 209,
    "hash": "8257ba7c6bb417a2"
   },
-  "https://www.newadvent.org/fathers/1902.htm": {
+  "758": {
+   "url": "https://www.newadvent.org/fathers/1902.htm",
+   "title": "No One Can Harm the Man Who Does Not Injure Himself",
    "min": 17142,
    "max": 17158,
    "count": 17,
    "hash": "61f193ce2b04a7a3"
   },
-  "https://www.newadvent.org/fathers/1903.htm": {
+  "759": {
+   "url": "https://www.newadvent.org/fathers/1903.htm",
+   "title": "Two Letters to Theodore After His Fall",
    "min": 17159,
    "max": 17185,
    "count": 27,
    "hash": "d65994ee2d5d84e7"
   },
-  "https://www.newadvent.org/fathers/1904.htm": {
+  "760": {
+   "url": "https://www.newadvent.org/fathers/1904.htm",
+   "title": "Letter to a Young Widow",
    "min": 17186,
    "max": 17194,
    "count": 9,
    "hash": "04b487dd669f635e"
   },
-  "https://www.newadvent.org/fathers/1905.htm": {
+  "761": {
+   "url": "https://www.newadvent.org/fathers/1905.htm",
+   "title": "Homily on St. Ignatius",
    "min": 17195,
    "max": 17200,
    "count": 6,
    "hash": "7b44c22bb2224df1"
   },
-  "https://www.newadvent.org/fathers/1906.htm": {
+  "762": {
+   "url": "https://www.newadvent.org/fathers/1906.htm",
+   "title": "Homily on St. Babylas",
    "min": 17201,
    "max": 17204,
    "count": 4,
    "hash": "4332bc151495b9ce"
   },
-  "https://www.newadvent.org/fathers/1907.htm": {
+  "763": {
+   "url": "https://www.newadvent.org/fathers/1907.htm",
+   "title": "Homily Concerning \"Lowliness of Mind\"",
    "min": 17205,
    "max": 17215,
    "count": 11,
    "hash": "7c2105e9a0f05efb"
   },
-  "https://www.newadvent.org/fathers/1908.htm": {
+  "764": {
+   "url": "https://www.newadvent.org/fathers/1908.htm",
+   "title": "Instructions to Catechumens",
    "min": 17216,
    "max": 17228,
    "count": 13,
    "hash": "59fe82a7e6082136"
   },
-  "https://www.newadvent.org/fathers/1919.htm": {
+  "765": {
+   "url": "https://www.newadvent.org/fathers/1919.htm",
+   "title": "Three Homilies on the Power of Satan",
    "min": 17229,
    "max": 17231,
    "count": 3,
    "hash": "4a22c7c5dd35ff91"
   },
-  "https://www.newadvent.org/fathers/1910.htm": {
+  "766": {
+   "url": "https://www.newadvent.org/fathers/1910.htm",
+   "title": "Homily on the Passage \"Father, if it be possible ...\"",
    "min": 17232,
    "max": 17237,
    "count": 6,
    "hash": "a2fb51e6aaa7d562"
   },
-  "https://www.newadvent.org/fathers/1911.htm": {
+  "767": {
+   "url": "https://www.newadvent.org/fathers/1911.htm",
+   "title": "Homily on the Paralytic Lowered Through the Roof",
    "min": 17238,
    "max": 17247,
    "count": 10,
    "hash": "2af314f50a95bb7d"
   },
-  "https://www.newadvent.org/fathers/1912.htm": {
+  "768": {
+   "url": "https://www.newadvent.org/fathers/1912.htm",
+   "title": "Homily on the Passage \"If your enemy hunger, feed him.\"",
    "min": 17248,
    "max": 17257,
    "count": 10,
    "hash": "744355dbddad6df9"
   },
-  "https://www.newadvent.org/fathers/1913.htm": {
+  "769": {
+   "url": "https://www.newadvent.org/fathers/1913.htm",
+   "title": "Homily Against Publishing the Errors of the Brethren",
    "min": 17258,
    "max": 17267,
    "count": 10,
    "hash": "bca272ab36e2d0fe"
   },
-  "https://www.newadvent.org/fathers/1914.htm": {
+  "770": {
+   "url": "https://www.newadvent.org/fathers/1914.htm",
+   "title": "First Homily on Eutropius",
    "min": 17268,
    "max": 17272,
    "count": 5,
    "hash": "844df55e760f9251"
   },
-  "https://www.newadvent.org/fathers/1915.htm": {
+  "771": {
+   "url": "https://www.newadvent.org/fathers/1915.htm",
+   "title": "Second Homily on Eutropius (After His Captivity)",
    "min": 17273,
    "max": 17288,
    "count": 16,
    "hash": "c1ac50f21131d355"
   },
-  "https://www.newadvent.org/fathers/1916.htm": {
+  "772": {
+   "url": "https://www.newadvent.org/fathers/1916.htm",
+   "title": "Four Letters to Olympias",
    "min": 17289,
    "max": 17293,
    "count": 5,
    "hash": "25e85af0863f31b2"
   },
-  "https://www.newadvent.org/fathers/1917.htm": {
+  "773": {
+   "url": "https://www.newadvent.org/fathers/1917.htm",
+   "title": "Letter to Some Priests of Antioch",
    "min": 17294,
    "max": 17294,
    "count": 1,
    "hash": "0aa476ca0f6f3121"
   },
-  "https://www.newadvent.org/fathers/1918.htm": {
+  "774": {
+   "url": "https://www.newadvent.org/fathers/1918.htm",
+   "title": "Correspondence with Pope Innocent I",
    "min": 17295,
    "max": 17300,
    "count": 6,
    "hash": "4b3ccab8848fa0aa"
   },
-  "https://www.newadvent.org/fathers/1922.htm": {
+  "775": {
+   "url": "https://www.newadvent.org/fathers/1922.htm",
+   "title": "On the Priesthood",
    "min": 17301,
    "max": 17361,
    "count": 61,
    "hash": "39dc9c70da909062"
   },
-  "https://www.newadvent.org/fathers/0614.htm": {
+  "776": {
+   "url": "https://www.newadvent.org/fathers/0614.htm",
+   "title": "Extant Writings",
    "min": 17362,
    "max": 17383,
    "count": 22,
    "hash": "74c9dd7dd8dbf06b"
   },
-  "https://www.newadvent.org/fathers/0126.htm": {
+  "777": {
+   "url": "https://www.newadvent.org/fathers/0126.htm",
+   "title": "First Apology",
    "min": 17384,
    "max": 17452,
    "count": 69,
    "hash": "098afb9bb73417dc"
   },
-  "https://www.newadvent.org/fathers/0127.htm": {
+  "778": {
+   "url": "https://www.newadvent.org/fathers/0127.htm",
+   "title": "Second Apology",
    "min": 17453,
    "max": 17467,
    "count": 15,
    "hash": "18142dc1f20233eb"
   },
-  "https://www.newadvent.org/fathers/0128.htm": {
+  "779": {
+   "url": "https://www.newadvent.org/fathers/0128.htm",
+   "title": "Dialogue with Trypho",
    "min": 17468,
    "max": 17609,
    "count": 142,
    "hash": "58435fe6e9421581"
   },
-  "https://www.newadvent.org/fathers/0129.htm": {
+  "780": {
+   "url": "https://www.newadvent.org/fathers/0129.htm",
+   "title": "Hortatory Address to the Greeks",
    "min": 17610,
    "max": 17647,
    "count": 38,
    "hash": "946b423620898949"
   },
-  "https://www.newadvent.org/fathers/0130.htm": {
+  "781": {
+   "url": "https://www.newadvent.org/fathers/0130.htm",
+   "title": "On the Sole Government of God",
    "min": 17648,
    "max": 17653,
    "count": 6,
    "hash": "fc635270e7bb95ec"
   },
-  "https://www.newadvent.org/fathers/0131.htm": {
+  "782": {
+   "url": "https://www.newadvent.org/fathers/0131.htm",
+   "title": "Fragments of the Lost Work on the Resurrection",
    "min": 17654,
    "max": 17663,
    "count": 10,
    "hash": "3235a50a4a5a2f29"
   },
-  "https://www.newadvent.org/fathers/0132.htm": {
+  "783": {
+   "url": "https://www.newadvent.org/fathers/0132.htm",
+   "title": "Miscellaneous Fragments from Lost Writings",
    "min": 17664,
    "max": 17682,
    "count": 19,
    "hash": "7333d5ba82dcdc57"
   },
-  "https://www.newadvent.org/fathers/0133.htm": {
+  "784": {
+   "url": "https://www.newadvent.org/fathers/0133.htm",
+   "title": "Martyrdom of Justin, Chariton, and other Roman Martyrs",
    "min": 17683,
    "max": 17687,
    "count": 5,
    "hash": "c125afdee82d355e"
   },
-  "https://www.newadvent.org/fathers/0135.htm": {
+  "785": {
+   "url": "https://www.newadvent.org/fathers/0135.htm",
+   "title": "Discourse to the Greeks",
    "min": 17688,
    "max": 17692,
    "count": 5,
    "hash": "cb237232f64d9808"
   },
-  "https://www.newadvent.org/fathers/0701.htm": {
+  "786": {
+   "url": "https://www.newadvent.org/fathers/0701.htm",
+   "title": "The Divine Institutes",
    "min": 17693,
    "max": 17872,
    "count": 180,
    "hash": "5619f75f5b3a0c6b"
   },
-  "https://www.newadvent.org/fathers/0702.htm": {
+  "787": {
+   "url": "https://www.newadvent.org/fathers/0702.htm",
+   "title": "The Epitome of the Divine Institutes",
    "min": 17873,
    "max": 17941,
    "count": 69,
    "hash": "b62b7bd9d7881342"
   },
-  "https://www.newadvent.org/fathers/0703.htm": {
+  "788": {
+   "url": "https://www.newadvent.org/fathers/0703.htm",
+   "title": "On the Anger of God",
    "min": 17942,
    "max": 17964,
    "count": 23,
    "hash": "e0177b6df93070b1"
   },
-  "https://www.newadvent.org/fathers/0704.htm": {
+  "789": {
+   "url": "https://www.newadvent.org/fathers/0704.htm",
+   "title": "On the Workmanship of God",
    "min": 17965,
    "max": 17984,
    "count": 20,
    "hash": "8a52d282a670b077"
   },
-  "https://www.newadvent.org/fathers/0705.htm": {
+  "790": {
+   "url": "https://www.newadvent.org/fathers/0705.htm",
+   "title": "Of the Manner In Which the Persecutors Died",
    "min": 17985,
    "max": 18036,
    "count": 52,
    "hash": "fcd71568889dfdc6"
   },
-  "https://www.newadvent.org/fathers/0706.htm": {
+  "791": {
+   "url": "https://www.newadvent.org/fathers/0706.htm",
+   "title": "Fragments of Lactantius",
    "min": 18037,
    "max": 18037,
    "count": 1,
    "hash": "d6888918a3bfa93d"
   },
-  "https://www.newadvent.org/fathers/0707.htm": {
+  "792": {
+   "url": "https://www.newadvent.org/fathers/0707.htm",
+   "title": "The Phoenix",
    "min": 18038,
    "max": 18038,
    "count": 1,
    "hash": "9f27c4280488d1da"
   },
-  "https://www.newadvent.org/fathers/0708.htm": {
+  "793": {
+   "url": "https://www.newadvent.org/fathers/0708.htm",
+   "title": "A Poem on the Passion of the Lord",
    "min": 18039,
    "max": 18039,
    "count": 1,
    "hash": "f6afd77f7511b9da"
   },
-  "https://www.newadvent.org/fathers/3603.htm": {
+  "794": {
+   "url": "https://www.newadvent.org/fathers/3603.htm",
+   "title": "Sermons",
    "min": 18040,
    "max": 18277,
    "count": 238,
    "hash": "60250024b4bc02ac"
   },
-  "https://www.newadvent.org/fathers/3604.htm": {
+  "795": {
+   "url": "https://www.newadvent.org/fathers/3604.htm",
+   "title": "Letters",
    "min": 41546,
    "max": 41818,
    "count": 273,
    "hash": "d81640ee7bff7fb0"
   },
-  "https://www.newadvent.org/fathers/0617.htm": {
+  "796": {
+   "url": "https://www.newadvent.org/fathers/0617.htm",
+   "title": "Epistle",
    "min": 18549,
    "max": 18551,
    "count": 3,
    "hash": "e437439d395c43a5"
   },
-  "https://www.newadvent.org/fathers/0851.htm": {
+  "797": {
+   "url": "https://www.newadvent.org/fathers/0851.htm",
+   "title": "Canticle on Edessa",
    "min": 18552,
    "max": 18553,
    "count": 2,
    "hash": "875e6de27215453f"
   },
-  "https://www.newadvent.org/fathers/0860.htm": {
+  "798": {
+   "url": "https://www.newadvent.org/fathers/0860.htm",
+   "title": "Homily on Habib the Martyr",
    "min": 18554,
    "max": 18562,
    "count": 9,
    "hash": "329a0fd6cafac5dc"
   },
-  "https://www.newadvent.org/fathers/0861.htm": {
+  "799": {
+   "url": "https://www.newadvent.org/fathers/0861.htm",
+   "title": "Homily on Guria and Shamuna",
    "min": 18563,
    "max": 18571,
    "count": 9,
    "hash": "f25fe895d055cdd9"
   },
-  "https://www.newadvent.org/fathers/0101.htm": {
+  "800": {
+   "url": "https://www.newadvent.org/fathers/0101.htm",
+   "title": "Epistle to Diognetus",
    "min": 18572,
    "max": 18583,
    "count": 12,
    "hash": "d8ec65f4010abf62"
   },
-  "https://www.newadvent.org/fathers/0623.htm": {
+  "801": {
+   "url": "https://www.newadvent.org/fathers/0623.htm",
+   "title": "The Banquet of the Ten Virgins",
    "min": 18584,
    "max": 18671,
    "count": 88,
    "hash": "15e55f790cdb2861"
   },
-  "https://www.newadvent.org/fathers/0624.htm": {
+  "802": {
+   "url": "https://www.newadvent.org/fathers/0624.htm",
+   "title": "Concerning Free Will",
    "min": 18672,
    "max": 18683,
    "count": 12,
    "hash": "0955023fd55aa11e"
   },
-  "https://www.newadvent.org/fathers/0625.htm": {
+  "803": {
+   "url": "https://www.newadvent.org/fathers/0625.htm",
+   "title": "From the Discourse on the Resurrection",
    "min": 18684,
    "max": 18686,
    "count": 3,
    "hash": "a9e84b6dc38d1edb"
   },
-  "https://www.newadvent.org/fathers/0626.htm": {
+  "804": {
+   "url": "https://www.newadvent.org/fathers/0626.htm",
+   "title": "Fragments",
    "min": 18687,
    "max": 18690,
    "count": 4,
    "hash": "66c1c2d7dc883032"
   },
-  "https://www.newadvent.org/fathers/0627.htm": {
+  "805": {
+   "url": "https://www.newadvent.org/fathers/0627.htm",
+   "title": "Oration Concerning Simeon and Anna",
    "min": 18691,
    "max": 18704,
    "count": 14,
    "hash": "e859a8f948aeb01f"
   },
-  "https://www.newadvent.org/fathers/0628.htm": {
+  "806": {
+   "url": "https://www.newadvent.org/fathers/0628.htm",
+   "title": "Oration on the Psalms",
    "min": 18705,
    "max": 18710,
    "count": 6,
    "hash": "b79b2c5fb670f15d"
   },
-  "https://www.newadvent.org/fathers/0629.htm": {
+  "807": {
+   "url": "https://www.newadvent.org/fathers/0629.htm",
+   "title": "Three Fragments from the Homily on the Cross and Passion of Christ",
    "min": 18711,
    "max": 18713,
    "count": 3,
    "hash": "9aa3a3917df1efb0"
   },
-  "https://www.newadvent.org/fathers/0410.htm": {
+  "808": {
+   "url": "https://www.newadvent.org/fathers/0410.htm",
+   "title": "Octavius",
    "min": 18714,
    "max": 18754,
    "count": 41,
    "hash": "c6d0f47fa1a201ac"
   },
-  "https://www.newadvent.org/fathers/0859.htm": {
+  "809": {
+   "url": "https://www.newadvent.org/fathers/0859.htm",
+   "title": "History of Armenia",
    "min": 18755,
    "max": 18765,
    "count": 11,
    "hash": "6609fea0b79b92d6"
   },
-  "https://www.newadvent.org/fathers/0511.htm": {
+  "810": {
+   "url": "https://www.newadvent.org/fathers/0511.htm",
+   "title": "Treatise Concerning the Trinity",
    "min": 18766,
    "max": 18796,
    "count": 31,
    "hash": "160b01538096cc48"
   },
-  "https://www.newadvent.org/fathers/0512.htm": {
+  "811": {
+   "url": "https://www.newadvent.org/fathers/0512.htm",
+   "title": "On the Jewish Meats",
    "min": 18797,
    "max": 18803,
    "count": 7,
    "hash": "31974c88c135e1eb"
   },
-  "https://www.newadvent.org/fathers/0412.htm": {
+  "812": {
+   "url": "https://www.newadvent.org/fathers/0412.htm",
+   "title": "De Principiis",
    "min": 18804,
    "max": 18834,
    "count": 31,
    "hash": "10f583683a203500"
   },
-  "https://www.newadvent.org/fathers/0413.htm": {
+  "813": {
+   "url": "https://www.newadvent.org/fathers/0413.htm",
+   "title": "Africanus to Origen",
    "min": 18835,
    "max": 18835,
    "count": 1,
    "hash": "7f4a2c518c27a3bc"
   },
-  "https://www.newadvent.org/fathers/0414.htm": {
+  "814": {
+   "url": "https://www.newadvent.org/fathers/0414.htm",
+   "title": "Origen to Africanus",
    "min": 18836,
    "max": 18846,
    "count": 11,
    "hash": "24371a46f4d1d662"
   },
-  "https://www.newadvent.org/fathers/0415.htm": {
+  "815": {
+   "url": "https://www.newadvent.org/fathers/0415.htm",
+   "title": "Origen to Gregory",
    "min": 18847,
    "max": 18848,
    "count": 2,
    "hash": "a228d9d560c95b75"
   },
-  "https://www.newadvent.org/fathers/0416.htm": {
+  "816": {
+   "url": "https://www.newadvent.org/fathers/0416.htm",
+   "title": "Against Celsus",
    "min": 18849,
    "max": 19470,
    "count": 622,
    "hash": "7bed5b9dd5c8c5ed"
   },
-  "https://www.newadvent.org/fathers/1014.htm": {
+  "817": {
+   "url": "https://www.newadvent.org/fathers/1014.htm",
+   "title": "Letter of Origen to Gregory",
    "min": 19471,
    "max": 19473,
    "count": 3,
    "hash": "90baef423fb167fb"
   },
-  "https://www.newadvent.org/fathers/1015.htm": {
+  "818": {
+   "url": "https://www.newadvent.org/fathers/1015.htm",
+   "title": "Commentary on the Gospel of John",
    "min": 19474,
    "max": 19618,
    "count": 145,
    "hash": "0fb525e2564fcae6"
   },
-  "https://www.newadvent.org/fathers/1016.htm": {
+  "819": {
+   "url": "https://www.newadvent.org/fathers/1016.htm",
+   "title": "Commentary on the Gospel of Matthew",
    "min": 41819,
    "max": 41963,
    "count": 145,
    "hash": "052b71586b769c30"
   },
-  "https://www.newadvent.org/fathers/0615.htm": {
+  "820": {
+   "url": "https://www.newadvent.org/fathers/0615.htm",
+   "title": "Exposition on the Acts of the Apostles",
    "min": 19763,
    "max": 19766,
    "count": 4,
    "hash": "14c4df668e57e200"
   },
-  "https://www.newadvent.org/fathers/0125.htm": {
+  "821": {
+   "url": "https://www.newadvent.org/fathers/0125.htm",
+   "title": "Fragments",
    "min": 19767,
    "max": 19776,
    "count": 10,
    "hash": "4ff63f511d99f181"
   },
-  "https://www.newadvent.org/fathers/0619.htm": {
+  "822": {
+   "url": "https://www.newadvent.org/fathers/0619.htm",
+   "title": "The Genuine Acts",
    "min": 19777,
    "max": 19787,
    "count": 11,
    "hash": "6d3cdf194d9ffc55"
   },
-  "https://www.newadvent.org/fathers/0620.htm": {
+  "823": {
+   "url": "https://www.newadvent.org/fathers/0620.htm",
+   "title": "The Canonical Epistle",
    "min": 19788,
    "max": 19802,
    "count": 15,
    "hash": "b345eb075427fabb"
   },
-  "https://www.newadvent.org/fathers/0621.htm": {
+  "824": {
+   "url": "https://www.newadvent.org/fathers/0621.htm",
+   "title": "Fragments",
    "min": 19803,
    "max": 19811,
    "count": 9,
    "hash": "66b4121f054b1fc0"
   },
-  "https://www.newadvent.org/fathers/0136.htm": {
+  "825": {
+   "url": "https://www.newadvent.org/fathers/0136.htm",
+   "title": "Epistle to the Philippians",
    "min": 19812,
    "max": 19826,
    "count": 15,
    "hash": "59e85e902841ff07"
   },
-  "https://www.newadvent.org/fathers/0102.htm": {
+  "826": {
+   "url": "https://www.newadvent.org/fathers/0102.htm",
+   "title": "The Martyrdom of Polycarp",
    "min": 19827,
    "max": 19849,
    "count": 23,
    "hash": "b25d684af32bd702"
   },
-  "https://www.newadvent.org/fathers/2709.htm": {
+  "827": {
+   "url": "https://www.newadvent.org/fathers/2709.htm",
+   "title": "Apology",
    "min": 19850,
    "max": 19853,
    "count": 4,
    "hash": "d16a299d4e920f82"
   },
-  "https://www.newadvent.org/fathers/2711.htm": {
+  "828": {
+   "url": "https://www.newadvent.org/fathers/2711.htm",
+   "title": "Commentary on the Apostles' Creed",
    "min": 19854,
    "max": 19881,
    "count": 28,
    "hash": "0c80077adb87f418"
   },
-  "https://www.newadvent.org/fathers/2712.htm": {
+  "829": {
+   "url": "https://www.newadvent.org/fathers/2712.htm",
+   "title": "Prefaces and Other Works",
    "min": 19882,
    "max": 19895,
    "count": 14,
    "hash": "0fcf21edc28df64d"
   },
-  "https://www.newadvent.org/fathers/2601.htm": {
+  "830": {
+   "url": "https://www.newadvent.org/fathers/2601.htm",
+   "title": "Ecclesiastical History",
    "min": 19896,
    "max": 20145,
    "count": 250,
    "hash": "2287d3948b5efa9f"
   },
-  "https://www.newadvent.org/fathers/2602.htm": {
+  "831": {
+   "url": "https://www.newadvent.org/fathers/2602.htm",
+   "title": "Ecclesiastical History",
    "min": 20146,
    "max": 20395,
    "count": 250,
    "hash": "c777215dd262c899"
   },
-  "https://www.newadvent.org/fathers/3501.htm": {
+  "832": {
+   "url": "https://www.newadvent.org/fathers/3501.htm",
+   "title": "On the Life of St. Martin",
    "min": 20396,
    "max": 20423,
    "count": 28,
    "hash": "48a02986ff648175"
   },
-  "https://www.newadvent.org/fathers/3502.htm": {
+  "833": {
+   "url": "https://www.newadvent.org/fathers/3502.htm",
+   "title": "Genuine",
    "min": 20424,
    "max": 20426,
    "count": 3,
    "hash": "50587b50e2e49340"
   },
-  "https://www.newadvent.org/fathers/3504.htm": {
+  "834": {
+   "url": "https://www.newadvent.org/fathers/3504.htm",
+   "title": "Dubious",
    "min": 20427,
    "max": 20433,
    "count": 7,
    "hash": "757610a8d313511e"
   },
-  "https://www.newadvent.org/fathers/3503.htm": {
+  "835": {
+   "url": "https://www.newadvent.org/fathers/3503.htm",
+   "title": "Dialogues",
    "min": 20434,
    "max": 20492,
    "count": 59,
    "hash": "4ea9d585c6e396dd"
   },
-  "https://www.newadvent.org/fathers/0202.htm": {
+  "836": {
+   "url": "https://www.newadvent.org/fathers/0202.htm",
+   "title": "Address to the Greeks",
    "min": 20493,
    "max": 20534,
    "count": 42,
    "hash": "9f301795f3606468"
   },
-  "https://www.newadvent.org/fathers/0203.htm": {
+  "837": {
+   "url": "https://www.newadvent.org/fathers/0203.htm",
+   "title": "Fragments",
    "min": 20535,
    "max": 20546,
    "count": 12,
    "hash": "21d9ead352ced627"
   },
-  "https://www.newadvent.org/fathers/1002.htm": {
+  "838": {
+   "url": "https://www.newadvent.org/fathers/1002.htm",
+   "title": "The Diatessaron",
    "min": 20547,
    "max": 20682,
    "count": 136,
    "hash": "7cb518bf4aafa97b"
   },
-  "https://www.newadvent.org/fathers/0301.htm": {
+  "839": {
+   "url": "https://www.newadvent.org/fathers/0301.htm",
+   "title": "The Apology",
    "min": 20683,
    "max": 20732,
    "count": 50,
    "hash": "45f6dcf9186e8861"
   },
-  "https://www.newadvent.org/fathers/0302.htm": {
+  "840": {
+   "url": "https://www.newadvent.org/fathers/0302.htm",
+   "title": "On Idolatry",
    "min": 20733,
    "max": 20756,
    "count": 24,
    "hash": "4549df2a23f8b8f7"
   },
-  "https://www.newadvent.org/fathers/0303.htm": {
+  "841": {
+   "url": "https://www.newadvent.org/fathers/0303.htm",
+   "title": "De Spectaculis (The Shows)",
    "min": 20757,
    "max": 20786,
    "count": 30,
    "hash": "faf751b838a179e6"
   },
-  "https://www.newadvent.org/fathers/0304.htm": {
+  "842": {
+   "url": "https://www.newadvent.org/fathers/0304.htm",
+   "title": "De Corona (The Chaplet)",
    "min": 20787,
    "max": 20801,
    "count": 15,
    "hash": "effb0ebd58544a83"
   },
-  "https://www.newadvent.org/fathers/0305.htm": {
+  "843": {
+   "url": "https://www.newadvent.org/fathers/0305.htm",
+   "title": "To Scapula",
    "min": 20802,
    "max": 20806,
    "count": 5,
    "hash": "86a60968aa278724"
   },
-  "https://www.newadvent.org/fathers/0308.htm": {
+  "844": {
+   "url": "https://www.newadvent.org/fathers/0308.htm",
+   "title": "An Answer to the Jews",
    "min": 20807,
    "max": 20820,
    "count": 14,
    "hash": "25df3cdec4497042"
   },
-  "https://www.newadvent.org/fathers/0309.htm": {
+  "845": {
+   "url": "https://www.newadvent.org/fathers/0309.htm",
+   "title": "The Soul's Testimony",
    "min": 20821,
    "max": 20826,
    "count": 6,
    "hash": "766ace1a1a9da4e9"
   },
-  "https://www.newadvent.org/fathers/0310.htm": {
+  "846": {
+   "url": "https://www.newadvent.org/fathers/0310.htm",
+   "title": "A Treatise on the Soul",
    "min": 20827,
    "max": 20884,
    "count": 58,
    "hash": "1b630974bf5ca661"
   },
-  "https://www.newadvent.org/fathers/0311.htm": {
+  "847": {
+   "url": "https://www.newadvent.org/fathers/0311.htm",
+   "title": "The Prescription Against Heretics",
    "min": 20885,
    "max": 20928,
    "count": 44,
    "hash": "d9320f8eccfdb6e0"
   },
-  "https://www.newadvent.org/fathers/0312.htm": {
+  "848": {
+   "url": "https://www.newadvent.org/fathers/0312.htm",
+   "title": "Against Marcion",
    "min": 20929,
    "max": 21074,
    "count": 146,
    "hash": "36a08f49fd2db2d4"
   },
-  "https://www.newadvent.org/fathers/0313.htm": {
+  "849": {
+   "url": "https://www.newadvent.org/fathers/0313.htm",
+   "title": "Against Hermogenes",
    "min": 21075,
    "max": 21119,
    "count": 45,
    "hash": "9a6f74def73707a4"
   },
-  "https://www.newadvent.org/fathers/0314.htm": {
+  "850": {
+   "url": "https://www.newadvent.org/fathers/0314.htm",
+   "title": "Against the Valentinians",
    "min": 21120,
    "max": 21158,
    "count": 39,
    "hash": "d421650d53a2a187"
   },
-  "https://www.newadvent.org/fathers/0315.htm": {
+  "851": {
+   "url": "https://www.newadvent.org/fathers/0315.htm",
+   "title": "On the Flesh of Christ",
    "min": 21159,
    "max": 21183,
    "count": 25,
    "hash": "dbf7ae6fd2bb2aa9"
   },
-  "https://www.newadvent.org/fathers/0316.htm": {
+  "852": {
+   "url": "https://www.newadvent.org/fathers/0316.htm",
+   "title": "On the Resurrection of the Flesh",
    "min": 21184,
    "max": 21246,
    "count": 63,
    "hash": "2f544168d6e58c5f"
   },
-  "https://www.newadvent.org/fathers/0317.htm": {
+  "853": {
+   "url": "https://www.newadvent.org/fathers/0317.htm",
+   "title": "Against Praxeas",
    "min": 21247,
    "max": 21277,
    "count": 31,
    "hash": "697673acdc631f3e"
   },
-  "https://www.newadvent.org/fathers/0318.htm": {
+  "854": {
+   "url": "https://www.newadvent.org/fathers/0318.htm",
+   "title": "Scorpiace",
    "min": 21278,
    "max": 21292,
    "count": 15,
    "hash": "0c71f9091ca80c97"
   },
-  "https://www.newadvent.org/fathers/0319.htm": {
+  "855": {
+   "url": "https://www.newadvent.org/fathers/0319.htm",
+   "title": "Appendix (Against All Heresies)",
    "min": 21293,
    "max": 21300,
    "count": 8,
    "hash": "fbf5e74793bbd927"
   },
-  "https://www.newadvent.org/fathers/0320.htm": {
+  "856": {
+   "url": "https://www.newadvent.org/fathers/0320.htm",
+   "title": "On Repentance",
    "min": 21301,
    "max": 21312,
    "count": 12,
    "hash": "0a1a409eaf510e9b"
   },
-  "https://www.newadvent.org/fathers/0321.htm": {
+  "857": {
+   "url": "https://www.newadvent.org/fathers/0321.htm",
+   "title": "On Baptism",
    "min": 21313,
    "max": 21332,
    "count": 20,
    "hash": "4971e77005428e69"
   },
-  "https://www.newadvent.org/fathers/0322.htm": {
+  "858": {
+   "url": "https://www.newadvent.org/fathers/0322.htm",
+   "title": "On Prayer",
    "min": 21333,
    "max": 21361,
    "count": 29,
    "hash": "c1a92923e2d72cfb"
   },
-  "https://www.newadvent.org/fathers/0323.htm": {
+  "859": {
+   "url": "https://www.newadvent.org/fathers/0323.htm",
+   "title": "Ad Martyras",
    "min": 21362,
    "max": 21367,
    "count": 6,
    "hash": "c755c838b7c50780"
   },
-  "https://www.newadvent.org/fathers/0324.htm": {
+  "860": {
+   "url": "https://www.newadvent.org/fathers/0324.htm",
+   "title": "The Martyrdom of Perpetua and Felicity",
    "min": 21368,
    "max": 21374,
    "count": 7,
    "hash": "58a6e04db86420b0"
   },
-  "https://www.newadvent.org/fathers/0325.htm": {
+  "861": {
+   "url": "https://www.newadvent.org/fathers/0325.htm",
+   "title": "Of Patience",
    "min": 21375,
    "max": 21390,
    "count": 16,
    "hash": "7f760c9fd204b446"
   },
-  "https://www.newadvent.org/fathers/0401.htm": {
+  "862": {
+   "url": "https://www.newadvent.org/fathers/0401.htm",
+   "title": "On the Pallium",
    "min": 21391,
    "max": 21396,
    "count": 6,
    "hash": "386700579f36dea4"
   },
-  "https://www.newadvent.org/fathers/0402.htm": {
+  "863": {
+   "url": "https://www.newadvent.org/fathers/0402.htm",
+   "title": "On the Apparel of Women",
    "min": 21397,
    "max": 21410,
    "count": 14,
    "hash": "71150cd425352154"
   },
-  "https://www.newadvent.org/fathers/0403.htm": {
+  "864": {
+   "url": "https://www.newadvent.org/fathers/0403.htm",
+   "title": "On the Veiling of Virgins",
    "min": 21411,
    "max": 21427,
    "count": 17,
    "hash": "5154f5d704cc52c1"
   },
-  "https://www.newadvent.org/fathers/0404.htm": {
+  "865": {
+   "url": "https://www.newadvent.org/fathers/0404.htm",
+   "title": "To His Wife",
    "min": 21428,
    "max": 21440,
    "count": 13,
    "hash": "700e7718c4fc5e7d"
   },
-  "https://www.newadvent.org/fathers/0405.htm": {
+  "866": {
+   "url": "https://www.newadvent.org/fathers/0405.htm",
+   "title": "On Exhortation to Chastity",
    "min": 21441,
    "max": 21449,
    "count": 9,
    "hash": "2fb887221f92f050"
   },
-  "https://www.newadvent.org/fathers/0406.htm": {
+  "867": {
+   "url": "https://www.newadvent.org/fathers/0406.htm",
+   "title": "On Monogamy",
    "min": 21450,
    "max": 21466,
    "count": 17,
    "hash": "37cec570e26233cc"
   },
-  "https://www.newadvent.org/fathers/0407.htm": {
+  "868": {
+   "url": "https://www.newadvent.org/fathers/0407.htm",
+   "title": "On Modesty",
    "min": 21467,
    "max": 21488,
    "count": 22,
    "hash": "46d74915e299463b"
   },
-  "https://www.newadvent.org/fathers/0408.htm": {
+  "869": {
+   "url": "https://www.newadvent.org/fathers/0408.htm",
+   "title": "On Fasting",
    "min": 21489,
    "max": 21506,
    "count": 18,
    "hash": "9318b0c6b8e5bc89"
   },
-  "https://www.newadvent.org/fathers/0409.htm": {
+  "870": {
+   "url": "https://www.newadvent.org/fathers/0409.htm",
+   "title": "De Fuga in Persecutione",
    "min": 21507,
    "max": 21517,
    "count": 11,
    "hash": "04e68609f961d170"
   },
-  "https://www.newadvent.org/fathers/2701.htm": {
+  "871": {
+   "url": "https://www.newadvent.org/fathers/2701.htm",
+   "title": "Counter-Statements to Cyril's 12 Anathemas against Nestorius",
    "min": 21518,
    "max": 21526,
    "count": 9,
    "hash": "8a6157d46c40312b"
   },
-  "https://www.newadvent.org/fathers/2702.htm": {
+  "872": {
+   "url": "https://www.newadvent.org/fathers/2702.htm",
+   "title": "Ecclesiastical History",
    "min": 21527,
    "max": 21682,
    "count": 156,
    "hash": "84178a68493eb59a"
   },
-  "https://www.newadvent.org/fathers/2703.htm": {
+  "873": {
+   "url": "https://www.newadvent.org/fathers/2703.htm",
+   "title": "Dialogues (\"Eranistes\" or \"Polymorphus\")",
    "min": 21683,
    "max": 21812,
    "count": 130,
    "hash": "66fd3708452a8f00"
   },
-  "https://www.newadvent.org/fathers/2704.htm": {
+  "874": {
+   "url": "https://www.newadvent.org/fathers/2704.htm",
+   "title": "Demonstrations by Syllogism",
    "min": 21813,
    "max": 21815,
    "count": 3,
    "hash": "2c97a7aaff2160ff"
   },
-  "https://www.newadvent.org/fathers/2707.htm": {
+  "875": {
+   "url": "https://www.newadvent.org/fathers/2707.htm",
+   "title": "Letters",
    "min": 40259,
    "max": 40494,
    "count": 236,
    "hash": "be1681473c533fda"
   },
-  "https://www.newadvent.org/fathers/0802.htm": {
+  "876": {
+   "url": "https://www.newadvent.org/fathers/0802.htm",
+   "title": "Excerpts",
    "min": 21817,
    "max": 21829,
    "count": 13,
    "hash": "68ded24ced71a82c"
   },
-  "https://www.newadvent.org/fathers/0204.htm": {
+  "877": {
+   "url": "https://www.newadvent.org/fathers/0204.htm",
+   "title": "Theophilus to Autolycus",
    "min": 21830,
    "max": 21911,
    "count": 82,
    "hash": "4fcdb90209d9472d"
   },
-  "https://www.newadvent.org/fathers/0709.htm": {
+  "878": {
+   "url": "https://www.newadvent.org/fathers/0709.htm",
+   "title": "Poem on Easter",
    "min": 21912,
    "max": 21912,
    "count": 1,
    "hash": "99f62a4052bdacbc"
   },
-  "https://www.newadvent.org/fathers/0711.htm": {
+  "879": {
+   "url": "https://www.newadvent.org/fathers/0711.htm",
+   "title": "On the Creation of the World",
    "min": 21913,
    "max": 21916,
    "count": 4,
    "hash": "98b236ae828439c5"
   },
-  "https://www.newadvent.org/fathers/0712.htm": {
+  "880": {
+   "url": "https://www.newadvent.org/fathers/0712.htm",
+   "title": "Commentary on the Apocalypse of the Blessed John",
    "min": 21917,
    "max": 21935,
    "count": 19,
    "hash": "8a4dd401a07e23d2"
   },
-  "https://www.newadvent.org/fathers/3506.htm": {
+  "881": {
+   "url": "https://www.newadvent.org/fathers/3506.htm",
+   "title": "Commonitory for the Antiquity and Universality of the Catholic Faith",
    "min": 21936,
    "max": 21968,
    "count": 33,
    "hash": "9d5339c721b98609"
   },
-  "https://www.newadvent.org/fathers/0717.htm": {
+  "882": {
+   "url": "https://www.newadvent.org/fathers/0717.htm",
+   "title": "The Liturgy of James",
    "min": 21969,
    "max": 21971,
    "count": 3,
    "hash": "3a2b219cb7a44e09"
   },
-  "https://www.newadvent.org/fathers/0718.htm": {
+  "883": {
+   "url": "https://www.newadvent.org/fathers/0718.htm",
+   "title": "The Liturgy of Mark",
    "min": 21972,
    "max": 21975,
    "count": 4,
    "hash": "a7ffa634502a2b57"
   },
-  "https://www.newadvent.org/fathers/0719.htm": {
+  "884": {
+   "url": "https://www.newadvent.org/fathers/0719.htm",
+   "title": "The Liturgy of the Blessed Apostles",
    "min": 21976,
    "max": 21986,
    "count": 11,
    "hash": "e708f6f34ddeb524"
   },
-  "https://www.newadvent.org/fathers/3818.htm": {
+  "885": {
+   "url": "https://www.newadvent.org/fathers/3818.htm",
+   "title": "Carthage under Cyprian (257)",
    "min": 21987,
    "max": 21987,
    "count": 1,
    "hash": "3e60d03037cb9dc5"
   },
-  "https://www.newadvent.org/fathers/3802.htm": {
+  "886": {
+   "url": "https://www.newadvent.org/fathers/3802.htm",
+   "title": "Ancyra (314)",
    "min": 21988,
    "max": 21995,
    "count": 8,
    "hash": "7f7cd1969dbf9192"
   },
-  "https://www.newadvent.org/fathers/3803.htm": {
+  "887": {
+   "url": "https://www.newadvent.org/fathers/3803.htm",
+   "title": "Neocaesarea (315)",
    "min": 21996,
    "max": 21998,
    "count": 3,
    "hash": "2d8d8e6a5d8832ef"
   },
-  "https://www.newadvent.org/fathers/3801.htm": {
+  "888": {
+   "url": "https://www.newadvent.org/fathers/3801.htm",
+   "title": "Nicaea I (325)",
    "min": 21999,
    "max": 22001,
    "count": 3,
    "hash": "b63ef8e445a34761"
   },
-  "https://www.newadvent.org/fathers/3805.htm": {
+  "889": {
+   "url": "https://www.newadvent.org/fathers/3805.htm",
+   "title": "Antioch in Encaeniis (341)",
    "min": 22002,
    "max": 22004,
    "count": 3,
    "hash": "6b53bdb2e5dd52c3"
   },
-  "https://www.newadvent.org/fathers/3804.htm": {
+  "890": {
+   "url": "https://www.newadvent.org/fathers/3804.htm",
+   "title": "Gangra (343)",
    "min": 22005,
    "max": 22007,
    "count": 3,
    "hash": "5a6cb11aeec78b71"
   },
-  "https://www.newadvent.org/fathers/3815.htm": {
+  "891": {
+   "url": "https://www.newadvent.org/fathers/3815.htm",
+   "title": "Sardica (344)",
    "min": 22008,
    "max": 22025,
    "count": 18,
    "hash": "0d55814333367a77"
   },
-  "https://www.newadvent.org/fathers/3808.htm": {
+  "892": {
+   "url": "https://www.newadvent.org/fathers/3808.htm",
+   "title": "Constantinople I (381)",
    "min": 22026,
    "max": 22028,
    "count": 3,
    "hash": "e708436ea3387acd"
   },
-  "https://www.newadvent.org/fathers/3809.htm": {
+  "893": {
+   "url": "https://www.newadvent.org/fathers/3809.htm",
+   "title": "Constantinople (382)",
    "min": 22029,
    "max": 22030,
    "count": 2,
    "hash": "4e16e92bd7e20330"
   },
-  "https://www.newadvent.org/fathers/3806.htm": {
+  "894": {
+   "url": "https://www.newadvent.org/fathers/3806.htm",
+   "title": "Laodicea (390)",
    "min": 22031,
    "max": 22042,
    "count": 12,
    "hash": "e0af7399d443326d"
   },
-  "https://www.newadvent.org/fathers/3817.htm": {
+  "895": {
+   "url": "https://www.newadvent.org/fathers/3817.htm",
+   "title": "Constantinople under Nectarius (394)",
    "min": 22043,
    "max": 22043,
    "count": 1,
    "hash": "f4b397a40d7d9b67"
   },
-  "https://www.newadvent.org/fathers/3816.htm": {
+  "896": {
+   "url": "https://www.newadvent.org/fathers/3816.htm",
+   "title": "Carthage (419)",
    "min": 22044,
    "max": 22046,
    "count": 3,
    "hash": "41b046ddb0c90d5b"
   },
-  "https://www.newadvent.org/fathers/3810.htm": {
+  "897": {
+   "url": "https://www.newadvent.org/fathers/3810.htm",
+   "title": "Ephesus (431)",
    "min": 22047,
    "max": 22050,
    "count": 4,
    "hash": "f02fadeee45e50e3"
   },
-  "https://www.newadvent.org/fathers/3811.htm": {
+  "898": {
+   "url": "https://www.newadvent.org/fathers/3811.htm",
+   "title": "Chalcedon (451)",
    "min": 22051,
    "max": 22063,
    "count": 13,
    "hash": "1fe44437917fcfa4"
   },
-  "https://www.newadvent.org/fathers/3812.htm": {
+  "899": {
+   "url": "https://www.newadvent.org/fathers/3812.htm",
+   "title": "Constantinople II (553)",
    "min": 22064,
    "max": 22071,
    "count": 8,
    "hash": "be5f26e9f9f0afda"
   },
-  "https://www.newadvent.org/fathers/3813.htm": {
+  "900": {
+   "url": "https://www.newadvent.org/fathers/3813.htm",
+   "title": "Constantinople III (680)",
    "min": 22072,
    "max": 22081,
    "count": 10,
    "hash": "8a1577377ed1c727"
   },
-  "https://www.newadvent.org/fathers/3814.htm": {
+  "901": {
+   "url": "https://www.newadvent.org/fathers/3814.htm",
+   "title": "Constantinople/\"Trullo\"/Quinisext (692)",
    "min": 22082,
    "max": 22183,
    "count": 102,
    "hash": "76809a80ad61f018"
   },
-  "https://www.newadvent.org/fathers/3819.htm": {
+  "902": {
+   "url": "https://www.newadvent.org/fathers/3819.htm",
+   "title": "Nicaea II (787)",
    "min": 22184,
    "max": 22190,
    "count": 7,
    "hash": "9bad9fb1265ae090"
   },
-  "https://www.newadvent.org/fathers/0714.htm": {
+  "942": {
+   "url": "https://www.newadvent.org/fathers/0714.htm",
+   "title": "The Didache (c. 100)",
    "min": 22540,
    "max": 22555,
    "count": 16,
    "hash": "0fc55035bc60b5a5"
   },
-  "https://www.newadvent.org/fathers/0715.htm": {
+  "943": {
+   "url": "https://www.newadvent.org/fathers/0715.htm",
+   "title": "Apostolic Constitutions (c. 400)",
    "min": 22556,
    "max": 22600,
    "count": 45,
    "hash": "6330724a1ee2eeb3"
   },
-  "https://www.newadvent.org/fathers/1013.htm": {
+  "945": {
+   "url": "https://www.newadvent.org/fathers/1013.htm",
+   "title": "The Passion of the Scillitan Martyrs (c. 180)",
    "min": 22610,
    "max": 22611,
    "count": 2,
    "hash": "560517aef3f40238"
   },
-  "https://www.newadvent.org/fathers/0514.htm": {
+  "946": {
+   "url": "https://www.newadvent.org/fathers/0514.htm",
+   "title": "A Treatise Against the Heretic Novatian (c. 255)",
    "min": 22612,
    "max": 22620,
    "count": 9,
    "hash": "d743b9d97e3237b6"
   },
-  "https://www.newadvent.org/fathers/0515.htm": {
+  "947": {
+   "url": "https://www.newadvent.org/fathers/0515.htm",
+   "title": "A Treatise on Re-Baptism (c. 255)",
    "min": 22621,
    "max": 22634,
    "count": 14,
    "hash": "5f6e08dd1057959b"
   },
-  "https://www.newadvent.org/fathers/07158.htm": {
+  "948": {
+   "url": "https://www.newadvent.org/fathers/07158.htm",
+   "title": "Apostolic Constitutions, Book VIII, Chapter 47",
    "min": 22635,
    "max": 22639,
    "count": 5,
    "hash": "7d133ec6add0de6c"
   },
-  "https://www.newadvent.org/fathers/0856.htm": {
+  "949": {
+   "url": "https://www.newadvent.org/fathers/0856.htm",
+   "title": "Acts of Sharbil (unknown date)",
    "min": 22640,
    "max": 22655,
    "count": 16,
    "hash": "1a089826aaa6d4cb"
   },
-  "https://www.newadvent.org/fathers/0865.htm": {
+  "950": {
+   "url": "https://www.newadvent.org/fathers/0865.htm",
+   "title": "The Martyrdom of Barsamya (unknown date)",
    "min": 22656,
    "max": 22662,
    "count": 7,
    "hash": "4c10c559b3ae0f4a"
   },
-  "https://www.newadvent.org/fathers/0852.htm": {
+  "951": {
+   "url": "https://www.newadvent.org/fathers/0852.htm",
+   "title": "Extracts from Various Books Concerning Abgar the King and Addaeus the Apostle (unknown date)",
    "min": 22663,
    "max": 22670,
    "count": 8,
    "hash": "80af25f93a5b7cee"
   },
-  "https://www.newadvent.org/fathers/0854.htm": {
+  "952": {
+   "url": "https://www.newadvent.org/fathers/0854.htm",
+   "title": "The Teaching of the Apostles (unknown date)",
    "min": 22671,
    "max": 22678,
    "count": 8,
    "hash": "65f720e42739c5b9"
   },
-  "https://www.newadvent.org/fathers/0855.htm": {
+  "953": {
+   "url": "https://www.newadvent.org/fathers/0855.htm",
+   "title": "The Teaching of Simon Cephas in the City of Rome (unknown date)",
    "min": 22679,
    "max": 22682,
    "count": 4,
    "hash": "61937eb97fa2f6be"
   },
-  "https://www.newadvent.org/fathers/0857.htm": {
+  "954": {
+   "url": "https://www.newadvent.org/fathers/0857.htm",
+   "title": "Martyrdom of Habib the Deacon (unknown date)",
    "min": 22683,
    "max": 22692,
    "count": 10,
    "hash": "002126c01183f47e"
   },
-  "https://www.newadvent.org/fathers/0858.htm": {
+  "955": {
+   "url": "https://www.newadvent.org/fathers/0858.htm",
+   "title": "Martyrdom of the Holy Confessors Shamuna, Guria, and Habib (unknown date)",
    "min": 22693,
    "max": 22700,
    "count": 8,
    "hash": "512efca469bb484b"
   },
-  "https://www.newadvent.org/fathers/0863.htm": {
+  "956": {
+   "url": "https://www.newadvent.org/fathers/0863.htm",
+   "title": "A Letter of Mara, Son of Serapion (unknown date)",
    "min": 22701,
    "max": 22707,
    "count": 7,
    "hash": "ec5e6046d1819d2c"
   },
-  "https://www.newadvent.org/fathers/0864.htm": {
+  "957": {
+   "url": "https://www.newadvent.org/fathers/0864.htm",
+   "title": "Ambrose (unknown date)",
    "min": 22708,
    "max": 22712,
    "count": 5,
    "hash": "dbcebfeb146b2ea7"
   },
-  "https://www.ccel.org/ccel/brannan/hstcrcon/cache/hstcrcon.txt": {
+  "959": {
+   "url": "https://www.ccel.org/ccel/brannan/hstcrcon/cache/hstcrcon.txt",
+   "title": "The Heidelberg Catechism",
+   "min": 22726,
+   "max": 22854,
+   "count": 129,
+   "hash": "9e131577bcae1876"
+  },
+  "960": {
+   "url": "https://www.ccel.org/ccel/brannan/hstcrcon/cache/hstcrcon.txt",
+   "title": "The Canons of Dordt",
+   "min": 22855,
+   "max": 22913,
+   "count": 59,
+   "hash": "def40cf71d3b4b9f"
+  },
+  "961": {
+   "url": "https://www.ccel.org/ccel/brannan/hstcrcon/cache/hstcrcon.txt",
+   "title": "The Belgic Confession",
    "min": 22914,
    "max": 22950,
    "count": 37,
    "hash": "9bdd18a469d8da35"
   },
-  "https://www.gutenberg.org/ebooks/275": {
+  "962": {
+   "url": "https://www.gutenberg.org/ebooks/275",
+   "title": "The Augsburg Confession",
    "min": 22951,
    "max": 22981,
    "count": 31,
    "hash": "e415226a449eda37"
   },
-  "https://www.gutenberg.org/ebooks/6744": {
+  "963": {
+   "url": "https://www.gutenberg.org/ebooks/6744",
+   "title": "The Apology of the Augsburg Confession",
    "min": 22982,
    "max": 23083,
    "count": 102,
    "hash": "834652da6572c995"
   },
-  "https://www.gutenberg.org/ebooks/273": {
+  "964": {
+   "url": "https://www.gutenberg.org/ebooks/273",
+   "title": "The Smalcald Articles",
    "min": 23084,
    "max": 23096,
    "count": 13,
    "hash": "8efc4c7771c553aa"
   },
-  "https://www.gutenberg.org/ebooks/1670": {
+  "965": {
+   "url": "https://www.gutenberg.org/ebooks/1670",
+   "title": "Luther's Small Catechism",
    "min": 23097,
    "max": 23111,
    "count": 15,
    "hash": "c04d3cb5b7e58633"
   },
-  "https://archive.org/details/thecanonsanddecr00unknuoft": {
+  "966": {
+   "url": "https://archive.org/details/thecanonsanddecr00unknuoft",
+   "title": "The Canons and Decrees of the Council of Trent",
    "min": 23112,
    "max": 23215,
    "count": 104,
    "hash": "adc3afde2aba2377"
   },
-  "https://www.ccel.org/ccel/anonymous/westminster1/cache/westminster1.txt": {
+  "967": {
+   "url": "https://www.ccel.org/ccel/anonymous/westminster1/cache/westminster1.txt",
+   "title": "The Westminster Shorter Catechism",
    "min": 23216,
    "max": 23322,
    "count": 107,
    "hash": "88b958578b7d2852"
   },
-  "https://www.ccel.org/ccel/anonymous/westminster2/cache/westminster2.txt": {
+  "968": {
+   "url": "https://www.ccel.org/ccel/anonymous/westminster2/cache/westminster2.txt",
+   "title": "The Westminster Larger Catechism",
    "min": 23323,
    "max": 23518,
    "count": 196,
    "hash": "764f1b102263c966"
   },
-  "https://www.gutenberg.org/cache/epub/29622/pg29622.txt": {
+  "969": {
+   "url": "https://www.gutenberg.org/cache/epub/29622/pg29622.txt",
+   "title": "The Thirty-Nine Articles of Religion",
    "min": 23519,
    "max": 23557,
    "count": 39,
    "hash": "723cbd2157366e1f"
   },
-  "https://www.gutenberg.org/ebooks/10": {
+  "970": {
+   "url": "https://www.gutenberg.org/ebooks/10",
+   "title": "The Holy Bible: King James Version",
    "min": 23558,
    "max": 24746,
    "count": 1189,
    "hash": "668c170dc73e70ad"
   },
-  "https://www.newadvent.org/summa/": {
+  "971": {
+   "url": "https://www.newadvent.org/summa/",
+   "title": "Summa Theologiae: Prima Pars",
+   "min": 24747,
+   "max": 25330,
+   "count": 584,
+   "hash": "c1e69f63e9868a55"
+  },
+  "972": {
+   "url": "https://www.newadvent.org/summa/",
+   "title": "Summa Theologiae: Prima Secundae",
+   "min": 25331,
+   "max": 25949,
+   "count": 619,
+   "hash": "fccabf59cacad6df"
+  },
+  "973": {
+   "url": "https://www.newadvent.org/summa/",
+   "title": "Summa Theologiae: Secunda Secundae",
+   "min": 25950,
+   "max": 26866,
+   "count": 917,
+   "hash": "824ae799e33decef"
+  },
+  "974": {
+   "url": "https://www.newadvent.org/summa/",
+   "title": "Summa Theologiae: Tertia Pars",
+   "min": 26867,
+   "max": 27415,
+   "count": 549,
+   "hash": "291f22f501cf23cd"
+  },
+  "975": {
+   "url": "https://www.newadvent.org/summa/",
+   "title": "Summa Theologiae: Supplementum",
    "min": 27416,
    "max": 27861,
    "count": 446,
    "hash": "05b8d60d0ee89268"
   },
-  "https://en.wikisource.org/wiki/1689_Baptist_Confession_of_Faith": {
+  "976": {
+   "url": "https://en.wikisource.org/wiki/1689_Baptist_Confession_of_Faith",
+   "title": "The Second London Baptist Confession of Faith",
    "min": 27862,
    "max": 28021,
    "count": 160,
    "hash": "a7f8e6ef6795e564"
   },
-  "https://www.ccel.org/ccel/wesley/sermons.html": {
+  "977": {
+   "url": "https://www.ccel.org/ccel/wesley/sermons.html",
+   "title": "Sermons on Several Occasions",
    "min": 28022,
    "max": 28162,
    "count": 141,
    "hash": "70a29dfaf8fe754f"
   },
-  "https://en.wikisource.org/wiki/Confession_of_Faith_Ratification_Act_1690": {
+  "978": {
+   "url": "https://en.wikisource.org/wiki/Confession_of_Faith_Ratification_Act_1690",
+   "title": "The Westminster Confession of Faith",
    "min": 28163,
    "max": 28334,
    "count": 172,
    "hash": "0839c83afe3daedf"
   },
-  "https://en.wikisource.org/wiki/Scots_Confession": {
+  "979": {
+   "url": "https://en.wikisource.org/wiki/Scots_Confession",
+   "title": "The Scots Confession",
    "min": 28335,
    "max": 28359,
    "count": 25,
    "hash": "7cae1e7002ea4adb"
   },
-  "https://ebible.org/eng-web/": {
+  "980": {
+   "url": "https://ebible.org/eng-web/",
+   "title": "The Holy Bible: World English Bible",
    "min": 28360,
    "max": 29761,
    "count": 1402,
    "hash": "7db824c37122d266"
   },
-  "https://ebible.org/eng-Brenton/": {
+  "981": {
+   "url": "https://ebible.org/eng-Brenton/",
+   "title": "The Septuagint (Brenton's English Translation)",
    "min": 29762,
    "max": 30877,
    "count": 1116,
    "hash": "b5caea1f00542c00"
   },
-  "https://ebible.org/eng-asv/": {
+  "982": {
+   "url": "https://ebible.org/eng-asv/",
+   "title": "The Holy Bible: American Standard Version",
    "min": 30878,
    "max": 32066,
    "count": 1189,
    "hash": "c529ebfedf749cc1"
   },
-  "https://ebible.org/eng-dra/": {
+  "983": {
+   "url": "https://ebible.org/eng-dra/",
+   "title": "The Holy Bible: Douay-Rheims (Challoner Revision)",
    "min": 32067,
    "max": 33400,
    "count": 1334,
    "hash": "3a107fdc8e4dc0e5"
   },
-  "https://www.reformedreader.org/ccc/1644lbc.htm": {
+  "984": {
+   "url": "https://www.reformedreader.org/ccc/1644lbc.htm",
+   "title": "The First London Baptist Confession of Faith",
    "min": 33401,
    "max": 33453,
    "count": 53,
    "hash": "04e0dd80ada2c1da"
   },
-  "https://www.newadvent.org/fathers/3406.htm": {
+  "985": {
+   "url": "https://www.newadvent.org/fathers/3406.htm",
+   "title": "On Repentance",
    "min": 41964,
    "max": 41992,
    "count": 29,
    "hash": "6535201dee450862"
   },
-  "https://www.newadvent.org/fathers/3403.htm": {
+  "986": {
+   "url": "https://www.newadvent.org/fathers/3403.htm",
+   "title": "On the Death of Satyrus",
    "min": 41993,
    "max": 42052,
    "count": 60,
    "hash": "1e970bc3fbe0c45b"
   },
-  "https://www.newadvent.org/fathers/2808.htm": {
+  "987": {
+   "url": "https://www.newadvent.org/fathers/2808.htm",
+   "title": "Apologia Contra Arianos",
    "min": 42053,
    "max": 42079,
    "count": 27,
    "hash": "409c6fae0ac3888f"
   },
-  "https://www.newadvent.org/fathers/1506.htm": {
+  "988": {
+   "url": "https://www.newadvent.org/fathers/1506.htm",
+   "title": "On the Grace of Christ, and on Original Sin",
    "min": 42080,
    "max": 42182,
    "count": 103,
    "hash": "c3fc0f8dc774331b"
   },
-  "https://www.newadvent.org/fathers/1512.htm": {
+  "989": {
+   "url": "https://www.newadvent.org/fathers/1512.htm",
+   "title": "The Predestination of the Saints/Gift of Perseverance",
    "min": 42183,
    "max": 42293,
    "count": 111,
    "hash": "07e65a8252f8643c"
   },
-  "https://www.newadvent.org/fathers/1601.htm": {
+  "990": {
+   "url": "https://www.newadvent.org/fathers/1601.htm",
+   "title": "Our Lord's Sermon on the Mount",
    "min": 42294,
    "max": 42341,
    "count": 48,
    "hash": "dfdd31056f27fc65"
   },
-  "https://www.newadvent.org/fathers/1703.htm": {
+  "991": {
+   "url": "https://www.newadvent.org/fathers/1703.htm",
+   "title": "Soliloquies",
    "min": 42342,
    "max": 42377,
    "count": 36,
    "hash": "0a282dcba80dda3e"
   },
-  "https://www.newadvent.org/fathers/3702.htm": {
+  "992": {
+   "url": "https://www.newadvent.org/fathers/3702.htm",
+   "title": "Nisibene Hymns",
    "min": 42378,
    "max": 42422,
    "count": 45,
    "hash": "204837070ae9d7c0"
   },
-  "https://www.newadvent.org/fathers/3103.htm": {
+  "993": {
+   "url": "https://www.newadvent.org/fathers/3103.htm",
+   "title": "Letters",
    "min": 42423,
    "max": 42458,
    "count": 36,
    "hash": "f4586fa7e44f1e88"
   },
-  "https://www.newadvent.org/fathers/3009.htm": {
+  "994": {
+   "url": "https://www.newadvent.org/fathers/3009.htm",
+   "title": "Against Jovinianus",
    "min": 42459,
    "max": 42530,
    "count": 72,
    "hash": "17f95c3c39eb5e1d"
   },
-  "https://www.newadvent.org/fathers/3505.htm": {
+  "995": {
+   "url": "https://www.newadvent.org/fathers/3505.htm",
+   "title": "Sacred History",
    "min": 42531,
    "max": 42635,
    "count": 105,
    "hash": "9240fac1a5a4a5ea"
   },
-  "https://www.newadvent.org/fathers/0306.htm": {
+  "996": {
+   "url": "https://www.newadvent.org/fathers/0306.htm",
+   "title": "Ad Nationes",
    "min": 42636,
    "max": 42673,
    "count": 38,
    "hash": "4c1f05f0fb4d9cee"
   },
-  "https://www.newadvent.org/fathers/0850.htm": {
+  "998": {
+   "url": "https://www.newadvent.org/fathers/0850.htm",
+   "title": "Remains of the Second and Third Centuries (various dates)",
    "min": 42757,
    "max": 42757,
    "count": 1,
    "hash": "f65bac10c1565bea"
   },
-  "http://www.pravoslavieto.com/docs/eng/Orthodox_Catechism_of_Philaret.htm": {
+  "999": {
+   "url": "http://www.pravoslavieto.com/docs/eng/Orthodox_Catechism_of_Philaret.htm",
+   "title": "The Longer Catechism of the Orthodox, Catholic, Eastern Church",
    "min": 42758,
    "max": 43365,
    "count": 608,
    "hash": "3948caa87e49b816"
   },
-  "https://www.crivoice.org/creeddositheus.html": {
+  "1000": {
+   "url": "https://www.crivoice.org/creeddositheus.html",
+   "title": "The Confession of Dositheus",
    "min": 43366,
    "max": 43387,
    "count": 22,
    "hash": "dc8a3f6731efe9a6"
   },
-  "https://www.gutenberg.org/ebooks/71513": {
+  "1001": {
+   "url": "https://www.gutenberg.org/ebooks/71513",
+   "title": "The Book of Needs of the Holy Orthodox Church",
    "min": 43388,
    "max": 43459,
    "count": 72,
    "hash": "4e45b4412f02e8ce"
   },
-  "https://www.ccel.org/ccel/ryle/matthew": {
+  "1191": {
+   "url": "https://www.ccel.org/ccel/ryle/matthew",
+   "title": "Expository Thoughts on Matthew",
    "min": 106397,
    "max": 106496,
    "count": 100,
    "hash": "4cd77e2037285dc6"
   },
-  "https://www.ccel.org/ccel/ryle/holiness": {
+  "1192": {
+   "url": "https://www.ccel.org/ccel/ryle/holiness",
+   "title": "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
    "min": 106497,
    "max": 106659,
    "count": 163,
    "hash": "551bb48c85522872"
   },
-  "https://www.ccel.org/ccel/ryle/upper_room": {
+  "1193": {
+   "url": "https://www.ccel.org/ccel/ryle/upper_room",
+   "title": "The Upper Room: Being a Few Truths for the Times",
    "min": 106660,
    "max": 106804,
    "count": 145,
    "hash": "b6e7cbda2ca4c187"
   },
-  "https://www.ccel.org/ccel/newton/messiah1": {
+  "1194": {
+   "url": "https://www.ccel.org/ccel/newton/messiah1",
+   "title": "Messiah Vol. 1",
    "min": 106805,
    "max": 106898,
    "count": 94,
    "hash": "6494341f3765fd21"
   },
-  "https://www.ccel.org/ccel/newton/messiah2": {
+  "1195": {
+   "url": "https://www.ccel.org/ccel/newton/messiah2",
+   "title": "Messiah Vol. 2",
    "min": 106899,
    "max": 106989,
    "count": 91,
    "hash": "9dbcd4cf1e3f5360"
   },
-  "https://www.ccel.org/ccel/newton/olneyhymns": {
+  "1196": {
+   "url": "https://www.ccel.org/ccel/newton/olneyhymns",
+   "title": "Olney Hymns",
    "min": 106990,
    "max": 107344,
    "count": 355,
    "hash": "158c25a298c7ec25"
   },
-  "https://www.ccel.org/ccel/lightfoot/fathers": {
+  "1197": {
+   "url": "https://www.ccel.org/ccel/lightfoot/fathers",
+   "title": "The Apostolic Fathers",
    "min": 107345,
    "max": 107433,
    "count": 89,
    "hash": "2bfbd2263c924bab"
   },
-  "https://www.ccel.org/ccel/law/serious_call": {
+  "1198": {
+   "url": "https://www.ccel.org/ccel/law/serious_call",
+   "title": "A Serious Call to a Devout and Holy Life",
    "min": 107434,
    "max": 107574,
    "count": 141,
    "hash": "f7d06289eeb16ca1"
   },
-  "https://www.ccel.org/ccel/law/clergy": {
+  "1199": {
+   "url": "https://www.ccel.org/ccel/law/clergy",
+   "title": "An Humble, Affectionate, and Earnest Address to the Clergy",
    "min": 107575,
    "max": 107617,
    "count": 43,
    "hash": "4aaf72c58e0e0c59"
   },
-  "https://www.ccel.org/ccel/law/love2": {
+  "1200": {
+   "url": "https://www.ccel.org/ccel/law/love2",
+   "title": "Spirit of Love",
    "min": 107618,
    "max": 107675,
    "count": 58,
    "hash": "d5ab3502da3e38b5"
   },
-  "https://www.ccel.org/ccel/law/prayer": {
+  "1201": {
+   "url": "https://www.ccel.org/ccel/law/prayer",
+   "title": "The Spirit of Prayer",
    "min": 107676,
    "max": 107733,
    "count": 58,
    "hash": "c01f9da50cca635f"
   },
-  "https://www.ccel.org/ccel/spurgeon/till_he_come": {
+  "1202": {
+   "url": "https://www.ccel.org/ccel/spurgeon/till_he_come",
+   "title": "Till He Come",
    "min": 107734,
    "max": 107823,
    "count": 90,
    "hash": "a951a46a717fa61f"
   },
-  "https://www.ccel.org/ccel/spurgeon/catechism": {
+  "1203": {
+   "url": "https://www.ccel.org/ccel/spurgeon/catechism",
+   "title": "A Puritan Catechism",
    "min": 107824,
    "max": 107830,
    "count": 7,
    "hash": "ba0dec648aab8b39"
   },
-  "https://www.ccel.org/ccel/spurgeon/grace": {
+  "1204": {
+   "url": "https://www.ccel.org/ccel/spurgeon/grace",
+   "title": "All of Grace",
    "min": 107831,
    "max": 107863,
    "count": 33,
    "hash": "db40429bcd5118ec"
   },
-  "https://www.ccel.org/ccel/spurgeon/checkbook": {
+  "1205": {
+   "url": "https://www.ccel.org/ccel/spurgeon/checkbook",
+   "title": "Faith's Checkbook",
    "min": 107864,
    "max": 107952,
    "count": 89,
    "hash": "7c4fc47c545bca14"
   },
-  "https://www.ccel.org/ccel/spurgeon/morneve": {
+  "1206": {
+   "url": "https://www.ccel.org/ccel/spurgeon/morneve",
+   "title": "Morning and Evening: Daily Readings",
    "min": 107953,
    "max": 108685,
    "count": 733,
    "hash": "1b47ff348174a588"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons01": {
+  "1207": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons01",
+   "title": "Spurgeon's Sermons Volume 01: 1855",
    "min": 108686,
    "max": 108975,
    "count": 290,
    "hash": "8facab003960d0e4"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons02": {
+  "1208": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons02",
+   "title": "Spurgeon's Sermons Volume 02: 1856",
    "min": 108976,
    "max": 109259,
    "count": 284,
    "hash": "a1651a37a613e5a9"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons03": {
+  "1209": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons03",
+   "title": "Spurgeon's Sermons Volume 03: 1857",
    "min": 109260,
    "max": 109570,
    "count": 311,
    "hash": "a26f9031c5228749"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons04": {
+  "1210": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons04",
+   "title": "Spurgeon's Sermons Volume 04: 1858",
    "min": 109571,
    "max": 109913,
    "count": 343,
    "hash": "8abc6ae901d4193f"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons05": {
+  "1211": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons05",
+   "title": "Spurgeon's Sermons Volume 05: 1859",
    "min": 109914,
    "max": 110263,
    "count": 350,
    "hash": "029cfd5c8cdd0150"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons06": {
+  "1212": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons06",
+   "title": "Spurgeon's Sermons Volume 06: 1860",
    "min": 110264,
    "max": 110628,
    "count": 365,
    "hash": "b6fc55de988751d0"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons07": {
+  "1213": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons07",
+   "title": "Spurgeon's Sermons Volume 07: 1861",
    "min": 110629,
    "max": 111053,
    "count": 425,
    "hash": "97945cb04559a2d1"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons08": {
+  "1214": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons08",
+   "title": "Spurgeon's Sermons Volume 08: 1862",
    "min": 111054,
    "max": 111443,
    "count": 390,
    "hash": "5ce1a217317a2ad9"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons09": {
+  "1215": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons09",
+   "title": "Spurgeon's Sermons Volume 09: 1863",
    "min": 111444,
    "max": 111852,
    "count": 409,
    "hash": "9feec148901af6cc"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons10": {
+  "1216": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons10",
+   "title": "Spurgeon's Sermons Volume 10: 1864",
    "min": 111853,
    "max": 112255,
    "count": 403,
    "hash": "64628c32a21e50e9"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons11": {
+  "1217": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons11",
+   "title": "Spurgeon's Sermons Volume 11: 1865",
    "min": 112256,
    "max": 112677,
    "count": 422,
    "hash": "cacabb1dd45086f1"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons12": {
+  "1218": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons12",
+   "title": "Spurgeon's Sermons Volume 12: 1866",
    "min": 112678,
    "max": 113096,
    "count": 419,
    "hash": "4fba09f3bf534539"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons13": {
+  "1219": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons13",
+   "title": "Spurgeon's Sermons Volume 13: 1867",
    "min": 113097,
    "max": 113516,
    "count": 420,
    "hash": "0d2ea683f01505c8"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons14": {
+  "1220": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons14",
+   "title": "Spurgeon's Sermons Volume 14: 1868",
    "min": 113517,
    "max": 113924,
    "count": 408,
    "hash": "ee5fa4940f88b10f"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons15": {
+  "1221": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons15",
+   "title": "Spurgeon's Sermons Volume 15: 1869",
    "min": 113925,
    "max": 114334,
    "count": 410,
    "hash": "6026576d9a341727"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons16": {
+  "1222": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons16",
+   "title": "Spurgeon's Sermons Volume 16: 1870",
    "min": 114335,
    "max": 114752,
    "count": 418,
    "hash": "fe28f6bb23cf2020"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons17": {
+  "1223": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons17",
+   "title": "Spurgeon's Sermons Volume 17: 1871",
    "min": 114753,
    "max": 115151,
    "count": 399,
    "hash": "ce693997bef94c22"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons18": {
+  "1224": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons18",
+   "title": "Spurgeon's Sermons Volume 18: 1872",
    "min": 115152,
    "max": 115567,
    "count": 416,
    "hash": "164666b028d5d122"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons19": {
+  "1225": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons19",
+   "title": "Spurgeon's Sermons Volume 19: 1873",
    "min": 115568,
    "max": 115991,
    "count": 424,
    "hash": "65605b33b75abdcc"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons20": {
+  "1226": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons20",
+   "title": "Spurgeon's Sermons Volume 20: 1874",
    "min": 115992,
    "max": 116409,
    "count": 418,
    "hash": "d660b6b48472f60c"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons21": {
+  "1227": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons21",
+   "title": "Spurgeon's Sermons Volume 21: 1875",
    "min": 116410,
    "max": 116826,
    "count": 417,
    "hash": "8069c6e084ed2fd4"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons22": {
+  "1228": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons22",
+   "title": "Spurgeon's Sermons Volume 22: 1876",
    "min": 116827,
    "max": 117251,
    "count": 425,
    "hash": "54ba695e4fbd8ca6"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons23": {
+  "1229": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons23",
+   "title": "Spurgeon's Sermons Volume 23: 1877",
    "min": 117252,
    "max": 117669,
    "count": 418,
    "hash": "430d7db0c9b1458b"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons24": {
+  "1230": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons24",
+   "title": "Spurgeon's Sermons Volume 24: 1878",
    "min": 117670,
    "max": 118088,
    "count": 419,
    "hash": "20e972fdd503ad19"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons25": {
+  "1231": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons25",
+   "title": "Spurgeon's Sermons Volume 25: 1879",
    "min": 118089,
    "max": 118510,
    "count": 422,
    "hash": "944089e59c3f8d37"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons26": {
+  "1232": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons26",
+   "title": "Spurgeon's Sermons Volume 26: 1880",
    "min": 118511,
    "max": 118924,
    "count": 414,
    "hash": "b11b859c8c90c3cf"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons27": {
+  "1233": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons27",
+   "title": "Spurgeon's Sermons Volume 27: 1881",
    "min": 118925,
    "max": 119346,
    "count": 422,
    "hash": "b695f80ba25f0f81"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons28": {
+  "1234": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons28",
+   "title": "Spurgeon's Sermons Volume 28: 1882",
    "min": 119347,
    "max": 119762,
    "count": 416,
    "hash": "85379b290ace7d40"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons29": {
+  "1235": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons29",
+   "title": "Spurgeon's Sermons Volume 29: 1883",
    "min": 119763,
    "max": 120172,
    "count": 410,
    "hash": "59600d5d0c1d19d8"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons30": {
+  "1236": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons30",
+   "title": "Spurgeon's Sermons Volume 30: 1884",
    "min": 120173,
    "max": 120576,
    "count": 404,
    "hash": "753267d7098054a5"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons31": {
+  "1237": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons31",
+   "title": "Spurgeon's Sermons Volume 31: 1885",
    "min": 120577,
    "max": 120972,
    "count": 396,
    "hash": "06e5d5a68cf2c597"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons32": {
+  "1238": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons32",
+   "title": "Spurgeon's Sermons Volume 32: 1886",
    "min": 120973,
    "max": 121384,
    "count": 412,
    "hash": "753acdde353d2204"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons33": {
+  "1239": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons33",
+   "title": "Spurgeon's Sermons Volume 33: 1887",
    "min": 121385,
    "max": 121805,
    "count": 421,
    "hash": "caf238e5bd955423"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons34": {
+  "1240": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons34",
+   "title": "Spurgeon's Sermons Volume 34: 1888",
    "min": 121806,
    "max": 122209,
    "count": 404,
    "hash": "0ba53604deebe8e1"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons35": {
+  "1241": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons35",
+   "title": "Spurgeon's Sermons Volume 35: 1889",
    "min": 122210,
    "max": 122614,
    "count": 405,
    "hash": "14b0bc6ba823469d"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons36": {
+  "1242": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons36",
+   "title": "Spurgeon's Sermons Volume 36: 1890",
    "min": 122615,
    "max": 123014,
    "count": 400,
    "hash": "a0ca1137d5203c69"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons37": {
+  "1243": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons37",
+   "title": "Spurgeon's Sermons Volume 37: 1891",
    "min": 123015,
    "max": 123404,
    "count": 390,
    "hash": "84d4fc818c427291"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons38": {
+  "1244": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons38",
+   "title": "Spurgeon's Sermons Volume 38: 1892",
    "min": 123405,
    "max": 123761,
    "count": 357,
    "hash": "abd875159f1915a7"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons39": {
+  "1245": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons39",
+   "title": "Spurgeon's Sermons Volume 39: 1893",
    "min": 123762,
    "max": 124130,
    "count": 369,
    "hash": "1a5afa54072cb538"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons40": {
+  "1246": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons40",
+   "title": "Spurgeon's Sermons Volume 40: 1894",
    "min": 124131,
    "max": 124493,
    "count": 363,
    "hash": "d847e418194a114a"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons41": {
+  "1247": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons41",
+   "title": "Spurgeon's Sermons Volume 41: 1895",
    "min": 124494,
    "max": 124849,
    "count": 356,
    "hash": "b7be5cefba56ebee"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons42": {
+  "1248": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons42",
+   "title": "Spurgeon's Sermons Volume 42: 1896",
    "min": 124850,
    "max": 125211,
    "count": 362,
    "hash": "01c4a9f4ae7d79cd"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons43": {
+  "1249": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons43",
+   "title": "Spurgeon's Sermons Volume 43: 1897",
    "min": 125212,
    "max": 125567,
    "count": 356,
    "hash": "bc40189536aed5ee"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons44": {
+  "1250": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons44",
+   "title": "Spurgeon's Sermons Volume 44: 1898",
    "min": 125568,
    "max": 125921,
    "count": 354,
    "hash": "01ceaeaf2431001e"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons45": {
+  "1251": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons45",
+   "title": "Spurgeon's Sermons Volume 45: 1899",
    "min": 125922,
    "max": 126288,
    "count": 367,
    "hash": "23b441545424f5e1"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons46": {
+  "1252": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons46",
+   "title": "Spurgeon's Sermons Volume 46: 1900",
    "min": 126289,
    "max": 126641,
    "count": 353,
    "hash": "07b756f5b4d2a35e"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons47": {
+  "1253": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons47",
+   "title": "Spurgeon's Sermons Volume 47: 1901",
    "min": 126642,
    "max": 126997,
    "count": 356,
    "hash": "acdb0be49ae0bf37"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons48": {
+  "1254": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons48",
+   "title": "Spurgeon's Sermons Volume 48: 1902",
    "min": 126998,
    "max": 127352,
    "count": 355,
    "hash": "d80b90bc5076c980"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons49": {
+  "1255": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons49",
+   "title": "Spurgeon's Sermons Volume 49: 1903",
    "min": 127353,
    "max": 127710,
    "count": 358,
    "hash": "76421e25ef2e4284"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons50": {
+  "1256": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons50",
+   "title": "Spurgeon's Sermons Volume 50: 1904",
    "min": 127711,
    "max": 128068,
    "count": 358,
    "hash": "e2f2e74cbf4b5279"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons51": {
+  "1257": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons51",
+   "title": "Spurgeon's Sermons Volume 51: 1905",
    "min": 128069,
    "max": 128419,
    "count": 351,
    "hash": "191c16ce1a61f1df"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons52": {
+  "1258": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons52",
+   "title": "Spurgeon's Sermons Volume 52: 1906",
    "min": 128420,
    "max": 128767,
    "count": 348,
    "hash": "603f579f29fd7fc2"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons53": {
+  "1259": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons53",
+   "title": "Spurgeon's Sermons Volume 53: 1907",
    "min": 128768,
    "max": 129114,
    "count": 347,
    "hash": "1e4105678c6ee5a9"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons54": {
+  "1260": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons54",
+   "title": "Spurgeon's Sermons Volume 54: 1908",
    "min": 129115,
    "max": 129463,
    "count": 349,
    "hash": "a7c87bcf43568b8f"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons55": {
+  "1261": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons55",
+   "title": "Spurgeon's Sermons Volume 55: 1909",
    "min": 129464,
    "max": 129819,
    "count": 356,
    "hash": "37c850373f3299ff"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons56": {
+  "1262": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons56",
+   "title": "Spurgeon's Sermons Volume 56: 1910",
    "min": 129820,
    "max": 130163,
    "count": 344,
    "hash": "35273e169ac21872"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons57": {
+  "1263": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons57",
+   "title": "Spurgeon's Sermons Volume 57: 1911",
    "min": 130164,
    "max": 130497,
    "count": 334,
    "hash": "75ec7e485cffb45f"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons58": {
+  "1264": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons58",
+   "title": "Spurgeon's Sermons Volume 58: 1912",
    "min": 130498,
    "max": 130822,
    "count": 325,
    "hash": "e7fa22d5e6a060ba"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons59": {
+  "1265": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons59",
+   "title": "Spurgeon's Sermons Volume 59: 1913",
    "min": 130823,
    "max": 131155,
    "count": 333,
    "hash": "9310fa33d30b6b80"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons60": {
+  "1266": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons60",
+   "title": "Spurgeon's Sermons Volume 60: 1914",
    "min": 131156,
    "max": 131492,
    "count": 337,
    "hash": "748516e249aed47c"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons61": {
+  "1267": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons61",
+   "title": "Spurgeon's Sermons Volume 61: 1915",
    "min": 131493,
    "max": 131827,
    "count": 335,
    "hash": "83d839ddf8f35093"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons62": {
+  "1268": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons62",
+   "title": "Spurgeon's Sermons Volume 62: 1916",
    "min": 131828,
    "max": 132113,
    "count": 286,
    "hash": "8037e5a664300f68"
   },
-  "https://www.ccel.org/ccel/spurgeon/sermons63": {
+  "1269": {
+   "url": "https://www.ccel.org/ccel/spurgeon/sermons63",
+   "title": "Spurgeon's Sermons Volume 63: 1917",
    "min": 132114,
    "max": 132224,
    "count": 111,
    "hash": "3290445aa0954070"
   },
-  "https://www.ccel.org/ccel/bunyan/miscellaneous": {
+  "1270": {
+   "url": "https://www.ccel.org/ccel/bunyan/miscellaneous",
+   "title": "Miscellaneous Pieces",
    "min": 132225,
    "max": 132232,
    "count": 8,
    "hash": "9e52ada0467fb00a"
   },
-  "https://www.ccel.org/ccel/bunyan/holy_war": {
+  "1271": {
+   "url": "https://www.ccel.org/ccel/bunyan/holy_war",
+   "title": "The Holy War",
    "min": 132233,
    "max": 132332,
    "count": 100,
    "hash": "c670828c722667ee"
   },
-  "https://www.ccel.org/ccel/bunyan/pilgrim": {
+  "1272": {
+   "url": "https://www.ccel.org/ccel/bunyan/pilgrim",
+   "title": "The Pilgrim's Progress",
    "min": 132333,
    "max": 132442,
    "count": 110,
    "hash": "de729bfde80b6066"
   },
-  "https://www.ccel.org/ccel/gill/practical": {
+  "1273": {
+   "url": "https://www.ccel.org/ccel/gill/practical",
+   "title": "A Body of Practical Divinity",
    "min": 132443,
    "max": 132709,
    "count": 267,
    "hash": "e64534b4f20ee747"
   },
-  "https://www.ccel.org/ccel/gill/song": {
+  "1274": {
+   "url": "https://www.ccel.org/ccel/gill/song",
+   "title": "An Exposition of the Book of Solomon's Song",
    "min": 132710,
    "max": 133036,
    "count": 327,
    "hash": "119f16800106af92"
   },
-  "https://www.ccel.org/ccel/gill/doctrinal": {
+  "1275": {
+   "url": "https://www.ccel.org/ccel/gill/doctrinal",
+   "title": "Doctrinal Divinity",
    "min": 133037,
    "max": 133591,
    "count": 555,
    "hash": "c1e79b6814d01024"
   },
-  "https://www.ccel.org/ccel/kempis/imitation": {
+  "1276": {
+   "url": "https://www.ccel.org/ccel/kempis/imitation",
+   "title": "The Imitation of Christ",
    "min": 133592,
    "max": 133708,
    "count": 117,
    "hash": "1bbb96de502efe99"
   },
-  "https://www.ccel.org/ccel/luther/good_works": {
+  "1277": {
+   "url": "https://www.ccel.org/ccel/luther/good_works",
+   "title": "A Treatise on Good Works",
    "min": 133709,
    "max": 133748,
    "count": 40,
    "hash": "cc8785836b16969c"
   },
-  "https://www.ccel.org/ccel/luther/christianliberty": {
+  "1278": {
+   "url": "https://www.ccel.org/ccel/luther/christianliberty",
+   "title": "Concerning Christian Liberty",
    "min": 133749,
    "max": 133766,
    "count": 18,
    "hash": "ecef0634fd289dc1"
   },
-  "https://www.ccel.org/ccel/luther/first_prin": {
+  "1279": {
+   "url": "https://www.ccel.org/ccel/luther/first_prin",
+   "title": "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
    "min": 133767,
    "max": 133893,
    "count": 127,
    "hash": "49e2b73268876b42"
   },
-  "https://www.ccel.org/ccel/luther/prefacetoromans": {
+  "1280": {
+   "url": "https://www.ccel.org/ccel/luther/prefacetoromans",
+   "title": "Preface to the Letter of St. Paul to the Romans",
    "min": 133894,
    "max": 133900,
    "count": 7,
    "hash": "a3b450011847c71a"
   },
-  "https://www.ccel.org/ccel/luther/largecatechism": {
+  "1281": {
+   "url": "https://www.ccel.org/ccel/luther/largecatechism",
+   "title": "The Large Catechism",
    "min": 133901,
    "max": 133948,
    "count": 48,
    "hash": "c7eaa49c54af236a"
   },
-  "https://www.ccel.org/ccel/luther/tabletalk": {
+  "1282": {
+   "url": "https://www.ccel.org/ccel/luther/tabletalk",
+   "title": "Table Talk",
    "min": 133949,
    "max": 134095,
    "count": 147,
    "hash": "2d022a8216b94417"
   },
-  "https://www.ccel.org/ccel/clarke/entire_sanct": {
+  "1283": {
+   "url": "https://www.ccel.org/ccel/clarke/entire_sanct",
+   "title": "Entire Sanctification",
    "min": 134096,
    "max": 134109,
    "count": 14,
    "hash": "9ffbfb61a3451ef2"
   },
-  "https://www.ccel.org/ccel/whitefield/sermons": {
+  "1284": {
+   "url": "https://www.ccel.org/ccel/whitefield/sermons",
+   "title": "Selected Sermons of George Whitefield",
    "min": 134110,
    "max": 134435,
    "count": 326,
    "hash": "8e6beb41bfcac3ff"
   },
-  "https://www.ccel.org/ccel/barnes/ntnotes": {
+  "1285": {
+   "url": "https://www.ccel.org/ccel/barnes/ntnotes",
+   "title": "Barnes' New Testament Notes",
    "min": 134436,
    "max": 140916,
    "count": 6481,
    "hash": "f5c67f6ae1d9c10e"
   },
-  "https://www.ccel.org/ccel/murray/surrender": {
+  "1286": {
+   "url": "https://www.ccel.org/ccel/murray/surrender",
+   "title": "Absolute Surrender",
    "min": 140917,
    "max": 140952,
    "count": 36,
    "hash": "37bebab169f1ed1e"
   },
-  "https://www.ccel.org/ccel/murray/deeper": {
+  "1287": {
+   "url": "https://www.ccel.org/ccel/murray/deeper",
+   "title": "The Deeper Christian Life",
    "min": 140953,
    "max": 140978,
    "count": 26,
    "hash": "f1cd4aab7818a0b1"
   },
-  "https://www.ccel.org/ccel/murray/indwelling": {
+  "1288": {
+   "url": "https://www.ccel.org/ccel/murray/indwelling",
+   "title": "The Master's Indwelling",
    "min": 140979,
    "max": 141020,
    "count": 42,
    "hash": "062557e77848f9c2"
   },
-  "https://www.ccel.org/ccel/murray/obedience": {
+  "1289": {
+   "url": "https://www.ccel.org/ccel/murray/obedience",
+   "title": "The School of Obedience",
    "min": 141021,
    "max": 141047,
    "count": 27,
    "hash": "42ee45886bbaf2c8"
   },
-  "https://www.ccel.org/ccel/murray/true_vine": {
+  "1290": {
+   "url": "https://www.ccel.org/ccel/murray/true_vine",
+   "title": "The True Vine: Meditations for a Month on John 15:1-16",
    "min": 141048,
    "max": 141080,
    "count": 33,
    "hash": "a544b503b03d12ad"
   },
-  "https://www.ccel.org/ccel/murray/covenants": {
+  "1291": {
+   "url": "https://www.ccel.org/ccel/murray/covenants",
+   "title": "The Two Covenants",
    "min": 141081,
    "max": 141125,
    "count": 45,
    "hash": "3af673e8ffd0afd1"
   },
-  "https://www.ccel.org/ccel/murray/waiting": {
+  "1292": {
+   "url": "https://www.ccel.org/ccel/murray/waiting",
+   "title": "Waiting On God!",
    "min": 141126,
    "max": 141160,
    "count": 35,
    "hash": "237d5ee29095f4aa"
   },
-  "https://www.ccel.org/ccel/murray/prayer": {
+  "1293": {
+   "url": "https://www.ccel.org/ccel/murray/prayer",
+   "title": "With Christ in the School of Prayer",
    "min": 141161,
    "max": 141239,
    "count": 79,
    "hash": "daaaa34e42c98717"
   },
-  "https://www.ccel.org/ccel/murray/working": {
+  "1294": {
+   "url": "https://www.ccel.org/ccel/murray/working",
+   "title": "Working For God!",
    "min": 141240,
    "max": 141272,
    "count": 33,
    "hash": "7d6b4b9f74717af5"
   },
-  "https://www.ccel.org/ccel/hodge/ephesians": {
+  "1295": {
+   "url": "https://www.ccel.org/ccel/hodge/ephesians",
+   "title": "A Commentary on the Epistle to the Ephesians",
    "min": 141273,
    "max": 141374,
    "count": 102,
    "hash": "a1d9f4de4c6b7dac"
   },
-  "https://www.ccel.org/ccel/hodge/theology1": {
+  "1296": {
+   "url": "https://www.ccel.org/ccel/hodge/theology1",
+   "title": "Systematic Theology - Volume I",
    "min": 141375,
    "max": 141672,
    "count": 298,
    "hash": "ac253af0fbf35da9"
   },
-  "https://www.ccel.org/ccel/hodge/theology2": {
+  "1297": {
+   "url": "https://www.ccel.org/ccel/hodge/theology2",
+   "title": "Systematic Theology - Volume II",
    "min": 141673,
    "max": 141999,
    "count": 327,
    "hash": "33fac66efb0ac00d"
   },
-  "https://www.ccel.org/ccel/hodge/theology3": {
+  "1298": {
+   "url": "https://www.ccel.org/ccel/hodge/theology3",
+   "title": "Systematic Theology - Volume III",
    "min": 142000,
    "max": 142369,
    "count": 370,
    "hash": "a251e2cc0374b349"
   },
-  "https://www.ccel.org/ccel/bullinger/apocalypse": {
+  "1299": {
+   "url": "https://www.ccel.org/ccel/bullinger/apocalypse",
+   "title": "Commentary on Revelation",
    "min": 142370,
    "max": 142575,
    "count": 206,
    "hash": "a704baa9a4a748a9"
   },
-  "https://www.ccel.org/ccel/bonar/peace": {
+  "1300": {
+   "url": "https://www.ccel.org/ccel/bonar/peace",
+   "title": "God's Way of Peace",
    "min": 142576,
    "max": 142610,
    "count": 35,
    "hash": "e4d39d15270c975a"
   },
-  "https://www.ccel.org/ccel/calvin/treatise_relics": {
+  "1301": {
+   "url": "https://www.ccel.org/ccel/calvin/treatise_relics",
+   "title": "A Treatise on Relics",
    "min": 142611,
    "max": 142682,
    "count": 72,
    "hash": "34ea116457295462"
   },
-  "https://www.ccel.org/ccel/calvin/calcom45": {
+  "1302": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom45",
+   "title": "Commentaries on the Catholic Epistles",
    "min": 142683,
    "max": 142871,
    "count": 189,
    "hash": "080ddd9361d11aef"
   },
-  "https://www.ccel.org/ccel/calvin/calcom36": {
+  "1303": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom36",
+   "title": "Commentary on Acts - Volume 1",
    "min": 142872,
    "max": 143072,
    "count": 201,
    "hash": "f3621ccd776428b9"
   },
-  "https://www.ccel.org/ccel/calvin/calcom37": {
+  "1304": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom37",
+   "title": "Commentary on Acts - Volume 2",
    "min": 143073,
    "max": 143226,
    "count": 154,
    "hash": "f4acfaa824832ff9"
   },
-  "https://www.ccel.org/ccel/calvin/calcom39": {
+  "1305": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom39",
+   "title": "Commentary on Corinthians - Volume 1",
    "min": 143227,
    "max": 143401,
    "count": 175,
    "hash": "3a982ed5baf803a7"
   },
-  "https://www.ccel.org/ccel/calvin/calcom40": {
+  "1306": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom40",
+   "title": "Commentary on Corinthians - Volume 2",
    "min": 143402,
    "max": 143537,
    "count": 136,
    "hash": "1a91c56ab2c33bc0"
   },
-  "https://www.ccel.org/ccel/calvin/calcom24": {
+  "1307": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom24",
+   "title": "Commentary on Daniel - Volume 1",
    "min": 143538,
    "max": 143788,
    "count": 251,
    "hash": "da3d08b40001ec0d"
   },
-  "https://www.ccel.org/ccel/calvin/calcom25": {
+  "1308": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom25",
+   "title": "Commentary on Daniel - Volume 2",
    "min": 143789,
    "max": 144049,
    "count": 261,
    "hash": "ddba785b18665a97"
   },
-  "https://www.ccel.org/ccel/calvin/calcom22": {
+  "1309": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom22",
+   "title": "Commentary on Ezekiel - Volume 1",
    "min": 144050,
    "max": 144313,
    "count": 264,
    "hash": "ead938ecd42165a3"
   },
-  "https://www.ccel.org/ccel/calvin/calcom23": {
+  "1310": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom23",
+   "title": "Commentary on Ezekiel - Volume 2",
    "min": 144314,
    "max": 144582,
    "count": 269,
    "hash": "ca019e95b66cd385"
   },
-  "https://www.ccel.org/ccel/calvin/calcom41": {
+  "1311": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom41",
+   "title": "Commentary on Galatians and Ephesians",
    "min": 144583,
    "max": 144733,
    "count": 151,
    "hash": "7ca572aeee912d71"
   },
-  "https://www.ccel.org/ccel/calvin/calcom01": {
+  "1312": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom01",
+   "title": "Commentary on Genesis - Volume 1",
    "min": 144734,
    "max": 144926,
    "count": 193,
    "hash": "dd8a42b1fa3cff46"
   },
-  "https://www.ccel.org/ccel/calvin/calcom02": {
+  "1313": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom02",
+   "title": "Commentary on Genesis - Volume 2",
    "min": 144927,
    "max": 145110,
    "count": 184,
    "hash": "6700ce572b0fdd63"
   },
-  "https://www.ccel.org/ccel/calvin/calcom29": {
+  "1314": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom29",
+   "title": "Commentary on Habakkuk, Zephaniah, Haggai",
    "min": 145111,
    "max": 145294,
    "count": 184,
    "hash": "287e19204514e71c"
   },
-  "https://www.ccel.org/ccel/calvin/calcom44": {
+  "1315": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom44",
+   "title": "Commentary on Hebrews",
    "min": 145295,
    "max": 145489,
    "count": 195,
    "hash": "43651dd6554e091d"
   },
-  "https://www.ccel.org/ccel/calvin/calcom26": {
+  "1316": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom26",
+   "title": "Commentary on Hosea",
    "min": 145490,
    "max": 145762,
    "count": 273,
    "hash": "ea938810ccf6c6a4"
   },
-  "https://www.ccel.org/ccel/calvin/calcom13": {
+  "1317": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom13",
+   "title": "Commentary on Isaiah - Volume 1",
    "min": 145763,
    "max": 145954,
    "count": 192,
    "hash": "1b1be13790730bc2"
   },
-  "https://www.ccel.org/ccel/calvin/calcom14": {
+  "1318": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom14",
+   "title": "Commentary on Isaiah - Volume 2",
    "min": 145955,
    "max": 146147,
    "count": 193,
    "hash": "ec16a919de4586da"
   },
-  "https://www.ccel.org/ccel/calvin/calcom15": {
+  "1319": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom15",
+   "title": "Commentary on Isaiah - Volume 3",
    "min": 146148,
    "max": 146356,
    "count": 209,
    "hash": "43d0ff228ca66843"
   },
-  "https://www.ccel.org/ccel/calvin/calcom16": {
+  "1320": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom16",
+   "title": "Commentary on Isaiah - Volume 4",
    "min": 146357,
    "max": 146543,
    "count": 187,
    "hash": "f87f9c496b5a259f"
   },
-  "https://www.ccel.org/ccel/calvin/calcom17": {
+  "1321": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom17",
+   "title": "Commentary on Jeremiah and Lamentations - Volume 1",
    "min": 146544,
    "max": 146824,
    "count": 281,
    "hash": "4c0730a208724ff2"
   },
-  "https://www.ccel.org/ccel/calvin/calcom18": {
+  "1322": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom18",
+   "title": "Commentary on Jeremiah and Lamentations - Volume 2",
    "min": 146825,
    "max": 147066,
    "count": 242,
    "hash": "117dac5a90b263b0"
   },
-  "https://www.ccel.org/ccel/calvin/calcom19": {
+  "1323": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom19",
+   "title": "Commentary on Jeremiah and Lamentations - Volume 3",
    "min": 147067,
    "max": 147329,
    "count": 263,
    "hash": "dd7c0d9e786529ba"
   },
-  "https://www.ccel.org/ccel/calvin/calcom20": {
+  "1324": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom20",
+   "title": "Commentary on Jeremiah and Lamentations - Volume 4",
    "min": 147330,
    "max": 147715,
    "count": 386,
    "hash": "49b2d0b798b2c926"
   },
-  "https://www.ccel.org/ccel/calvin/calcom21": {
+  "1325": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom21",
+   "title": "Commentary on Jeremiah and Lamentations - Volume 5",
    "min": 147716,
    "max": 148116,
    "count": 401,
    "hash": "088706ac64da8dff"
   },
-  "https://www.ccel.org/ccel/calvin/calcom27": {
+  "1326": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom27",
+   "title": "Commentary on Joel, Amos, Obadiah",
    "min": 148117,
    "max": 148382,
    "count": 266,
    "hash": "82ee83643bbc282f"
   },
-  "https://www.ccel.org/ccel/calvin/calcom34": {
+  "1327": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom34",
+   "title": "Commentary on John - Volume 1",
    "min": 148383,
    "max": 148561,
    "count": 179,
    "hash": "e202a97bd9a343e0"
   },
-  "https://www.ccel.org/ccel/calvin/calcom35": {
+  "1328": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom35",
+   "title": "Commentary on John - Volume 2",
    "min": 148562,
    "max": 148678,
    "count": 117,
    "hash": "2a05879e2bf24874"
   },
-  "https://www.ccel.org/ccel/calvin/calcom28": {
+  "1329": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom28",
+   "title": "Commentary on Jonah, Micah, Nahum",
    "min": 148679,
    "max": 148926,
    "count": 248,
    "hash": "ef17fb673c1f4dfe"
   },
-  "https://www.ccel.org/ccel/calvin/calcom07": {
+  "1330": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom07",
+   "title": "Commentary on Joshua",
    "min": 148927,
    "max": 149057,
    "count": 131,
    "hash": "6280f5998d165fa3"
   },
-  "https://www.ccel.org/ccel/calvin/calcom31": {
+  "1331": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom31",
+   "title": "Commentary on Matthew, Mark, Luke - Volume 1",
    "min": 149058,
    "max": 149247,
    "count": 190,
    "hash": "457d0fa56c53b04a"
   },
-  "https://www.ccel.org/ccel/calvin/calcom32": {
+  "1332": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom32",
+   "title": "Commentary on Matthew, Mark, Luke - Volume 2",
    "min": 149248,
    "max": 149423,
    "count": 176,
    "hash": "89ee286d97ff08fe"
   },
-  "https://www.ccel.org/ccel/calvin/calcom33": {
+  "1333": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom33",
+   "title": "Commentary on Matthew, Mark, Luke - Volume 3",
    "min": 149424,
    "max": 149579,
    "count": 156,
    "hash": "bc532743f21ab0ef"
   },
-  "https://www.ccel.org/ccel/calvin/calcom42": {
+  "1334": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom42",
+   "title": "Commentary on Philippians, Colossians, and Thessalonians",
    "min": 149580,
    "max": 149716,
    "count": 137,
    "hash": "3b76a9e39803a120"
   },
-  "https://www.ccel.org/ccel/calvin/calcom08": {
+  "1335": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom08",
+   "title": "Commentary on Psalms - Volume 1",
    "min": 149717,
    "max": 149974,
    "count": 258,
    "hash": "e894c571c9ab1842"
   },
-  "https://www.ccel.org/ccel/calvin/calcom09": {
+  "1336": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom09",
+   "title": "Commentary on Psalms - Volume 2",
    "min": 149975,
    "max": 150160,
    "count": 186,
    "hash": "1cf38bd7f0814700"
   },
-  "https://www.ccel.org/ccel/calvin/calcom10": {
+  "1337": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom10",
+   "title": "Commentary on Psalms - Volume 3",
    "min": 150161,
    "max": 150338,
    "count": 178,
    "hash": "7aa67abc75a256a4"
   },
-  "https://www.ccel.org/ccel/calvin/calcom11": {
+  "1338": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom11",
+   "title": "Commentary on Psalms - Volume 4",
    "min": 150339,
    "max": 150526,
    "count": 188,
    "hash": "bf79e35187858a1a"
   },
-  "https://www.ccel.org/ccel/calvin/calcom12": {
+  "1339": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom12",
+   "title": "Commentary on Psalms - Volume 5",
    "min": 150527,
    "max": 150816,
    "count": 290,
    "hash": "f6fdcd7dac33f94f"
   },
-  "https://www.ccel.org/ccel/calvin/calcom38": {
+  "1340": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom38",
+   "title": "Commentary on Romans",
    "min": 150817,
    "max": 151019,
    "count": 203,
    "hash": "977889ab907ba8de"
   },
-  "https://www.ccel.org/ccel/calvin/calcom43": {
+  "1341": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom43",
+   "title": "Commentary on Timothy, Titus, Philemon",
    "min": 151020,
    "max": 151162,
    "count": 143,
    "hash": "683e6189df8d6bbc"
   },
-  "https://www.ccel.org/ccel/calvin/calcom30": {
+  "1342": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom30",
+   "title": "Commentary on Zechariah, Malachi",
    "min": 151163,
    "max": 151480,
    "count": 318,
    "hash": "820e0107ef3efd1f"
   },
-  "https://www.ccel.org/ccel/calvin/calcom03": {
+  "1343": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom03",
+   "title": "Harmony of the Law - Volume 1",
    "min": 151481,
    "max": 151685,
    "count": 205,
    "hash": "0b8f420f556b1b93"
   },
-  "https://www.ccel.org/ccel/calvin/calcom04": {
+  "1344": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom04",
+   "title": "Harmony of the Law - Volume 2",
    "min": 151686,
    "max": 151897,
    "count": 212,
    "hash": "3d90da6ec9fb0cbd"
   },
-  "https://www.ccel.org/ccel/calvin/calcom05": {
+  "1345": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom05",
+   "title": "Harmony of the Law - Volume 3",
    "min": 151898,
    "max": 152117,
    "count": 220,
    "hash": "9b3a2cb719877676"
   },
-  "https://www.ccel.org/ccel/calvin/calcom06": {
+  "1346": {
+   "url": "https://www.ccel.org/ccel/calvin/calcom06",
+   "title": "Harmony of the Law - Volume 4",
    "min": 152118,
    "max": 152288,
    "count": 171,
    "hash": "0ebc6e12fe3772ec"
   },
-  "https://www.ccel.org/ccel/calvin/chr_life": {
+  "1347": {
+   "url": "https://www.ccel.org/ccel/calvin/chr_life",
+   "title": "On the Christian Life",
    "min": 152289,
    "max": 152306,
    "count": 18,
    "hash": "51dc395b96ae3140"
   },
-  "https://www.ccel.org/ccel/calvin/institutes": {
+  "1348": {
+   "url": "https://www.ccel.org/ccel/calvin/institutes",
+   "title": "The Institutes of the Christian Religion",
    "min": 152307,
    "max": 152891,
    "count": 585,
    "hash": "c7a009feaa9925bc"
   },
-  "https://www.ccel.org/ccel/flavel/saintindeed": {
+  "1349": {
+   "url": "https://www.ccel.org/ccel/flavel/saintindeed",
+   "title": "A Saint Indeed or the Great Work of a Christian in Keeping the Heart in the Several Conditions of Life",
    "min": 152892,
    "max": 152948,
    "count": 57,
    "hash": "5bc0718fec4c7f04"
   },
-  "https://www.ccel.org/ccel/flavel/lovely": {
+  "1350": {
+   "url": "https://www.ccel.org/ccel/flavel/lovely",
+   "title": "Christ Altogether Lovely",
    "min": 152949,
    "max": 152956,
    "count": 8,
    "hash": "d4bf7a7b312e124c"
   },
-  "https://www.ccel.org/ccel/flavel/pneum": {
+  "1351": {
+   "url": "https://www.ccel.org/ccel/flavel/pneum",
+   "title": "Pneumatologia: A Treatise of the Soul of Man",
    "min": 152957,
    "max": 153123,
    "count": 167,
    "hash": "21bc9ad215c829cd"
   },
-  "https://www.ccel.org/ccel/calvin/prayer": {
+  "1352": {
+   "url": "https://www.ccel.org/ccel/calvin/prayer",
+   "title": "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
    "min": 153124,
    "max": 153179,
    "count": 56,
    "hash": "6eae0b06effd9083"
   },
-  "https://www.ccel.org/ccel/knox/blast": {
+  "1353": {
+   "url": "https://www.ccel.org/ccel/knox/blast",
+   "title": "The First Blast of the Trumpet Against the Monstrous Regiment of Women.",
    "min": 153180,
    "max": 153205,
    "count": 26,
    "hash": "beda7edbeb599d72"
   },
-  "https://www.ccel.org/ccel/knox/history_reformation": {
+  "1354": {
+   "url": "https://www.ccel.org/ccel/knox/history_reformation",
+   "title": "The History of the Reformation of Religion in Scotland",
    "min": 153206,
    "max": 153384,
    "count": 179,
    "hash": "39f264cd8112237c"
   },
-  "https://www.ccel.org/ccel/knox/works1": {
+  "1355": {
+   "url": "https://www.ccel.org/ccel/knox/works1",
+   "title": "The Works of John Knox, Vol. 1 (of 6)",
    "min": 153385,
    "max": 153566,
    "count": 182,
    "hash": "f383146029ca9751"
   },
-  "https://www.ccel.org/ccel/knox/prayer": {
+  "1356": {
+   "url": "https://www.ccel.org/ccel/knox/prayer",
+   "title": "Treatise on Prayer",
    "min": 153567,
    "max": 153577,
    "count": 11,
    "hash": "f393365437e76199"
   },
-  "https://www.ccel.org/ccel/edwards/trinity": {
+  "1357": {
+   "url": "https://www.ccel.org/ccel/edwards/trinity",
+   "title": "An Unpublished Essay on the Trinity",
    "min": 153578,
    "max": 153585,
    "count": 8,
    "hash": "00c172f48371b31a"
   },
-  "https://www.ccel.org/ccel/edwards/will": {
+  "1358": {
+   "url": "https://www.ccel.org/ccel/edwards/will",
+   "title": "Freedom of the Will",
    "min": 153586,
    "max": 153683,
    "count": 98,
    "hash": "0a4f0348ecc9fb2c"
   },
-  "https://www.ccel.org/ccel/edwards/affections": {
+  "1359": {
+   "url": "https://www.ccel.org/ccel/edwards/affections",
+   "title": "Religious Affections",
    "min": 153684,
    "max": 153829,
    "count": 146,
    "hash": "f3edcf2df9545241"
   },
-  "https://www.ccel.org/ccel/edwards/sermons": {
+  "1360": {
+   "url": "https://www.ccel.org/ccel/edwards/sermons",
+   "title": "Select Sermons",
    "min": 153830,
    "max": 154000,
    "count": 171,
    "hash": "da1cf29167ab97fb"
   },
-  "https://www.ccel.org/ccel/edwards/works1": {
+  "1361": {
+   "url": "https://www.ccel.org/ccel/edwards/works1",
+   "title": "The Works of Jonathan Edwards, Volume One",
    "min": 154001,
    "max": 155287,
    "count": 1287,
    "hash": "648429050f008958"
   },
-  "https://www.ccel.org/ccel/edwards/works2": {
+  "1362": {
+   "url": "https://www.ccel.org/ccel/edwards/works2",
+   "title": "The Works of Jonathan Edwards, Volume Two",
    "min": 155288,
    "max": 156462,
    "count": 1175,
    "hash": "2affedfc2683b12f"
   },
-  "https://www.ccel.org/ccel/edwards/treatiseongrace": {
+  "1363": {
+   "url": "https://www.ccel.org/ccel/edwards/treatiseongrace",
+   "title": "Treatise on Grace",
    "min": 156463,
    "max": 156482,
    "count": 20,
    "hash": "a47b27eabf5d34ba"
   },
-  "https://www.ccel.org/ccel/henry/mhc1": {
+  "1364": {
+   "url": "https://www.ccel.org/ccel/henry/mhc1",
+   "title": "Commentary on the Whole Bible Volume I (Genesis to Deuteronomy)",
    "min": 156483,
    "max": 157288,
    "count": 806,
    "hash": "a4b107a63fd4fc9f"
   },
-  "https://www.ccel.org/ccel/henry/mhc2": {
+  "1365": {
+   "url": "https://www.ccel.org/ccel/henry/mhc2",
+   "title": "Commentary on the Whole Bible Volume II (Joshua to Esther)",
    "min": 157289,
    "max": 158322,
    "count": 1034,
    "hash": "c21ed8a47072f96d"
   },
-  "https://www.ccel.org/ccel/henry/mhc3": {
+  "1366": {
+   "url": "https://www.ccel.org/ccel/henry/mhc3",
+   "title": "Commentary on the Whole Bible Volume III (Job to Song of Solomon)",
    "min": 158323,
    "max": 159377,
    "count": 1055,
    "hash": "ef6558d8d1f9e6aa"
   },
-  "https://www.ccel.org/ccel/henry/mhc4": {
+  "1367": {
+   "url": "https://www.ccel.org/ccel/henry/mhc4",
+   "title": "Commentary on the Whole Bible Volume IV (Isaiah to Malachi)",
    "min": 159378,
    "max": 160686,
    "count": 1309,
    "hash": "b9e4aa621ab0a9be"
   },
-  "https://www.ccel.org/ccel/henry/mhc5": {
+  "1368": {
+   "url": "https://www.ccel.org/ccel/henry/mhc5",
+   "title": "Commentary on the Whole Bible Volume V (Matthew to John)",
    "min": 160687,
    "max": 161841,
    "count": 1155,
    "hash": "2427a17dfb126bbf"
   },
-  "https://www.ccel.org/ccel/henry/mhc6": {
+  "1369": {
+   "url": "https://www.ccel.org/ccel/henry/mhc6",
+   "title": "Commentary on the Whole Bible Volume VI (Acts to Revelation)",
    "min": 161842,
    "max": 162923,
    "count": 1082,
    "hash": "9271f809f8504b50"
   },
-  "https://www.ccel.org/ccel/baxter/pastor": {
+  "1370": {
+   "url": "https://www.ccel.org/ccel/baxter/pastor",
+   "title": "The Reformed Pastor",
    "min": 162924,
    "max": 163003,
    "count": 80,
    "hash": "66ca83f241aa7821"
   },
-  "https://www.ccel.org/ccel/baxter/saints_rest": {
+  "1371": {
+   "url": "https://www.ccel.org/ccel/baxter/saints_rest",
+   "title": "The Saints' Everlasting Rest",
    "min": 163004,
    "max": 163106,
    "count": 103,
    "hash": "83cf1540eb07bd48"
   },
-  "https://www.ccel.org/ccel/charnock/reconcil": {
+  "1372": {
+   "url": "https://www.ccel.org/ccel/charnock/reconcil",
+   "title": "A Discourse of God's being the Author of Reconciliation",
    "min": 163107,
    "max": 163205,
    "count": 99,
    "hash": "83973e25e42b96d9"
   },
-  "https://www.ccel.org/ccel/charnock/efficient_regeneration": {
+  "1373": {
+   "url": "https://www.ccel.org/ccel/charnock/efficient_regeneration",
+   "title": "A Discourse of the Efficient of Regeneration",
    "min": 163206,
    "max": 163290,
    "count": 85,
    "hash": "fa6313ef5dd596a5"
   },
-  "https://www.ccel.org/ccel/charnock/nat_regen": {
+  "1374": {
+   "url": "https://www.ccel.org/ccel/charnock/nat_regen",
+   "title": "A Discourse of the Nature of Regeneneration",
    "min": 163291,
    "max": 163340,
    "count": 50,
    "hash": "4826a8f13927380c"
   },
-  "https://www.ccel.org/ccel/charnock/instr_regen": {
+  "1375": {
+   "url": "https://www.ccel.org/ccel/charnock/instr_regen",
+   "title": "A Discourse of the Word, the Instrument of Regeneration",
    "min": 163341,
    "max": 163358,
    "count": 18,
    "hash": "bbf2ac5b4c10423f"
   },
-  "https://www.ccel.org/ccel/charnock/cleansing": {
+  "1376": {
+   "url": "https://www.ccel.org/ccel/charnock/cleansing",
+   "title": "A Discourse on the Cleansing Virtue of Christ's Blood",
    "min": 163359,
    "max": 163376,
    "count": 18,
    "hash": "561cc406c9f8b580"
   },
-  "https://www.ccel.org/ccel/charnock/nec_regen": {
+  "1377": {
+   "url": "https://www.ccel.org/ccel/charnock/nec_regen",
+   "title": "The Necessity of Regeneration",
    "min": 163377,
    "max": 163421,
    "count": 45,
    "hash": "5f29e42709c9fbc5"
   },
-  "https://www.ccel.org/ccel/boston/crook": {
+  "1378": {
+   "url": "https://www.ccel.org/ccel/boston/crook",
+   "title": "The Crook in the Lot",
    "min": 163422,
    "max": 163464,
    "count": 43,
    "hash": "c62f960d71a73711"
   },
-  "https://www.ccel.org/ccel/manton/manton01": {
+  "1379": {
+   "url": "https://www.ccel.org/ccel/manton/manton01",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. I",
    "min": 163465,
    "max": 163759,
    "count": 295,
    "hash": "7577db2ff6015989"
   },
-  "https://www.ccel.org/ccel/manton/manton02": {
+  "1380": {
+   "url": "https://www.ccel.org/ccel/manton/manton02",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. II",
    "min": 163760,
    "max": 164024,
    "count": 265,
    "hash": "50cd36804facc260"
   },
-  "https://www.ccel.org/ccel/manton/manton03": {
+  "1381": {
+   "url": "https://www.ccel.org/ccel/manton/manton03",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. III",
    "min": 164025,
    "max": 164300,
    "count": 276,
    "hash": "1378fb7ec56a11cc"
   },
-  "https://www.ccel.org/ccel/manton/manton04": {
+  "1382": {
+   "url": "https://www.ccel.org/ccel/manton/manton04",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. IV",
    "min": 164301,
    "max": 164545,
    "count": 245,
    "hash": "a680369f13683e53"
   },
-  "https://www.ccel.org/ccel/manton/manton05": {
+  "1383": {
+   "url": "https://www.ccel.org/ccel/manton/manton05",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. V",
    "min": 164546,
    "max": 164800,
    "count": 255,
    "hash": "282edcfcbbec6892"
   },
-  "https://www.ccel.org/ccel/manton/manton08": {
+  "1384": {
+   "url": "https://www.ccel.org/ccel/manton/manton08",
+   "title": "The Complete Works of Thomas Manton, D.D. Vol. VIII",
    "min": 164801,
    "max": 165086,
    "count": 286,
    "hash": "223121a95faf6868"
   },
-  "https://www.ccel.org/ccel/manton/manton06": {
+  "1385": {
+   "url": "https://www.ccel.org/ccel/manton/manton06",
+   "title": "The Works of Thomas Manton, D.D. Vol. VI",
    "min": 165087,
    "max": 165373,
    "count": 287,
    "hash": "6d8a050b44e0b01f"
   },
-  "https://www.ccel.org/ccel/manton/manton07": {
+  "1386": {
+   "url": "https://www.ccel.org/ccel/manton/manton07",
+   "title": "The Works of Thomas Manton, D.D. Vol. VII",
    "min": 165374,
    "max": 165661,
    "count": 288,
    "hash": "654c521f8d0139a8"
   },
-  "https://www.ccel.org/ccel/manton/manton20": {
+  "1387": {
+   "url": "https://www.ccel.org/ccel/manton/manton20",
+   "title": "The Works of Thomas Manton, D.D. Vol. XX",
    "min": 165662,
    "max": 165960,
    "count": 299,
    "hash": "e007f5f1f72cb009"
   },
-  "https://www.ccel.org/ccel/watson/cordial": {
+  "1388": {
+   "url": "https://www.ccel.org/ccel/watson/cordial",
+   "title": "A Divine Cordial, or, The transcendent priviledge of those that love God and are savingly called ...",
    "min": 165961,
    "max": 166001,
    "count": 41,
    "hash": "2d6e3fc534d3bb86"
   },
-  "https://www.ccel.org/ccel/watson/beatitudes": {
+  "1389": {
+   "url": "https://www.ccel.org/ccel/watson/beatitudes",
+   "title": "The Beatitudes: An Exposition of Matthew 5:1-12",
    "min": 166002,
    "max": 166127,
    "count": 126,
    "hash": "3e17c938485ae2b9"
   },
-  "https://www.ccel.org/ccel/watson/commandments": {
+  "1390": {
+   "url": "https://www.ccel.org/ccel/watson/commandments",
+   "title": "The Ten Commandments",
    "min": 166128,
    "max": 166235,
    "count": 108,
    "hash": "6acc7a29da77d42d"
   },
-  "https://www.ccel.org/ccel/watson/divinity": {
+  "1391": {
+   "url": "https://www.ccel.org/ccel/watson/divinity",
+   "title": "A Body of Divinity",
    "min": 166236,
    "max": 166367,
    "count": 132,
    "hash": "01558163aa4a380b"
   },
-  "https://www.ccel.org/ccel/owen/apostasy": {
+  "1392": {
+   "url": "https://www.ccel.org/ccel/owen/apostasy",
+   "title": "Nature and Causes of Apostasy from the Gospel",
    "min": 166368,
    "max": 166495,
    "count": 128,
    "hash": "3b45429a9659c8ec"
   },
-  "https://www.ccel.org/ccel/owen/catechisms": {
+  "1393": {
+   "url": "https://www.ccel.org/ccel/owen/catechisms",
+   "title": "Two Short Catechisms",
    "min": 166496,
    "max": 166526,
    "count": 31,
    "hash": "c3c97f0e1e94250c"
   },
-  "https://www.ccel.org/ccel/owen/churchlove": {
+  "1394": {
+   "url": "https://www.ccel.org/ccel/owen/churchlove",
+   "title": "A Discourse concerning Evangelical Love, Church Peace, and Unity",
    "min": 166527,
    "max": 166578,
    "count": 52,
    "hash": "8c97bc35df4f93a7"
   },
-  "https://www.ccel.org/ccel/owen/communion": {
+  "1395": {
+   "url": "https://www.ccel.org/ccel/owen/communion",
+   "title": "Of Communion with God the Father, Son and Holy Ghost",
    "min": 166579,
    "max": 166758,
    "count": 180,
    "hash": "e4827a8a5f5a3cde"
   },
-  "https://www.ccel.org/ccel/owen/conscience": {
+  "1396": {
+   "url": "https://www.ccel.org/ccel/owen/conscience",
+   "title": "Several Practical Cases of Conscience Resolved",
    "min": 166759,
    "max": 166782,
    "count": 24,
    "hash": "a93d2e07fc4d5bff"
   },
-  "https://www.ccel.org/ccel/owen/deathofdeath": {
+  "1397": {
+   "url": "https://www.ccel.org/ccel/owen/deathofdeath",
+   "title": "The Death of Death in the Death of Christ",
    "min": 166783,
    "max": 166945,
    "count": 163,
    "hash": "44bc982bed814d0c"
   },
-  "https://www.ccel.org/ccel/owen/discourses": {
+  "1398": {
+   "url": "https://www.ccel.org/ccel/owen/discourses",
+   "title": "Sacramental Discourses",
    "min": 166946,
    "max": 167001,
    "count": 56,
    "hash": "b0d4479cd95fa3d2"
   },
-  "https://www.ccel.org/ccel/owen/display": {
+  "1399": {
+   "url": "https://www.ccel.org/ccel/owen/display",
+   "title": "A Display of Arminianism",
    "min": 167002,
    "max": 167066,
    "count": 65,
    "hash": "554d8b29bdccad01"
   },
-  "https://www.ccel.org/ccel/owen/eshcol": {
+  "1400": {
+   "url": "https://www.ccel.org/ccel/owen/eshcol",
+   "title": "Eshcol; A Cluster of the Fruit of Canaan",
    "min": 167067,
    "max": 167092,
    "count": 26,
    "hash": "0e975b5f2d438060"
   },
-  "https://www.ccel.org/ccel/owen/evangelicalchurches": {
+  "1401": {
+   "url": "https://www.ccel.org/ccel/owen/evangelicalchurches",
+   "title": "An Inquiry into the Original, Nature, Institution, Power, Order, and Communion of Evangelical Churches",
    "min": 167093,
    "max": 167328,
    "count": 236,
    "hash": "9832bcc22bd12575"
   },
-  "https://www.ccel.org/ccel/owen/faith": {
+  "1402": {
+   "url": "https://www.ccel.org/ccel/owen/faith",
+   "title": "Gospel Grounds and Evidences of the Faith of God's Elect",
    "min": 167329,
    "max": 167359,
    "count": 31,
    "hash": "5506c1f1b38dc865"
   },
-  "https://www.ccel.org/ccel/owen/glory": {
+  "1403": {
+   "url": "https://www.ccel.org/ccel/owen/glory",
+   "title": "Meditations and Discourses on the Glory of Christ",
    "min": 167360,
    "max": 167457,
    "count": 98,
    "hash": "91c5d33c807edb51"
   },
-  "https://www.ccel.org/ccel/owen/grotius": {
+  "1404": {
+   "url": "https://www.ccel.org/ccel/owen/grotius",
+   "title": "A Review of the Annotations of Hugo Grotius",
    "min": 167458,
    "max": 167469,
    "count": 12,
    "hash": "9f8ecb2ea78c2311"
   },
-  "https://www.ccel.org/ccel/owen/indwellingsin": {
+  "1405": {
+   "url": "https://www.ccel.org/ccel/owen/indwellingsin",
+   "title": "The Nature, Power, Deceit, and Prevelancy of the Remainders of Indwelling Sin in Believers",
    "min": 167470,
    "max": 167555,
    "count": 86,
    "hash": "2494391d1b61107c"
   },
-  "https://www.ccel.org/ccel/owen/just": {
+  "1406": {
+   "url": "https://www.ccel.org/ccel/owen/just",
+   "title": "The Doctrine of Justification by Faith",
    "min": 167556,
    "max": 167755,
    "count": 200,
    "hash": "ea9c65f2be544b57"
   },
-  "https://www.ccel.org/ccel/owen/justice": {
+  "1407": {
+   "url": "https://www.ccel.org/ccel/owen/justice",
+   "title": "A Dissertation on Divine Justice",
    "min": 167756,
    "max": 167832,
    "count": 77,
    "hash": "0fb4fc3b40b3abd5"
   },
-  "https://www.ccel.org/ccel/owen/liturgies": {
+  "1408": {
+   "url": "https://www.ccel.org/ccel/owen/liturgies",
+   "title": "A Discourse Concerning Liturgies, and their Imposition",
    "min": 167833,
    "max": 167856,
    "count": 24,
    "hash": "27c5c44bbcaef5ee"
   },
-  "https://www.ccel.org/ccel/owen/mort": {
+  "1409": {
+   "url": "https://www.ccel.org/ccel/owen/mort",
+   "title": "Of the Mortification of Sin in Believers",
    "min": 167857,
    "max": 167900,
    "count": 44,
    "hash": "cfe8ed20ade257e7"
   },
-  "https://www.ccel.org/ccel/owen/pastorspeople": {
+  "1410": {
+   "url": "https://www.ccel.org/ccel/owen/pastorspeople",
+   "title": "The Duty of Pastors and People Distinguished",
    "min": 167901,
    "max": 167926,
    "count": 26,
    "hash": "7b362f5582da1b0a"
   },
-  "https://www.ccel.org/ccel/owen/perseverance": {
+  "1411": {
+   "url": "https://www.ccel.org/ccel/owen/perseverance",
+   "title": "The Doctrine of the Saints' Perseverance Explained and Confirmed",
    "min": 167927,
    "max": 168252,
    "count": 326,
    "hash": "5b2872838f0d62e8"
   },
-  "https://www.ccel.org/ccel/owen/pneum": {
+  "1412": {
+   "url": "https://www.ccel.org/ccel/owen/pneum",
+   "title": "Pneumatologia",
    "min": 168253,
    "max": 168799,
    "count": 547,
    "hash": "cf316f75aa091f1a"
   },
-  "https://www.ccel.org/ccel/owen/psalm130": {
+  "1413": {
+   "url": "https://www.ccel.org/ccel/owen/psalm130",
+   "title": "A Practical Exposition upon Psalm CXXX",
    "min": 168800,
    "max": 168971,
    "count": 172,
    "hash": "0ab7b11304f73af1"
   },
-  "https://www.ccel.org/ccel/owen/schism": {
+  "1414": {
+   "url": "https://www.ccel.org/ccel/owen/schism",
+   "title": "Of Schism",
    "min": 168972,
    "max": 169098,
    "count": 127,
    "hash": "93558dddd5d1dfc4"
   },
-  "https://www.ccel.org/ccel/owen/sermons": {
+  "1415": {
+   "url": "https://www.ccel.org/ccel/owen/sermons",
+   "title": "The Sermons of John Owen",
    "min": 169099,
    "max": 169696,
    "count": 598,
    "hash": "a0aae403f7dd6df0"
   },
-  "https://www.ccel.org/ccel/owen/sin_grace": {
+  "1416": {
+   "url": "https://www.ccel.org/ccel/owen/sin_grace",
+   "title": "A Treatise of the Dominion of Sin and Grace",
    "min": 169697,
    "max": 169729,
    "count": 33,
    "hash": "cca6a9c22b45d30b"
   },
-  "https://www.ccel.org/ccel/owen/spirituallyminded": {
+  "1417": {
+   "url": "https://www.ccel.org/ccel/owen/spirituallyminded",
+   "title": "The Grace and Duty of being Spiritually Minded",
    "min": 169730,
    "max": 169849,
    "count": 120,
    "hash": "20fc84da0aeb1d55"
   },
-  "https://www.ccel.org/ccel/owen/temptation": {
+  "1418": {
+   "url": "https://www.ccel.org/ccel/owen/temptation",
+   "title": "Of Temptation",
    "min": 169850,
    "max": 169881,
    "count": 32,
    "hash": "95a53a7800ce9781"
   },
-  "https://www.ccel.org/ccel/owen/trinity": {
+  "1419": {
+   "url": "https://www.ccel.org/ccel/owen/trinity",
+   "title": "A Brief Declaration and Vindication of The Doctrine of the Trinity",
    "min": 169882,
    "max": 169925,
    "count": 44,
    "hash": "325229ea69392c3b"
   },
-  "https://www.ccel.org/ccel/owen/truthinnocence": {
+  "1420": {
+   "url": "https://www.ccel.org/ccel/owen/truthinnocence",
+   "title": "Truth and Innocence Vindicated",
    "min": 169926,
    "max": 170003,
    "count": 78,
    "hash": "ae5d155b43bb0918"
   },
-  "https://www.ccel.org/ccel/owen/vindicevang": {
+  "1421": {
+   "url": "https://www.ccel.org/ccel/owen/vindicevang",
+   "title": "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined",
    "min": 170004,
    "max": 170300,
    "count": 297,
    "hash": "687dc0c9e2b3ac0d"
   },
-  "https://www.ccel.org/ccel/owen/worship": {
+  "1422": {
+   "url": "https://www.ccel.org/ccel/owen/worship",
+   "title": "A Brief Instruction in the Worship of God",
    "min": 170301,
    "max": 170362,
    "count": 62,
    "hash": "87ac43641275d9a8"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk1-ch1-41.pdf": {
+  "1435": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk1-ch1-41.pdf",
+   "title": "The Treasury of David \u2014 Psalms 1-41",
    "min": 175423,
    "max": 176006,
    "count": 584,
    "hash": "1b0e34f8571c74a2"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk2-ch42-72.pdf": {
+  "1436": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk2-ch42-72.pdf",
+   "title": "The Treasury of David \u2014 Psalms 42-72",
    "min": 176007,
    "max": 176367,
    "count": 361,
    "hash": "256aa8e4494a4cb3"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk3-ch73-89.pdf": {
+  "1437": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk3-ch73-89.pdf",
+   "title": "The Treasury of David \u2014 Psalms 73-89",
    "min": 176368,
    "max": 176603,
    "count": 236,
    "hash": "4698fa538493199c"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk4-ch90-106.pdf": {
+  "1438": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk4-ch90-106.pdf",
+   "title": "The Treasury of David \u2014 Psalms 90-106",
    "min": 176604,
    "max": 176879,
    "count": 276,
    "hash": "c294b783bcbb3f27"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk5a-ch107-119.pdf": {
+  "1439": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk5a-ch107-119.pdf",
+   "title": "The Treasury of David \u2014 Psalms 107-119",
    "min": 176880,
    "max": 177569,
    "count": 690,
    "hash": "6cad739436243b95"
   },
-  "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk5b-ch120-150.pdf": {
+  "1440": {
+   "url": "https://biblicalelearning.org/wp-content/uploads/2020/10/Spurgeon-Treasury-Bk5b-ch120-150.pdf",
+   "title": "The Treasury of David \u2014 Psalms 120-150",
    "min": 177570,
    "max": 177952,
    "count": 383,
    "hash": "4da9a279d955b938"
   },
-  "https://www.gutenberg.org/ebooks/77935": {
+  "1441": {
+   "url": "https://www.gutenberg.org/ebooks/77935",
+   "title": "The Book of Enoch (1 Enoch)",
    "min": 178061,
    "max": 178168,
    "count": 108,
    "hash": "0da1f736ba70c689"
   },
-  "https://www.gutenberg.org/ebooks/56487": {
+  "1442": {
+   "url": "https://www.gutenberg.org/ebooks/56487",
+   "title": "An Apology for the True Christian Divinity",
    "min": 178169,
    "max": 178183,
    "count": 15,
    "hash": "ffca7ccbe4647cac"
   },
-  "https://www.gutenberg.org/ebooks/75559": {
+  "1443": {
+   "url": "https://www.gutenberg.org/ebooks/75559",
+   "title": "The Journal of George Fox, Volume 1",
    "min": 178184,
    "max": 178197,
    "count": 14,
    "hash": "230d6e58eece136d"
   },
-  "https://www.gutenberg.org/ebooks/75590": {
+  "1444": {
+   "url": "https://www.gutenberg.org/ebooks/75590",
+   "title": "The Journal of George Fox, Volume 2",
    "min": 178198,
    "max": 178212,
    "count": 15,
    "hash": "2de5717fa7f09785"
   },
-  "https://www.gutenberg.org/ebooks/44895": {
+  "1445": {
+   "url": "https://www.gutenberg.org/ebooks/44895",
+   "title": "No Cross, No Crown",
    "min": 178213,
    "max": 178234,
    "count": 22,
    "hash": "7e46f029fa5cb4d3"
   },
-  "https://www.gutenberg.org/ebooks/37311": {
+  "1446": {
+   "url": "https://www.gutenberg.org/ebooks/37311",
+   "title": "The Journal of John Woolman",
    "min": 178235,
    "max": 178252,
    "count": 18,
    "hash": "c819158d345ef10e"
   },
-  "https://www.gutenberg.org/ebooks/57241": {
+  "1447": {
+   "url": "https://www.gutenberg.org/ebooks/57241",
+   "title": "The History of the Rise, Increase, and Progress of the Christian People Called Quakers",
    "min": 178253,
    "max": 178314,
    "count": 62,
    "hash": "c0e9df41b82511b4"
   },
-  "https://www.gutenberg.org/ebooks/65855": {
+  "1448": {
+   "url": "https://www.gutenberg.org/ebooks/65855",
+   "title": "The Bloody Theatre, or Martyrs Mirror of the Defenseless Christians",
    "min": 178315,
    "max": 178840,
    "count": 526,
    "hash": "92c3e9a0c33191d3"
+  },
+  "1449": {
+   "url": "https://www.ccel.org/ccel/schaff/creeds3/cache/creeds3.txt",
+   "title": "The Second Helvetic Confession",
+   "min": 178841,
+   "max": 178870,
+   "count": 30,
+   "hash": "3fb90c6a368a3340"
+  },
+  "1450": {
+   "url": "https://www.ccel.org/ccel/schaff/creeds3/cache/creeds3.txt",
+   "title": "The Savoy Declaration: Platform of Discipline",
+   "min": 178871,
+   "max": 178900,
+   "count": 30,
+   "hash": "ca99adf262654f6a"
+  },
+  "1451": {
+   "url": "https://www.ccel.org/ccel/schaff/creeds3/cache/creeds3.txt",
+   "title": "Articles of Religion of the Reformed Episcopal Church",
+   "min": 178901,
+   "max": 178934,
+   "count": 34,
+   "hash": "70400a02707138de"
+  },
+  "1452": {
+   "url": "https://www.ccel.org/ccel/white/steps",
+   "title": "Steps to Christ",
+   "min": 178935,
+   "max": 178967,
+   "count": 33,
+   "hash": "0397c993833e96df"
+  },
+  "1453": {
+   "url": "https://www.ccel.org/ccel/white/acts",
+   "title": "The Acts of the Apostles",
+   "min": 178968,
+   "max": 179140,
+   "count": 173,
+   "hash": "b9ee8e581136ef3f"
+  },
+  "1454": {
+   "url": "https://www.ccel.org/ccel/white/desire",
+   "title": "The Desire of Ages",
+   "min": 179141,
+   "max": 179447,
+   "count": 307,
+   "hash": "00c1920f257b8480"
+  },
+  "1455": {
+   "url": "https://www.ccel.org/ccel/white/controversy",
+   "title": "The Great Controversy",
+   "min": 179448,
+   "max": 179700,
+   "count": 253,
+   "hash": "2d3495b2dc18be5f"
+  },
+  "1456": {
+   "url": "https://www.ccel.org/ccel/white/prophets",
+   "title": "The Story of Prophets and Kings",
+   "min": 179701,
+   "max": 179902,
+   "count": 202,
+   "hash": "d4f433072e6ac416"
+  },
+  "1457": {
+   "url": "https://www.ccel.org/ccel/finney/revivals",
+   "title": "Lectures on Revivals of Religion",
+   "min": 179903,
+   "max": 180097,
+   "count": 195,
+   "hash": "f1682cda94b6a7ff"
+  },
+  "1458": {
+   "url": "https://www.ccel.org/ccel/finney/toprofessingchristians",
+   "title": "Lectures to Professing Christians",
+   "min": 180098,
+   "max": 180238,
+   "count": 141,
+   "hash": "d031c8c3f54da191"
+  },
+  "1459": {
+   "url": "https://www.ccel.org/ccel/finney/power",
+   "title": "Power From On High",
+   "min": 180239,
+   "max": 180274,
+   "count": 36,
+   "hash": "a669367d3faa74a8"
+  },
+  "1460": {
+   "url": "https://www.ccel.org/ccel/finney/sermons",
+   "title": "Sermons on Gospel Themes",
+   "min": 180275,
+   "max": 180450,
+   "count": 176,
+   "hash": "7ae8a1c95c272e6e"
+  },
+  "1461": {
+   "url": "https://www.ccel.org/ccel/finney/theology",
+   "title": "Systematic Theology [1878]",
+   "min": 180451,
+   "max": 180773,
+   "count": 323,
+   "hash": "826c213b2c47230c"
+  },
+  "1462": {
+   "url": "https://www.ccel.org/ccel/finney/backslide",
+   "title": "The Backslider in Heart",
+   "min": 180774,
+   "max": 180783,
+   "count": 10,
+   "hash": "1bc2fb07420533a8"
+  },
+  "1463": {
+   "url": "https://www.ccel.org/ccel/smith_hw/types",
+   "title": "Old Testament Types and Teachings",
+   "min": 180784,
+   "max": 180910,
+   "count": 127,
+   "hash": "6419e3af42018ee4"
+  },
+  "1464": {
+   "url": "https://www.ccel.org/ccel/smith_hw/secret",
+   "title": "The Christian's Secret of a Happy Life",
+   "min": 180911,
+   "max": 180994,
+   "count": 84,
+   "hash": "79cc8f7386b91cf3"
+  },
+  "1465": {
+   "url": "https://www.ccel.org/ccel/smith_hw/comfort",
+   "title": "The God of All Comfort",
+   "min": 180995,
+   "max": 181072,
+   "count": 78,
+   "hash": "0e8f1b1a068faf1d"
+  },
+  "1466": {
+   "url": "https://www.ccel.org/ccel/wesley/perfection",
+   "title": "A Plain Account of Christian Perfection",
+   "min": 181073,
+   "max": 181108,
+   "count": 36,
+   "hash": "b8dac9bea24363d0"
+  },
+  "1467": {
+   "url": "https://www.ccel.org/ccel/upham/maxims",
+   "title": "F\u00e9nelon's Maxims of the Saints",
+   "min": 181109,
+   "max": 181153,
+   "count": 45,
+   "hash": "c68399ec5b85740e"
   }
  },
  "idSpace": 1

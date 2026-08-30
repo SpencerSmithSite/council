@@ -23,6 +23,8 @@ __pycache__/
 # Uncompressed corpus: built by tools/build_corpus.py, shipped as .gz
 assets/theology.db
 assets/theology.db.bak
+# SQLite's rollback journal, present only while a build is mid-write.
+assets/theology.db-journal
 # Ad-hoc copies taken before a destructive prune. `git checkout` cannot restore
 # any of these — the .db above is ignored too, and theology.db.gz is the 9 MB
 # bundled core, not the 895 MB corpus — so a local copy is the only way back,

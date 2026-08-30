@@ -13,11 +13,13 @@ Each case here is one that was actually got wrong, and the comment says how.
     python3 tools/test_ingesters.py
 """
 
+import sqlite3
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import build_packs  # noqa: E402
 import ingest_reformation as reformation  # noqa: E402
 import ingest_orthodox as orthodox  # noqa: E402
 import ingest_treasury as treasury  # noqa: E402
@@ -265,10 +267,48 @@ def test_psalm_pages():
           "PREFACE." in pages[119] and "more" in pages[119], True)
 
 
+def test_ledger_keys():
+    """Two sources from one document must be two ledger entries.
+
+    They were one for months. `current_ledger` grouped by source id and then
+    wrote each row into a dict keyed by `source_url`, so the five parts of the
+    Summa collapsed into whichever came last, and eight of 653 sources sat
+    outside the check that guards against id reassignment. It shipped because a
+    dict that loses keys returns a smaller dict rather than raising, and nothing
+    counted. This is the fixed shape and the count that would have caught it.
+    """
+    conn = sqlite3.connect(":memory:")
+    conn.executescript("""
+        CREATE TABLE sources (id INTEGER PRIMARY KEY, source_url TEXT, title TEXT);
+        CREATE TABLE content_units (id INTEGER PRIMARY KEY, source_id INTEGER,
+                                    content TEXT);
+        INSERT INTO sources VALUES (1, 'http://one/doc', 'Part I'),
+                                   (2, 'http://one/doc', 'Part II'),
+                                   (3, '',               'No url at all');
+        INSERT INTO content_units VALUES (1, 1, 'alpha'), (2, 2, 'beta'),
+                                         (3, 3, 'gamma');
+    """)
+    ledger = build_packs.current_ledger(conn)
+
+    check("a shared url yields one entry per source",
+          sorted(ledger["sources"]), ["1", "2", "3"])
+    # Keyed by url, these two were indistinguishable; the hashes differ, so the
+    # collapse silently discarded a real fact about ids 1 and 2.
+    check("each entry keeps its own footprint",
+          ledger["sources"]["1"]["hash"] != ledger["sources"]["2"]["hash"], True)
+    # A source with no url used to be skipped outright. Source id needs no url.
+    check("a source without a url is still watched",
+          ledger["sources"]["3"]["count"], 1)
+    check("the format is stamped so an old ledger cannot be misread",
+          ledger["format"], build_packs.LEDGER_FORMAT)
+    conn.close()
+
+
 def main():
     for test in (test_creators, test_public_domain, test_display_matter,
                  test_titles, test_containment, test_reference_apparatus,
-                 test_front_matter, test_psalm_pages):
+                 test_front_matter, test_psalm_pages,
+                 test_ledger_keys):
         test()
 
     print()

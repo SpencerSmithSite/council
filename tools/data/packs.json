@@ -264,6 +264,18 @@
       ]
     },
     {
+      "id": "f-holiness",
+      "traditions": [
+        "holiness"
+      ]
+    },
+    {
+      "id": "f-adventist",
+      "traditions": [
+        "adventist"
+      ]
+    },
+    {
       "id": "f-orthodox",
       "traditions": [
         "eastern-orthodox"
@@ -523,7 +535,7 @@
       "id": "tradition-reformed",
       "kind": "tradition",
       "name": "Reformed & Presbyterian",
-      "description": "The Westminster Confession as ratified by the Scottish Parliament in 1690, the Westminster catechisms, the Heidelberg Catechism, the Canons of Dordt and the Belgic Confession.",
+      "description": "The confessional standards \u2014 the Westminster Confession as ratified by the Scottish Parliament in 1690, the Westminster catechisms, the Heidelberg Catechism, the Canons of Dordt, the Belgic and the Scots Confession \u2014 and the divines who argued them out: Calvin's Institutes and commentaries, Owen, Edwards, Hodge, Matthew Henry, Baxter, Knox, Watson, Charnock, Manton, Flavel and Murray.",
       "fragments": [
         "f-reformed",
         "f-calvin",
@@ -544,7 +556,7 @@
       "id": "tradition-anglican",
       "kind": "tradition",
       "name": "Anglican",
-      "description": "The Thirty-Nine Articles of Religion.",
+      "description": "The Thirty-Nine Articles of Religion, with Ryle on holiness and Matthew, William Law's Serious Call, Newton's Olney Hymns and Messiah, and Lightfoot's Apostolic Fathers. No liturgy: there is no proofread public-domain transcription of the 1662 Book of Common Prayer, so the tradition is here in its divines rather than in its worship.",
       "fragments": [
         "f-anglican",
         "f-ryle",
@@ -562,7 +574,7 @@
         "f-bunyan",
         "f-gill"
       ],
-      "description": "The Second London Baptist Confession of Faith (1689), the central Baptist confessional document."
+      "description": "Both London Baptist Confessions \u2014 the First of 1644 and the Second of 1689, the central Baptist confessional document \u2014 with Spurgeon's complete sermons and The Treasury of David, Bunyan's Pilgrim's Progress and Holy War, and Gill's Body of Divinity."
     },
     {
       "id": "tradition-orthodox",
@@ -589,7 +601,7 @@
       "id": "tradition-anabaptist",
       "kind": "tradition",
       "name": "Anabaptist",
-      "description": "The Martyrs Mirror \u2014 after the Bible, the book Mennonite households actually held. Martyrology rather than systematics: Menno Simons and the Schleitheim and Dordrecht confessions have no public-domain transcription and are not here.",
+      "description": "The Martyrs Mirror \u2014 after the Bible, the book Mennonite households actually held. Martyrology rather than systematics: the Dordrecht Confession and the complete works of Menno Simons were located on Wikisource in August 2026 and are not ingested yet; the Schleitheim Confession has no public-domain transcription anywhere that has been found.",
       "fragments": [
         "f-anabaptist"
       ]
@@ -607,10 +619,28 @@
       "id": "tradition-methodist",
       "kind": "tradition",
       "name": "Methodist & Wesleyan",
-      "description": "John Wesley's Sermons on Several Occasions (1771) \u2014 with his notes on the New Testament, the doctrinal standard of Methodism \u2014 and the other Methodist sources in the library.",
+      "description": "John Wesley's Sermons on Several Occasions (1771), with Adam Clarke on entire sanctification and Whitefield's sermons. Half a doctrinal standard: Methodism's standards are the Sermons and Wesley's Notes on the New Testament, and only the Sermons are here so far.",
       "fragments": [
         "f-methodist",
         "f-whitefield"
+      ]
+    },
+    {
+      "id": "tradition-holiness",
+      "kind": "tradition",
+      "name": "Holiness",
+      "description": "The movement in its antecedents, because its denominations arrived too late to be public domain. Wesley's A Plain Account of Christian Perfection states the doctrine the whole family formed around; Finney's Lectures on Revivals and Systematic Theology, Hannah Whitall Smith's The Christian's Secret of a Happy Life and The God of All Comfort, and Upham on F\u00e9nelon carry it into the nineteenth century. The Nazarene, Wesleyan, Free Methodist and Salvation Army standards are all twentieth-century and in copyright, and no better archive changes that.",
+      "fragments": [
+        "f-holiness"
+      ]
+    },
+    {
+      "id": "tradition-adventist",
+      "kind": "tradition",
+      "name": "Adventist",
+      "description": "Ellen G. White, the movement's own foundational author, rather than an account of Adventism written by someone else. Four of the five Conflict of the Ages volumes \u2014 The Story of Prophets and Kings, The Desire of Ages, The Acts of the Apostles and The Great Controversy \u2014 with Steps to Christ. Patriarchs and Prophets, the first volume, has no CCEL edition and is not here.",
+      "fragments": [
+        "f-adventist"
       ]
     },
     {

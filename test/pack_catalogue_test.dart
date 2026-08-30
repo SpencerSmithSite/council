@@ -331,6 +331,34 @@ void _restraint(
     // The incentive gradient that makes this honest rather than nagging:
     // installing the largest pack removes the warning for most subjects,
     // because it genuinely closes most of the gap.
+    //
+    // The largest pack is 'tradition-reformed', and this test used to name
+    // 'church-fathers' instead. That was true when it was written and stopped
+    // being true without anything in this file changing: Church Fathers is the
+    // largest by *works* — 357 of them — and Reformed & Presbyterian is more
+    // than twice its size in text, 108 MB against 49 MB. It only looked
+    // dominant while the Reformation ingest was untagged and therefore
+    // uncounted. A fixture that names a pack by reputation rather than by
+    // measurement drifts out of date silently.
+    var warned = 0;
+    for (final tag in everyTag) {
+      final suggestions = catalogue.suggest(
+        question: 'a question with no names in it',
+        queryTags: [tag],
+        installedFragments: fragmentsOf(const ['tradition-reformed']),
+      );
+      if (suggestions.isNotEmpty) warned++;
+    }
+    expect(warned, lessThan(3),
+        reason: 'after the big pack, only genuinely thin subjects should warn');
+  });
+
+  test('the patristic pack alone still warns on the Reformation subjects', () {
+    // The other half of the same property, and the one that stops the
+    // threshold above from being set by whatever made the suite pass: a reader
+    // holding only the Fathers really is missing most of what the corpus has
+    // on justification, and should be told so. A notice that never fires is as
+    // useless as one that always does.
     var warned = 0;
     for (final tag in everyTag) {
       final suggestions = catalogue.suggest(
@@ -340,8 +368,8 @@ void _restraint(
       );
       if (suggestions.isNotEmpty) warned++;
     }
-    expect(warned, lessThan(3),
-        reason: 'after the big pack, only genuinely thin subjects should warn');
+    expect(warned, greaterThan(2),
+        reason: 'the patristic corpus is genuinely thin on several of these');
   });
 
   test('a fully installed library never warns about any subject', () {

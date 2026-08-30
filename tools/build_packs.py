@@ -87,7 +87,7 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2-int8-384"
 # Must match DatabaseService.corpusVersion. This governs the *bundled* database:
 # the app throws away its installed copy and unpacks the new one when this
 # changes. It ships inside the binary, so it can only ever change with a release.
-CORPUS_VERSION = 15
+CORPUS_VERSION = 16
 
 # What packs are actually gated on. See `read_ledger` below.
 #
@@ -107,7 +107,12 @@ ID_SPACE_START = 1
 # Reference tables are small, shared, and copied whole into every pack, so that
 # installing a pack cannot leave a source pointing at a tradition the app has
 # never heard of. They are inserted with OR IGNORE, so overlap is free.
-REFERENCE_TABLES = ["traditions", "source_types", "tags", "authors", "works"]
+# `branches` leads `traditions` because a tradition row carries a branch_id.
+# SQLite does not enforce that by default, so the order is free rather than
+# necessary — but a pack that carried families and not the branches they name
+# would leave the shelf unable to group what it had just installed.
+REFERENCE_TABLES = ["branches", "traditions", "source_types", "tags",
+                    "authors", "works"]
 
 # Copied per-pack, in dependency order.
 CONTENT_TABLES = [
@@ -420,33 +425,76 @@ def sha256(path):
 # their text. That is enough to decide the question, because units are inserted
 # in one contiguous run per source, so "same range and same text" means every
 # individual id in it still holds what it held.
+#
+# Keyed by source id. It was keyed by source_url until format 2, which quietly
+# lost every source that shared a url with another: the query groups by s.id and
+# the loop wrote each row into sources[url], so the last row of a group won and
+# the rest vanished. Eight of 653 sources went unmonitored that way — the five
+# parts of the Summa, three of Brannan's confessions, three of Schaff's — and
+# nothing reported it, because a dictionary that collapses keys does not raise.
+# Source id is the better key regardless: it is the identity the packs and the
+# reader's bookmarks already carry, so a *source* id being reused is a fault
+# this can now see, and no source needs a url to be watched.
+
+# Ledger format. Bumped when the shape of the file changes, so that a ledger
+# this code cannot read stops the build instead of being misread as a corpus
+# full of faults. See `read_ledger`.
+LEDGER_FORMAT = 2
 
 
 def current_ledger(conn):
     """Per-source id footprint of the corpus as it stands."""
     sources = {}
     rows = conn.execute(
-        """SELECT s.source_url, MIN(u.id), MAX(u.id), COUNT(u.id),
+        """SELECT s.id, s.source_url, s.title, MIN(u.id), MAX(u.id), COUNT(u.id),
                   GROUP_CONCAT(u.content, char(30))
            FROM sources s JOIN content_units u ON u.source_id = s.id
-           WHERE s.source_url IS NOT NULL AND s.source_url <> ''
            GROUP BY s.id"""
     )
-    for url, low, high, count, text in rows:
-        sources[url] = {
+    for sid, url, title, low, high, count, text in rows:
+        sources[str(sid)] = {
+            "url": url or "",
+            "title": title,
             "min": low,
             "max": high,
             "count": count,
             "hash": hashlib.sha256((text or "").encode()).hexdigest()[:16],
         }
+
+    # Sources in, entries out. The url-keyed ledger lost eight of them for
+    # months, and it stayed invisible because nothing ever compared these two
+    # numbers. Any keying that collapses rows fails here on the next build
+    # rather than in a reader's half-finished install.
+    expected = conn.execute(
+        """SELECT COUNT(*) FROM sources s
+           WHERE EXISTS (SELECT 1 FROM content_units u WHERE u.source_id = s.id)"""
+    ).fetchone()[0]
+    if len(sources) != expected:
+        sys.exit(f"Ledger covers {len(sources)} sources but the corpus has "
+                 f"{expected} with units. Some are going unmonitored.")
+
     top = conn.execute("SELECT MAX(id) FROM content_units").fetchone()[0] or 0
-    return {"maxUnitId": top, "sources": sources}
+    return {"format": LEDGER_FORMAT, "maxUnitId": top, "sources": sources}
 
 
 def read_ledger():
+    """The previous build's ledger, or None if there has never been one.
+
+    Fails closed on a format it does not recognise. That matters more than it
+    looks: an unreadable baseline makes every key look new, every settled source
+    read as `occupied`, and the id space bump — telling every reader to update
+    the app for a build that changed nothing. The right answer to "I do not
+    recognise this" is to stop, never to cry wolf.
+    """
     if not LEDGER_PATH.exists():
         return None
-    return json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+    ledger = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+    if ledger.get("format") != LEDGER_FORMAT:
+        sys.exit(
+            f"{LEDGER_PATH.name} is format {ledger.get('format', 1)}; this build "
+            f"reads format {LEDGER_FORMAT}.\n"
+            "Run: python3 tools/migrate_id_ledger.py --write")
+    return ledger
 
 
 def check_id_space(conn):
@@ -480,12 +528,21 @@ def check_id_space(conn):
     was = before["sources"]
     moved, rewritten, occupied = [], [], []
 
-    for url, entry in now["sources"].items():
-        old = was.get(url)
+    def label(key, entry):
+        """What to call a faulting source in the report.
+
+        Its title, because that is what a person recognises; the id after it,
+        because that is what identifies it in the corpus and in the ledger, and
+        two sources may well share a title.
+        """
+        return f"{entry['title'][:56]}  (source {key})"
+
+    for key, entry in now["sources"].items():
+        old = was.get(key)
         settled = entry["min"] <= mark
         if old is None:
             if settled:
-                occupied.append(url)
+                occupied.append(label(key, entry))
             continue
         same_ids = (old["min"], old["max"], old["count"]) == (
             entry["min"], entry["max"], entry["count"])
@@ -497,11 +554,11 @@ def check_id_space(conn):
             # rebuilt into fresh ids above the mark retires its old ones and
             # collides with nothing.
             if settled:
-                moved.append(url)
+                moved.append(label(key, entry))
         elif same_ids and not same_text:
-            rewritten.append(url)
+            rewritten.append(label(key, entry))
         elif settled:
-            occupied.append(url)
+            occupied.append(label(key, entry))
 
     faults = [("moved", moved), ("rewritten", rewritten), ("occupied", occupied)]
     if not any(items for _, items in faults):
@@ -512,11 +569,11 @@ def check_id_space(conn):
 
     space = before.get("idSpace", ID_SPACE_START) + 1
     print(f"id space: {space} (BUMPED — ids in the field have been reassigned)")
-    for label, items in faults:
-        for url in items[:6]:
-            print(f"    {label:10} {url}")
+    for kind, items in faults:
+        for item in items[:6]:
+            print(f"    {kind:10} {item}")
         if len(items) > 6:
-            print(f"    {label:10} … and {len(items) - 6} more")
+            print(f"    {kind:10} … and {len(items) - 6} more")
     print("  Readers must update the app before they can install these packs.")
     return space, now
 

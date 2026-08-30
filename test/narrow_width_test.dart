@@ -55,8 +55,10 @@ void main() {
       inMemoryDatabasePath,
       options: OpenDatabaseOptions(singleInstance: false),
     );
+    await corpus.execute('CREATE TABLE branches (id INTEGER PRIMARY KEY, '
+        'name TEXT, sort_order INTEGER)');
     await corpus.execute('CREATE TABLE traditions (id INTEGER PRIMARY KEY, '
-        'name TEXT)');
+        'name TEXT, branch_id INTEGER, sort_order INTEGER)');
     await corpus.execute('CREATE TABLE source_types (id INTEGER PRIMARY KEY, '
         'name TEXT)');
     await corpus.execute('CREATE TABLE sources (id INTEGER PRIMARY KEY, '
@@ -73,8 +75,17 @@ void main() {
 
     // A shelf of works whose names are the length the corpus actually holds,
     // filed under the longest tradition name in it.
-    await corpus
-        .insert('traditions', {'id': 1, 'name': 'Reformed and Presbyterian'});
+    // The longest branch name over the longest family name: the shelf now
+    // stacks a branch heading above a family heading, so the width test has to
+    // exercise both or it stops measuring the widest thing on screen.
+    await corpus.insert(
+        'branches', {'id': 1, 'name': 'Other and Independent', 'sort_order': 1});
+    await corpus.insert('traditions', {
+      'id': 1,
+      'name': 'Reformed and Presbyterian',
+      'branch_id': 1,
+      'sort_order': 1,
+    });
     for (var i = 0; i < 4; i++) {
       await corpus.insert('sources', {
         'id': 10 + i,
@@ -342,6 +353,13 @@ void main() {
   /// row it is here to check.
   Future<void> openTheShelf(WidgetTester tester, double textScale) async {
     await show(tester, const ReadScreen(), textScale: textScale);
+    // Scrolled into view rather than tapped where it happens to land. The
+    // heading sits below a Pinned section and a branch heading, and at the
+    // largest font size that is far enough down a 320 px screen to put it
+    // under the floating search bar — where the tap reaches the search field
+    // instead and the failure reads as a missing widget.
+    await tester.ensureVisible(find.text('Reformed and Presbyterian'));
+    await settle(tester);
     await tester.tap(find.text('Reformed and Presbyterian'));
     await settle(tester);
     expect(find.textContaining('Seven Ecumenical Councils'), findsWidgets);
