@@ -305,7 +305,13 @@ Confirmed present on Project Gutenberg with an ID:
 Priority weighs three things: how central the tradition is to the app's
 purpose, whether its texts can actually be shipped, and how large the gap is.
 
-### 1. Baptist — a defined tradition with nothing in it
+### 1. Baptist — done, and now the second-largest tradition in the corpus
+
+**Closed.** The heading here used to read "a defined tradition with nothing in
+it", which was true when it was written and has been false since July: Baptist
+is 82 sources and 98 MB, behind only Reformed. Kept because the sequence below
+is the record of how it was closed, and the edition comparison in it is the
+part worth re-reading.
 
 The database had a `baptist` row and zero sources, while Baptists are among the
 largest Protestant families in the world.
@@ -407,7 +413,12 @@ largest Protestant families in the world.
 - **Bunyan** — *Pilgrim's Progress* (131) and *Grace Abounding*.
 - **John Gill**, *Body of Divinity*; **Andrew Fuller**.
 
-### 2. Methodist and Wesleyan — two placeholder entries
+### 2. Methodist and Wesleyan — placeholders replaced, one standard still missing
+
+**Half closed.** The two placeholder entries are gone, replaced by Wesley's
+*Sermons on Several Occasions*, Whitefield and Adam Clarke. Wesley's *Notes on
+the New Testament* — the other half of the doctrinal standard — is still not
+ingested, and the pack description says so rather than implying otherwise.
 
 - [x] **Wesley's sermons** — done, 2026-07-22. Not the 44 Standard Sermons but
   all **141** of *Sermons on Several Occasions* (1771), 3.59 M chars, from
@@ -456,7 +467,14 @@ largest Protestant families in the world.
 - **John Fletcher**, *Checks to Antinomianism*.
 - 67 Gutenberg hits for "wesley" need filtering — most are not John Wesley.
 
-### 3. Eastern Orthodox — 0.004 M characters
+### 3. Eastern Orthodox — from 0.004 M characters to 0.575 M, and still the
+thinnest major tradition
+
+**Partly closed and still the weakest thing in the corpus.** Three documents —
+Philaret's *Longer Catechism*, the Confession of Dositheus and the *Book of
+Needs* — against 147 Reformed sources. The copyright audit of 2026-08-30 located
+Brightman's *Liturgies Eastern and Western* (1896) and Mogila's *Orthodox
+Confession* (Shann, 1898) as the next two, and both are queued in `TODO.md`.
 
 - **The Philokalia** — the current entry is an unsourced abridgement.
   Translation rights need care: the standard English translation is modern and
