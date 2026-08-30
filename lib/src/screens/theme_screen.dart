@@ -41,7 +41,7 @@ class ThemeScreen extends StatelessWidget {
 
     final top = MediaQuery.of(context).padding.top;
 
-    // Full-bleed like the Settings and Library screens it is pushed from: a
+    // Full-bleed like the Settings and Browse screens it is pushed from: a
     // scrolling large title with a floating round back button, and the content
     // in grouped inset sections rather than under a solid app bar.
     return Scaffold(

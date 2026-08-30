@@ -7,7 +7,7 @@ import '../services/database_service.dart';
 import '../services/packs/pack_provider.dart';
 import '../services/read_shelf_service.dart';
 import 'content_detail_screen.dart';
-import 'library_screen.dart';
+import 'browse_screen.dart';
 import 'source_reader_screen.dart';
 
 /// Everything installed, arranged to be read rather than queried.
@@ -501,7 +501,7 @@ class _Shelf extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                    MaterialPageRoute(builder: (_) => const BrowseScreen()),
                   ),
                   icon: const Icon(Icons.add),
                   label: const Text('Add more to your library'),
@@ -842,9 +842,9 @@ class _Results extends StatelessWidget {
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                  MaterialPageRoute(builder: (_) => const BrowseScreen()),
                 ),
-                child: const Text('Browse the Library'),
+                child: const Text('Browse collections'),
               ),
             ],
           ),

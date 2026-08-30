@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'src/services/database_service.dart';
@@ -20,7 +21,7 @@ import 'src/screens/chat_history_screen.dart';
 import 'src/screens/chat_screen.dart';
 import 'src/screens/notes_screen.dart';
 import 'src/screens/read_screen.dart';
-import 'src/screens/library_screen.dart';
+import 'src/screens/browse_screen.dart';
 import 'src/screens/settings_screen.dart';
 import 'src/screens/onboarding_screen.dart';
 import 'src/theme/app_theme.dart';
@@ -67,6 +68,8 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
   Future<TheologyApp> _bootstrap() async {
     await _initialiseLocalModelRuntime();
 
+    await _dropRecentlyViewed();
+
     // Initialize database
     final dbService = DatabaseService();
     await dbService.initialize();
@@ -95,7 +98,7 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
       await PackCatalogue.load(),
     );
     await packs.loadInstalled();
-    // Fetched at startup rather than when the Library is first opened. It is
+    // Fetched at startup rather than when Browse is first opened. It is
     // 1.4 KB, and without it the coverage notice can name a collection but not
     // say what it costs. Not awaited, so a slow network never holds up launch.
     unawaited(packs.refresh());
@@ -106,6 +109,21 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
       settings: settings,
       inference: inference,
     );
+  }
+
+  /// Throw away the reading history of a screen that no longer exists.
+  ///
+  /// Recently Viewed was reachable only from a home screen that the Read tab
+  /// replaced, so for some time the app went on recording up to fifty passages
+  /// to disk that nothing could ever display. The screen and its service are
+  /// gone; this clears what they left on devices that ran those builds, rather
+  /// than leaving a reader's history sitting there unread and unreachable.
+  ///
+  /// Cheap and idempotent — a key that is not there is not an error — so it
+  /// stays rather than needing a migration number to retire it.
+  Future<void> _dropRecentlyViewed() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('recently_viewed');
   }
 
   /// Registers the engine that runs a downloaded model.
@@ -280,7 +298,7 @@ class MainScreen extends StatefulWidget {
 enum _Area {
   ask('Ask'),
   read('Read'),
-  library('Library');
+  browse('Browse');
 
   const _Area(this.title);
   final String title;
@@ -288,7 +306,7 @@ enum _Area {
   IconData get icon => switch (this) {
         _Area.ask => AppIcons.ask,
         _Area.read => AppIcons.read,
-        _Area.library => AppIcons.library,
+        _Area.browse => AppIcons.browse,
       };
 }
 
@@ -324,7 +342,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _screenFor(_Area area) => switch (area) {
         _Area.ask => ChatScreen(key: _chatKey),
         _Area.read => const ReadScreen(),
-        _Area.library => const LibraryScreen(embedded: true),
+        _Area.browse => const BrowseScreen(embedded: true),
       };
 
   Future<void> _openHistory() async {

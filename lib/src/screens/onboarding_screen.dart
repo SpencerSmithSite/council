@@ -217,7 +217,7 @@ class _BiblesPage extends StatelessWidget {
       subtitle:
           'The King James Bible is already installed and works offline. Add any '
           'of these other public-domain translations if you like — or move on, '
-          'and add them later from the Library.',
+          'and add them later from Browse.',
       child: _Body(
         manifest: manifest,
         error: packs.error,
@@ -271,8 +271,8 @@ class _StartHerePage extends StatelessWidget {
       title: 'Build your library',
       subtitle:
           'The councils, creeds, confessions and church fathers. Start with '
-          'Creeds & Confessions — the rest of the collections are always in the '
-          'Library.',
+          'Creeds & Confessions — the rest of the collections are always in '
+          'Browse.',
       child: _Body(
         manifest: manifest,
         error: packs.error,
@@ -293,9 +293,10 @@ class _StartHerePage extends StatelessWidget {
   }
 }
 
-/// Step 3 — how answers are generated. Search-only is the default and a
-/// first-class choice; the other two send a question somewhere, so they are
-/// opt-in and say so.
+/// Step 3 — how answers are generated. Opens on whichever private backend the
+/// device can offer — its own built-in model, or a local download — chosen by
+/// [InferenceProvider.load]; search-only stays a first-class choice one tap
+/// away, and the two that send a question somewhere are opt-in and say so.
 class _AiPage extends StatelessWidget {
   const _AiPage();
 
@@ -490,7 +491,7 @@ class _Body extends StatelessWidget {
                   children: [
                     Text(
                       'The catalogue could not be reached. You can add '
-                      'collections later from the Library.',
+                      'collections later from Browse.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),

@@ -14,7 +14,7 @@ import '../theme/themes.dart';
 import 'ai_backend_screen.dart';
 import 'onboarding_screen.dart';
 import 'theme_screen.dart';
-import 'library_screen.dart';
+import 'browse_screen.dart';
 import '../services/packs/pack_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
 
     // Full-bleed like the primary screens: a scrolling large title with a
     // floating round back button, rather than a solid bar bolted to the top —
-    // the same Apple chrome the Read and Library tabs use. The scaffold keeps
+    // the same Apple chrome the Read and Browse tabs use. The scaffold keeps
     // its themed background (this is a pushed route), so the content is never
     // stranded on black.
     return Scaffold(
@@ -150,7 +150,7 @@ class SettingsScreen extends StatelessWidget {
                 trailing: Icon(AppIcons.chevronRight),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                  MaterialPageRoute(builder: (_) => const BrowseScreen()),
                 ),
               ),
             ],
