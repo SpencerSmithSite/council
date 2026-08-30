@@ -1,5 +1,5 @@
 {
-  "corpusVersion": 15,
+  "corpusVersion": 16,
   "core": {
     "angels": 119,
     "baptism": 17,
@@ -614,7 +614,29 @@
         "On the Christian Life",
         "The Institutes of the Christian Religion"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 805,
+        "baptism": 194,
+        "christology": 2,
+        "church": 2567,
+        "creation": 248,
+        "eschatology": 352,
+        "eucharist": 10,
+        "faith": 2499,
+        "grace": 1886,
+        "holy-spirit": 691,
+        "incarnation": 5,
+        "justification": 124,
+        "last-judgment": 2462,
+        "prayer": 1543,
+        "sacraments": 192,
+        "salvation": 1750,
+        "sanctification": 104,
+        "scripture": 1472,
+        "sin": 2153,
+        "trinity": 18,
+        "worship": 1338
+      },
       "traditions": [
         "Reformed"
       ]
@@ -631,7 +653,28 @@
         "Commentary on the Whole Bible Volume V (Matthew to John)",
         "Commentary on the Whole Bible Volume VI (Acts to Revelation)"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 675,
+        "baptism": 121,
+        "church": 1750,
+        "creation": 190,
+        "eschatology": 300,
+        "eucharist": 2,
+        "faith": 1515,
+        "grace": 1987,
+        "holy-spirit": 80,
+        "incarnation": 27,
+        "justification": 114,
+        "last-judgment": 1770,
+        "prayer": 1170,
+        "sacraments": 39,
+        "salvation": 711,
+        "sanctification": 120,
+        "scripture": 554,
+        "sin": 2604,
+        "trinity": 21,
+        "worship": 672
+      },
       "traditions": [
         "Reformed"
       ]
@@ -717,7 +760,28 @@
         "The Treasury of David \u2014 Psalms 90-106",
         "Till He Come"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 3839,
+        "baptism": 695,
+        "church": 6915,
+        "creation": 960,
+        "eschatology": 1240,
+        "eucharist": 23,
+        "faith": 9265,
+        "grace": 11766,
+        "holy-spirit": 5389,
+        "incarnation": 213,
+        "justification": 670,
+        "last-judgment": 3032,
+        "prayer": 7173,
+        "sacraments": 265,
+        "salvation": 6036,
+        "sanctification": 457,
+        "scripture": 3815,
+        "sin": 12837,
+        "trinity": 281,
+        "worship": 2528
+      },
       "traditions": [
         "Baptist"
       ]
@@ -735,7 +799,27 @@
         "The Works of Jonathan Edwards, Volume Two",
         "Treatise on Grace"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 364,
+        "baptism": 47,
+        "church": 739,
+        "creation": 176,
+        "eschatology": 137,
+        "faith": 490,
+        "grace": 972,
+        "holy-spirit": 124,
+        "incarnation": 44,
+        "justification": 139,
+        "last-judgment": 528,
+        "prayer": 449,
+        "sacraments": 89,
+        "salvation": 603,
+        "sanctification": 39,
+        "scripture": 897,
+        "sin": 1029,
+        "trinity": 58,
+        "worship": 246
+      },
       "traditions": [
         "Reformed"
       ]
@@ -751,7 +835,28 @@
         "Preface to the Letter of St. Paul to the Romans",
         "The Large Catechism"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 17,
+        "baptism": 39,
+        "church": 106,
+        "creation": 5,
+        "eschatology": 7,
+        "eucharist": 3,
+        "faith": 144,
+        "grace": 54,
+        "holy-spirit": 8,
+        "incarnation": 1,
+        "justification": 29,
+        "last-judgment": 34,
+        "prayer": 60,
+        "sacraments": 59,
+        "salvation": 61,
+        "sanctification": 4,
+        "scripture": 65,
+        "sin": 110,
+        "trinity": 1,
+        "worship": 17
+      },
       "traditions": [
         "Lutheran"
       ]
@@ -765,7 +870,22 @@
         "The Holy War",
         "The Pilgrim's Progress"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 14,
+        "church": 5,
+        "eschatology": 4,
+        "faith": 35,
+        "grace": 45,
+        "holy-spirit": 1,
+        "justification": 1,
+        "last-judgment": 38,
+        "prayer": 18,
+        "salvation": 16,
+        "scripture": 5,
+        "sin": 53,
+        "trinity": 2,
+        "worship": 6
+      },
       "traditions": [
         "Baptist"
       ]
@@ -777,7 +897,29 @@
       "titles": [
         "Barnes' New Testament Notes"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 400,
+        "baptism": 101,
+        "christology": 1,
+        "church": 1200,
+        "creation": 113,
+        "eschatology": 291,
+        "eucharist": 4,
+        "faith": 655,
+        "grace": 433,
+        "holy-spirit": 269,
+        "incarnation": 31,
+        "justification": 135,
+        "last-judgment": 463,
+        "prayer": 388,
+        "sacraments": 9,
+        "salvation": 692,
+        "sanctification": 37,
+        "scripture": 591,
+        "sin": 1096,
+        "trinity": 31,
+        "worship": 345
+      },
       "traditions": [
         "Reformed"
       ]
@@ -790,7 +932,26 @@
         "The Reformed Pastor",
         "The Saints' Everlasting Rest"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 32,
+        "baptism": 1,
+        "church": 63,
+        "creation": 5,
+        "eschatology": 7,
+        "faith": 64,
+        "grace": 72,
+        "holy-spirit": 5,
+        "justification": 4,
+        "last-judgment": 41,
+        "prayer": 43,
+        "sacraments": 5,
+        "salvation": 61,
+        "sanctification": 5,
+        "scripture": 39,
+        "sin": 102,
+        "trinity": 2,
+        "worship": 10
+      },
       "traditions": [
         "Reformed"
       ]
@@ -805,7 +966,29 @@
         "Systematic Theology - Volume II",
         "Systematic Theology - Volume III"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 116,
+        "baptism": 88,
+        "christology": 9,
+        "church": 563,
+        "creation": 120,
+        "eschatology": 91,
+        "eucharist": 23,
+        "faith": 421,
+        "grace": 264,
+        "holy-spirit": 150,
+        "incarnation": 51,
+        "justification": 96,
+        "last-judgment": 174,
+        "prayer": 87,
+        "sacraments": 102,
+        "salvation": 269,
+        "sanctification": 82,
+        "scripture": 579,
+        "sin": 478,
+        "trinity": 57,
+        "worship": 107
+      },
       "traditions": [
         "Reformed"
       ]
@@ -825,7 +1008,28 @@
         "The Works of Thomas Manton, D.D. Vol. VII",
         "The Works of Thomas Manton, D.D. Vol. XX"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 331,
+        "baptism": 75,
+        "church": 487,
+        "creation": 143,
+        "eschatology": 121,
+        "eucharist": 1,
+        "faith": 970,
+        "grace": 1265,
+        "holy-spirit": 68,
+        "incarnation": 8,
+        "justification": 68,
+        "last-judgment": 627,
+        "prayer": 458,
+        "sacraments": 33,
+        "salvation": 515,
+        "sanctification": 98,
+        "scripture": 611,
+        "sin": 1415,
+        "trinity": 19,
+        "worship": 253
+      },
       "traditions": [
         "Reformed"
       ]
@@ -839,7 +1043,28 @@
         "An Exposition of the Book of Solomon's Song",
         "Doctrinal Divinity"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 274,
+        "baptism": 87,
+        "church": 511,
+        "creation": 103,
+        "eschatology": 140,
+        "eucharist": 5,
+        "faith": 438,
+        "grace": 700,
+        "holy-spirit": 58,
+        "incarnation": 58,
+        "justification": 103,
+        "last-judgment": 172,
+        "prayer": 124,
+        "sacraments": 2,
+        "salvation": 288,
+        "sanctification": 68,
+        "scripture": 264,
+        "sin": 499,
+        "trinity": 35,
+        "worship": 166
+      },
       "traditions": [
         "Baptist"
       ]
@@ -854,7 +1079,27 @@
         "The Works of John Knox, Vol. 1 (of 6)",
         "Treatise on Prayer"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 14,
+        "baptism": 12,
+        "church": 88,
+        "creation": 5,
+        "eschatology": 2,
+        "faith": 67,
+        "grace": 118,
+        "holy-spirit": 9,
+        "incarnation": 2,
+        "justification": 5,
+        "last-judgment": 63,
+        "prayer": 51,
+        "sacraments": 43,
+        "salvation": 14,
+        "sanctification": 4,
+        "scripture": 52,
+        "sin": 40,
+        "trinity": 1,
+        "worship": 8
+      },
       "traditions": [
         "Reformed"
       ]
@@ -868,7 +1113,26 @@
         "The Beatitudes: An Exposition of Matthew 5:1-12",
         "The Ten Commandments"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 75,
+        "baptism": 12,
+        "church": 43,
+        "creation": 10,
+        "eschatology": 2,
+        "faith": 88,
+        "grace": 133,
+        "holy-spirit": 6,
+        "justification": 6,
+        "last-judgment": 6,
+        "prayer": 63,
+        "sacraments": 17,
+        "salvation": 46,
+        "sanctification": 9,
+        "scripture": 54,
+        "sin": 197,
+        "trinity": 6,
+        "worship": 27
+      },
       "traditions": [
         "Reformed"
       ]
@@ -888,7 +1152,26 @@
         "With Christ in the School of Prayer",
         "Working For God!"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 9,
+        "baptism": 8,
+        "church": 99,
+        "creation": 16,
+        "eschatology": 25,
+        "faith": 191,
+        "grace": 142,
+        "holy-spirit": 174,
+        "incarnation": 2,
+        "justification": 6,
+        "last-judgment": 24,
+        "prayer": 170,
+        "salvation": 70,
+        "sanctification": 13,
+        "scripture": 54,
+        "sin": 125,
+        "trinity": 6,
+        "worship": 44
+      },
       "traditions": [
         "Reformed"
       ]
@@ -902,7 +1185,26 @@
         "Christ Altogether Lovely",
         "Pneumatologia: A Treatise of the Soul of Man"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 58,
+        "church": 32,
+        "creation": 19,
+        "eschatology": 27,
+        "faith": 56,
+        "grace": 80,
+        "holy-spirit": 2,
+        "incarnation": 2,
+        "justification": 6,
+        "last-judgment": 23,
+        "prayer": 34,
+        "sacraments": 4,
+        "salvation": 49,
+        "sanctification": 19,
+        "scripture": 57,
+        "sin": 111,
+        "trinity": 1,
+        "worship": 16
+      },
       "traditions": [
         "Reformed"
       ]
@@ -915,7 +1217,27 @@
         "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
         "The Upper Room: Being a Few Truths for the Times"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 26,
+        "baptism": 11,
+        "church": 134,
+        "creation": 16,
+        "eschatology": 25,
+        "faith": 149,
+        "grace": 133,
+        "holy-spirit": 15,
+        "incarnation": 1,
+        "justification": 35,
+        "last-judgment": 55,
+        "prayer": 91,
+        "sacraments": 20,
+        "salvation": 76,
+        "sanctification": 40,
+        "scripture": 89,
+        "sin": 174,
+        "trinity": 6,
+        "worship": 32
+      },
       "traditions": [
         "Anglican"
       ]
@@ -929,7 +1251,26 @@
         "Messiah Vol. 2",
         "Olney Hymns"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 69,
+        "baptism": 2,
+        "church": 50,
+        "creation": 30,
+        "eschatology": 26,
+        "faith": 151,
+        "grace": 242,
+        "holy-spirit": 41,
+        "incarnation": 8,
+        "justification": 4,
+        "last-judgment": 51,
+        "prayer": 108,
+        "salvation": 81,
+        "sanctification": 5,
+        "scripture": 79,
+        "sin": 224,
+        "trinity": 1,
+        "worship": 42
+      },
       "traditions": [
         "Anglican"
       ]
@@ -944,7 +1285,26 @@
         "Spirit of Love",
         "The Spirit of Prayer"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 79,
+        "baptism": 5,
+        "church": 66,
+        "creation": 38,
+        "eschatology": 28,
+        "faith": 50,
+        "grace": 38,
+        "holy-spirit": 32,
+        "justification": 4,
+        "last-judgment": 30,
+        "prayer": 101,
+        "sacraments": 8,
+        "salvation": 61,
+        "sanctification": 6,
+        "scripture": 90,
+        "sin": 87,
+        "trinity": 8,
+        "worship": 30
+      },
       "traditions": [
         "Anglican"
       ]
@@ -956,7 +1316,27 @@
       "titles": [
         "Selected Sermons of George Whitefield"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 80,
+        "baptism": 13,
+        "church": 96,
+        "creation": 13,
+        "eschatology": 25,
+        "faith": 105,
+        "grace": 132,
+        "holy-spirit": 38,
+        "incarnation": 1,
+        "justification": 21,
+        "last-judgment": 75,
+        "prayer": 73,
+        "sacraments": 23,
+        "salvation": 79,
+        "sanctification": 13,
+        "scripture": 80,
+        "sin": 159,
+        "trinity": 7,
+        "worship": 29
+      },
       "traditions": [
         "Methodist"
       ]
@@ -998,7 +1378,28 @@
         "Two Short Catechisms",
         "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 214,
+        "baptism": 73,
+        "church": 1637,
+        "creation": 241,
+        "eschatology": 118,
+        "eucharist": 6,
+        "faith": 1699,
+        "grace": 1799,
+        "holy-spirit": 429,
+        "incarnation": 71,
+        "justification": 386,
+        "last-judgment": 879,
+        "prayer": 441,
+        "sacraments": 85,
+        "salvation": 494,
+        "sanctification": 217,
+        "scripture": 1505,
+        "sin": 1786,
+        "trinity": 108,
+        "worship": 759
+      },
       "traditions": [
         "Reformed"
       ]
@@ -1322,24 +1723,25 @@
         "The Smalcald Articles"
       ],
       "tags": {
-        "angels": 6,
-        "baptism": 15,
-        "church": 89,
-        "creation": 5,
-        "eschatology": 4,
+        "angels": 22,
+        "baptism": 31,
+        "church": 158,
+        "creation": 10,
+        "eschatology": 16,
         "eucharist": 7,
-        "faith": 107,
-        "grace": 69,
-        "holy-spirit": 4,
-        "justification": 39,
-        "last-judgment": 40,
-        "prayer": 26,
-        "sacraments": 41,
-        "salvation": 21,
-        "sanctification": 3,
-        "scripture": 63,
-        "sin": 119,
-        "worship": 35
+        "faith": 180,
+        "grace": 110,
+        "holy-spirit": 10,
+        "justification": 53,
+        "last-judgment": 65,
+        "prayer": 45,
+        "sacraments": 63,
+        "salvation": 47,
+        "sanctification": 5,
+        "scripture": 118,
+        "sin": 194,
+        "trinity": 4,
+        "worship": 49
       },
       "traditions": [
         "Lutheran"
@@ -1348,6 +1750,7 @@
     "f-reformed": {
       "authors": [
         "E.W. Bullinger",
+        "Heinrich Bullinger",
         "Horatius, D.D. Bonar",
         "John Henry Beveridge Calvin",
         "Stephen Charnock",
@@ -1369,31 +1772,34 @@
         "The Crook in the Lot",
         "The Heidelberg Catechism",
         "The Necessity of Regeneration",
+        "The Savoy Declaration: Platform of Discipline",
         "The Scots Confession",
+        "The Second Helvetic Confession",
         "The Westminster Confession of Faith",
         "The Westminster Larger Catechism",
         "The Westminster Shorter Catechism"
       ],
       "tags": {
-        "angels": 27,
-        "baptism": 33,
-        "church": 88,
-        "creation": 15,
-        "eschatology": 30,
-        "faith": 123,
-        "grace": 144,
-        "holy-spirit": 43,
-        "incarnation": 4,
-        "justification": 26,
-        "last-judgment": 34,
-        "prayer": 41,
-        "sacraments": 65,
-        "salvation": 79,
-        "sanctification": 19,
-        "scripture": 51,
-        "sin": 206,
-        "trinity": 6,
-        "worship": 43
+        "angels": 276,
+        "baptism": 48,
+        "church": 333,
+        "creation": 158,
+        "eschatology": 101,
+        "eucharist": 2,
+        "faith": 404,
+        "grace": 513,
+        "holy-spirit": 106,
+        "incarnation": 23,
+        "justification": 73,
+        "last-judgment": 220,
+        "prayer": 195,
+        "sacraments": 78,
+        "salvation": 204,
+        "sanctification": 61,
+        "scripture": 246,
+        "sin": 613,
+        "trinity": 37,
+        "worship": 130
       },
       "traditions": [
         "Reformed"
@@ -1408,25 +1814,26 @@
         "The Imitation of Christ"
       ],
       "tags": {
-        "angels": 5,
+        "angels": 21,
         "baptism": 15,
-        "church": 77,
-        "creation": 1,
+        "church": 80,
+        "creation": 5,
         "eschatology": 3,
-        "eucharist": 13,
-        "faith": 37,
-        "grace": 30,
-        "holy-spirit": 3,
-        "incarnation": 3,
-        "justification": 16,
-        "last-judgment": 14,
-        "prayer": 12,
-        "sacraments": 58,
-        "salvation": 22,
+        "eucharist": 14,
+        "faith": 53,
+        "grace": 91,
+        "holy-spirit": 8,
+        "incarnation": 4,
+        "justification": 17,
+        "last-judgment": 31,
+        "prayer": 37,
+        "sacraments": 71,
+        "salvation": 48,
         "sanctification": 1,
-        "scripture": 17,
-        "sin": 43,
-        "worship": 9
+        "scripture": 22,
+        "sin": 67,
+        "trinity": 2,
+        "worship": 10
       },
       "traditions": [
         "Catholic"
@@ -1438,24 +1845,32 @@
         "Joseph Barber Lightfoot"
       ],
       "titles": [
+        "Articles of Religion of the Reformed Episcopal Church",
         "Expository Thoughts on Matthew",
         "The Apostolic Fathers",
         "The Thirty-Nine Articles of Religion"
       ],
       "tags": {
-        "baptism": 3,
-        "church": 10,
-        "creation": 1,
-        "eschatology": 2,
-        "faith": 15,
-        "grace": 7,
-        "justification": 3,
-        "prayer": 5,
-        "sacraments": 10,
-        "salvation": 5,
-        "scripture": 10,
-        "sin": 8,
-        "trinity": 1
+        "angels": 34,
+        "baptism": 15,
+        "church": 105,
+        "creation": 19,
+        "eschatology": 18,
+        "eucharist": 1,
+        "faith": 114,
+        "grace": 74,
+        "holy-spirit": 20,
+        "incarnation": 2,
+        "justification": 11,
+        "last-judgment": 45,
+        "prayer": 49,
+        "sacraments": 16,
+        "salvation": 47,
+        "sanctification": 3,
+        "scripture": 67,
+        "sin": 115,
+        "trinity": 7,
+        "worship": 19
       },
       "traditions": [
         "Anglican"
@@ -1468,24 +1883,24 @@
         "The Second London Baptist Confession of Faith"
       ],
       "tags": {
-        "angels": 7,
-        "baptism": 8,
-        "church": 28,
+        "angels": 10,
+        "baptism": 10,
+        "church": 43,
         "creation": 6,
-        "eschatology": 7,
-        "faith": 31,
-        "grace": 43,
-        "holy-spirit": 18,
+        "eschatology": 8,
+        "faith": 48,
+        "grace": 51,
+        "holy-spirit": 20,
         "incarnation": 1,
-        "justification": 7,
-        "last-judgment": 7,
-        "prayer": 7,
-        "salvation": 24,
-        "sanctification": 4,
-        "scripture": 16,
-        "sin": 38,
+        "justification": 10,
+        "last-judgment": 8,
+        "prayer": 8,
+        "salvation": 28,
+        "sanctification": 7,
+        "scripture": 23,
+        "sin": 49,
         "trinity": 4,
-        "worship": 16
+        "worship": 19
       },
       "traditions": [
         "Baptist"
@@ -1501,28 +1916,109 @@
         "Sermons on Several Occasions"
       ],
       "tags": {
-        "angels": 25,
+        "angels": 27,
         "baptism": 5,
-        "church": 35,
+        "church": 41,
         "creation": 18,
-        "eschatology": 5,
-        "faith": 53,
-        "grace": 30,
-        "holy-spirit": 8,
+        "eschatology": 6,
+        "faith": 62,
+        "grace": 40,
+        "holy-spirit": 9,
         "incarnation": 1,
-        "justification": 9,
-        "last-judgment": 21,
-        "prayer": 10,
+        "justification": 13,
+        "last-judgment": 22,
+        "prayer": 12,
         "sacraments": 3,
-        "salvation": 20,
-        "sanctification": 4,
-        "scripture": 39,
-        "sin": 64,
+        "salvation": 28,
+        "sanctification": 18,
+        "scripture": 42,
+        "sin": 76,
         "trinity": 2,
         "worship": 10
       },
       "traditions": [
         "Methodist"
+      ]
+    },
+    "f-holiness": {
+      "authors": [
+        "Charles G. Finney",
+        "Hannah Whitall Smith",
+        "John Wesley",
+        "Thomas Cogswell Upham"
+      ],
+      "titles": [
+        "A Plain Account of Christian Perfection",
+        "F\u00e9nelon's Maxims of the Saints",
+        "Lectures on Revivals of Religion",
+        "Lectures to Professing Christians",
+        "Old Testament Types and Teachings",
+        "Power From On High",
+        "Sermons on Gospel Themes",
+        "Systematic Theology [1878]",
+        "The Backslider in Heart",
+        "The Christian's Secret of a Happy Life",
+        "The God of All Comfort"
+      ],
+      "tags": {
+        "angels": 65,
+        "baptism": 26,
+        "church": 322,
+        "creation": 34,
+        "eschatology": 32,
+        "faith": 379,
+        "grace": 219,
+        "holy-spirit": 120,
+        "incarnation": 3,
+        "justification": 65,
+        "last-judgment": 148,
+        "prayer": 273,
+        "sacraments": 4,
+        "salvation": 280,
+        "sanctification": 129,
+        "scripture": 148,
+        "sin": 578,
+        "trinity": 4,
+        "worship": 43
+      },
+      "traditions": [
+        "Holiness"
+      ]
+    },
+    "f-adventist": {
+      "authors": [
+        "Ellen G. White"
+      ],
+      "titles": [
+        "Steps to Christ",
+        "The Acts of the Apostles",
+        "The Desire of Ages",
+        "The Great Controversy",
+        "The Story of Prophets and Kings"
+      ],
+      "tags": {
+        "angels": 260,
+        "baptism": 34,
+        "church": 314,
+        "creation": 30,
+        "eschatology": 69,
+        "eucharist": 2,
+        "faith": 471,
+        "grace": 213,
+        "holy-spirit": 145,
+        "incarnation": 2,
+        "justification": 9,
+        "last-judgment": 227,
+        "prayer": 194,
+        "sacraments": 6,
+        "salvation": 200,
+        "sanctification": 14,
+        "scripture": 227,
+        "sin": 395,
+        "worship": 132
+      },
+      "traditions": [
+        "Adventist"
       ]
     },
     "f-orthodox": {
@@ -1536,7 +2032,28 @@
         "The Confession of Dositheus",
         "The Longer Catechism of the Orthodox, Catholic, Eastern Church"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 44,
+        "baptism": 42,
+        "church": 115,
+        "creation": 22,
+        "eschatology": 40,
+        "eucharist": 2,
+        "faith": 105,
+        "grace": 78,
+        "holy-spirit": 15,
+        "incarnation": 8,
+        "justification": 2,
+        "last-judgment": 31,
+        "prayer": 116,
+        "sacraments": 50,
+        "salvation": 60,
+        "sanctification": 16,
+        "scripture": 113,
+        "sin": 111,
+        "trinity": 35,
+        "worship": 27
+      },
       "traditions": [
         "Eastern Orthodox"
       ]
@@ -1548,7 +2065,17 @@
       "titles": [
         "The Book of Enoch (1 Enoch)"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 56,
+        "creation": 10,
+        "eschatology": 1,
+        "faith": 9,
+        "grace": 2,
+        "prayer": 6,
+        "salvation": 1,
+        "sin": 29,
+        "worship": 7
+      },
       "traditions": [
         "Oriental Orthodox"
       ]
@@ -1560,7 +2087,27 @@
       "titles": [
         "The Bloody Theatre, or Martyrs Mirror of the Defenseless Christians"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 16,
+        "baptism": 126,
+        "church": 238,
+        "creation": 1,
+        "eschatology": 10,
+        "eucharist": 1,
+        "faith": 380,
+        "grace": 109,
+        "holy-spirit": 14,
+        "incarnation": 2,
+        "justification": 1,
+        "last-judgment": 40,
+        "prayer": 38,
+        "sacraments": 65,
+        "salvation": 55,
+        "sanctification": 1,
+        "scripture": 56,
+        "sin": 87,
+        "worship": 41
+      },
       "traditions": [
         "Anabaptist"
       ]
@@ -1581,7 +2128,25 @@
         "The Journal of George Fox, Volume 2",
         "The Journal of John Woolman"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 6,
+        "baptism": 6,
+        "church": 34,
+        "creation": 5,
+        "eschatology": 3,
+        "faith": 22,
+        "grace": 25,
+        "holy-spirit": 9,
+        "justification": 2,
+        "last-judgment": 36,
+        "prayer": 21,
+        "sacraments": 3,
+        "salvation": 21,
+        "sanctification": 2,
+        "scripture": 38,
+        "sin": 30,
+        "worship": 30
+      },
       "traditions": [
         "Quaker"
       ]
@@ -1643,6 +2208,7 @@
         "Adam Clarke",
         "Councils",
         "E.W. Bullinger",
+        "Heinrich Bullinger",
         "Horatius, D.D. Bonar",
         "John C. Ryle",
         "John Henry Beveridge Calvin",
@@ -1666,6 +2232,7 @@
         "A Discourse on the Cleansing Virtue of Christ's Blood",
         "Ancyra (314)",
         "Antioch in Encaeniis (341)",
+        "Articles of Religion of the Reformed Episcopal Church",
         "Carthage (419)",
         "Carthage under Cyprian (257)",
         "Chalcedon (451)",
@@ -1704,7 +2271,9 @@
         "The Imitation of Christ",
         "The Longer Catechism of the Orthodox, Catholic, Eastern Church",
         "The Necessity of Regeneration",
+        "The Savoy Declaration: Platform of Discipline",
         "The Scots Confession",
+        "The Second Helvetic Confession",
         "The Second London Baptist Confession of Faith",
         "The Smalcald Articles",
         "The Thirty-Nine Articles of Religion",
@@ -1713,26 +2282,26 @@
         "The Westminster Shorter Catechism"
       ],
       "tags": {
-        "angels": 75,
-        "baptism": 91,
-        "church": 438,
-        "creation": 48,
-        "eschatology": 56,
-        "eucharist": 22,
-        "faith": 418,
-        "grace": 347,
-        "holy-spirit": 83,
-        "incarnation": 19,
-        "last-judgment": 135,
-        "prayer": 124,
-        "sacraments": 178,
-        "salvation": 184,
-        "sanctification": 35,
-        "scripture": 213,
-        "sin": 497,
-        "trinity": 25,
-        "worship": 120,
-        "justification": 100
+        "angels": 439,
+        "baptism": 178,
+        "church": 986,
+        "creation": 240,
+        "eschatology": 197,
+        "eucharist": 28,
+        "faith": 1018,
+        "grace": 981,
+        "holy-spirit": 195,
+        "incarnation": 49,
+        "last-judgment": 441,
+        "prayer": 485,
+        "sacraments": 282,
+        "salvation": 475,
+        "sanctification": 115,
+        "scripture": 648,
+        "sin": 1244,
+        "trinity": 103,
+        "worship": 271,
+        "justification": 179
       },
       "traditions": [
         "Anglican",
@@ -2970,7 +3539,29 @@
         "On the Christian Life",
         "The Institutes of the Christian Religion"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 805,
+        "baptism": 194,
+        "christology": 2,
+        "church": 2567,
+        "creation": 248,
+        "eschatology": 352,
+        "eucharist": 10,
+        "faith": 2499,
+        "grace": 1886,
+        "holy-spirit": 691,
+        "incarnation": 5,
+        "justification": 124,
+        "last-judgment": 2462,
+        "prayer": 1543,
+        "sacraments": 192,
+        "salvation": 1750,
+        "sanctification": 104,
+        "scripture": 1472,
+        "sin": 2153,
+        "trinity": 18,
+        "worship": 1338
+      },
       "traditions": [
         "Reformed"
       ],
@@ -2991,7 +3582,28 @@
         "Commentary on the Whole Bible Volume V (Matthew to John)",
         "Commentary on the Whole Bible Volume VI (Acts to Revelation)"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 675,
+        "baptism": 121,
+        "church": 1750,
+        "creation": 190,
+        "eschatology": 300,
+        "eucharist": 2,
+        "faith": 1515,
+        "grace": 1987,
+        "holy-spirit": 80,
+        "incarnation": 27,
+        "justification": 114,
+        "last-judgment": 1770,
+        "prayer": 1170,
+        "sacraments": 39,
+        "salvation": 711,
+        "sanctification": 120,
+        "scripture": 554,
+        "sin": 2604,
+        "trinity": 21,
+        "worship": 672
+      },
       "traditions": [
         "Reformed"
       ],
@@ -3081,7 +3693,28 @@
         "The Treasury of David \u2014 Psalms 90-106",
         "Till He Come"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 3839,
+        "baptism": 695,
+        "church": 6915,
+        "creation": 960,
+        "eschatology": 1240,
+        "eucharist": 23,
+        "faith": 9265,
+        "grace": 11766,
+        "holy-spirit": 5389,
+        "incarnation": 213,
+        "justification": 670,
+        "last-judgment": 3032,
+        "prayer": 7173,
+        "sacraments": 265,
+        "salvation": 6036,
+        "sanctification": 457,
+        "scripture": 3815,
+        "sin": 12837,
+        "trinity": 281,
+        "worship": 2528
+      },
       "traditions": [
         "Baptist"
       ],
@@ -3103,7 +3736,27 @@
         "The Works of Jonathan Edwards, Volume Two",
         "Treatise on Grace"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 364,
+        "baptism": 47,
+        "church": 739,
+        "creation": 176,
+        "eschatology": 137,
+        "faith": 490,
+        "grace": 972,
+        "holy-spirit": 124,
+        "incarnation": 44,
+        "justification": 139,
+        "last-judgment": 528,
+        "prayer": 449,
+        "sacraments": 89,
+        "salvation": 603,
+        "sanctification": 39,
+        "scripture": 897,
+        "sin": 1029,
+        "trinity": 58,
+        "worship": 246
+      },
       "traditions": [
         "Reformed"
       ],
@@ -3123,7 +3776,28 @@
         "Preface to the Letter of St. Paul to the Romans",
         "The Large Catechism"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 17,
+        "baptism": 39,
+        "church": 106,
+        "creation": 5,
+        "eschatology": 7,
+        "eucharist": 3,
+        "faith": 144,
+        "grace": 54,
+        "holy-spirit": 8,
+        "incarnation": 1,
+        "justification": 29,
+        "last-judgment": 34,
+        "prayer": 60,
+        "sacraments": 59,
+        "salvation": 61,
+        "sanctification": 4,
+        "scripture": 65,
+        "sin": 110,
+        "trinity": 1,
+        "worship": 17
+      },
       "traditions": [
         "Lutheran"
       ],
@@ -3141,7 +3815,22 @@
         "The Holy War",
         "The Pilgrim's Progress"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 14,
+        "church": 5,
+        "eschatology": 4,
+        "faith": 35,
+        "grace": 45,
+        "holy-spirit": 1,
+        "justification": 1,
+        "last-judgment": 38,
+        "prayer": 18,
+        "salvation": 16,
+        "scripture": 5,
+        "sin": 53,
+        "trinity": 2,
+        "worship": 6
+      },
       "traditions": [
         "Baptist"
       ],
@@ -3158,7 +3847,26 @@
         "The Reformed Pastor",
         "The Saints' Everlasting Rest"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 32,
+        "baptism": 1,
+        "church": 63,
+        "creation": 5,
+        "eschatology": 7,
+        "faith": 64,
+        "grace": 72,
+        "holy-spirit": 5,
+        "justification": 4,
+        "last-judgment": 41,
+        "prayer": 43,
+        "sacraments": 5,
+        "salvation": 61,
+        "sanctification": 5,
+        "scripture": 39,
+        "sin": 102,
+        "trinity": 2,
+        "worship": 10
+      },
       "traditions": [
         "Reformed"
       ],
@@ -3204,7 +3912,28 @@
         "Two Short Catechisms",
         "Vindici\u00e6 Evangelic\u00e6 or, the Mystery of the Gospel Vindicated and Socinianism Examined"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 214,
+        "baptism": 73,
+        "church": 1637,
+        "creation": 241,
+        "eschatology": 118,
+        "eucharist": 6,
+        "faith": 1699,
+        "grace": 1799,
+        "holy-spirit": 429,
+        "incarnation": 71,
+        "justification": 386,
+        "last-judgment": 879,
+        "prayer": 441,
+        "sacraments": 85,
+        "salvation": 494,
+        "sanctification": 217,
+        "scripture": 1505,
+        "sin": 1786,
+        "trinity": 108,
+        "worship": 759
+      },
       "traditions": [
         "Reformed"
       ],
@@ -3321,26 +4050,26 @@
         "Tractates on the Gospel of John"
       ],
       "tags": {
-        "angels": 1279,
+        "angels": 1295,
         "baptism": 921,
-        "church": 2324,
-        "creation": 401,
+        "church": 2327,
+        "creation": 405,
         "eschatology": 803,
-        "eucharist": 118,
-        "faith": 2661,
-        "grace": 2075,
-        "holy-spirit": 696,
-        "incarnation": 196,
-        "justification": 156,
-        "last-judgment": 1489,
-        "prayer": 825,
-        "sacraments": 991,
-        "salvation": 982,
+        "eucharist": 119,
+        "faith": 2677,
+        "grace": 2136,
+        "holy-spirit": 701,
+        "incarnation": 197,
+        "justification": 157,
+        "last-judgment": 1506,
+        "prayer": 850,
+        "sacraments": 1004,
+        "salvation": 1008,
         "sanctification": 125,
-        "scripture": 1913,
-        "sin": 3406,
-        "worship": 660,
-        "trinity": 366
+        "scripture": 1918,
+        "sin": 3430,
+        "trinity": 368,
+        "worship": 661
       },
       "traditions": [
         "Catholic",
@@ -3373,24 +4102,26 @@
         "The Smalcald Articles"
       ],
       "tags": {
-        "angels": 6,
-        "baptism": 15,
-        "church": 89,
-        "creation": 5,
-        "eschatology": 4,
-        "eucharist": 7,
-        "faith": 107,
-        "grace": 69,
-        "holy-spirit": 4,
-        "justification": 39,
-        "last-judgment": 40,
-        "prayer": 26,
-        "sacraments": 41,
-        "salvation": 21,
-        "sanctification": 3,
-        "scripture": 63,
-        "sin": 119,
-        "worship": 35
+        "angels": 39,
+        "baptism": 70,
+        "church": 264,
+        "creation": 15,
+        "eschatology": 23,
+        "eucharist": 10,
+        "faith": 324,
+        "grace": 164,
+        "holy-spirit": 18,
+        "justification": 82,
+        "last-judgment": 99,
+        "prayer": 105,
+        "sacraments": 122,
+        "salvation": 108,
+        "sanctification": 9,
+        "scripture": 183,
+        "sin": 304,
+        "trinity": 5,
+        "worship": 66,
+        "incarnation": 1
       },
       "traditions": [
         "Lutheran"
@@ -3407,6 +4138,7 @@
         "Andrew Murray",
         "Charles Hodge",
         "E.W. Bullinger",
+        "Heinrich Bullinger",
         "Horatius, D.D. Bonar",
         "John Calvin",
         "John Flavel",
@@ -3545,8 +4277,10 @@
         "The Necessity of Regeneration",
         "The Reformed Pastor",
         "The Saints' Everlasting Rest",
+        "The Savoy Declaration: Platform of Discipline",
         "The School of Obedience",
         "The Scots Confession",
+        "The Second Helvetic Confession",
         "The Sermons of John Owen",
         "The Ten Commandments",
         "The True Vine: Meditations for a Month on John 15:1-16",
@@ -3570,25 +4304,27 @@
         "Working For God!"
       ],
       "tags": {
-        "angels": 27,
-        "baptism": 33,
-        "church": 88,
-        "creation": 15,
-        "eschatology": 30,
-        "faith": 123,
-        "grace": 144,
-        "holy-spirit": 43,
-        "incarnation": 4,
-        "justification": 26,
-        "last-judgment": 34,
-        "prayer": 41,
-        "sacraments": 65,
-        "salvation": 79,
-        "sanctification": 19,
-        "scripture": 51,
-        "sin": 206,
-        "trinity": 6,
-        "worship": 43
+        "angels": 3369,
+        "baptism": 780,
+        "church": 9601,
+        "creation": 1444,
+        "eschatology": 1574,
+        "eucharist": 48,
+        "faith": 9119,
+        "grace": 9664,
+        "holy-spirit": 2113,
+        "incarnation": 266,
+        "justification": 1162,
+        "last-judgment": 7280,
+        "prayer": 5092,
+        "sacraments": 696,
+        "salvation": 5478,
+        "sanctification": 808,
+        "scripture": 6711,
+        "sin": 11749,
+        "trinity": 365,
+        "worship": 3955,
+        "christology": 12
       },
       "traditions": [
         "Reformed"
@@ -3621,6 +4357,7 @@
       "titles": [
         "A Serious Call to a Devout and Holy Life",
         "An Humble, Affectionate, and Earnest Address to the Clergy",
+        "Articles of Religion of the Reformed Episcopal Church",
         "Expository Thoughts on Matthew",
         "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
         "Messiah Vol. 1",
@@ -3633,19 +4370,26 @@
         "The Upper Room: Being a Few Truths for the Times"
       ],
       "tags": {
-        "baptism": 3,
-        "church": 10,
-        "creation": 1,
-        "eschatology": 2,
-        "faith": 15,
-        "grace": 7,
-        "justification": 3,
-        "prayer": 5,
-        "sacraments": 10,
-        "salvation": 5,
-        "scripture": 10,
-        "sin": 8,
-        "trinity": 1
+        "angels": 208,
+        "baptism": 33,
+        "church": 355,
+        "creation": 103,
+        "eschatology": 97,
+        "eucharist": 1,
+        "faith": 464,
+        "grace": 487,
+        "holy-spirit": 108,
+        "incarnation": 11,
+        "justification": 54,
+        "last-judgment": 181,
+        "prayer": 349,
+        "sacraments": 44,
+        "salvation": 265,
+        "sanctification": 54,
+        "scripture": 325,
+        "sin": 600,
+        "trinity": 22,
+        "worship": 123
       },
       "traditions": [
         "Anglican"
@@ -3750,24 +4494,26 @@
         "Till He Come"
       ],
       "tags": {
-        "angels": 7,
-        "baptism": 8,
-        "church": 28,
-        "creation": 6,
-        "eschatology": 7,
-        "faith": 31,
-        "grace": 43,
-        "holy-spirit": 18,
-        "incarnation": 1,
-        "justification": 7,
-        "last-judgment": 7,
-        "prayer": 7,
-        "salvation": 24,
-        "sanctification": 4,
-        "scripture": 16,
-        "sin": 38,
-        "trinity": 4,
-        "worship": 16
+        "angels": 4137,
+        "baptism": 792,
+        "church": 7474,
+        "creation": 1069,
+        "eschatology": 1392,
+        "faith": 9786,
+        "grace": 12562,
+        "holy-spirit": 5468,
+        "incarnation": 272,
+        "justification": 784,
+        "last-judgment": 3250,
+        "prayer": 7323,
+        "salvation": 6368,
+        "sanctification": 532,
+        "scripture": 4107,
+        "sin": 13438,
+        "trinity": 322,
+        "worship": 2719,
+        "eucharist": 28,
+        "sacraments": 267
       },
       "traditions": [
         "Baptist"
@@ -3865,26 +4611,26 @@
         "Vita S. Antoni (Life of St. Anthony)"
       ],
       "tags": {
-        "angels": 487,
-        "baptism": 161,
-        "church": 664,
-        "creation": 291,
-        "eschatology": 392,
-        "eucharist": 3,
-        "faith": 842,
-        "grace": 923,
-        "holy-spirit": 181,
-        "incarnation": 46,
-        "justification": 23,
-        "last-judgment": 534,
-        "prayer": 370,
-        "sacraments": 7,
-        "salvation": 476,
-        "sanctification": 43,
-        "scripture": 575,
-        "sin": 999,
-        "trinity": 30,
-        "worship": 156
+        "angels": 531,
+        "baptism": 203,
+        "church": 779,
+        "creation": 313,
+        "eschatology": 432,
+        "eucharist": 5,
+        "faith": 947,
+        "grace": 1001,
+        "holy-spirit": 196,
+        "incarnation": 54,
+        "justification": 25,
+        "last-judgment": 565,
+        "prayer": 486,
+        "sacraments": 57,
+        "salvation": 536,
+        "sanctification": 59,
+        "scripture": 688,
+        "sin": 1110,
+        "trinity": 65,
+        "worship": 183
       },
       "traditions": [
         "Early Church",
@@ -3905,7 +4651,17 @@
       "titles": [
         "The Book of Enoch (1 Enoch)"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 56,
+        "creation": 10,
+        "eschatology": 1,
+        "faith": 9,
+        "grace": 2,
+        "prayer": 6,
+        "salvation": 1,
+        "sin": 29,
+        "worship": 7
+      },
       "traditions": [
         "Oriental Orthodox"
       ],
@@ -3921,7 +4677,27 @@
       "titles": [
         "The Bloody Theatre, or Martyrs Mirror of the Defenseless Christians"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 16,
+        "baptism": 126,
+        "church": 238,
+        "creation": 1,
+        "eschatology": 10,
+        "eucharist": 1,
+        "faith": 380,
+        "grace": 109,
+        "holy-spirit": 14,
+        "incarnation": 2,
+        "justification": 1,
+        "last-judgment": 40,
+        "prayer": 38,
+        "sacraments": 65,
+        "salvation": 55,
+        "sanctification": 1,
+        "scripture": 56,
+        "sin": 87,
+        "worship": 41
+      },
       "traditions": [
         "Anabaptist"
       ],
@@ -3946,7 +4722,25 @@
         "The Journal of George Fox, Volume 2",
         "The Journal of John Woolman"
       ],
-      "tags": {},
+      "tags": {
+        "angels": 6,
+        "baptism": 6,
+        "church": 34,
+        "creation": 5,
+        "eschatology": 3,
+        "faith": 22,
+        "grace": 25,
+        "holy-spirit": 9,
+        "justification": 2,
+        "last-judgment": 36,
+        "prayer": 21,
+        "sacraments": 3,
+        "salvation": 21,
+        "sanctification": 2,
+        "scripture": 38,
+        "sin": 30,
+        "worship": 30
+      },
       "traditions": [
         "Quaker"
       ],
@@ -3967,25 +4761,25 @@
         "Sermons on Several Occasions"
       ],
       "tags": {
-        "angels": 25,
-        "baptism": 5,
-        "church": 35,
-        "creation": 18,
-        "eschatology": 5,
-        "faith": 53,
-        "grace": 30,
-        "holy-spirit": 8,
-        "incarnation": 1,
-        "justification": 9,
-        "last-judgment": 21,
-        "prayer": 10,
-        "sacraments": 3,
-        "salvation": 20,
-        "sanctification": 4,
-        "scripture": 39,
-        "sin": 64,
-        "trinity": 2,
-        "worship": 10
+        "angels": 107,
+        "baptism": 18,
+        "church": 137,
+        "creation": 31,
+        "eschatology": 31,
+        "faith": 167,
+        "grace": 172,
+        "holy-spirit": 47,
+        "incarnation": 2,
+        "justification": 34,
+        "last-judgment": 97,
+        "prayer": 85,
+        "sacraments": 26,
+        "salvation": 107,
+        "sanctification": 31,
+        "scripture": 122,
+        "sin": 235,
+        "trinity": 9,
+        "worship": 39
       },
       "traditions": [
         "Methodist"
@@ -3993,6 +4787,95 @@
       "fragments": [
         "f-methodist",
         "f-whitefield"
+      ]
+    },
+    "tradition-holiness": {
+      "name": "Holiness",
+      "authors": [
+        "Charles G. Finney",
+        "Hannah Whitall Smith",
+        "John Wesley",
+        "Thomas Cogswell Upham"
+      ],
+      "titles": [
+        "A Plain Account of Christian Perfection",
+        "F\u00e9nelon's Maxims of the Saints",
+        "Lectures on Revivals of Religion",
+        "Lectures to Professing Christians",
+        "Old Testament Types and Teachings",
+        "Power From On High",
+        "Sermons on Gospel Themes",
+        "Systematic Theology [1878]",
+        "The Backslider in Heart",
+        "The Christian's Secret of a Happy Life",
+        "The God of All Comfort"
+      ],
+      "tags": {
+        "angels": 65,
+        "baptism": 26,
+        "church": 322,
+        "creation": 34,
+        "eschatology": 32,
+        "faith": 379,
+        "grace": 219,
+        "holy-spirit": 120,
+        "incarnation": 3,
+        "justification": 65,
+        "last-judgment": 148,
+        "prayer": 273,
+        "sacraments": 4,
+        "salvation": 280,
+        "sanctification": 129,
+        "scripture": 148,
+        "sin": 578,
+        "trinity": 4,
+        "worship": 43
+      },
+      "traditions": [
+        "Holiness"
+      ],
+      "fragments": [
+        "f-holiness"
+      ]
+    },
+    "tradition-adventist": {
+      "name": "Adventist",
+      "authors": [
+        "Ellen G. White"
+      ],
+      "titles": [
+        "Steps to Christ",
+        "The Acts of the Apostles",
+        "The Desire of Ages",
+        "The Great Controversy",
+        "The Story of Prophets and Kings"
+      ],
+      "tags": {
+        "angels": 260,
+        "baptism": 34,
+        "church": 314,
+        "creation": 30,
+        "eschatology": 69,
+        "eucharist": 2,
+        "faith": 471,
+        "grace": 213,
+        "holy-spirit": 145,
+        "incarnation": 2,
+        "justification": 9,
+        "last-judgment": 227,
+        "prayer": 194,
+        "sacraments": 6,
+        "salvation": 200,
+        "sanctification": 14,
+        "scripture": 227,
+        "sin": 395,
+        "worship": 132
+      },
+      "traditions": [
+        "Adventist"
+      ],
+      "fragments": [
+        "f-adventist"
       ]
     },
     "bible-web": {
