@@ -12,10 +12,11 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-30 · 709 sources, 106,202 units, 484.6 M characters ·
-458,350 chunks and 458,350 vectors · 7 branches and 31 traditions, 15 of them
-holding text · 48 fragments, 301.9 MB published · all three audits clean except
-the three noted at the bottom.*
+*Last verified: 2026-08-30 · 710 sources, 106,312 units, 485.0 M characters ·
+458,717 chunks and 458,717 vectors · 7 branches and 31 traditions, 16 of them
+holding text; **six of the seven branches now hold text**, and the seventh is
+Other and Independent, whose families are all twentieth-century · 49 fragments ·
+all three audits clean except the three noted at the bottom.*
 
 *Two version numbers, and they are not the same one. `CORPUS_VERSION` is
 **16** — the stamp on the bundled database, which the app compares against its
@@ -229,6 +230,17 @@ is listed under *Wanted, with no clean text anywhere* above.
   from Wikisource, with van Braght's *Martyrs Mirror* and its 526 accounts. The
   tradition had been a martyrology with no confession and no systematics; it now
   has both. Schleitheim is the one gap left.
+- **Church of the East** — Badger's *The Nestorians and their Rituals*, vol. II
+  (1852), added 2026-08-30 from Wikisource. **Read the caveat before quoting
+  it**: Badger was an East India Company chaplain and the volume is an
+  Anglican's examination of the church's doctrine, its chapters mapped onto the
+  Thirty-Nine Articles. What makes it worth having is that he builds each
+  chapter out of long translated quotations from that church's own service
+  books — the Khudhra, Gezza, Warda, Khâmees and Sinhadòs — and from Abdisho
+  bar Berika, whose creed appears in full. A documentary anthology inside a
+  frame, and the frame is recorded on the source. Wikisource's transcription is
+  partial (chapters I–XXVIII, XLII, Appendix B); volume I is a travel narrative
+  and was deliberately left out.
 - **Adventist** — Ellen G. White: four of the five Conflict of the Ages volumes
   (*The Story of Prophets and Kings*, *The Desire of Ages*, *The Acts of the
   Apostles*, *The Great Controversy*) and *Steps to Christ*. 968 units, 5.0 M
@@ -627,10 +639,22 @@ archive.org holds scans and raw OCR, and this corpus refuses uncorrected OCR, so
 each needs either a proofread transcription or the two-witness route
 `ingest_owen.py` uses. Ordered by how much of a hole each fills.
 
-- [ ] **Church of the East — an entire branch with no sources.** Nestorius,
-      *The Bazaar of Heracleides* (Driver & Hodgson, 1925,
-      `nestoriusbazaaro0000nest`) and Badger, *The Nestorians and their Rituals*
-      (1852, `nestorianstheirr0001badg`).
+- [x] **Church of the East** — opened 2026-08-30, and not from the scans this
+      entry named. English Wikisource has **Badger's *The Nestorians and their
+      Rituals*, volume II** fully transcribed, so it went in as proofread text
+      rather than through the two-witness route. 110 units, 400.9 K characters.
+      See *Have* for what it is and is not.
+
+      Still wanted for this branch, and both genuinely blocked on text rather
+      than rights:
+      - **Abdisho bar Berika, *The Marganitha* (Book of the Pearl)** — the
+        church's own doctrinal manual, and the thing that ought to be here
+        instead of a description of it. Wikisource's `Marganitha` page is
+        **1,028 characters of stub**. No full transcription found anywhere.
+      - **Nestorius, *The Bazaar of Heracleides*** (Driver & Hodgson, 1925,
+        `nestoriusbazaaro0000nest`) — scans and raw OCR only. This one needs
+        the two-witness route, and there is no clean transcription to
+        corroborate against, so it would be OCR checked only by other OCR.
 - [ ] **Pentecostal — the family this project told readers was impossible.**
       Assemblies of God *Statement of Fundamental Truths* (1916) and Foursquare
       *Declaration of Faith* (1923) are the confessional documents and are not

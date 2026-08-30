@@ -4118,3 +4118,89 @@ which is the same rule `survey_ccel.py` exists to enforce.
 Two pages were dropped and both for stated reasons: "The Education of Children"
 renders as twelve characters — the page exists and the transcription does not —
 and the earlier list carried "The Christian Constitution of States" twice.
+
+## The Church of the East, and what it cost to open the seventh branch (2026-08-30)
+
+The taxonomy has defined seven branches since the day it was written, and this
+one has had nothing in it. It is now open — six of the seven branches hold text,
+and the seventh is *Other and Independent*, whose families are all
+twentieth-century bodies.
+
+### The queue said "scans". The queue was out of date by one tool
+
+The copyright audit had filed this branch under archive.org identifiers —
+Driver and Hodgson's 1925 *Bazaar of Heracleides*, Badger's *Nestorians and
+their Rituals* — with a note that it needed the two-witness route because
+archive.org holds scans and raw OCR. That was true when it was written and
+stopped being true the moment `ingest_wikisource.py` existed: **English
+Wikisource has Badger's volume II fully transcribed**, 34 pages, every one of
+them `PD-old`. It went in as proofread text and the OCR problem never arose.
+
+The lesson is about the queue rather than about Badger. A "how" recorded
+alongside a "what" goes stale silently — the work item still names the right
+book and the wrong route, and nobody re-checks a route that is written down as
+settled.
+
+### What was checked before ingesting anything
+
+* **The Liturgy of Addai and Mari is already in the app.** The East Syriac rite
+  is in the corpus as *The Liturgy of the Blessed Apostles*, ingested with the
+  Ante-Nicene Fathers and filed under **Early Church**. So the branch read empty
+  while the app held that church's liturgy.
+
+  **It was deliberately not re-filed**, and the reason is a hazard worth
+  recording: moving a source between traditions moves it between *fragments*,
+  and fragments are only guaranteed disjoint **within one build**. A reader
+  holding `f-fathers-rest` from an earlier release already has those unit ids;
+  a new `f-assyrian` carrying the same source would collide on primary key
+  halfway through the install. Re-filing an existing source is therefore not a
+  metadata edit — it is an id-space event, and it costs an id-space bump.
+* **The Doctrine of Addai stays withdrawn.** It is in the New Advent manifest
+  and was withdrawn on 2026-08-01 as New Testament apocrypha. That decision was
+  found and left alone rather than quietly reversed to pad a thin branch.
+* **Abdisho's *Marganitha*** — the Book of the Pearl, this church's own
+  doctrinal manual and the thing that ought to be here — has a Wikisource page
+  that is **1,028 characters of stub**. Measured, not assumed.
+
+### What went in, and the caveat that travels with it
+
+Badger's volume II is **not a Church of the East document**. He was an East
+India Company chaplain, and the volume is an Anglican's examination of the
+church's doctrine in which the chapters are mapped onto the Thirty-Nine
+Articles — "the doctrine of our Article held by the Nestorians". What makes it
+worth having anyway is what he builds it out of: long translated quotations from
+that church's own service books — the Khudhra, the Gezza, the Warda, the
+Khâmees, the Sinhadòs — and from Abdisho bar Berika, whose creed he gives in
+full. Counted in the ingested text: 61 quotations attributed to the Khudhra, 24
+to Abdisho, 23 to the Warda, 19 to the Gezza.
+
+It is a documentary anthology inside a frame. **The frame is disclosed on the
+source and in the pack description**, because a reader who quotes it should know
+whose arrangement they are quoting. Volume I — a missionary travel narrative
+through Mesopotamia and Kurdistan with an inquiry into the Yezidis attached — is
+deliberately absent; none of it is theology. Wikisource's transcription of
+volume II is partial, and the note says which chapters are missing.
+
+### A concatenated book needs to know which page it came from
+
+Multi-page works are joined before they are cut into units, and until now the
+page was forgotten in the joining. Badger sets "quotations, then REMARKS." in
+every chapter, so **twenty units arrived titled `REMARKS.` and nothing else** —
+a table of contents with twenty identical entries, and citations that cannot say
+where they point. Seven more said `THE ANAPHORA.`
+
+Units now carry the page's own label: `Chapter 13 — REMARKS.`,
+`Appendix B — Part 5 — CHAPTER V.` A single-page work gets no label, because
+the source title already says where the unit is.
+
+That change then broke Vatican I, which is the useful part of the story. Its
+chapters are numbered on one line and named on the next, and a rule added
+earlier promoted the name into a numeral-only title. Prefixing the page label
+made the title no longer numeral-only, so the promotion stopped firing and
+`I. Of God the Creator of all things` reverted to `Part 1 — Chapter 1 — I`. The
+fix is ordering: **promote the name first, then add the label.** A heading rule
+that inspects the title has to run before anything else edits the title.
+
+The same pass drops a heading left dangling on a function word — the
+heading-chaining had glued a title page into `THE NESTORIANS — AND`, which is
+not a section name. Where that happens the page label stands alone.

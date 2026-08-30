@@ -2084,6 +2084,39 @@
         "Adventist"
       ]
     },
+    "f-assyrian": {
+      "authors": [
+        "George Percy Badger"
+      ],
+      "titles": [
+        "The Nestorians and their Rituals, Volume II"
+      ],
+      "tags": {
+        "angels": 27,
+        "baptism": 11,
+        "church": 61,
+        "creation": 16,
+        "eschatology": 21,
+        "eucharist": 3,
+        "faith": 43,
+        "grace": 26,
+        "holy-spirit": 11,
+        "incarnation": 1,
+        "justification": 3,
+        "last-judgment": 14,
+        "prayer": 34,
+        "sacraments": 19,
+        "salvation": 31,
+        "sanctification": 7,
+        "scripture": 25,
+        "sin": 44,
+        "trinity": 16,
+        "worship": 30
+      },
+      "traditions": [
+        "Assyrian"
+      ]
+    },
     "f-orthodox": {
       "authors": [
         "Orthodox Eastern Church",
@@ -4696,6 +4729,43 @@
         "f-spurgeon",
         "f-bunyan",
         "f-gill"
+      ]
+    },
+    "tradition-church-of-the-east": {
+      "name": "Church of the East",
+      "authors": [
+        "George Percy Badger"
+      ],
+      "titles": [
+        "The Nestorians and their Rituals, Volume II"
+      ],
+      "tags": {
+        "angels": 27,
+        "baptism": 11,
+        "church": 61,
+        "creation": 16,
+        "eschatology": 21,
+        "eucharist": 3,
+        "faith": 43,
+        "grace": 26,
+        "holy-spirit": 11,
+        "incarnation": 1,
+        "justification": 3,
+        "last-judgment": 14,
+        "prayer": 34,
+        "sacraments": 19,
+        "salvation": 31,
+        "sanctification": 7,
+        "scripture": 25,
+        "sin": 44,
+        "trinity": 16,
+        "worship": 30
+      },
+      "traditions": [
+        "Assyrian"
+      ],
+      "fragments": [
+        "f-assyrian"
       ]
     },
     "tradition-orthodox": {

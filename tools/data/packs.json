@@ -282,6 +282,12 @@
       ]
     },
     {
+      "id": "f-assyrian",
+      "traditions": [
+        "assyrian"
+      ]
+    },
+    {
       "id": "f-orthodox",
       "traditions": [
         "eastern-orthodox"
@@ -591,6 +597,15 @@
         "f-gill"
       ],
       "description": "Both London Baptist Confessions \u2014 the First of 1644 and the Second of 1689, the central Baptist confessional document \u2014 with Spurgeon's complete sermons and The Treasury of David, Bunyan's Pilgrim's Progress and Holy War, and Gill's Body of Divinity."
+    },
+    {
+      "id": "tradition-church-of-the-east",
+      "kind": "tradition",
+      "name": "Church of the East",
+      "description": "The branch that separated after Ephesus in 431, and the hardest of the seven to represent: almost nothing of it exists in English, out of copyright, and proofread. What is here is Badger's Nestorians and their Rituals, volume II \u2014 an Anglican chaplain's examination of the church's doctrine, arranged against the Thirty-Nine Articles, but built throughout out of long translated quotations from their own service books and from Abdisho bar Berika, whose creed it gives in full. The framing is Badger's, not the Church of the East's, and the source says so. Abdisho's own Book of the Pearl has no transcription anywhere that has been found.",
+      "fragments": [
+        "f-assyrian"
+      ]
     },
     {
       "id": "tradition-orthodox",

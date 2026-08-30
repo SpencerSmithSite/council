@@ -4,7 +4,7 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **709 works and 484 million characters**.
+Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **710 works and 485 million characters**.
 
 Bundled: the King James Version, complete.
 
@@ -23,6 +23,7 @@ content:
 
 | Collection | Works | Download |
 |---|---|---|
+| Church of the East | 1 | 0.3 MB |
 | Leo XIII | 30 | 0.8 MB |
 | Adventist | 5 | 3.2 MB |
 | Holiness | 11 | 3.8 MB |
@@ -39,7 +40,7 @@ content:
 | Charles Spurgeon | 74 | 93.1 MB |
 | Reformed & Presbyterian | 147 | 108.2 MB |
 
-Thirty-seven collections over forty-eight shared fragments, 302 MB published in
+Thirty-eight collections over forty-nine shared fragments, 302 MB published in
 all. The same collections as standalone files would be 587 MB — no work is
 downloaded twice, however many collections it belongs to, which is why the
 big authors have a fragment each rather than sitting inside their tradition's.
@@ -66,6 +67,9 @@ The full library spans:
   Fox and Woolman, Penn, Sewel)
 - Oriental Orthodox (1 Enoch, scripture in the Ethiopian and Eritrean Tewahedo
   churches)
+- Church of the East (Badger's *Nestorians and their Rituals*, vol. II — an
+  Anglican's study, but built from that church's own service books and from
+  Abdisho's creed)
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
 - Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, and more)
 
@@ -77,8 +81,9 @@ the Restorationists and the Adventists decline to recite creeds and teach what
 the creeds state, so they are in. Groups that fail it on the doctrine itself
 are not. The rule, the groups it excludes and the reason for each are in
 [`tools/data/traditions.json`](tools/data/traditions.json); the library is
-organised branch → tradition, at 7 branches and 31 traditions. Fifteen of those
-traditions hold text today. The rest are defined and empty, and the shelf shows
+organised branch → tradition, at 7 branches and 31 traditions. Sixteen of those
+traditions hold text today, across six of the seven branches; the seventh is
+Other and Independent, whose families are all twentieth-century bodies. The rest are defined and empty, and the shelf shows
 a tradition only once it has something in it — an empty family is a piece of
 work that has not been done, not a section a reader has to walk past.
 

@@ -241,6 +241,61 @@ WORKS = [
             "The Religious Congregations in France",
         ]
     ],
+    # --- Church of the East: a branch with no sources at all -----------------
+    #
+    # The taxonomy defines seven branches and this one has been empty since it
+    # was written. What exists in English and out of copyright is thin,
+    # scattered and mostly unproofread scans; this is the exception.
+    #
+    # **What this is, stated plainly, because the record has to carry it.**
+    # George Percy Badger was an East India Company chaplain, and volume II is
+    # not a Church of the East document — it is an Anglican's examination of
+    # their doctrine, chapter by chapter, in which the chapters are mapped onto
+    # the Thirty-Nine Articles ("the doctrine of our Article held by the
+    # Nestorians"). What makes it worth having anyway is that he builds each
+    # chapter out of long translated quotations from the church's own service
+    # books — the Khudhra, the Gezza, the Warda, the Khâmees, the Sinhadòs —
+    # and from Abdisho bar Berika, whose creed he gives in full. It is a
+    # documentary anthology inside a frame, and the frame is disclosed on the
+    # source rather than left for a reader to discover.
+    #
+    # Volume I is deliberately not here. It is a missionary travel narrative
+    # through Mesopotamia and Kurdistan with an inquiry into the Yezidis
+    # attached, and none of it is theology.
+    #
+    # Abdisho's *Marganitha* — the Book of the Pearl, the church's own doctrinal
+    # manual and the thing that ought to be here instead — has a Wikisource
+    # page that is 1,028 characters of stub. The full text is not transcribed
+    # anywhere that has been found.
+    {
+        "id": "badger-2",
+        "title": "The Nestorians and their Rituals, Volume II",
+        "author": "George Percy Badger",
+        "date": "1852",
+        "tradition": "Assyrian",
+        "kind": "Treatise",
+        "root": "The Nestorians and their Rituals",
+        "pages": (
+            [f"The Nestorians and their Rituals/Volume 2/Chapter {n}"
+             for n in list(range(1, 29)) + [42]]
+            + [f"The Nestorians and their Rituals/Volume 2/Appendix B/Part {n}"
+               for n in range(1, 6)]
+        ),
+        "collection": ("The Nestorians and their Rituals, vol. II "
+                       "(Joseph Masters, London, 1852), ed. John Mason Neale"),
+        "notes": (
+            "An Anglican chaplain's examination of the doctrine of the Church "
+            "of the East, arranged against the Thirty-Nine Articles, and built "
+            "throughout from translated quotations of that church's own "
+            "service books — the Khudhra, Gezza, Warda, Khâmees and Sinhadòs — "
+            "and from Abdisho bar Berika, whose creed is given in full in "
+            "chapter VI. The framing is Badger's and is not the Church of the "
+            "East's own. English Wikisource's transcription of the volume is "
+            "partial: chapters I-XXVIII and XLII and Appendix B are "
+            "transcribed, and chapters XXIX-XLI are not, so this is not the "
+            "whole book. Volume I, a travel narrative, is deliberately not "
+            "ingested."),
+    },
     # --- Anabaptist: the confession and the systematics ----------------------
     # The Anabaptist pack has been the Martyrs Mirror and nothing else, and its
     # own description has had to say so. This is the confession and the man.
@@ -411,74 +466,102 @@ def is_heading(paragraph):
 def units_from(blocks_):
     """Cut a document into display-sized units.
 
+    Blocks are `(kind, text, label)`, where the label names the page the block
+    came from. Multi-page works are concatenated before cutting, and without the
+    label the units of a book lose all trace of which chapter they belong to:
+    Badger sets "quotations, then REMARKS." in every chapter, so twenty units
+    arrived titled `REMARKS.` and nothing else. A reader scanning a table of
+    contents cannot use twenty identical entries, and neither can a citation.
+
     An HTML heading always opens a unit: the document said so. A paragraph that
     merely *looks* like a heading only opens one when what has accumulated is
     long enough to stand alone — these transcriptions begin with title pages
     split across four or five short all-caps lines, and each would otherwise
     become a unit saying nothing.
     """
-    units, heading, body = [], None, []
+    units, heading, body, label = [], None, [], None
 
     def size():
         return sum(len(x) for x in body)
 
-    def emit(title):
+    def emit(title, where):
+        content = "\n\n".join(body).strip()
+        name = (title or "").strip()
+
+        # A chapter numbered but not named takes the name printed under its
+        # number. Done here, before the page label is added, because the label
+        # would otherwise hide the numeral this looks for.
+        if NUMERAL_ONLY.match(name):
+            first, _, rest = content.partition("\n\n")
+            if rest and len(first) <= 90:
+                name, content = f"{name.strip('.')}. {first}", rest
+
+        # A heading left dangling on a function word is a title page that the
+        # heading-chaining glued together — "THE NESTORIANS — AND" — not a
+        # section name. The page label alone is more use than a fragment.
+        if DANGLING.search(name):
+            name = ""
+
+        # The label is dropped when the heading already carries it, so a
+        # chapter that names itself is not made to say so twice.
+        if where and not name.upper().startswith(where.upper()):
+            name = f"{where} — {name}" if name else where
         units.append({
             "number": len(units) + 1,
-            "title": (title or f"Section {len(units) + 1}")[:200],
-            "content": "\n\n".join(body).strip(),
+            "title": (name or f"Section {len(units) + 1}")[:200],
+            "content": content,
         })
 
-    for kind, text in blocks_:
+    for kind, text, block_label in blocks_:
         declared = kind == "h"
         if declared or is_heading(text):
             if size() >= MIN_UNIT_CHARS:
-                emit(heading)
-                body, heading = [], text
+                emit(heading, label)
+                body, heading, label = [], text, block_label
             elif not body:
-                # A run of consecutive headings is one compound heading.
                 heading = f"{heading} — {text}"[:200] if heading else text
+                label = label or block_label
             elif declared:
-                # The document says a section starts here, so it does, even
-                # though what precedes it is short.
-                emit(heading)
-                body, heading = [], text
+                emit(heading, label)
+                body, heading, label = [], text, block_label
             else:
                 body.append(text)
             continue
+        if not body:
+            label = block_label
         body.append(text)
 
     if size() >= MIN_UNIT_CHARS:
-        emit(heading)
+        emit(heading, label)
     elif body and units:
-        # Never dropped: a short tail belongs to the section it followed.
         units[-1]["content"] += "\n\n" + "\n\n".join(body)
 
-    return ccel.split_oversized([_retitle(u) for u in units])
+    return ccel.split_oversized(units)
 
 
 NUMERAL_ONLY = re.compile(r"^[IVXLC]{1,6}\.?$|^\d{1,3}\.?$")
 
-
-def _retitle(unit):
-    """Give a unit numbered but not named the name printed under its number.
-
-    The Vatican decrees set a chapter's number and its subject as two separate
-    lines — "I", then "Of God the Creator of all things" — and only the first
-    reads as a heading, so the chapters arrived titled "I", "II", "III", "IV"
-    in each of three constitutions. Twelve units with four distinct names
-    between them is a table of contents that cannot be used.
-    """
-    if not NUMERAL_ONLY.match(unit["title"].strip()):
-        return unit
-    first, _, rest = unit["content"].partition("\n\n")
-    if rest and len(first) <= 90:
-        unit["title"] = f"{unit['title'].strip('.')}. {first}"[:200]
-        unit["content"] = rest
-    return unit
+# A composed heading that trails off on a function word or an "&c.".
+DANGLING = re.compile(r"(?:^|\s|—\s)(?:AND|OR|OF|THE|A|AN|WITH|BY|TO|IN|&c\.?)\s*$",
+                      re.I)
 
 
 # --- commands ----------------------------------------------------------------
+
+def page_label(page, work):
+    """How a unit should name the page it came from, or None for a lone page.
+
+    A single-page work needs no label — the source title already says where the
+    unit is. A multi-page work needs one, and the useful part is whatever the
+    page title adds beyond the work's own root: "Chapter 6", "Appendix B —
+    Part 3", "Part 1 — Chapter 4".
+    """
+    if len(work["pages"]) < 2:
+        return None
+    tail = page[len(work["root"]):].strip("/")
+    tail = re.sub(r"^Volume \d+/?", "", tail).strip("/")
+    return " — ".join(part for part in tail.split("/") if part) or None
+
 
 def path_for(title):
     safe = re.sub(r"[^A-Za-z0-9]+", "_", title).strip("_")[:120]
@@ -552,7 +635,8 @@ def survey():
             continue
         hyphens += sum(len(LINE_HYPHEN.findall(htmllib.unescape(
             TAG.sub(" ", raw)))) for _, raw in BLOCK.findall(cached["html"]))
-        units = units_from(blocks(cached["html"]))
+        units = units_from([(k, t, None) for k, t
+                             in blocks(cached["html"])])
         chars = sum(len(u["content"]) for u in units)
         print(f"{chars:>8} {len(units):>6} "
               f"{(cached['licence'] or 'NO PD CATEGORY'):<24} {title}")
@@ -576,11 +660,12 @@ def parse():
 
         parts = []
         for c in cached:
+            label = page_label(c["title"], work)
             # Proofread Page's own provenance line, kept off the page and put
             # on the source instead.
-            parts.extend((k, t) for k, t in blocks(c["html"])
+            parts.extend((k, t, label) for k, t in blocks(c["html"])
                          if not PRINT_BASIS.match(t))
-        paras = [t for _, t in parts]
+        paras = [t for _, t, _ in parts]
 
         title = work["title"]
         date = work["date"]
