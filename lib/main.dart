@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'src/services/database_service.dart';
@@ -67,6 +68,8 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
   Future<TheologyApp> _bootstrap() async {
     await _initialiseLocalModelRuntime();
 
+    await _dropRecentlyViewed();
+
     // Initialize database
     final dbService = DatabaseService();
     await dbService.initialize();
@@ -106,6 +109,21 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
       settings: settings,
       inference: inference,
     );
+  }
+
+  /// Throw away the reading history of a screen that no longer exists.
+  ///
+  /// Recently Viewed was reachable only from a home screen that the Read tab
+  /// replaced, so for some time the app went on recording up to fifty passages
+  /// to disk that nothing could ever display. The screen and its service are
+  /// gone; this clears what they left on devices that ran those builds, rather
+  /// than leaving a reader's history sitting there unread and unreachable.
+  ///
+  /// Cheap and idempotent — a key that is not there is not an error — so it
+  /// stays rather than needing a migration number to retire it.
+  Future<void> _dropRecentlyViewed() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('recently_viewed');
   }
 
   /// Registers the engine that runs a downloaded model.

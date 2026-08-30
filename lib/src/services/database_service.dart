@@ -720,23 +720,6 @@ class DatabaseService {
     return results.isNotEmpty ? results.first : null;
   }
 
-  /// Get a uniformly random content unit, joined to its source.
-  ///
-  /// Selecting in SQL rather than guessing an id — content unit ids are sparse
-  /// (4918 rows spread over ids 1..4933), so a random id can miss.
-  Future<Map<String, dynamic>?> getRandomContentUnit() async {
-    final results = await database.rawQuery('''
-      SELECT $_contentUnitColumns
-      FROM content_units cu
-      JOIN sources s ON cu.source_id = s.id
-      LEFT JOIN traditions t ON s.tradition_id = t.id
-      LEFT JOIN source_types st ON s.source_type_id = st.id
-      ORDER BY RANDOM()
-      LIMIT 1
-    ''');
-    return results.isNotEmpty ? results.first : null;
-  }
-  
   /// Get tags for content unit
   Future<List<Map<String, dynamic>>> getTagsForContent(int contentId) async {
     return await database.rawQuery('''
