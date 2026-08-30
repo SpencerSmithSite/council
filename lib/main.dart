@@ -21,7 +21,7 @@ import 'src/screens/chat_history_screen.dart';
 import 'src/screens/chat_screen.dart';
 import 'src/screens/notes_screen.dart';
 import 'src/screens/read_screen.dart';
-import 'src/screens/library_screen.dart';
+import 'src/screens/browse_screen.dart';
 import 'src/screens/settings_screen.dart';
 import 'src/screens/onboarding_screen.dart';
 import 'src/theme/app_theme.dart';
@@ -98,7 +98,7 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
       await PackCatalogue.load(),
     );
     await packs.loadInstalled();
-    // Fetched at startup rather than when the Library is first opened. It is
+    // Fetched at startup rather than when Browse is first opened. It is
     // 1.4 KB, and without it the coverage notice can name a collection but not
     // say what it costs. Not awaited, so a slow network never holds up launch.
     unawaited(packs.refresh());
@@ -298,7 +298,7 @@ class MainScreen extends StatefulWidget {
 enum _Area {
   ask('Ask'),
   read('Read'),
-  library('Library');
+  browse('Browse');
 
   const _Area(this.title);
   final String title;
@@ -306,7 +306,7 @@ enum _Area {
   IconData get icon => switch (this) {
         _Area.ask => AppIcons.ask,
         _Area.read => AppIcons.read,
-        _Area.library => AppIcons.library,
+        _Area.browse => AppIcons.browse,
       };
 }
 
@@ -342,7 +342,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _screenFor(_Area area) => switch (area) {
         _Area.ask => ChatScreen(key: _chatKey),
         _Area.read => const ReadScreen(),
-        _Area.library => const LibraryScreen(embedded: true),
+        _Area.browse => const BrowseScreen(embedded: true),
       };
 
   Future<void> _openHistory() async {

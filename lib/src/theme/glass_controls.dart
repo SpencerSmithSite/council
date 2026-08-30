@@ -37,7 +37,7 @@ class AppIcons {
       isApplePlatform ? CupertinoIcons.bubble_left_bubble_right_fill : Icons.forum;
   static IconData get read =>
       isApplePlatform ? CupertinoIcons.book_fill : Icons.menu_book;
-  static IconData get library =>
+  static IconData get browse =>
       isApplePlatform ? CupertinoIcons.square_stack_3d_up_fill : Icons.library_books;
 
   // Content and actions.

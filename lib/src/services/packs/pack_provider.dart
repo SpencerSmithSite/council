@@ -18,7 +18,7 @@ class PackProvider extends ChangeNotifier {
   /// Load what is already installed.
   ///
   /// Separate from [refresh] because it needs no network: the coverage notice
-  /// has to work on first launch, offline, before anyone opens the Library.
+  /// has to work on first launch, offline, before anyone opens Browse.
   Future<void> loadInstalled() async {
     _installed = await _service.installedCollections();
     _fragments = await _service.installedFragments();

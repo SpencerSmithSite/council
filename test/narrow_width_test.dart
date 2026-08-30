@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:council/src/screens/chat_screen.dart';
-import 'package:council/src/screens/library_screen.dart';
+import 'package:council/src/screens/browse_screen.dart';
 import 'package:council/src/screens/read_screen.dart';
 import 'package:council/src/services/chat_history_service.dart';
 import 'package:council/src/services/database_service.dart';
@@ -25,7 +25,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 /// held two buttons whose labels interpolate a collection name and a byte
 /// count. That shape is not unique to it — nearly every row in this app mixes
 /// fixed chrome with text of unknown length, and a debug run on a desktop
-/// window never shows which of them break. Ask, Read and Library are all here
+/// window never shows which of them break. Ask, Read and Browse are all here
 /// for that reason.
 ///
 /// Nothing here asserts a layout. An overflow *is* the failure: Flutter throws
@@ -370,10 +370,10 @@ void main() {
     expect(find.textContaining('Chalcedon'), findsWidgets);
   });
 
-  // ---- Library ----------------------------------------------------------
+  // ---- Browse -----------------------------------------------------------
 
   testWidgets('the library fits a 320 px phone', (tester) async {
-    await show(tester, const LibraryScreen(embedded: true));
+    await show(tester, const BrowseScreen(embedded: true));
 
     // The manifest resolved, so the rows carry the download sizes that are the
     // whole reason these labels are long.
@@ -381,7 +381,7 @@ void main() {
   });
 
   testWidgets('the library fits at the largest font size', (tester) async {
-    await show(tester, const LibraryScreen(embedded: true), textScale: 1.5);
+    await show(tester, const BrowseScreen(embedded: true), textScale: 1.5);
 
     expect(find.textContaining('MB'), findsWidgets);
     // Every collection in the real catalogue, not just the handful above the
@@ -394,7 +394,7 @@ void main() {
       (tester) async {
     // Pushed rather than embedded: it paints its own background and carries a
     // back button, so its top row is not the one tested above.
-    await show(tester, const LibraryScreen(), textScale: 1.5);
+    await show(tester, const BrowseScreen(), textScale: 1.5);
 
     expect(find.textContaining('MB'), findsWidgets);
   });

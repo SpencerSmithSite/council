@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../services/packs/pack_catalogue.dart';
 import '../services/packs/pack_manifest.dart';
 import '../services/packs/pack_provider.dart';
-import 'library_screen.dart';
+import 'browse_screen.dart';
 import '../services/chat_history_service.dart';
 import '../services/database_service.dart';
 import '../services/ollama_service.dart';
@@ -916,7 +916,7 @@ class _Badge extends StatelessWidget {
 /// a question about the Eucharist from confessions alone — fluent, cited, and
 /// drawn from under a tenth of what has been written on it.
 ///
-/// It downloads here rather than linking to the Library. Sending someone to
+/// It downloads here rather than linking to Browse. Sending someone to
 /// another screen to fix a problem they did not know they had, and expecting
 /// them to come back and retype the question, is most of a feature: the answer
 /// is the point, and it should arrive on its own once the collection lands.
@@ -1059,7 +1059,7 @@ class _CoverageNoticeState extends State<_CoverageNotice> {
                   TextButton(
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                      MaterialPageRoute(builder: (_) => const BrowseScreen()),
                     ),
                     child: const Text('Browse library'),
                   ),

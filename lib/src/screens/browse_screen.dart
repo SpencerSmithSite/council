@@ -13,7 +13,7 @@ import '../services/packs/pack_provider.dart';
 /// conversation missing the text under discussion — and it is the one body of
 /// material that makes the app useful before anything has been downloaded.
 /// Everything else is chosen.
-class LibraryScreen extends StatefulWidget {
+class BrowseScreen extends StatefulWidget {
   /// True when hosted inside the main tab shell, which already paints the
   /// background and floats the menu and settings bubbles over the content.
   ///
@@ -23,13 +23,13 @@ class LibraryScreen extends StatefulWidget {
   /// shows through to black) and offer a back button of its own.
   final bool embedded;
 
-  const LibraryScreen({super.key, this.embedded = false});
+  const BrowseScreen({super.key, this.embedded = false});
 
   @override
-  State<LibraryScreen> createState() => _LibraryScreenState();
+  State<BrowseScreen> createState() => _BrowseScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> {
+class _BrowseScreenState extends State<BrowseScreen> {
   final _query = TextEditingController();
 
   @override
