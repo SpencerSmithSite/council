@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/packs/pack_provider.dart';
 import '../services/read_shelf_service.dart';
-import 'bookmarks_screen.dart';
 import 'content_detail_screen.dart';
 import 'library_screen.dart';
 import 'source_reader_screen.dart';
@@ -36,6 +35,13 @@ class _ReadScreenState extends State<ReadScreen> {
   Set<int> _pinned = {};
   Set<int> _starred = {};
   Set<String> _collapsed = {};
+
+  // Whether the shelf is narrowed to starred works.
+  //
+  // Deliberately not persisted, unlike the rest of the arrangement above. A
+  // filter that survived a relaunch would greet the reader with most of their
+  // library missing and only a small highlighted button to explain why.
+  bool _starredOnly = false;
 
   // The library's installed set, watched so the shelf reloads the moment a pack
   // is added or removed — the reader shouldn't have to pull-to-refresh to see a
@@ -91,19 +97,33 @@ class _ReadScreenState extends State<ReadScreen> {
     }
   }
 
-  Future<void> _togglePin(int id) async {
-    final next = await _shelf.togglePinned(id);
-    if (mounted) setState(() => _pinned = next);
+  // Every arrangement gesture below repaints first and writes afterwards.
+  // Persisting is a platform-channel hop and a file write; awaiting it before
+  // setState put that latency between the reader's tap and the section
+  // actually opening, which read as the whole shelf being sluggish. The write
+  // cannot meaningfully fail — and if it did, the shelf is still correct for
+  // this session and merely reverts on the next launch — so nothing is gained
+  // by making the frame wait for it.
+  void _togglePin(int id) {
+    final next = _pinned.toggled(id);
+    setState(() => _pinned = next);
+    _shelf.setPinned(next);
   }
 
-  Future<void> _toggleStar(int id) async {
-    final next = await _shelf.toggleStarred(id);
-    if (mounted) setState(() => _starred = next);
+  void _toggleStar(int id) {
+    final next = _starred.toggled(id);
+    setState(() => _starred = next);
+    _shelf.setStarred(next);
   }
 
-  Future<void> _toggleCollapse(String tradition) async {
-    final next = await _shelf.toggleCollapsed(tradition);
-    if (mounted) setState(() => _collapsed = next);
+  void _toggleStarredOnly() {
+    setState(() => _starredOnly = !_starredOnly);
+  }
+
+  void _toggleCollapse(String tradition) {
+    final next = _collapsed.toggled(tradition);
+    setState(() => _collapsed = next);
+    _shelf.setCollapsed(next);
   }
 
   /// Every tradition that currently has a (non-pinned) section on the shelf —
@@ -124,12 +144,11 @@ class _ReadScreenState extends State<ReadScreen> {
     return traditions.isNotEmpty && traditions.every(_collapsed.contains);
   }
 
-  Future<void> _toggleCollapseAll() async {
-    final traditions = _traditionNames();
+  void _toggleCollapseAll() {
     // Collapse everything, or — if it is all collapsed already — expand it.
-    final next = await _shelf
-        .setCollapsed(_allCollapsed ? <String>{} : traditions);
-    if (mounted) setState(() => _collapsed = next);
+    final next = _allCollapsed ? <String>{} : _traditionNames();
+    setState(() => _collapsed = next);
+    _shelf.setCollapsed(next);
   }
 
   @override
@@ -170,14 +189,22 @@ class _ReadScreenState extends State<ReadScreen> {
     if (mounted) setState(() => _collapsed = next);
   }
 
-  /// The shelf, narrowed by whatever is in the box.
+  /// The shelf, narrowed by the starred filter and by whatever is in the box.
   ///
-  /// Matches title, author and tradition, because a reader hunting for
-  /// Augustine may type any of the three.
+  /// The text match covers title, author and tradition, because a reader
+  /// hunting for Augustine may type any of the three.
   List<Map<String, dynamic>>? get _filtered {
-    final all = _sources;
+    var all = _sources;
+    if (all == null) return null;
+
+    if (_starredOnly) {
+      all = all
+          .where((source) => _starred.contains(source['id'] as int))
+          .toList();
+    }
+
     final query = _query.text.trim().toLowerCase();
-    if (all == null || query.isEmpty) return all;
+    if (query.isEmpty) return all;
 
     return all.where((source) {
       final haystack = [
@@ -233,6 +260,8 @@ class _ReadScreenState extends State<ReadScreen> {
                         sources: _filtered,
                         onRefresh: _loadShelf,
                         filtered: _query.text.trim().isNotEmpty,
+                        starredOnly: _starredOnly,
+                        anyStarred: _starred.isNotEmpty,
                         pinned: _pinned,
                         starred: _starred,
                         collapsed: _collapsed,
@@ -241,13 +270,23 @@ class _ReadScreenState extends State<ReadScreen> {
                         onToggleStar: _toggleStar,
                         onToggleCollapse: _toggleCollapse,
                         onToggleCollapseAll: _toggleCollapseAll,
-                        onOpenBookmarks: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const BookmarksScreen()),
-                        ),
+                        onToggleStarredOnly: _toggleStarredOnly,
                       ),
     );
+  }
+}
+
+/// A copy of this set with [value] removed if present and added if not.
+///
+/// A copy rather than a mutation because the shelf's state fields are compared
+/// by identity when Flutter decides what to rebuild; mutating the existing set
+/// in place would leave the field pointing at the same object and the change
+/// could be missed.
+extension _Toggle<T> on Set<T> {
+  Set<T> toggled(T value) {
+    final next = Set<T>.of(this);
+    if (!next.remove(value)) next.add(value);
+    return next;
   }
 }
 
@@ -262,8 +301,17 @@ const String _scripture = 'Scripture';
 class _Shelf extends StatelessWidget {
   final List<Map<String, dynamic>>? sources;
   final Future<void> Function() onRefresh;
+
+  /// Narrowed by the search box.
   final bool filtered;
-  final VoidCallback onOpenBookmarks;
+
+  /// Narrowed to starred works.
+  final bool starredOnly;
+
+  /// Whether anything is starred *at all*, which is what separates "the filter
+  /// found nothing" from "there is nothing to filter for yet".
+  final bool anyStarred;
+
   final Set<int> pinned;
   final Set<int> starred;
   final Set<String> collapsed;
@@ -272,11 +320,11 @@ class _Shelf extends StatelessWidget {
   final ValueChanged<int> onToggleStar;
   final ValueChanged<String> onToggleCollapse;
   final VoidCallback onToggleCollapseAll;
+  final VoidCallback onToggleStarredOnly;
 
   const _Shelf({
     required this.sources,
     required this.onRefresh,
-    required this.onOpenBookmarks,
     required this.pinned,
     required this.starred,
     required this.collapsed,
@@ -285,8 +333,19 @@ class _Shelf extends StatelessWidget {
     required this.onToggleStar,
     required this.onToggleCollapse,
     required this.onToggleCollapseAll,
+    required this.onToggleStarredOnly,
     this.filtered = false,
+    this.starredOnly = false,
+    this.anyStarred = false,
   });
+
+  /// Whether the shelf is showing a subset of what is installed.
+  ///
+  /// Sections stay open while it is: a collapsed section under a filter shows
+  /// its own header and hides the very rows the reader narrowed the shelf to
+  /// find, which reads as "no results" when there are results. The reader's own
+  /// collapsed arrangement is untouched and comes back when the filter lifts.
+  bool get _narrowed => filtered || starredOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -294,9 +353,13 @@ class _Shelf extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final scheme = Theme.of(context).colorScheme;
+
     // Whether there is at least one collapsible tradition section to act on.
+    // Under a filter every section is forced open, so the control would have
+    // nothing to say.
     final hasSections =
-        sources!.any((s) => !pinned.contains(s['id'] as int));
+        !_narrowed && sources!.any((s) => !pinned.contains(s['id'] as int));
 
     final header = LargeTitle(
       'Read',
@@ -310,30 +373,54 @@ class _Shelf extends StatelessWidget {
                   allCollapsed ? Icons.unfold_more : Icons.unfold_less),
               onPressed: onToggleCollapseAll,
             ),
+          // Filled and tinted while on: the shelf is hiding most of the library
+          // and the reason has to be visible, or the missing works read as a
+          // bug rather than a filter.
           IconButton(
-            tooltip: 'Bookmarks',
-            icon: Icon(AppIcons.bookmark),
-            onPressed: onOpenBookmarks,
+            tooltip: starredOnly ? 'Show all works' : 'Show starred only',
+            icon: Icon(starredOnly ? AppIcons.starFill : AppIcons.star),
+            color: starredOnly ? scheme.primary : null,
+            isSelected: starredOnly,
+            onPressed: onToggleStarredOnly,
           ),
         ],
       ),
     );
 
     if (sources!.isEmpty) {
+      // Which nothing this is matters: a filter hiding everything needs a way
+      // out, and a reader who has never starred anything needs to be told what
+      // starring is rather than shown an empty result.
+      final String message;
+      if (starredOnly && !anyStarred) {
+        message = 'No works are starred yet. Swipe a work to the left to star '
+            'it, and it will be listed here.';
+      } else if (starredOnly && filtered) {
+        message = 'No starred work matches.';
+      } else if (starredOnly) {
+        message = 'No starred works are on your shelf.';
+      } else if (filtered) {
+        message = 'Nothing on your shelf matches. Press return to search '
+            'inside the texts instead.';
+      } else {
+        message = 'Nothing installed yet.';
+      }
+
       return ListView(
         padding: EdgeInsets.only(bottom: floatingBottomInset(context)),
         children: [
           header,
           Padding(
-            padding: const EdgeInsets.all(32),
-            child: Text(
-              filtered
-                  ? 'Nothing on your shelf matches. Press return to search '
-                      'inside the texts instead.'
-                  : 'Nothing installed yet.',
-              textAlign: TextAlign.center,
-            ),
+            padding: const EdgeInsets.fromLTRB(32, 32, 32, 12),
+            child: Text(message, textAlign: TextAlign.center),
           ),
+          if (starredOnly)
+            Center(
+              child: TextButton(
+                onPressed: onToggleStarredOnly,
+                child: const Text('Show all works'),
+              ),
+            ),
         ],
       );
     }
@@ -359,60 +446,109 @@ class _Shelf extends StatelessWidget {
     final scripture = traditions.remove(_scripture);
     final order = [if (scripture) _scripture, ...traditions];
 
+    // Slivers rather than a ListView of boxes: a section's rows have to stay
+    // lazily built, or expanding an 82-work tradition would lay out 82 tiles in
+    // a single frame — off-screen ones included — and visibly stutter.
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView(
-        padding: EdgeInsets.only(bottom: floatingBottomInset(context, extra: 8)),
+      child: CustomScrollView(
         // Dragging the shelf puts the search keyboard away.
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        children: [
-          header,
+        slivers: [
+          SliverToBoxAdapter(child: header),
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
           // Always shown, even empty. Pinning is the shelf's main arrangement
           // gesture and it is invisible: without a labelled place for pinned
           // works to land, nothing on screen suggests the gesture exists.
-          _SectionHeader(
-            title: 'Pinned',
-            count: pinnedSources.isEmpty ? null : pinnedSources.length,
+          SliverToBoxAdapter(
+            child: _SectionHeader(
+              title: 'Pinned',
+              count: pinnedSources.isEmpty ? null : pinnedSources.length,
+            ),
           ),
           if (pinnedSources.isEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 2, 20, 10),
-              child: Text(
-                'Swipe a work to the right to keep it here.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            )
+            const SliverToBoxAdapter(child: _EmptyPinnedSlot())
           else
-            for (final source in pinnedSources) _tile(context, source),
+            _card(context, pinnedSources),
+          // The gap that separates one tradition from the next is deliberately
+          // larger than the gap between a section's own label and its card, so
+          // "these belong together" and "this is a new group" read differently
+          // at a glance rather than as one undifferentiated run of rows.
           for (final tradition in order) ...[
-            _SectionHeader(
-              title: tradition,
-              count: byTradition[tradition]!.length,
-              collapsed: collapsed.contains(tradition),
-              onToggle: () => onToggleCollapse(tradition),
+            const SliverToBoxAdapter(child: SizedBox(height: 28)),
+            SliverToBoxAdapter(
+              child: _SectionHeader(
+                title: tradition,
+                count: byTradition[tradition]!.length,
+                collapsed: !_narrowed && collapsed.contains(tradition),
+                // No disclosure control under a filter: the section cannot be
+                // closed while narrowed, so offering the chevron would be
+                // offering a control that does nothing.
+                onToggle:
+                    _narrowed ? null : () => onToggleCollapse(tradition),
+              ),
             ),
-            if (!collapsed.contains(tradition))
-              for (final source in byTradition[tradition]!)
-                _tile(context, source),
+            if (_narrowed || !collapsed.contains(tradition))
+              _card(context, byTradition[tradition]!),
           ],
           // With Scripture alone the shelf is one book, and the reason is not
           // obvious from an otherwise working screen.
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: TextButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LibraryScreen()),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                  24, 24, 24, 24 + floatingBottomInset(context, extra: 8)),
+              child: Center(
+                child: TextButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                  ),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add more to your library'),
                 ),
-                icon: const Icon(Icons.add),
-                label: const Text('Add more to your library'),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// One section's rows, each drawn as its own card.
+  ///
+  /// A card per work rather than one card per section with rules between the
+  /// rows: grouping every work into a single slab made the individual works
+  /// run together again, which is the thing this layout exists to stop. What
+  /// marks a *section* is the label above it and the wider gap before it — the
+  /// cards themselves only ever mark one work each.
+  Widget _card(BuildContext context, List<Map<String, dynamic>> rows) {
+    final scheme = Theme.of(context).colorScheme;
+    final hairline =
+        Theme.of(context).dividerTheme.color ?? scheme.outlineVariant;
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverList.separated(
+        itemCount: rows.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        // A [Material] rather than a decorated box, because the tile inside
+        // paints its ink on the nearest Material ancestor: a plain background
+        // painted over that ancestor would sit on top of the splash and swallow
+        // it, and the row would stop responding visibly to taps.
+        itemBuilder: (context, i) => Material(
+          // Outlined and barely tinted rather than solidly filled: the outline
+          // is enough to bound the row, and a heavier fill would compete with
+          // the glass chrome floating over it.
+          color: scheme.surfaceContainerHighest.withValues(alpha: 0.28),
+          shape: squircle(
+            AppleMetrics.cardRadius,
+            side: BorderSide(color: hairline.withValues(alpha: 0.4)),
+          ),
+          // Clipped to its own shape so a tap ripple or the coloured
+          // swipe-action background stays inside the corners.
+          clipBehavior: Clip.antiAlias,
+          child: _tile(context, rows[i]),
+        ),
       ),
     );
   }
@@ -451,7 +587,11 @@ class _SectionHeader extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     final row = Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      // The gap above a label is whitespace the caller controls (see the
+      // [SizedBox]s around this widget in [_Shelf]), so it can differ between
+      // "new category" and "title to first category". This padding only
+      // holds the label close to the card it introduces.
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Row(
         children: [
           Expanded(
@@ -482,6 +622,95 @@ class _SectionHeader extends StatelessWidget {
     if (onToggle == null) return row;
     return InkWell(onTap: onToggle, child: row);
   }
+}
+
+/// The Pinned section with nothing in it: an empty card in the same shape the
+/// filled sections take, holding the instruction for the gesture that fills it.
+///
+/// Drawn rather than left as bare text so the section keeps the outline every
+/// other section has — an empty slot that visibly *is* a container reads as
+/// somewhere works can be put, where a floating line of grey text reads as a
+/// stray caption. The border is dashed to say the same thing again: this is a
+/// place, and it is waiting.
+class _EmptyPinnedSlot extends StatelessWidget {
+  const _EmptyPinnedSlot();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final hairline =
+        Theme.of(context).dividerTheme.color ?? scheme.outlineVariant;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CustomPaint(
+        painter: _DashedOutlinePainter(
+          radius: AppleMetrics.cardRadius,
+          color: hairline.withValues(alpha: 0.45),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(AppIcons.pin,
+                    size: 15, color: scheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    'Swipe a work right to keep it here',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A dashed rounded outline, in the same continuous-corner shape the filled
+/// section cards use, so the empty slot lines up with them exactly.
+class _DashedOutlinePainter extends CustomPainter {
+  final double radius;
+  final Color color;
+
+  const _DashedOutlinePainter({required this.radius, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..addRSuperellipse(
+        RSuperellipse.fromRectXY(Offset.zero & size, radius, radius),
+      );
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = color;
+
+    const dash = 5.0;
+    const gap = 4.0;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        canvas.drawPath(
+          metric.extractPath(distance, (distance + dash).clamp(0, metric.length)),
+          paint,
+        );
+        distance += dash + gap;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedOutlinePainter old) =>
+      old.radius != radius || old.color != color;
 }
 
 /// A source on the shelf. Swipe right to pin it to the top, swipe left to star

@@ -36,29 +36,25 @@ class ReadShelfService {
   Future<bool> hasArrangedSections() async =>
       (await _prefs).getBool(_arrangedKey) ?? false;
 
-  /// Add [id] to the pinned set if absent, remove it if present. Returns the
-  /// new set so the caller can update its state in one step.
-  Future<Set<int>> togglePinned(int id) => _toggleInt(_pinnedKey, id);
+  /// Write the arrangement the shelf is *already showing*.
+  ///
+  /// These take a whole set rather than toggling one member, because the screen
+  /// holds the current arrangement in its own state and applies a change on the
+  /// spot. A toggle here would mean reading prefs back off disk to decide what
+  /// the new state is, which makes persistence — a platform-channel hop and a
+  /// file write — sit in front of the frame that shows the result. Collapsing a
+  /// section then visibly waited on a disk write. Now the screen paints first
+  /// and these are fired off behind it.
+  Future<void> setPinned(Set<int> ids) => _writeInts(_pinnedKey, ids);
 
-  Future<Set<int>> toggleStarred(int id) => _toggleInt(_starredKey, id);
+  Future<void> setStarred(Set<int> ids) => _writeInts(_starredKey, ids);
 
-  Future<Set<String>> toggleCollapsed(String tradition) async {
-    final prefs = await _prefs;
-    final set =
-        (prefs.getStringList(_collapsedKey) ?? const <String>[]).toSet();
-    if (!set.remove(tradition)) set.add(tradition);
-    await prefs.setStringList(_collapsedKey, set.toList());
-    await prefs.setBool(_arrangedKey, true);
-    return set;
-  }
-
-  /// Replace the whole collapsed set — used by the Read page's collapse-all /
-  /// expand-all control.
-  Future<Set<String>> setCollapsed(Set<String> traditions) async {
+  /// Records the collapsed set *and* marks the shelf arranged: reaching here at
+  /// all means the reader opened or closed something themselves.
+  Future<void> setCollapsed(Set<String> traditions) async {
     final prefs = await _prefs;
     await prefs.setStringList(_collapsedKey, traditions.toList());
     await prefs.setBool(_arrangedKey, true);
-    return traditions;
   }
 
   /// Collapse everything, on a shelf the reader has never arranged.
@@ -74,6 +70,11 @@ class ReadShelfService {
     return traditions;
   }
 
+  Future<void> _writeInts(String key, Set<int> ids) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(key, ids.map((e) => e.toString()).toList());
+  }
+
   // SharedPreferences has no int-list type, so the ids are stored as strings.
   Future<Set<int>> _readInts(String key) async {
     final prefs = await _prefs;
@@ -83,11 +84,4 @@ class ReadShelfService {
         .toSet();
   }
 
-  Future<Set<int>> _toggleInt(String key, int id) async {
-    final ids = await _readInts(key);
-    if (!ids.remove(id)) ids.add(id);
-    final prefs = await _prefs;
-    await prefs.setStringList(key, ids.map((e) => e.toString()).toList());
-    return ids;
-  }
 }
