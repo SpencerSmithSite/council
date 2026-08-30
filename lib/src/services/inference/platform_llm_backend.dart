@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'inference_backend.dart';
@@ -96,6 +97,12 @@ class PlatformLlmBackend implements InferenceBackend {
   /// Cached because the picker, the onboarding step and the status line all ask
   /// on the same frame, and the platform call is not free.
   static PlatformLlmAvailability? _cached;
+
+  /// Test seam: forget what the platform last said, so one test run can pose as
+  /// several devices. The app never needs it — a reader who has just switched
+  /// Apple Intelligence on is served by `availability(refresh: true)`.
+  @visibleForTesting
+  static void debugForgetAvailability() => _cached = null;
 
   const PlatformLlmBackend();
 
