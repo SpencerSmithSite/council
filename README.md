@@ -4,7 +4,7 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **669 works and 482 million characters**.
+Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **709 works and 484 million characters**.
 
 Bundled: the King James Version, complete.
 
@@ -23,11 +23,14 @@ content:
 
 | Collection | Works | Download |
 |---|---|---|
+| Leo XIII | 30 | 0.8 MB |
 | Adventist | 5 | 3.2 MB |
 | Holiness | 11 | 3.8 MB |
+| Anabaptist | 10 | 4.3 MB |
 | Quaker | 6 | 4.7 MB |
-| Creeds & Confessions | 56 | 9.2 MB |
+| Creeds & Confessions | 57 | 9.2 MB |
 | Eastern Orthodox | 74 | 11.8 MB |
+| Catholic | 130 | 25.6 MB |
 | Augustine of Hippo | 48 | 12.9 MB |
 | John Owen | 31 | 13.8 MB |
 | Matthew Henry | 6 | 24.0 MB |
@@ -36,8 +39,8 @@ content:
 | Charles Spurgeon | 74 | 93.1 MB |
 | Reformed & Presbyterian | 147 | 108.2 MB |
 
-Thirty-six collections over forty-seven shared fragments, 300 MB published in
-all. The same collections as standalone files would be 585 MB — no work is
+Thirty-seven collections over forty-eight shared fragments, 302 MB published in
+all. The same collections as standalone files would be 587 MB — no work is
 downloaded twice, however many collections it belongs to, which is why the
 big authors have a fragment each rather than sitting inside their tradition's.
 
@@ -53,12 +56,14 @@ The full library spans:
   Bunyan, Gill, both London confessions)
 - Eastern Orthodox (Philaret's *Longer Catechism*, the Confession of
   Dositheus, the *Book of Needs*)
-- Catholic (Aquinas, Trent, Thomas à Kempis)
+- Catholic (Aquinas, Trent, Vatican I including papal infallibility, all
+  thirty of Leo XIII's encyclicals, Thomas à Kempis)
 - Anglican and Methodist (Ryle, Newton, William Law, Wesley, Whitefield)
 - Holiness (Wesley on Christian perfection, Finney, Hannah Whitall Smith)
 - Adventist (Ellen G. White — the Conflict of the Ages volumes, Steps to Christ)
-- Anabaptist and Quaker (van Braght's *Martyrs Mirror*, Barclay's *Apology*,
-  the journals of Fox and Woolman, Penn, Sewel)
+- Anabaptist and Quaker (the Dordrecht Confession, the complete works of Menno
+  Simons, van Braght's *Martyrs Mirror*, Barclay's *Apology*, the journals of
+  Fox and Woolman, Penn, Sewel)
 - Oriental Orthodox (1 Enoch, scripture in the Ethiopian and Eritrean Tewahedo
   churches)
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
