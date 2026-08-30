@@ -96,7 +96,11 @@ class InferenceProvider extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _backendId = prefs.getString(_backendKey) ?? 'none';
+    // Asked before the backend is resolved, because with nothing stored it is
+    // what the device offers that decides where the reader starts.
+    _platformLlm = await PlatformLlmBackend.availability();
+    _backendId =
+        prefs.getString(_backendKey) ?? await _openingBackend(prefs);
     _ollamaHost = prefs.getString(_ollamaHostKey) ?? OllamaBackend.defaultHost;
     _ollamaModel =
         prefs.getString(_ollamaModelKey) ?? OllamaBackend.defaultModel;
@@ -112,11 +116,49 @@ class InferenceProvider extends ChangeNotifier {
     // discover the picker.
     _localModelId = prefs.getString(_localModelKey) ??
         (await LocalModelChoice.recommendedHere()).id;
-    _platformLlm = await PlatformLlmBackend.availability();
 
     _isLoaded = true;
     notifyListeners();
     unawaited(refreshStatus());
+  }
+
+  /// Where a reader who has never chosen a backend begins.
+  ///
+  /// Search-only used to be it, which meant onboarding opened on the app's
+  /// least capable setting and every reader who wanted an answer had to go and
+  /// find the option that gives one. The two private backends are better
+  /// openings and cost nothing to preselect: the device's own model when it can
+  /// answer right now — already installed, no account, no key, nothing leaving
+  /// the phone — and otherwise the local download, the same bargain one step
+  /// further away. Neither downloads anything by being selected. Failing both,
+  /// there is nothing to lead with and search-only stands.
+  ///
+  /// [platformLlmReady] rather than [offersPlatformLlm]: the picker shows a row
+  /// for Apple Intelligence that is merely switched off, since the row says
+  /// where the switch is, but starting a reader on a backend that cannot answer
+  /// yet is worse than starting them on the download.
+  ///
+  /// Written back, because a default the reader was shown and left alone is a
+  /// choice and has to survive the launch after onboarding — and because a
+  /// default that re-derived itself each launch would move under them as
+  /// availability changed.
+  ///
+  /// Only for a reader who has not been through onboarding. An install with no
+  /// stored backend but onboarding behind it has already been offered this
+  /// choice and left it at search-only; switching a model on for them now would
+  /// not be a default, it would be changing their mind for them.
+  Future<String> _openingBackend(SharedPreferences prefs) async {
+    // SettingsService owns this key; read directly rather than ordering this
+    // load after that one.
+    if (prefs.getBool('has_onboarded') ?? false) return 'none';
+
+    final id = platformLlmReady
+        ? PlatformLlmBackend.backendId
+        : offersLocalModel
+            ? LocalModelBackend.backendId
+            : 'none';
+    await prefs.setString(_backendKey, id);
+    return id;
   }
 
   Future<String> _readKey(CloudProvider provider) async {
