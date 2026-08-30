@@ -87,7 +87,7 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2-int8-384"
 # Must match DatabaseService.corpusVersion. This governs the *bundled* database:
 # the app throws away its installed copy and unpacks the new one when this
 # changes. It ships inside the binary, so it can only ever change with a release.
-CORPUS_VERSION = 15
+CORPUS_VERSION = 16
 
 # What packs are actually gated on. See `read_ledger` below.
 #
@@ -107,7 +107,12 @@ ID_SPACE_START = 1
 # Reference tables are small, shared, and copied whole into every pack, so that
 # installing a pack cannot leave a source pointing at a tradition the app has
 # never heard of. They are inserted with OR IGNORE, so overlap is free.
-REFERENCE_TABLES = ["traditions", "source_types", "tags", "authors", "works"]
+# `branches` leads `traditions` because a tradition row carries a branch_id.
+# SQLite does not enforce that by default, so the order is free rather than
+# necessary — but a pack that carried families and not the branches they name
+# would leave the shelf unable to group what it had just installed.
+REFERENCE_TABLES = ["branches", "traditions", "source_types", "tags",
+                    "authors", "works"]
 
 # Copied per-pack, in dependency order.
 CONTENT_TABLES = [

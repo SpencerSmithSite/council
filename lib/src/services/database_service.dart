@@ -29,7 +29,7 @@ class DatabaseService {
   /// This governs the database that ships *inside the binary*, and nothing
   /// else. It can only change with a release, because the file it describes
   /// can only change with a release.
-  static const int corpusVersion = 15;
+  static const int corpusVersion = 16;
 
   /// Which assignment of row ids the bundled database belongs to.
   ///

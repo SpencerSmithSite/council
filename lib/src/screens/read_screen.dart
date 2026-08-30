@@ -160,15 +160,33 @@ class _ReadScreenState extends State<ReadScreen> {
 
   Future<void> _loadShelf() async {
     final db = context.read<DatabaseService>();
+    // Ordered by the taxonomy rather than by the alphabet: branches run in
+    // historical order (the undivided church, then each split by its date),
+    // and families run in their own order inside a branch. Sorting either by
+    // name would put Adventist above Anglican and the Reformation above
+    // Chalcedon, which is the shape of a list rather than of a church.
+    //
+    // `branches` arrived with the taxonomy, so this query cannot run against a
+    // corpus unpacked before it — a LEFT JOIN to a table that does not exist
+    // is an error, not a null, and no amount of COALESCE saves it. What makes
+    // it safe is [DatabaseService.corpusVersion], bumped to 16 in the same
+    // change: the app throws away an installed copy whose stamp differs and
+    // unpacks the bundled one, so by the time this runs the table is there.
+    // The COALESCEs below are for missing *rows*, which are possible — a
+    // source whose tradition predates the taxonomy has a null branch_id.
     final rows = await db.database.rawQuery('''
       SELECT s.id, s.title, s.author, s.date_composed,
              COALESCE(t.name, 'Other') AS tradition,
+             COALESCE(b.name, 'Other') AS branch,
              COUNT(cu.id) AS units
       FROM sources s
       LEFT JOIN traditions t ON s.tradition_id = t.id
+      LEFT JOIN branches b ON t.branch_id = b.id
       JOIN content_units cu ON cu.source_id = s.id
       GROUP BY s.id
-      ORDER BY t.name, s.author, s.title
+      ORDER BY COALESCE(b.sort_order, 99), b.name,
+               COALESCE(t.sort_order, 99), t.name,
+               s.author, s.title
     ''');
     if (!mounted) return;
     setState(() => _sources = rows);
@@ -290,12 +308,6 @@ extension _Toggle<T> on Set<T> {
   }
 }
 
-/// The tradition that holds the Bibles, lifted out of alphabetical order.
-///
-/// Matched by name rather than by id because the shelf is built from whatever
-/// is installed, and a pack can introduce sources under it.
-const String _scripture = 'Scripture';
-
 /// The installed works, grouped by tradition, with pinned works lifted to the
 /// top and each tradition section collapsible.
 class _Shelf extends StatelessWidget {
@@ -338,6 +350,12 @@ class _Shelf extends StatelessWidget {
     this.starredOnly = false,
     this.anyStarred = false,
   });
+
+  /// Whether a branch needs a heading of its own, or would only repeat the one
+  /// family inside it.
+  static bool _showsBranchHeader(
+          MapEntry<String, Map<String, List<Map<String, dynamic>>>> branch) =>
+      !(branch.value.length == 1 && branch.value.keys.first == branch.key);
 
   /// Whether the shelf is showing a subset of what is installed.
   ///
@@ -430,21 +448,24 @@ class _Shelf extends StatelessWidget {
     final pinnedSources =
         sources!.where((s) => pinned.contains(s['id'] as int)).toList();
 
-    final byTradition = <String, List<Map<String, dynamic>>>{};
+    // Branch → tradition → works. Both levels are plain maps, which in Dart
+    // preserve insertion order, so the taxonomy's ordering comes straight from
+    // the query's ORDER BY and is not re-derived here.
+    //
+    // Scripture used to be lifted out of the alphabet by name at this point,
+    // because leaving it to fall between Reformed and Universal buried the one
+    // section nobody should have to look for. The special case is gone: it is
+    // the first family of the first branch, so it already sits directly under
+    // Pinned, and hoisting it a second time would move it out of the branch
+    // that explains why it is there.
+    final byBranch = <String, Map<String, List<Map<String, dynamic>>>>{};
     for (final source in sources!) {
       if (pinned.contains(source['id'] as int)) continue;
-      byTradition
+      byBranch
+          .putIfAbsent(source['branch'] as String, () => {})
           .putIfAbsent(source['tradition'] as String, () => [])
           .add(source);
     }
-
-    // Scripture sits directly under Pinned, ahead of the alphabet. It is what
-    // most readers open most often, and leaving it to fall between Reformed
-    // and Universal buries the one section nobody should have to look for.
-    // Everything else keeps the order the query returned.
-    final traditions = byTradition.keys.toList();
-    final scripture = traditions.remove(_scripture);
-    final order = [if (scripture) _scripture, ...traditions];
 
     // Slivers rather than a ListView of boxes: a section's rows have to stay
     // lazily built, or expanding an 82-work tradition would lay out 82 tiles in
@@ -474,22 +495,40 @@ class _Shelf extends StatelessWidget {
           // larger than the gap between a section's own label and its card, so
           // "these belong together" and "this is a new group" read differently
           // at a glance rather than as one undifferentiated run of rows.
-          for (final tradition in order) ...[
+          for (final branch in byBranch.entries) ...[
             const SliverToBoxAdapter(child: SizedBox(height: 28)),
-            SliverToBoxAdapter(
-              child: _SectionHeader(
-                title: tradition,
-                count: byTradition[tradition]!.length,
-                collapsed: !_narrowed && collapsed.contains(tradition),
-                // No disclosure control under a filter: the section cannot be
-                // closed while narrowed, so offering the chevron would be
-                // offering a control that does nothing.
-                onToggle:
-                    _narrowed ? null : () => onToggleCollapse(tradition),
+            // Suppressed where it would only repeat itself. Some branches hold
+            // a single family of the same name — Eastern Orthodox inside
+            // Eastern Orthodox — and stacking the two headings says nothing
+            // twice. The family's heading is the one kept, because it is the
+            // one carrying the count and the disclosure control.
+            if (_showsBranchHeader(branch))
+              SliverToBoxAdapter(child: _BranchHeader(title: branch.key)),
+            // The branch heading takes over the 28 px gap that used to sit
+            // before every family, so the first family under it is pulled
+            // close. Adding a second full gap cost about fifty vertical pixels
+            // per branch, which on a 320 px phone at the largest font size was
+            // enough to push the first family below the floating search bar.
+            for (final (index, tradition) in branch.value.entries.indexed) ...[
+              SliverToBoxAdapter(
+                child: SizedBox(
+                    height: _showsBranchHeader(branch) && index == 0 ? 10 : 20),
               ),
-            ),
-            if (_narrowed || !collapsed.contains(tradition))
-              _card(context, byTradition[tradition]!),
+              SliverToBoxAdapter(
+                child: _SectionHeader(
+                  title: tradition.key,
+                  count: tradition.value.length,
+                  collapsed: !_narrowed && collapsed.contains(tradition.key),
+                  // No disclosure control under a filter: the section cannot be
+                  // closed while narrowed, so offering the chevron would be
+                  // offering a control that does nothing.
+                  onToggle:
+                      _narrowed ? null : () => onToggleCollapse(tradition.key),
+                ),
+              ),
+              if (_narrowed || !collapsed.contains(tradition.key))
+                _card(context, tradition.value),
+            ],
           ],
           // With Scripture alone the shelf is one book, and the reason is not
           // obvious from an otherwise working screen.
@@ -568,6 +607,47 @@ class _Shelf extends StatelessWidget {
 /// A grouped-shelf section header. Plain for "Pinned"; a tappable disclosure
 /// row (with a rotating chevron and a count) for the collapsible tradition
 /// sections.
+/// The name of a branch of Christianity, introducing the families inside it.
+///
+/// Deliberately not collapsible, and the reason is not visual. The collapsed
+/// set is persisted as a list of *names*, and a branch can share its name with
+/// the family inside it — collapsing "Eastern Orthodox" would have to mean one
+/// or the other and would silently mean both. Families stay the unit the
+/// reader opens and closes; a branch is a label over them.
+class _BranchHeader extends StatelessWidget {
+  final String title;
+
+  const _BranchHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: scheme.primary,
+              // Letter-spaced small caps rather than a larger size: the branch
+              // has to outrank the family heading below it without competing
+              // with the screen's own large title.
+              letterSpacing: 0.8,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Divider(height: 1, thickness: 1, color: scheme.primary.withValues(alpha: 0.22)),
+        ],
+      ),
+    );
+  }
+}
+
 class _SectionHeader extends StatelessWidget {
   final String title;
   final int? count;

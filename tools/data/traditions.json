@@ -1,0 +1,331 @@
+{
+  "_comment": [
+    "The taxonomy of Christian traditions this app covers, as data.",
+    "",
+    "THREE LEVELS: branch -> family -> denomination. Only the first two are",
+    "defined here. `branches` is the split-by-split backbone; `families` is the",
+    "granularity sources are filed under and the level the app displays.",
+    "Denominations are future work and will hang off `families` by parent.",
+    "",
+    "WHY A FILE AND NOT A MIGRATION: the tradition list is a doctrinal",
+    "judgement, not a schema detail. Keeping it as data means the judgement can",
+    "be read, argued with and diffed without reading Python, and it means the",
+    "excluded groups are recorded next to the rule that excludes them instead",
+    "of living only in whoever remembered to leave them out.",
+    "",
+    "Applied by tools/build_traditions.py. Dry run by default."
+  ],
+  "criterion": {
+    "name": "Nicene in substance",
+    "_comment": [
+      "The test is doctrinal content, not creedal form. A group that teaches",
+      "the substance passes whether or not it recites a creed, which is why",
+      "the Brethren, the Restorationists and the Adventists are all in: their",
+      "non-creedalism is a conviction about creeds, not a denial of the",
+      "doctrine the creeds state."
+    ],
+    "affirms": [
+      "The Trinity \u2014 one God in three co-equal, co-eternal persons",
+      "The full deity and full humanity of Christ \u2014 true God and true man",
+      "The incarnation, atoning death, and bodily resurrection of Christ"
+    ],
+    "proxy_tests": [
+      "Baptism in the name of the Father, Son and Holy Spirit, in a form the historic churches recognise. Catholic and Orthodox recognition of a body's baptism is a strong signal: Baptist and Methodist baptisms are recognised, LDS and Jehovah's Witness baptisms are not.",
+      "The World Council of Churches basis \u2014 churches that 'confess the Lord Jesus Christ as God and Saviour according to the scriptures... to the glory of the one God, Father, Son and Holy Spirit' \u2014 is a usable pre-filter, because its basis is explicitly Trinitarian."
+    ]
+  },
+  "excluded": [
+    {
+      "name": "Church of Jesus Christ of Latter-day Saints",
+      "why": "Non-Trinitarian Godhead theology \u2014 three separate beings, not one God in three persons."
+    },
+    {
+      "name": "Jehovah's Witnesses",
+      "why": "Arian \u2014 denies the full deity of Christ."
+    },
+    {
+      "name": "Oneness Pentecostals",
+      "why": "Modalist \u2014 denies the Trinity by collapsing the persons into modes. Distinct from the Trinitarian Pentecostal bodies, which are included."
+    },
+    {
+      "name": "Christadelphians",
+      "why": "Non-Trinitarian; denies the pre-existence and deity of Christ."
+    },
+    {
+      "name": "Christian Science",
+      "why": "Denies the Trinity, the incarnation and the bodily resurrection."
+    },
+    {
+      "name": "Unitarian and Unitarian Universalist bodies",
+      "why": "Non-Trinitarian by definition and self-description."
+    }
+  ],
+  "branches": [
+    {
+      "slug": "shared",
+      "name": "The Undivided Church",
+      "sort_order": 1,
+      "description": "Scripture, the Fathers and the ecumenical councils \u2014 what every branch below inherits rather than what divides them. Not a branch in the historical sense; the place the material that predates the splits belongs."
+    },
+    {
+      "slug": "church-of-the-east",
+      "name": "Church of the East",
+      "split_year": 431,
+      "sort_order": 2,
+      "description": "Separated after the Council of Ephesus."
+    },
+    {
+      "slug": "oriental-orthodox",
+      "name": "Oriental Orthodox",
+      "split_year": 451,
+      "sort_order": 3,
+      "description": "Separated after the Council of Chalcedon."
+    },
+    {
+      "slug": "eastern-orthodox",
+      "name": "Eastern Orthodox",
+      "split_year": 1054,
+      "sort_order": 4,
+      "description": "The autocephalous churches of the Byzantine tradition, in communion with one another."
+    },
+    {
+      "slug": "roman-catholic",
+      "name": "Roman Catholic",
+      "sort_order": 5,
+      "description": "The Latin Church together with the twenty-three Eastern Catholic Churches in communion with Rome."
+    },
+    {
+      "slug": "protestant",
+      "name": "Protestant",
+      "split_year": 1517,
+      "sort_order": 6,
+      "description": "The families issuing from the Reformation, and the movements that came out of them."
+    },
+    {
+      "slug": "other-independent",
+      "name": "Other and Independent",
+      "sort_order": 7,
+      "description": "Bodies that sit outside the branches above and are admitted one at a time on the doctrinal test rather than by category."
+    }
+  ],
+  "families": [
+    {
+      "slug": "scripture",
+      "name": "Scripture",
+      "branch": "shared",
+      "sort_order": 1,
+      "description": "The biblical text itself, which every tradition in this library is interpreting."
+    },
+    {
+      "slug": "early-church",
+      "name": "Early Church",
+      "branch": "shared",
+      "sort_order": 2,
+      "description": "The Fathers of the first eight centuries, before and across the divisions below."
+    },
+    {
+      "slug": "ecumenical",
+      "name": "Ecumenical",
+      "branch": "shared",
+      "sort_order": 3,
+      "description": "The acts of the seven ecumenical councils and the local synods, received in common.",
+      "full_name": "Ecumenical Councils"
+    },
+    {
+      "slug": "universal",
+      "name": "Universal",
+      "branch": "shared",
+      "sort_order": 4,
+      "description": "Creeds held across the traditions rather than by any one of them."
+    },
+    {
+      "slug": "assyrian",
+      "name": "Assyrian",
+      "branch": "church-of-the-east",
+      "sort_order": 1,
+      "full_name": "Assyrian Church of the East"
+    },
+    {
+      "slug": "ancient-church-of-the-east",
+      "name": "Ancient Church of the East",
+      "branch": "church-of-the-east",
+      "sort_order": 2
+    },
+    {
+      "slug": "oriental-orthodox",
+      "name": "Oriental Orthodox",
+      "branch": "oriental-orthodox",
+      "sort_order": 1,
+      "description": "The Coptic, Syriac, Armenian, Ethiopian, Eritrean and Malankara churches, distinguished at the denomination level."
+    },
+    {
+      "slug": "eastern-orthodox",
+      "name": "Eastern Orthodox",
+      "branch": "eastern-orthodox",
+      "sort_order": 1,
+      "description": "The autocephalous churches \u2014 Constantinople, Moscow, Antioch, Serbia, Greece, Romania and the rest \u2014 distinguished at the denomination level."
+    },
+    {
+      "slug": "catholic",
+      "name": "Catholic",
+      "branch": "roman-catholic",
+      "sort_order": 1,
+      "description": "The Latin Church.",
+      "full_name": "Roman Catholic"
+    },
+    {
+      "slug": "eastern-catholic",
+      "name": "Eastern Catholic",
+      "branch": "roman-catholic",
+      "sort_order": 2,
+      "description": "The twenty-three sui iuris churches in communion with Rome, keeping Eastern liturgy and canon law.",
+      "full_name": "Eastern Catholic Churches"
+    },
+    {
+      "slug": "lutheran",
+      "name": "Lutheran",
+      "branch": "protestant",
+      "sort_order": 1
+    },
+    {
+      "slug": "reformed",
+      "name": "Reformed",
+      "branch": "protestant",
+      "sort_order": 2,
+      "description": "One family at this granularity, as the polity differences that separate Presbyterian from Congregational do not separate their confessions \u2014 the Savoy Declaration is a Congregational revision of Westminster.",
+      "full_name": "Reformed, Presbyterian & Congregational"
+    },
+    {
+      "slug": "anglican",
+      "name": "Anglican",
+      "branch": "protestant",
+      "sort_order": 3,
+      "full_name": "Anglican & Episcopal"
+    },
+    {
+      "slug": "anabaptist",
+      "name": "Anabaptist",
+      "branch": "protestant",
+      "sort_order": 4,
+      "description": "Mennonite, Amish and Hutterite."
+    },
+    {
+      "slug": "brethren",
+      "name": "Brethren",
+      "branch": "protestant",
+      "sort_order": 5,
+      "description": "Church of the Brethren and Plymouth Brethren. Non-creedal, and Nicene in substance."
+    },
+    {
+      "slug": "baptist",
+      "name": "Baptist",
+      "branch": "protestant",
+      "sort_order": 6
+    },
+    {
+      "slug": "methodist",
+      "name": "Methodist",
+      "branch": "protestant",
+      "sort_order": 7,
+      "full_name": "Methodist & Wesleyan"
+    },
+    {
+      "slug": "holiness",
+      "name": "Holiness",
+      "branch": "protestant",
+      "parent": "methodist",
+      "sort_order": 8,
+      "description": "Nazarene, Wesleyan, Free Methodist and the Salvation Army. The Salvation Army practises no sacraments and is fully orthodox on the doctrinal test, so it is in: the criterion is what a body confesses about God, not how many sacraments it keeps."
+    },
+    {
+      "slug": "pentecostal",
+      "name": "Pentecostal",
+      "branch": "protestant",
+      "sort_order": 9,
+      "description": "Trinitarian bodies only \u2014 Assemblies of God, Church of God (Cleveland), Church of God in Christ, Foursquare. Oneness Pentecostalism is modalist and is excluded."
+    },
+    {
+      "slug": "restorationist",
+      "name": "Restorationist",
+      "branch": "protestant",
+      "sort_order": 10,
+      "description": "The Stone-Campbell movement: Churches of Christ, Disciples of Christ, Christian Churches. Non-creedal on principle, and Nicene in substance."
+    },
+    {
+      "slug": "adventist",
+      "name": "Adventist",
+      "branch": "protestant",
+      "sort_order": 11,
+      "description": "Seventh-day Adventists and the wider Advent movement. Non-creedal, and Nicene in substance: the Fundamental Beliefs affirm the Trinity, the full deity and humanity of Christ, and the bodily resurrection. The distinctives that mark the family off \u2014 the seventh-day Sabbath, the investigative judgement, conditional immortality \u2014 are not touched by the criterion, which asks what a body confesses about God and not what else it holds besides."
+    },
+    {
+      "slug": "moravian-waldensian-hussite",
+      "name": "Moravian",
+      "branch": "protestant",
+      "sort_order": 12,
+      "description": "Three distinct churches grouped at this granularity. Two of them predate the Reformation \u2014 the Waldensians by some three centuries \u2014 and joined it rather than issuing from it; they are filed here because that is where they ended up, not where they began. Separate them at the denomination level.",
+      "full_name": "Moravian, Waldensian & Hussite"
+    },
+    {
+      "slug": "quaker",
+      "name": "Quaker",
+      "branch": "protestant",
+      "sort_order": 13,
+      "description": "The Religious Society of Friends."
+    },
+    {
+      "slug": "evangelical-free",
+      "name": "Evangelical",
+      "branch": "protestant",
+      "sort_order": 14,
+      "full_name": "Free Church & Evangelical"
+    },
+    {
+      "slug": "charismatic",
+      "name": "Charismatic",
+      "branch": "protestant",
+      "sort_order": 15,
+      "full_name": "Charismatic Networks"
+    },
+    {
+      "slug": "nondenominational",
+      "name": "Nondenominational",
+      "branch": "protestant",
+      "sort_order": 16,
+      "description": "A category rather than a denomination, and kept as one deliberately: these congregations have no shared confessional document to hold, so what files here is the movement's own writing, not a body's official teaching."
+    },
+    {
+      "slug": "old-catholic",
+      "name": "Old Catholic",
+      "branch": "other-independent",
+      "sort_order": 1,
+      "description": "The Union of Utrecht churches, separated from Rome after Vatican I."
+    },
+    {
+      "slug": "polish-national-catholic",
+      "name": "Polish National Catholic",
+      "branch": "other-independent",
+      "sort_order": 2
+    },
+    {
+      "slug": "continuing-anglican",
+      "name": "Continuing Anglican",
+      "branch": "other-independent",
+      "sort_order": 3
+    },
+    {
+      "slug": "messianic-jewish",
+      "name": "Messianic Jewish",
+      "branch": "other-independent",
+      "sort_order": 4,
+      "description": "Admitted body by body rather than as a movement. Most Messianic congregations are Trinitarian and pass the test; some are not, and the category is not uniform enough to admit wholesale."
+    },
+    {
+      "slug": "independent-catholic",
+      "name": "Independent Catholic",
+      "branch": "other-independent",
+      "sort_order": 5,
+      "description": "Admitted body by body. Some independent Catholic jurisdictions hold the Nicene faith intact and some have drifted into esoteric or syncretist teaching; the apostolic-succession claim these bodies make is not itself the test, and does not substitute for it."
+    }
+  ]
+}
