@@ -98,11 +98,21 @@ class PlatformLlmBackend implements InferenceBackend {
   /// on the same frame, and the platform call is not free.
   static PlatformLlmAvailability? _cached;
 
-  /// Test seam: forget what the platform last said, so one test run can pose as
-  /// several devices. The app never needs it — a reader who has just switched
-  /// Apple Intelligence on is served by `availability(refresh: true)`.
+  /// Test seam: pose as a device whose built-in model is in a given state, or
+  /// pass null to forget what the platform last said.
+  ///
+  /// Seeded directly rather than through a mocked method channel, because
+  /// [availability] answers `unsupportedPlatform` on a host with no bridge
+  /// without ever calling the platform. A mocked channel therefore tests
+  /// nothing on Linux, where CI runs, and a test written against it passes on a
+  /// Mac and fails there — which is how it first went in. The cache is read
+  /// before that gate, so seeding it works on any host.
+  ///
+  /// The app never needs this: a reader who has just switched Apple
+  /// Intelligence on is served by `availability(refresh: true)`.
   @visibleForTesting
-  static void debugForgetAvailability() => _cached = null;
+  static void debugSetAvailability(PlatformLlmAvailability? report) =>
+      _cached = report;
 
   const PlatformLlmBackend();
 
