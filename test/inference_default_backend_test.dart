@@ -1,6 +1,5 @@
 import 'dart:ffi';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,33 +16,29 @@ import 'package:council/src/services/inference/platform_llm_backend.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel('site.spencersmith.council/platform_llm');
-
-  /// Answer the availability call the way a given device would.
+  /// Report what a given device's built-in model would.
+  ///
+  /// Seeded rather than mocked at the method channel: availability answers
+  /// `unsupportedPlatform` on a host with no Apple bridge before it calls the
+  /// platform at all, so a mocked channel is never consulted on the Linux
+  /// runner and every expectation here would quietly become "whatever this host
+  /// happens to be". Seeding is read ahead of that gate, so these tests say the
+  /// same thing on a Mac and in CI.
   void poseAsDevice({required bool hasBuiltInModel}) {
-    PlatformLlmBackend.debugForgetAvailability();
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (call) async {
-      if (call.method != 'availability') return null;
-      return hasBuiltInModel
-          ? {'supported': true, 'reason': 'available', 'detail': 'Ready.'}
-          : {
-              'supported': true,
-              'reason': 'device_not_eligible',
-              'detail': 'This device cannot run it.',
-            };
-    });
+    PlatformLlmBackend.debugSetAvailability(
+      hasBuiltInModel
+          ? const PlatformLlmAvailability(
+              PlatformLlmState.available, 'Ready.')
+          : const PlatformLlmAvailability(
+              PlatformLlmState.notEligible, 'This device cannot run it.'),
+    );
   }
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
-    PlatformLlmBackend.debugForgetAvailability();
-  });
+  tearDown(() => PlatformLlmBackend.debugSetAvailability(null));
 
   test('a device with a built-in model opens on it', () async {
     poseAsDevice(hasBuiltInModel: true);
@@ -60,9 +55,9 @@ void main() {
     final inference = InferenceProvider();
     await inference.load();
 
-    // The engine runs on every architecture these tests are run on, so the
-    // third case — neither backend available, search-only stands — is the one
-    // asserted in 'a device that can run neither stays on search only'.
+    // True on every architecture these tests run on, macOS arm64 and the Linux
+    // x64 runner alike, so the third case — neither backend available and
+    // search-only standing — is asserted separately below.
     expect(LocalModelChoice.runsHere, isTrue);
     expect(inference.backendId, LocalModelBackend.backendId);
   });
