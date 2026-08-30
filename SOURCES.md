@@ -8,6 +8,45 @@ Christianity. This document is the map from that goal to specific documents and
 specific archives, so that adding a tradition is a matter of executing a plan
 rather than starting a search.
 
+## Who is in, and at what granularity
+
+Both questions are settled, and the answers live in
+[`tools/data/traditions.json`](tools/data/traditions.json) rather than here, so
+that the app and this document cannot disagree about them.
+
+**Who is in: Nicene in substance.** A body is covered if it affirms the
+Trinity, the full deity and full humanity of Christ, and the incarnation,
+atoning death and bodily resurrection. The test is doctrinal *content*, not
+creedal form — which is the part that does the work. Non-creedal groups pass:
+the Brethren, the Restorationists and the Adventists all decline to recite
+creeds as a matter of conviction, and all teach what the creeds state. Refusing
+a creed is not denying its doctrine, and a test that could not tell those apart
+would exclude several traditions this app exists to represent.
+
+What it excludes is not a matter of taste either. The Latter-day Saints,
+Jehovah's Witnesses, Oneness Pentecostals, Christadelphians, Christian Science
+and the Unitarian bodies each fail on the same clause, and each is recorded in
+the taxonomy file next to which one. Note the seam inside Pentecostalism:
+Trinitarian Pentecostal bodies are in and Oneness Pentecostalism is out, so
+"Pentecostal" is not a single verdict.
+
+Two usable proxies when a body is unclear: whether the historic churches
+recognise its baptism (Catholic and Orthodox recognition is a strong signal —
+Baptist and Methodist baptisms are recognised, LDS and Jehovah's Witness ones
+are not), and the World Council of Churches basis, whose membership test is
+explicitly Trinitarian.
+
+**At what granularity: families, about thirty of them.** The structure is
+**branch → family → denomination**, and this corpus is being built at the
+family level. That is a decision forced by arithmetic rather than preference:
+the World Christian Database counts roughly 45,000 denominations, so "all of
+them" is not a target, it is a category error. Families are completable — there
+are 31 — and denominations are the next tier of work, not this one.
+
+Sources are filed at the family level. Branches are the split-by-split backbone
+(431, 451, 1054, 1517), plus a *shared* branch holding scripture, the Fathers
+and the councils, which belong to every branch rather than to one.
+
 ## Read this first: two constraints that shape everything
 
 **Copyright is the binding constraint, not availability.** Almost everything
@@ -388,15 +427,22 @@ largest Protestant families in the world.
 - Palamas and the hesychast corpus — mostly modern translations, mostly
   restricted.
 
-### 4. Anabaptist, Mennonite, Quaker — absent entirely
+### 4. Anabaptist, Mennonite, Quaker — mostly done, 2026-08-02
 
-- **Schleitheim Confession (1527)**; **Dordrecht Confession (1632)**.
-- **Menno Simons**, *Foundation of Christian Doctrine*.
-- **Martyrs Mirror** — large, and the standard English text is old enough to be
-  free.
-- **Barclay's *Apology for the True Christian Divinity*** — the systematic
-  statement of Quaker theology.
-- **Fox's *Journal***, **Penn** (44895), **Woolman** (37311).
+- [x] **Quaker** — done. Barclay's *Apology*, both volumes of Fox's *Journal*,
+  Penn's *No Cross, No Crown*, Woolman's *Journal*, Sewel's *History*.
+- [x] **Martyrs Mirror** — done. van Braght, and currently the whole of the
+  Anabaptist tradition.
+- [ ] **Menno Simons** — **found 2026-08-30, not yet ingested.** English
+  Wikisource carries nine works under *The Complete Works of Menno Simons/*,
+  1.04 M characters of rendered text, including *The True Christian Faith* and
+  the *Reply to Gellius Faber*. Not the whole Funk edition, but it is the
+  tradition's systematics, which it has never had.
+- [ ] **Dordrecht Confession (1632)** — **found 2026-08-30, not yet ingested.**
+  Wikisource, *Dordrecht Confession of Faith*, 29,459 characters, complete.
+- [ ] **Schleitheim Confession (1527)** — still not found. Gutenberg and
+  Wikisource both return nothing under *Schleitheim*, *Brotherly Union* or
+  *seven articles*. See `TODO.md`.
 
 ### 5. Anglican beyond the Articles
 
@@ -460,40 +506,74 @@ One source, now that the Thirty-Nine Articles are properly sourced.
   it is a non-doctrinal salutation that neither creeds.net nor Schaff carries in
   this rendering, so it could not be corroborated, and the corpus does not ship
   what it cannot check.
-- [ ] **Second Helvetic (1566)** — **deferred, likely copyright-blocked.** The
-  complete English text on `ccel.org/creeds/helvetic.htm` (30 chapters) is the
-  1966 Arthur Cochrane translation, which is © Westminster Press; CCEL's
-  `/creeds/` pages carry no rights declaration, unlike its `/ccel/` text
-  exports. Schaff's *Creeds of Christendom* has the confession only in the
-  Latin original. So the readily-available modern English is in copyright and
-  no public-domain English edition was found — the same constraint that removed
-  the Catechism of the Catholic Church. Revisit if a PD English translation
-  surfaces, or ship the Latin with that limitation stated.
+- [x] **Second Helvetic (1566)** — **done 2026-08-30**, `tools/ingest_schaff.py`.
+  30 chapters, 185 K characters, public domain.
+
+  This entry was wrong, and the sentence that made it wrong was *"Schaff's
+  Creeds of Christendom has the confession only in the Latin original."* It has
+  the Latin in the body of vol. III and an **English version as an appendix**,
+  which Schaff added in the third edition for the stated reason that the
+  volumes had begun to be sold separately — so a reader of vol. III alone could
+  no longer be referred to the summary in vol. I. The rest of the entry stands:
+  the 1966 Cochrane translation on `ccel.org/creeds/helvetic.htm` is © West-
+  minster Press and is still not usable.
+
+  The generalisation worth keeping is about editions rather than about this
+  document. "Schaff has it in Latin" was true of the edition someone looked at
+  and false of the one CCEL serves, and nothing in the note recorded which had
+  been checked. A rights or language verdict needs the edition attached to it.
 - [x] **Calvin's *Institutes*** — done, 2026-07-26, with 45 volumes of his
   commentaries. `tools/ingest_reformation.py`.
 - [x] **Owen** — done, 2026-07-27. All 31 works, from Goold's edition of
   1850-55. `tools/ingest_owen.py`.
 - **Turretin**, **Bavinck** (Dutch, translations vary in status).
 
-### 7. Restoration and Adventist — absent, and freely available
+### 7. Restoration and Adventist — half done, 2026-08-30
 
 Unusual among the newer movements in that their founding documents predate
-copyright.
+copyright. Both were recorded here as blocked on a schema decision rather than
+on a text; the taxonomy settled the rows, and one of the two was ingested the
+same day.
 
-- **Alexander Campbell**, *The Christian System*; **Barton Stone**.
-- **Ellen White** — *The Great Controversy* (25833) and others. The Ellen G.
-  White Estate publishes her complete works and their status should be
-  confirmed directly rather than assumed from age.
+- **Adventist — done.** Ellen G. White, five works, from CCEL rather than the
+  Gutenberg route this section used to name. That is the correction worth
+  keeping: Gutenberg has two of her books, CCEL has five, and the entry here
+  pointed at the smaller archive because it was the one that had been searched.
+  `tools/ingest_adventist_holiness.py`.
+- **Alexander Campbell**, *The Christian System* — not on Gutenberg or
+  Wikisource (2026-08-30), and **not on CCEL either**: the `campbell` author
+  page there is J. M. Campbell, a Scot, and there is no `acampbell` or `stone`
+  page at all. Three archives, none of them holding the Restoration movement's
+  systematic statement.
+- **Thomas Campbell**, *Declaration and Address of the Christian Association of
+  Washington* (1809) — on English Wikisource at 160,942 characters, fetched and
+  measured 2026-08-30. Two caveats that decide whether it can be ingested as it
+  stands: Wikisource tags it **not backed by a scanned copy**, meaning no one
+  has proofread it against a page image, and the rendered page has **no
+  headings** — the Declaration, the Address, the thirteen Propositions and the
+  Appendix arrive as one undivided run of text. Unit boundaries would have to
+  be inferred from the prose, which is a different and riskier job than reading
+  a document's own structure.
 
-### 8. Pentecostal and Holiness — the hard case
+### 8. Pentecostal and Holiness — one of them answered
 
-The `pentecostal` row exists and will stay empty under a public-domain-only
-policy. Honest options:
+**Holiness — done 2026-08-30, as antecedents.** This section's own framing
+turned out to be the right one and is now what shipped: the family is
+represented by the teaching its denominations came out of, because the
+denominations themselves are twentieth-century and in copyright. Wesley's *A
+Plain Account of Christian Perfection* carries the doctrine, Finney six works
+and Hannah Whitall Smith three carry it into the nineteenth century, and Thomas
+Upham — Phoebe Palmer's colleague — carries the Fénelon and Guyon strand that
+came with it. Palmer herself has a CCEL author page with no works on it, and
+**William Booth has no CCEL page at all**, so the Salvation Army is still
+unrepresented. The pack description states the gap rather than implying
+coverage.
+
+**Pentecostal stays empty**, and the reasoning is unchanged and structural:
 
 - **The Apostolic Faith** (Azusa Street periodical, 1906–1908) — public domain,
-  and the closest thing to a primary founding document.
-- **Phoebe Palmer**, **William Booth**, **Charles Finney** — the Holiness
-  antecedents, all public domain.
+  and the closest thing to a primary founding document. Not yet located as a
+  transcription.
 - Modern statements of faith — Assemblies of God, Church of the Nazarene,
   Foursquare — are **in copyright**. Link out, or state plainly that the
   tradition is represented only by its antecedents.
@@ -507,7 +587,9 @@ policy. Honest options:
   replies — and not a chapter list. That check matters here specifically,
   because two sources already in the corpus turned out to hold New Advent index
   pages rather than text.
-- **Council of Trent** — already ingested. **Vatican I** — public domain.
+- **Council of Trent** — already ingested. **Vatican I** — public domain, and
+  as of 2026-08-30 located rather than merely assumed: English Wikisource
+  carries *The Decrees of the Vatican Council* and *Petri Privilegium*.
 - **Vatican II and the Catechism** — © Libreria Editrice Vaticana, **not
   shippable**. This is the gap that cannot be closed by finding a better
   archive.

@@ -4,11 +4,11 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **687 works and 460 million characters**.
+Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **669 works and 482 million characters**.
 
 Bundled: the King James Version, complete.
 
-First download — **Creeds & Confessions**, 8.9 MB:
+First download — **Creeds & Confessions**, 9.2 MB:
 
 - Ecumenical creeds and councils — the acts themselves, not summaries: the
   creeds, canons and synodal letters of all seven ecumenical councils and
@@ -23,17 +23,21 @@ content:
 
 | Collection | Works | Download |
 |---|---|---|
-| Creeds & Confessions | 53 | 8.9 MB |
+| Adventist | 5 | 3.2 MB |
+| Holiness | 11 | 3.8 MB |
+| Quaker | 6 | 4.7 MB |
+| Creeds & Confessions | 56 | 9.2 MB |
 | Eastern Orthodox | 74 | 11.8 MB |
 | Augustine of Hippo | 48 | 12.9 MB |
-| John Owen | 31 | 13.6 MB |
-| Matthew Henry | 6 | 23.9 MB |
-| John Calvin | 48 | 29.4 MB |
-| Church Fathers | 402 | 51.0 MB |
-| Charles Spurgeon | 74 | 92.3 MB |
+| John Owen | 31 | 13.8 MB |
+| Matthew Henry | 6 | 24.0 MB |
+| John Calvin | 48 | 29.6 MB |
+| Church Fathers | 357 | 49.2 MB |
+| Charles Spurgeon | 74 | 93.1 MB |
+| Reformed & Presbyterian | 147 | 108.2 MB |
 
-Thirty-one collections over forty-three shared fragments, 285 MB published in
-all. The same collections as standalone files would be 568 MB — no work is
+Thirty-six collections over forty-seven shared fragments, 300 MB published in
+all. The same collections as standalone files would be 585 MB — no work is
 downloaded twice, however many collections it belongs to, which is why the
 big authors have a fragment each rather than sitting inside their tradition's.
 
@@ -51,14 +55,43 @@ The full library spans:
   Dositheus, the *Book of Needs*)
 - Catholic (Aquinas, Trent, Thomas à Kempis)
 - Anglican and Methodist (Ryle, Newton, William Law, Wesley, Whitefield)
+- Holiness (Wesley on Christian perfection, Finney, Hannah Whitall Smith)
+- Adventist (Ellen G. White — the Conflict of the Ages volumes, Steps to Christ)
+- Anabaptist and Quaker (van Braght's *Martyrs Mirror*, Barclay's *Apology*,
+  the journals of Fox and Woolman, Penn, Sewel)
+- Oriental Orthodox (1 Enoch, scripture in the Ethiopian and Eritrean Tewahedo
+  churches)
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
 - Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, and more)
 
+**Who counts as a tradition here** is settled by one test, applied to doctrinal
+content rather than to creedal form: a body is covered if it holds the Trinity,
+the full deity and humanity of Christ, and the incarnation, atoning death and
+bodily resurrection. That is deliberately not a creedalism test — the Brethren,
+the Restorationists and the Adventists decline to recite creeds and teach what
+the creeds state, so they are in. Groups that fail it on the doctrine itself
+are not. The rule, the groups it excludes and the reason for each are in
+[`tools/data/traditions.json`](tools/data/traditions.json); the library is
+organised branch → tradition, at 7 branches and 31 traditions. Fifteen of those
+traditions hold text today. The rest are defined and empty, and the shelf shows
+a tradition only once it has something in it — an empty family is a piece of
+work that has not been done, not a section a reader has to walk past.
+
 It stops where the public domain does. Modern theology is not here — no Barth,
-Lewis, Packer or Sproul — and neither are Pentecostal and Oriental Orthodox,
-whose defining documents are 20th-century and in copyright. Nothing is
-generated to fill those gaps; `tools/prune_bylined_sources.py` exists because
-some of it once was, and was removed. See `SOURCES.md`.
+Lewis, Packer or Sproul — and neither is Pentecostalism, whose defining
+documents are all 20th-century and in copyright. That is the structural gap:
+a corpus of what can be freely redistributed will under-represent the
+second-largest Christian movement in the world, and no better archive fixes it.
+
+The traditions that are here are not all here to the same depth. Oriental
+Orthodox is one work, Anabaptist is a martyrology with no systematics, and
+Eastern Orthodox is three documents. Holiness is a subtler case of the same
+thing: its own denominations — Nazarene, Wesleyan, Free Methodist, the
+Salvation Army — wrote their standards in the twentieth century, so the pack
+holds the teaching they came out of and not the bodies themselves. Each pack
+says so in its own description rather than implying coverage it does not have. Nothing is generated to fill
+those gaps; `tools/prune_bylined_sources.py` exists because some of it once
+was, and was removed. See `SOURCES.md`.
 
 The **Ask** tab uses RAG (retrieval-augmented generation): your question is matched against the library by full-text search *and* semantic search over on-device embeddings, the results are fused, and the passages are passed to whichever model you have configured — or shown on their own, if you would rather not use AI at all.
 
@@ -104,8 +137,10 @@ can offer:
 Three tabs, each a thing the reader does:
 
 - **Ask** — put a question to the corpus and get an answer with citations
-- **Read** — the installed shelf, arranged by tradition, and the reader itself;
-  full-text search across everything installed lives here too
+- **Read** — the installed shelf and the reader itself; full-text search across
+  everything installed lives here too. The shelf is arranged branch by branch —
+  the undivided church, then each split in the order it happened, then the
+  Reformation families — with each tradition collapsible inside its branch
 - **Browse** — add and remove collections
 
 Bookmarks, Notes and Chat history are reached from the app menu, and Settings

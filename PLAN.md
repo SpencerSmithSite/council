@@ -3567,3 +3567,355 @@ first next time an answer looks wrong in a way the transcript cannot explain.
 
 Scoped to the downloadable backend. Apple Intelligence, Ollama and the cloud
 providers are untouched, as are retrieval and citations.
+
+---
+
+## The taxonomy, and a shelf shaped like the church (2026-08-30)
+
+Three pieces of work that turned out to be one: a corpus survey, an ingest the
+tooling had refused, and a `traditions` table that could not express what the
+app claims to cover.
+
+### The survey, and what it found
+
+Two user-facing defects, both of the same kind — a pack description asserting
+something the corpus did not hold. The Methodist pack promised Wesley's *Notes
+on the New Testament*; the corpus held one Wesley source and it was the
+*Sermons*. Three tradition packs described a single confession and shipped
+between 3.7 MB and 107 MB, so a reader downloaded Spurgeon's complete sermons
+expecting the 1689 Baptist Confession. Both are fixed, and the fix in each case
+was to say what is there — including two things no description mentioned, the
+First London Baptist Confession and the Scots Confession — and to name what is
+not, which the Anabaptist pack was already doing and the others were not.
+
+The README was wrong about its own numbers in both directions: 687 works
+against an actual 650 (it predated the v16 apocrypha prune) and 460 M
+characters against 471 M. It also gave a reason for Oriental Orthodox being
+absent, and the tradition was not absent and that was never the reason.
+
+### Searching by the shape of the document, not by the archive
+
+Three texts sat under *Wanted, with no clean text anywhere* in `TODO.md` —
+searched for, not merely missing. All three are on English Wikisource: the
+Dordrecht Confession complete at 29,459 characters, nine works of Menno Simons
+at 1.04 M, and the Book of Jubilees inside Charles' *Apocrypha and
+Pseudepigrapha*. Vatican I and Thomas Campbell's *Declaration and Address* are
+there too, both named in `SOURCES.md` as public domain and never fetched.
+
+The lesson is not "try Wikisource", which is where the Westminster Confession
+came from. It is that those three searches had only been run against Gutenberg
+and CCEL, and both are **book** archives. A 29,000-character confession has no
+Gutenberg edition because nobody publishes it by itself, and that is a fact
+about the document rather than about the archive.
+
+Wikisource rate-limits hard, and its failure mode is the dangerous one: without
+a descriptive User-Agent and a delay it returns HTML errors that parse as an
+empty page rather than as a failure. A silently-empty result is
+indistinguishable from a work with no text, which is the reason to write a tool
+for it rather than fetch by hand.
+
+### Schaff: answering a refusal instead of relaxing it
+
+`ingest_ccel.py` refuses Schaff's *Creeds of Christendom* because CCEL's export
+linearizes his parallel Latin/English columns into unreadable prose. The
+refusal is correct. It is also written about the volume and applied to every
+document in it, and it is not true of all of them — the third edition adds an
+English appendix carrying the whole Second Helvetic Confession.
+
+`ingest_schaff.py` answers that with a measurement. Every candidate is scored
+for Latin, French and German function words that have no English homograph, as
+a ratio against English ones, and anything above 0.02 is refused before it is
+parsed. The populations do not overlap: clean English measures 0.000 on all
+three axes, the nearest refusal is 0.021 and the worst is 8.6. The refused
+documents stay in `CANDIDATES` so `survey` can be watched rejecting them, which
+is the same reason `audit_completeness.py` prints its near misses.
+
+Calibrating it caught the obvious trap. A first pass included `in`, `sed`,
+`non` and `cum` as Latin markers and scored the Second Helvetic — which
+contains no Latin whatever — as 1.3 parts Latin, because those are English
+words. The gate is only as good as the markers having no homograph.
+
+Taken: the Second Helvetic Confession, 30 chapters and 185 K characters, which
+both ledgers recorded as copyright-blocked in every English edition found; the
+Savoy Declaration's Platform of Discipline, Congregationalism's constitutional
+document and previously absent; and the Reformed Episcopal Articles. Refused
+and worth a second pass with a column-aware extractor rather than a lower
+standard: the Piedmont (Waldensian) confession and the Moravian Easter Litany,
+both of which have a real English column the export interleaves.
+
+### A table that could not say what the app covers
+
+`traditions` was fifteen rows grown one ingest at a time, so "Early Church" and
+"Baptist" sat at the same level as though they were the same kind of thing. One
+is a period every branch inherits; the other is a family inside one branch.
+
+It is now **branch → family**, with denominations to hang off families later.
+The taxonomy is data — `tools/data/traditions.json` — because the tradition
+list is a doctrinal judgement rather than a schema detail, and a judgement
+should be readable and diffable without reading Python. The inclusion rule
+lives in the same file as the groups it excludes.
+
+**The rule is Nicene in substance**, and the load-bearing word is *substance*.
+The test is doctrinal content, not creedal form, which is what lets the
+Brethren, the Restorationists and the Adventists in: their non-creedalism is a
+conviction about creeds, not a denial of the doctrine creeds state. A test that
+could not tell those apart would exclude traditions this app exists to
+represent. Note the seam inside Pentecostalism — Trinitarian bodies are in,
+Oneness Pentecostalism is modalist and is out — so "Pentecostal" is not one
+verdict.
+
+**Granularity is families, of which there are 31.** Not denominations: the
+World Christian Database counts roughly 45,000, so that is a different project
+and not a longer list.
+
+Three things this settled that were open:
+
+* **Congregational needs no row.** Reformed, Presbyterian and Congregational
+  are one family, because the polity difference between them is not a
+  confessional one — the Savoy Declaration *is* Westminster with Congregational
+  revisions. The Savoy Platform is therefore correctly filed, not filed under
+  Reformed for want of anywhere better.
+* **Waldensian needs no row either**, for a less comfortable reason: it is
+  grouped with Moravian and Hussite, and two of those three predate the
+  Reformation and joined it rather than issuing from it. Filing them under
+  Protestant records where they ended up, not where they began. Split them at
+  the denomination tier.
+* **`name` is load-bearing and was not touched.** Eleven ingesters and every
+  `*_units.json` address traditions by name, and the app renders that string on
+  citations and shelf headings, where the taxonomy's longer labels would not
+  fit. Those went into a new `full_name` column. `build_traditions.py` asserts
+  the slug set *and* the name set against the database and refuses to run if
+  either would lose a row — a source pointing at a tradition the app cannot
+  name raises nowhere, it just renders a blank citation.
+
+### The shelf
+
+Read now groups **branch → tradition**, ordered by the taxonomy rather than the
+alphabet. Sorting by name put Adventist above Anglican and the Reformation
+above Chalcedon, which is the shape of a list and not of a church.
+
+Four decisions worth keeping:
+
+* **Branches are labels, not disclosures.** The collapsed set is persisted as a
+  list of *names*, and a branch can share its name with the only family inside
+  it; making branches collapsible would mean collapsing "Eastern Orthodox"
+  silently acts on both. Families stay the unit that opens and closes, so the
+  stored arrangement needed no migration.
+* **A branch heading is suppressed when it would only repeat itself.** Eastern
+  Orthodox inside Eastern Orthodox says nothing twice. The family heading is
+  the one kept, because it carries the count and the chevron.
+* **Scripture's special case is gone.** It used to be hoisted out of
+  alphabetical order by name; it is now the first family of the first branch
+  and already sits directly under Pinned. Hoisting it again would move it out
+  of the branch that explains why it is there.
+* **The branch heading takes over the gap that preceded each family** rather
+  than adding one of its own. The first version added about fifty vertical
+  pixels per branch, which on a 320 px phone at the largest font size pushed
+  the first family under the floating search bar — where `narrow_width_test`'s
+  tap landed in the search field instead, and the failure read as a missing
+  widget rather than as a layout cost.
+
+**`corpusVersion` goes to 16, and that forces an app release.** The bundled
+database gained a table, and a query joining a table that does not exist is an
+error rather than a null — no amount of `COALESCE` makes the shelf survive an
+older unpacked corpus. This is exactly what `corpusVersion` is for: the app
+discards an installed copy whose stamp differs and unpacks the bundled one. The
+packs themselves still install into any app on id space 1, which is unchanged,
+because this build only appends.
+
+### The ledger was watching 645 of 653 sources
+
+Found while writing the phase above, and fixed the same day. `current_ledger`
+grouped correctly — `GROUP BY s.id`, one row per source — and then filed each
+row under `sources[url]`. Where several sources come from one document, the last
+row overwrote the rest: four parts of the Summa, two of Brannan's confessions
+and two of Schaff's were outside the check that decides whether a rebuild has
+reassigned ids readers already hold. Nothing reported it, because a dictionary
+that collapses keys does not raise — it just returns fewer entries than it was
+handed.
+
+Nothing was corrupted. Everything ingested that day landed above the previous
+high-water mark of 178,840, so it could not have collided with anything. What
+was missing was *detection*, and the failure it detects is the one this project
+has already had once: vectors pointing at unrelated text, with every count and
+checksum still correct.
+
+Four decisions, of which only the first is the bug:
+
+* **Key by `sources.id`, not by url.** It is the identity the packs and the
+  reader's bookmarks already carry, so its stability was load-bearing anyway.
+  Keying on it also lets the check see a fault it never could before — a
+  *source* id reused for different content — and removes the reason a source
+  had to have a url to be watched at all.
+* **Version the ledger, and fail closed on a version it cannot read.** This is
+  the part that made the fix landable rather than another entry in the
+  known-issues list. Any repair changes the file's keys, and a format-1 baseline
+  read by format-2 code makes every key look new, every settled source read as
+  `occupied`, and the id space bump — which tells every reader to update the app
+  for a build that changed nothing. **The check's failure mode on an
+  unrecognised baseline has to be *stop*, never *bump*.** Crying wolf here is
+  not a small cost; it is the whole cost the id space exists to avoid.
+* **Migrate once, with the proof as the precondition.**
+  `tools/migrate_id_ledger.py` rekeys and refuses to write unless the new ledger
+  reproduces the old one exactly — the old entry for a url being whichever of
+  its sources has the highest id, since that is the row `GROUP BY s.id` wrote
+  last. It reproduced 645 of 645, every range, count and hash, and added the 8
+  the url key could not hold. It also refuses if the corpus has moved since the
+  ledger was written, because that would make it the invention of a baseline
+  rather than the rekeying of one.
+* **Count the entries against the corpus on every build.** Sources with units
+  in, ledger entries out. One line, and it would have caught this the day it
+  appeared. It survived months because nothing had ever compared those two
+  numbers — which is the general lesson: a structure that silently loses
+  elements needs a conservation check, not more careful code.
+
+The six unmonitored sources sitting on settled ids were then verified against
+what readers actually hold, rather than assumed: `f-aquinas.db.gz` and
+`f-reformed.db.gz` from release `corpus-v17`, unpacked and compared source by
+source. All six matched the live corpus exactly — range, count and text hash.
+Writing them into the new baseline asserts that their ids have not moved, and
+that assertion now has a witness instead of a shrug.
+
+## Two empty families filled, and what the survey found in the rest (2026-08-30)
+
+The taxonomy defined 31 families and the corpus held 13 of them. This closes two
+— **Adventist** and **Holiness** — and, more usefully, replaces guesses about
+the other fourteen with measurements.
+
+### Picking them was not a judgement call
+
+`TODO.md` and `SOURCES.md` both already named Adventist and Restorationist as
+the next two, for a reason that was recorded and is unusual: almost every
+tradition the corpus lacks is missing because its founding documents are in
+copyright, and these two are missing because nobody had gone to fetch texts that
+have been public domain for a century. Both were logged as *blocked on the
+tradition rows, not on the texts* — and the taxonomy phase above unblocked them
+the same day. Holiness came along because the survey found it, not because it
+was planned.
+
+### The survey, and why it was a survey
+
+Eleven CCEL author slugs were probed one request at a time at the archive's
+stated `Crawl-delay: 10`, and the result is worth more than the two ingests:
+
+* **`white` — five works.** The Conflict of the Ages series minus its first
+  volume, plus *Steps to Christ*. Adventist is a tradition with a foundational
+  author, and this is that author rather than an account of the movement.
+* **`finney` — eight, `smith_hw` — three, `upham` — one.** Enough for Holiness.
+* **`palmer` has an author page with no works on it, and `booth` has no page at
+  all.** So Phoebe Palmer and the Salvation Army are still unrepresented, and
+  the pack description says so rather than letting Finney stand in for them.
+* **`campbell` is the wrong Campbell** — J. M. Campbell, the Scot who wrote
+  *The Nature of the Atonement* — and `acampbell` and `stone` have no page.
+  Restorationist is not on CCEL, which is now recorded rather than assumed.
+* **`hus`, `huss`, `zinzendorf`, `comenius`** — either no page or a page with no
+  works. CCEL is not the route to anything Moravian or Hussite. That family
+  needs a different archive, and knowing which archive *not* to try again is the
+  point of doing this as a survey.
+
+The rule the corpus already had — *nothing is hand-typed, work ids come off the
+archive's own index* — is what made this cheap. The alternative is writing a
+list of plausible ids from memory and discovering the shape of the archive one
+404 at a time.
+
+### Holiness is filed as its antecedents, deliberately
+
+The Nazarene, Wesleyan, Free Methodist and Salvation Army standards are all
+twentieth-century and in copyright. A public-domain corpus cannot represent this
+family by its confessions the way it represents Lutheran or Reformed, so the
+choice is between leaving it empty and holding the teaching its denominations
+came out of. It holds the teaching, and every description says which it is.
+
+One entry in it is a deliberate exception. **Wesley's *A Plain Account of
+Christian Perfection* is filed Holiness, not Methodist**, while his *Sermons*
+stay Methodist. Entire sanctification is the doctrine the family organised
+itself around, and without the *Plain Account* the pack would be revival
+preaching and devotional writing with no statement of the teaching that makes it
+a family at all. The taxonomy already makes Holiness a child of Methodist, so
+the two sit adjacent on the shelf rather than in unrelated places.
+
+### Three defects the parse turned up, and what they teach
+
+* **Every Ellen White export opens with a colophon**, not with the book: a
+  title-page block followed by the White Estate's note on who keyed the e-text
+  and where to write for a copy. It arrives as unit 1 because it sits below the
+  title page and is long enough to clear the body-text floor, so five of the
+  corpus's works would have opened on a note about e-text provenance. It is
+  dropped — but read first, because it states the publication year, which the
+  export's `Creator(s)` line does not: `parse_work` left White's date empty and
+  the colophon supplies 1892, 1898, 1911, 1911 and 1917. **Front matter is not
+  always only noise; sometimes it is the only place the metadata lives.**
+* **CCEL spells the same author three ways.** "White, Ellen Gould" and "White,
+  Ellen Gould Harmon"; Finney as "Charles", "Charles G." and "Charles
+  Grandison". To anything that groups by author those are separate people, and
+  the corpus already carries this defect for Spurgeon — who needs both his
+  spellings listed in `packs.json` to stay inside one fragment. Canonicalised
+  here, because it costs a line at ingest and a row rewrite afterwards.
+* **CCEL's header misspells Fénelon as "Felon".** Corrected, and the correction
+  is a typo fix rather than a retitling — which is the distinction that decides
+  whether overriding an archive's metadata is honest.
+
+### What it cost, and what it did not
+
+16 works, 2,219 units, 11.25 M characters. Corpus to 669 sources and 482.5 M
+characters; chunks and vectors to 456,396, of which **10,706 were new and only
+those were embedded** — `--incremental`, which is the flag whose omission cost
+136 minutes earlier in this phase. Packs to 47 fragments and 300.6 MB.
+
+**No app release is required for any of it.** The id space stays 1 because the
+build only appends, and the bundled core is byte-identical in size and content —
+still the King James Version, seven branches and thirty-one traditions.
+`corpusVersion` stays 16, which it needed anyway for the `branches` table. Two
+new traditions reach readers as ordinary pack downloads, which is exactly what
+the pack/core split was bought for.
+
+### The Restorationist decision, deferred on evidence
+
+*Declaration and Address of the Christian Association of Washington* is on
+Wikisource at 160,942 characters, and it is a clean transcription. It is not
+ingested, for two reasons that are about the document rather than about effort.
+Wikisource tags it **not backed by a scanned copy** — nobody has proofread it
+against a page image — and the rendered page carries **no headings at all**: the
+Declaration, the Address, the thirteen Propositions and the Appendix run
+together as one block. Every other ingester in this repository cuts units on
+structure the document itself provides. Inferring boundaries from prose is a
+different job with a different failure mode, and it should be started
+deliberately rather than tacked onto a CCEL pass.
+
+### The ingest uncovered a bigger thing: 60,000 units had never been tagged
+
+`tag_units.py` is meant to be run after every ingest, and running it after this
+one tagged **57,578 units that had nothing to do with this ingest**. The
+Reformation and Baptist expansions — Calvin, Owen, Spurgeon, Matthew Henry,
+Edwards, Gill — had gone in untagged. 88,237 of 105,677 units now carry a topic
+tag; the 17,446 that remain match no keyword, which is a different and honest
+outcome.
+
+Tag search is one of the three engines fused in `searchForRAG`, so those works
+had been retrievable lexically and semantically but not by subject. That is the
+same defect this tool was written to fix once before, for the confessional
+documents, and it recurred for the same reason: the tool is a separate step and
+separate steps get skipped.
+
+**It also silently falsified the pack coverage notice.** That notice compares
+the tagged material a reader holds against the tagged material that exists, and
+"exists" was being computed over the patristic corpus alone. The library claimed
+5,042 units on grace when it had 28,505 and 304 on justification when it had
+2,416. Every "you have most of what there is" was measured against a denominator
+missing two thirds of the corpus.
+
+Correcting the counts made `_missingShare = 0.5` fire on all ten test subjects
+after a 108 MB install — the notice-nobody-reads failure the constant exists to
+prevent. It is now **0.8**: the reader holds under a fifth of what has been
+written on the subject they just asked. The constant's meaning did not change;
+the denominator did.
+
+A test caught this, and what it caught is worth stating precisely. `assert
+warned < 3` after installing "the largest pack" had been true and became false
+without any code changing, because the fixture named Church Fathers — largest by
+*works*, 357 of them, and less than half the size of Reformed & Presbyterian in
+text. **It only looked dominant while most of the corpus was uncounted.** The
+fixture now names the pack that is actually largest, and a second test asserts
+the opposite direction: a reader holding only the Fathers *should* be warned
+about the Reformation subjects, so the threshold cannot be quietly raised until
+the notice never fires at all.
