@@ -609,6 +609,69 @@ the reasoning is recorded next to the constant.
 checklist below lists it, and that is the only thing standing between here and a
 third occurrence.
 
+## Queued by the copyright audit — 2026-08-30
+
+Fourteen works whose rights are settled and whose identifiers are recorded, in
+`SOURCES.md` under *The copyright audit*. They are queued rather than available:
+archive.org holds scans and raw OCR, and this corpus refuses uncorrected OCR, so
+each needs either a proofread transcription or the two-witness route
+`ingest_owen.py` uses. Ordered by how much of a hole each fills.
+
+- [ ] **Church of the East — an entire branch with no sources.** Nestorius,
+      *The Bazaar of Heracleides* (Driver & Hodgson, 1925,
+      `nestoriusbazaaro0000nest`) and Badger, *The Nestorians and their Rituals*
+      (1852, `nestorianstheirr0001badg`).
+- [ ] **Pentecostal — the family this project told readers was impossible.**
+      Assemblies of God *Statement of Fundamental Truths* (1916) and Foursquare
+      *Declaration of Faith* (1923) are the confessional documents and are not
+      yet located as text; McPherson's *This Is That* (1923,
+      `thisisthatperson0000mcph`) is located.
+- [ ] **Restorationist.** Alexander Campbell, *The Christian System* (1839,
+      `christiansystem010camp`) — recorded above as "not found" after Gutenberg
+      and Wikisource; it is on archive.org. *The Christian Baptist* 1823–30
+      (`the-christian-baptist-1823-1830`) with it.
+- [ ] **Moravian / Waldensian / Hussite.** Hus, *De Ecclesia* (D. S. Schaff,
+      1915, `deecclesiachurch00husj`), and Morland's *History of the Evangelical
+      Churches of the Valleys of Piemont* (1658, `historyofevangel00morl`),
+      which carries the Waldensian confession **in English** — `ingest_schaff.py`
+      refused the Piedmont confession for being French.
+- [ ] **Eastern Orthodox, which is three documents and no liturgy.** Brightman,
+      *Liturgies Eastern and Western* (1896, `liturgieseastern0001febr_p2z8`),
+      and Mogila's *Orthodox Confession* (Shann, 1898,
+      `the-orthodox-confession-of-the-catholic-and-apostolic-eastern-church`) —
+      which would properly restore a source this corpus **deleted** as
+      unprovenanced paraphrase.
+- [ ] **Holiness, by its own standards rather than its antecedents.** Free
+      Methodist *Doctrines and Discipline* (1915 `doctrinesanddisc00unknuoft`,
+      1923 `doctrinesdiscipl00free`); Booth, *In Darkest England* (1890,
+      `cihm_29082`); the Nazarene *Manual* (1908) still to locate.
+- [ ] **Adventist.** Ellen White, *Patriarchs and Prophets* (1890,
+      `patriarchsprophe0000mrse`) — the one Conflict of the Ages volume CCEL
+      lacks.
+- [ ] **Oriental Orthodox, which is one work.** *Kebra Nagast* (Budge, 1922,
+      `kebranagast`).
+- [ ] **Catholic before 1931, entirely absent.** The Baltimore Catechism (1885)
+      and the encyclicals through *Casti Connubii* (1930).
+- [ ] **Brethren.** Darby's *Collected Writings* and Mackintosh's *Notes on the
+      Pentateuch* — both authors long dead, both widely mirrored, neither yet
+      located with recorded provenance.
+
+**The 1662 Prayer Book moves queues rather than closing.** It is recorded above
+and in `README.md` as lacking a public-domain transcription. Its rights are
+clear — the UK's perpetual Crown copyright is a UK restriction on a text printed
+in 1662 and does not reach a corpus published in the US — so it is
+transcription-blocked, not rights-blocked. `justus.anglican.org` hosts a
+complete transcription and could not be fetched during the audit; the host
+presented a certificate this environment would not verify.
+
+**Two turn on a renewal check nobody has run.** US works published 1929–1963
+lost copyright unless renewed and most were not: the English *Rudder / Pedalion*
+(Cummings, 1957) and Wenger's Schleitheim translation (*Mennonite Quarterly
+Review*, 1945), which would close the Anabaptist gap recorded above as having no
+clean text anywhere. The Stanford Copyright Renewal Database answers both and is
+behind a bot challenge, so this is a manual lookup. **Claim neither until it is
+done.**
+
 ## Known, small, deliberately not fixed yet
 
 - ~~**The id ledger silently drops sources that share a `source_url`.**~~

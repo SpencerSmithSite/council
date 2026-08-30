@@ -3919,3 +3919,87 @@ fixture now names the pack that is actually largest, and a second test asserts
 the opposite direction: a reader holding only the Fathers *should* be warned
 about the Reformation subjects, so the threshold cannot be quietly raised until
 the notice never fires at all.
+
+## The corpus had been calling things copyrighted that were not (2026-08-30)
+
+Prompted by a direct challenge to the claim, and the challenge was right. The
+audit is in `SOURCES.md` under *The copyright audit*; this is what it changes.
+
+### The error was a category error, and it was in a table
+
+`SOURCES.md` carried a table dating each *movement* and inferring the status of
+its *documents*. "Pentecostal, Nazarene | 20th c. | in copyright" reads like a
+fact and is an inference, and the inference does not hold: a body founded in
+1901 can have adopted its statement of faith in 1916, and 1916 is public domain.
+
+Three findings follow, and the middle one is the one that matters:
+
+* **Holiness is not a copyright problem at all.** The Salvation Army's eleven
+  doctrines are 1878, Booth's *In Darkest England* 1890, the Free Methodist
+  *Doctrines and Discipline* 1860 with 1915 and 1923 printings sitting on
+  archive.org, the Nazarene *Manual* 1908. The pack shipped that morning
+  describes the family as representable only through antecedents. That was true
+  of what CCEL holds and false of what exists.
+* **Pentecostalism is not structurally excluded.** The Assemblies of God
+  *Statement of Fundamental Truths* is 1916 and the Foursquare *Declaration of
+  Faith* is 1923 — the confessional documents of the two largest Trinitarian
+  Pentecostal bodies, both public domain. `README.md` tells readers that
+  Pentecostalism is absent and that "no better archive fixes it". The first half
+  is true today; the second half is not true at all, and it is the sentence that
+  most needed correcting, because this is the second-largest Christian movement
+  in the world.
+* **Post-Vatican II Catholicism really is closed.** Checked, not assumed. What
+  is open and entirely absent is the pre-1931 magisterium — Vatican I, the
+  Baltimore Catechism, every encyclical through 1930.
+
+### The distinction that had collapsed
+
+**"In copyright" and "no clean transcription" had been getting the same label**,
+and they are opposites in the only way that matters: one has no remedy and the
+other has three. The 1662 Prayer Book is the sharpest case. Its UK position is
+genuinely unusual — perpetual Crown copyright through letters patent — but that
+is a UK restriction on a text printed in 1662, and it does not reach a corpus
+published in the US. It was never a rights problem. It is a transcription
+problem, which is a queue this repository already knows how to work.
+
+Everything now recorded as closed says which of the two it is.
+
+### A constant that was right when written and wrong every January after
+
+`PD_CUTOFF` was the literal `1929`. US copyright runs publication plus 95 years,
+so the line moves on the first of January and the constant did not; by this
+audit it was refusing two years of publishing for no reason. It is now
+`date.today().year - 95`.
+
+The objection to deriving it is reproducibility, and it is the wrong way round:
+a work refused in 2025 and admitted in 2027 is not the tool being inconsistent,
+it is the copyright expiring. Every source records the rights statement it was
+admitted under, so any decision can be read back.
+
+### What the re-check found, in one line
+
+Fourteen works, public domain and located with identifiers, closing gaps in
+seven families — including **an entire branch**. The Church of the East has no
+sources at all, and Nestorius's own *Bazaar of Heracleides* has been sitting in
+Driver and Hodgson's 1925 translation the whole time. Alexander Campbell's *The
+Christian System* was recorded as "not found" after two archives were searched;
+it is on the third. Peter Mogila's *Orthodox Confession* was **deleted from this
+corpus as unprovenanced paraphrase**, and the real 1898 edition is available to
+put back.
+
+Rights are settled for all fourteen. Text quality is not: archive.org holds
+scans and raw OCR, and this corpus refuses uncorrected OCR. The route in is the
+two-witness method `ingest_owen.py` and `ingest_treasury.py` already use — a
+clean transcription may stand in for a printing whenever it can be shown to *be*
+that printing. So these are queued as work, not as downloads.
+
+### The category still unexamined
+
+US works published 1929–1963 lost copyright unless renewed, and most were never
+renewed. Two candidates turn on it: the English *Rudder* (1957), the Orthodox
+canonical collection, and Wenger's Schleitheim translation (1945) — the
+Anabaptist founding confession, which `TODO.md` records as having no clean text
+anywhere. Renewal is checkable per title in the Stanford Copyright Renewal
+Database, which is behind a bot challenge and cannot be scripted from here.
+It is a manual lookup, and nothing may be claimed on this basis until someone
+does it.

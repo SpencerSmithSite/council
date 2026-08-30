@@ -49,33 +49,74 @@ and the councils, which belong to every branch rather than to one.
 
 ## Read this first: two constraints that shape everything
 
-**Copyright is the binding constraint, not availability.** Almost everything
-before roughly 1929 is public domain in the United States and freely
-redistributable. Almost nothing after it is. This falls unevenly across
-Christianity, and not by accident — the traditions that formed most recently
-are exactly the ones whose defining documents are still in copyright:
+**Copyright is a real constraint and this document had been overstating it.**
+Audited 2026-08-30, and the audit is recorded here because the error was
+systematic rather than incidental: the table below used to date each *movement*
+and infer the status of its *documents*. Those are different facts. A body
+founded in 1901 can have written its statement of faith in 1916, and 1916 is
+public domain.
+
+The rule in the United States is publication plus 95 years, so as of 2026
+everything published through **1930** is free. Three corrections follow from
+applying it to documents instead of movements:
 
 | | Founded | Defining documents |
 |---|---|---|
 | Reformed, Lutheran, Anglican | 16th–17th c. | public domain |
 | Methodist, Baptist, Quaker | 17th–18th c. | public domain |
 | Adventist, Restoration | 19th c. | public domain |
-| Pentecostal, Nazarene | 20th c. | **in copyright** |
-| Post-Vatican II Catholic | 20th c. | **in copyright** |
+| Holiness (Nazarene, Free Methodist, Salvation Army) | 19th–20th c. | **founding documents public domain**, current ones not |
+| Pentecostal (Assemblies of God, Foursquare) | 20th c. | **founding documents public domain**, current ones not |
+| Post-Vatican II Catholic | 20th c. | **in copyright**, and no route around it |
 
-So a corpus built only from what can be freely redistributed will
-systematically under-represent Pentecostalism — the second-largest Christian
-movement in the world — and modern Catholicism. That is a real limitation of
-the app, not a gap to be quietly filled. Two of the 23 unsourced entries were
-removed for exactly this reason: the Catechism of the Catholic Church and Lumen
-Gentium are © Libreria Editrice Vaticana and had been recorded here as public
-domain.
+* **Holiness is not a 20th-century copyright problem.** The Salvation Army's
+  eleven doctrines date from 1878 and Booth's *In Darkest England* from 1890;
+  the Free Methodist *Doctrines and Discipline* runs from 1860 and its 1915 and
+  1923 printings are on archive.org; the Church of the Nazarene's first
+  *Manual* is 1908. What is in copyright is each body's *current* edition, and a
+  current edition is not a founding document.
+* **Pentecostalism is not structurally excluded either.** The Assemblies of God
+  *Statement of Fundamental Truths* was adopted in 1916 and the Foursquare
+  *Declaration of Faith* in 1923 — both public domain, both the actual
+  confessional documents of the two largest Trinitarian Pentecostal bodies. The
+  Azusa Street periodical *The Apostolic Faith* ran 1906–1908 and Aimee Semple
+  McPherson's *This Is That* is 1923, on archive.org. The line this file used to
+  take — that the movement can only ever appear through antecedents — was
+  wrong, and it is the one claim here that mattered most, because Pentecostalism
+  is the second-largest Christian movement in the world.
+* **Post-Vatican II Catholicism is genuinely closed.** The Catechism of the
+  Catholic Church and the Vatican II constitutions are © Libreria Editrice
+  Vaticana, and no archive changes that. Two of the 23 unsourced entries were
+  removed for exactly this reason. What *is* open and entirely absent is the
+  pre-1931 magisterium: Vatican I, the Baltimore Catechism (1885), and every
+  encyclical through *Casti Connubii* (1930).
 
-Where a tradition's own materials cannot be shipped, the honest options are its
-**pre-copyright antecedents** (Wesley for the Holiness movement, the Azusa
-Street periodicals for Pentecostalism), **linking out** rather than bundling,
-or **saying the tradition is not covered**. Faking coverage with summaries is
-what this project already spent several phases undoing.
+**"In copyright" and "no clean transcription" are different problems and had
+been getting the same label.** A rights problem has no solution; a transcription
+problem has three — find a better archive, corroborate a scan against a second
+witness the way `ingest_owen.py` does, or wait for someone to key it. Several
+works filed here as copyright-blocked were only ever transcription-blocked, and
+one — the Second Helvetic Confession — turned out to be neither. Anything now
+recorded as closed says which of the two it is.
+
+**The date is derived, not written down.** `PD_CUTOFF` in
+`ingest_reformation.py` used to be the literal `1929`, which was right when it
+was written and silently wrong from the following January; by the time of this
+audit it was refusing two years of publishing for no reason. It is now
+`date.today().year - 95`.
+
+**A whole category is still unexamined: US works published 1929–1963 required
+renewal, and most were never renewed.** That covers, among other things, the
+English *Rudder* (1957) and the standard English Schleitheim. Renewal is
+checkable per title in the Stanford Copyright Renewal Database, which is behind
+a bot challenge and cannot be queried from a script here — so it is a manual
+lookup, and nothing should be claimed public domain on this basis until someone
+does it.
+
+Where a tradition's own materials genuinely cannot be shipped, the honest
+options are its **pre-copyright antecedents**, **linking out** rather than
+bundling, or **saying the tradition is not covered**. Faking coverage with
+summaries is what this project already spent several phases undoing.
 
 **Verification status is recorded, not assumed.** Every archive below is marked
 with whether it was actually checked. A list of plausible URLs written from
@@ -618,3 +659,100 @@ should be scoped honestly before being promised.
 Once two or three of these land, the pack split should be revisited: the
 boundaries live in `tools/data/packs.json` and re-splitting is an edit and a
 rebuild, not a code change.
+
+---
+
+## The copyright audit — 2026-08-30
+
+Every work this file or `TODO.md` had written off was re-checked against the
+question *is the text actually in copyright*, rather than *did the archive I
+tried have it*. Located means found and its identifier recorded, not believed to
+exist.
+
+**Rights are settled for everything in this section. What separates the two
+tables is text quality, which is a different problem with different remedies.**
+archive.org holds scans and their raw OCR, and this corpus refuses uncorrected
+OCR — about one error per hundred characters, which in an app whose purpose is
+quoting a source accurately is a regression. So a scan is a route in only
+through the two-witness method `ingest_owen.py` and `ingest_treasury.py`
+already use: a clean transcription may stand in for a printing whenever it can
+be shown to *be* that printing.
+
+### Public domain, located, and worth having
+
+| work | date | where | closes |
+|---|---|---|---|
+| **Alexander Campbell**, *The Christian System* | 1839 | archive.org `christiansystem010camp` | The Restoration movement's systematic statement. Recorded here as "not found" after Gutenberg and Wikisource were searched; it was on a third archive the whole time |
+| **The Christian Baptist**, 7 vols | 1823–30 | archive.org `the-christian-baptist-1823-1830` | Campbell's periodical — the movement arguing itself into existence |
+| **Ellen G. White**, *Patriarchs and Prophets* | 1890 | archive.org `patriarchsprophe0000mrse` | Volume one of the Conflict of the Ages series, the only one CCEL lacks |
+| **Jan Hus**, *De Ecclesia* (trans. D. S. Schaff) | 1915 | archive.org `deecclesiachurch00husj` | The Hussite family, which has nothing. An English translation by the same Schaff whose *Creeds* this corpus already ingests |
+| **Samuel Morland**, *History of the Evangelical Churches of the Valleys of Piemont* | 1658 | archive.org `historyofevangel00morl` | The Waldensian confession **in English**, from 1658. `ingest_schaff.py` refused the Piedmont confession for being French; this is the same document in a language the corpus can use |
+| **Nestorius**, *The Bazaar of Heracleides* (trans. Driver & Hodgson) | 1925 | archive.org `nestoriusbazaaro0000nest` | The Church of the East — an entire *branch* with no sources. Nestorius in his own defence |
+| **G. P. Badger**, *The Nestorians and their Rituals* | 1852 | archive.org `nestorianstheirr0001badg` | The same branch's liturgy and creed, in English |
+| **F. E. Brightman**, *Liturgies Eastern and Western* | 1896 | archive.org `liturgieseastern0001febr_p2z8` | Eastern Orthodox is three documents and no liturgy. This is the standard critical edition of the Eastern rites |
+| **Peter Mogila**, *The Orthodox Confession* (trans. Shann) | 1898 | archive.org `the-orthodox-confession-of-the-catholic-and-apostolic-eastern-church` | A Mogila source was **removed** from this corpus as unprovenanced paraphrase. This is the real edition, and would restore it properly |
+| **Kebra Nagast** (trans. Budge) | 1922 | archive.org `kebranagast` | Oriental Orthodox holds one work. This is the Ethiopian national epic and a Tewahedo text |
+| **Free Methodist Church**, *Doctrines and Discipline* | 1915, 1923 | archive.org `doctrinesanddisc00unknuoft`, `doctrinesdiscipl00free` | A Holiness body's own standard, not an antecedent |
+| **William Booth**, *In Darkest England and the Way Out* | 1890 | archive.org `cihm_29082` | The Salvation Army, recorded here as unrepresented because CCEL has no `booth` page |
+| **Aimee Semple McPherson**, *This Is That* | 1923 | archive.org `thisisthatperson0000mcph` | Foursquare's founder. Pentecostal, and public domain |
+| **The Book of Common Prayer**, 1662 text | 1662 | archive.org, 215 printings incl. `bookofcommonpray00chur_14` (1669) | Anglican liturgy. See the note below — the rights question here is not what it looks like |
+
+### Public domain by date, not yet located as text
+
+Each is out of copyright on the arithmetic. None has been found as a
+transcription, and none should be listed as available until it has.
+
+- **Assemblies of God**, *Statement of Fundamental Truths* (1916) — the
+  confessional document of the largest Pentecostal body. archive.org has only
+  later commentaries on it; the 1916 text needs finding.
+- **Foursquare**, *Declaration of Faith* (McPherson, 1923).
+- **The Apostolic Faith** (Azusa Street, 1906–1908) — periodical issues.
+- **Charles Parham**, *A Voice Crying in the Wilderness* (1902).
+- **Church of the Nazarene**, *Manual* (1908 and after) — archive.org's
+  `Church of the Nazarene` creator search is swamped by sermon audio.
+- **C. H. Mackintosh**, *Notes on the Pentateuch*, and **J. N. Darby**,
+  *Collected Writings* — the Brethren family. Both authors died in the 1880s
+  and both are widely mirrored on denominational sites; neither was located in a
+  form with recorded provenance.
+- **Papal encyclicals through 1930** — *Rerum Novarum* (1891), *Aeterni Patris*
+  (1879), *Pascendi* (1907), *Quas Primas* (1925), *Casti Connubii* (1930) —
+  and the **Baltimore Catechism** (1885).
+
+### The 1662 Prayer Book is a special case, and the entry here was wrong about it
+
+`README.md` and `TODO.md` say there is no public-domain transcription. The
+rights position is more specific than that. In the **United Kingdom** the 1662
+text is under perpetual Crown copyright, exercised through letters patent held
+by the Queen's Printer and the two university presses. That restriction is
+**UK-only and does not reach a US-published corpus**, and the text was printed
+in 1662 in any case.
+
+So the Prayer Book is not a rights problem. It is a transcription problem: the
+Society of Archbishop Justus hosts a complete transcription at
+`justus.anglican.org`, which could not be fetched during this audit — the host
+presented a certificate this environment would not verify — and archive.org has
+215 printings as scans. Recorded as *transcription-blocked, rights clear*,
+which is a different queue.
+
+### Genuinely closed, and confirmed so
+
+- **The Catechism of the Catholic Church** (1992) and the **Vatican II**
+  constitutions — © Libreria Editrice Vaticana.
+- **The Philokalia in English** — Kadloubovsky & Palmer (Faber, 1951) and
+  Palmer/Sherrard/Ware (Faber, 1979–). Both British publications, both restored
+  in the US by the URAA. There is no pre-1931 English Philokalia. Its
+  constituent authors are reachable individually through the patristic corpus.
+- **Modern theology** — Barth, Lewis, Packer, Sproul.
+- **Gregory of Nyssa**, *Life of Moses* — Ferguson & Malherbe, 1978.
+- **The Second Helvetic Confession**, 1966 translation — in copyright, and
+  irrelevant now: Schaff's own English appendix of 1877 was ingested instead.
+
+### Unresolved: the 1929–1963 renewal question
+
+US works published in this window lost copyright unless renewed, and the large
+majority were not. Two candidates turn on it — the English *Rudder / Pedalion*
+(Cummings, 1957), which is the Orthodox canonical collection, and the standard
+English **Schleitheim Confession** (Wenger's translation, *Mennonite Quarterly
+Review*, 1945). Both would close a real gap. Neither may be claimed until the
+renewal records are checked by hand, which the Stanford database supports and a
+script here cannot reach.

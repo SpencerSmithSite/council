@@ -78,10 +78,15 @@ a tradition only once it has something in it — an empty family is a piece of
 work that has not been done, not a section a reader has to walk past.
 
 It stops where the public domain does. Modern theology is not here — no Barth,
-Lewis, Packer or Sproul — and neither is Pentecostalism, whose defining
-documents are all 20th-century and in copyright. That is the structural gap:
-a corpus of what can be freely redistributed will under-represent the
-second-largest Christian movement in the world, and no better archive fixes it.
+Lewis, Packer or Sproul — and neither is Pentecostalism or post-Vatican II
+Catholicism. Those two absences are not the same kind of thing, and this file
+used to say they were. The Catechism of the Catholic Church and the Vatican II
+constitutions are in copyright and there is no way around that. Pentecostalism
+is simply **not ingested yet**: the Assemblies of God *Statement of Fundamental
+Truths* dates from 1916 and the Foursquare *Declaration of Faith* from 1923,
+both long out of copyright. A corpus of what can be freely redistributed does
+under-represent the second-largest Christian movement in the world today — but
+by not having done the work, not because the documents are closed.
 
 The traditions that are here are not all here to the same depth. Oriental
 Orthodox is one work, Anabaptist is a martyrology with no systematics, and
