@@ -88,16 +88,20 @@ The app connects to Ollama at `http://localhost:11434` and uses the first model 
 | AI inference | [Ollama](https://ollama.com/) (local, streaming) |
 | RAG retrieval | FTS5 + tag-based hybrid search |
 | State management | `provider` |
-| Persistence | `shared_preferences` (bookmarks, search history, settings) |
+| Persistence | `shared_preferences` (bookmarks, reading position, settings) |
 | Markdown rendering | `flutter_markdown` |
 
 ## Screens
 
-- **Home** — database stats and quick actions
-- **Browse** — explore sources by tradition or type
-- **Search** — full-text search across all content
-- **Chat** — ask questions, get AI answers with citations
-- **Bookmarks** — saved passages
+Three tabs, each a thing the reader does:
+
+- **Ask** — put a question to the corpus and get an answer with citations
+- **Read** — the installed shelf, arranged by tradition, and the reader itself;
+  full-text search across everything installed lives here too
+- **Browse** — add and remove collections
+
+Bookmarks, Notes and Chat history are reached from the app menu, and Settings
+from the bubble beside it.
 
 ## The website
 
