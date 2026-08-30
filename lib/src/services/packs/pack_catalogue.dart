@@ -245,9 +245,24 @@ class PackCatalogue {
   /// the Eucharist, which is precisely what a reader needs to know before
   /// trusting an answer.
   ///
-  /// At half, the answer they just received was drawn from a minority of the
-  /// available sources.
-  static const double _missingShare = 0.5;
+  /// **Recalibrated 2026-08-30, from 0.5, because the denominator changed and
+  /// not the meaning.** The old value was set when only the patristic units
+  /// carried topic tags: `tag_units.py` had never been run over the Reformation
+  /// ingest, so 60,000 units of Calvin, Owen, Spurgeon and Matthew Henry were
+  /// invisible to this arithmetic. The corpus said it held 5,042 units on grace
+  /// when it held 28,505. Half of an undercount is not half of the corpus, and
+  /// "you have most of it" was quiet because the rest was not being counted.
+  ///
+  /// With every unit tagged, a reader who has installed one collection — even
+  /// the largest — is missing more than half of most subjects, because the
+  /// library is large and any one collection is a minority of it. At 0.5 the
+  /// notice fired on all ten test subjects after a 108 MB install, which is the
+  /// notice-nobody-reads failure this constant exists to prevent.
+  ///
+  /// At four fifths, the reader holds under a fifth of what has been written on
+  /// the subject they just asked about, and the answer they received was drawn
+  /// from that fifth.
+  static const double _missingShare = 0.8;
 
   /// Which uninstalled packs would likely have helped with [question].
   ///
