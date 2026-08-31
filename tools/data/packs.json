@@ -306,6 +306,12 @@
       ]
     },
     {
+      "id": "f-pentecostal",
+      "traditions": [
+        "pentecostal"
+      ]
+    },
+    {
       "id": "f-orthodox",
       "traditions": [
         "eastern-orthodox"
@@ -708,6 +714,15 @@
       "description": "The movement in its antecedents, because its denominations arrived too late to be public domain. Wesley's A Plain Account of Christian Perfection states the doctrine the whole family formed around; Finney's Lectures on Revivals and Systematic Theology, Hannah Whitall Smith's The Christian's Secret of a Happy Life and The God of All Comfort, and Upham on F\u00e9nelon carry it into the nineteenth century. The Nazarene, Wesleyan, Free Methodist and Salvation Army standards are all twentieth-century and in copyright, and no better archive changes that.",
       "fragments": [
         "f-holiness"
+      ]
+    },
+    {
+      "id": "tradition-pentecostal",
+      "kind": "tradition",
+      "name": "Pentecostal",
+      "description": "The confessional documents of two of the oldest Pentecostal denominations, printed while the movement was forming: the Discipline of the Pentecostal Holiness Church of 1917, whose Basis of Union states entire sanctification, the baptism of the Holy Ghost with speaking in tongues as its initial evidence, divine healing in the atonement and the premillennial second coming; and the Church of God's Book of Doctrines of 1922. Both survive only as scans, so both carry a measured account of their transcription \u2014 the 1917 Discipline corroborated word by word against a separate printing. Later statements, including the Assemblies of God's, are still in copyright.",
+      "fragments": [
+        "f-pentecostal"
       ]
     },
     {

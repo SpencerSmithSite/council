@@ -639,14 +639,28 @@ came with it. Palmer herself has a CCEL author page with no works on it, and
 unrepresented. The pack description states the gap rather than implying
 coverage.
 
-**Pentecostal stays empty**, and the reasoning is unchanged and structural:
+**Pentecostal opened 2026-08-30**, and working it settled what the audit could
+only assert. The rights were never the problem; the transcription always was.
 
-- **The Apostolic Faith** (Azusa Street periodical, 1906–1908) — public domain,
-  and the closest thing to a primary founding document. Not yet located as a
-  transcription.
-- Modern statements of faith — Assemblies of God, Church of the Nazarene,
-  Foursquare — are **in copyright**. Link out, or state plainly that the
-  tradition is represented only by its antecedents.
+- **Ingested**: the *Discipline of the Pentecostal Holiness Church* (1917),
+  whose Section I is the Basis of Union, and the Church of God's *Book of
+  Doctrines* (1922). Both from Duke University's *Religion in North Carolina*
+  digitisation, which holds 33 pre-1931 items from Pentecostal bodies.
+  `tools/ingest_archive.py`.
+- **Absent from archive.org entirely** — not in copyright, not digitised: the
+  **AG Statement of Fundamental Truths** (1916), the **Foursquare Declaration
+  of Faith** (1923), the Azusa Street ***Apostolic Faith*** periodical,
+  **Parham**, **Seymour**. Searching the AG Statement returns only lending-only
+  commentaries on it from 1948 and 1971. The two largest Pentecostal bodies are
+  unrepresented for want of a scanner, not a licence.
+- **Refused on measurement**: **Aimee Semple McPherson**, *This Is That* (1923).
+  Three independent scans are open, so two were aligned word by word — **373
+  disagreements per 10,000 words of body prose**, and 326 for her *Divine
+  Healing Sermons*. "soul" as "seul", "she" as "sihe", "was" as "wa". That is
+  the order of the raw OCR this corpus already refuses. An 840-page book scans
+  badly; a 38-page pamphlet does not.
+- Later denominational statements — Assemblies of God, Church of the Nazarene,
+  Foursquare — remain **in copyright** in their current form.
 
 ### 9. Catholic beyond the medievals
 

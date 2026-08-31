@@ -12,9 +12,9 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-30 · 715 sources, 106,504 units, 486.0 M characters ·
-459,679 chunks and 459,679 vectors · 7 branches and 31 traditions, **19 of them
-holding text, across all seven branches** · 52 fragments, 302.9 MB published ·
+*Last verified: 2026-08-30 · 717 sources, 106,564 units, 486.3 M characters ·
+459,930 chunks and 459,930 vectors · 7 branches and 31 traditions, **20 of them
+holding text, across all seven branches** · 53 fragments, 303.1 MB published ·
 all three audits clean except the three noted at the bottom.*
 
 *Two version numbers, and they are not the same one. `CORPUS_VERSION` is
@@ -662,11 +662,31 @@ each needs either a proofread transcription or the two-witness route
         `nestoriusbazaaro0000nest`) — scans and raw OCR only. This one needs
         the two-witness route, and there is no clean transcription to
         corroborate against, so it would be OCR checked only by other OCR.
-- [ ] **Pentecostal — the family this project told readers was impossible.**
-      Assemblies of God *Statement of Fundamental Truths* (1916) and Foursquare
-      *Declaration of Faith* (1923) are the confessional documents and are not
-      yet located as text; McPherson's *This Is That* (1923,
-      `thisisthatperson0000mcph`) is located.
+- [x] **Pentecostal — opened 2026-08-30**, and the audit's premise held while
+      its targets did not. `tools/ingest_archive.py`. Two documents went in:
+      the **Discipline of the Pentecostal Holiness Church (1917)**, whose
+      Section I is the Basis of Union, and the **Church of God's Book of
+      Doctrines (1922)**. Both from Duke's *Religion in North Carolina*
+      digitisation, which holds 33 pre-1931 items from Pentecostal bodies.
+
+      **What is still missing, and why it is not a rights problem.** The
+      Assemblies of God *Statement of Fundamental Truths* (1916), the Foursquare
+      *Declaration of Faith* (1923), the Azusa Street *Apostolic Faith*
+      periodical, Parham and Seymour are **absent from archive.org entirely** —
+      searching for the AG Statement returns only lending-only commentaries on
+      it from 1948 and 1971. They are public domain and nobody has digitised
+      them. The two largest Pentecostal bodies remain unrepresented for that
+      reason and no other.
+
+      **McPherson is refused on a measurement, not a hunch.** Three independent
+      scans of *This Is That* (1923) are open, so two were aligned word by word:
+      **373 disagreements per 10,000 words of body prose** ("soul" as "seul",
+      "she" as "sihe", "was" as "wa"), and 326 for her *Divine Healing Sermons*.
+      That is the order of the raw OCR this project already refuses and eighty
+      times worse than the Wikisource material. An 840-page book scans badly;
+      a 38-page pamphlet does not. Do not re-open this on the grounds that the
+      book is public domain and available — both are true, and neither is the
+      objection.
 - [ ] **Restorationist.** Alexander Campbell, *The Christian System* (1839,
       `christiansystem010camp`) — recorded above as "not found" after Gutenberg
       and Wikisource; it is on archive.org. *The Christian Baptist* 1823–30

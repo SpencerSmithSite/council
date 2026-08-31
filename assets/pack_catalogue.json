@@ -2194,6 +2194,35 @@
         "Old Catholic"
       ]
     },
+    "f-pentecostal": {
+      "authors": [],
+      "titles": [
+        "The Book of Doctrines",
+        "The Discipline of the Pentecostal Holiness Church"
+      ],
+      "tags": {
+        "angels": 3,
+        "baptism": 19,
+        "church": 41,
+        "creation": 1,
+        "eschatology": 8,
+        "faith": 22,
+        "grace": 10,
+        "holy-spirit": 11,
+        "justification": 8,
+        "last-judgment": 9,
+        "prayer": 12,
+        "sacraments": 3,
+        "salvation": 7,
+        "sanctification": 7,
+        "scripture": 25,
+        "sin": 21,
+        "worship": 3
+      },
+      "traditions": [
+        "Pentecostal"
+      ]
+    },
     "f-orthodox": {
       "authors": [
         "Orthodox Eastern Church",
@@ -5255,6 +5284,39 @@
       ],
       "fragments": [
         "f-holiness"
+      ]
+    },
+    "tradition-pentecostal": {
+      "name": "Pentecostal",
+      "authors": [],
+      "titles": [
+        "The Book of Doctrines",
+        "The Discipline of the Pentecostal Holiness Church"
+      ],
+      "tags": {
+        "angels": 3,
+        "baptism": 19,
+        "church": 41,
+        "creation": 1,
+        "eschatology": 8,
+        "faith": 22,
+        "grace": 10,
+        "holy-spirit": 11,
+        "justification": 8,
+        "last-judgment": 9,
+        "prayer": 12,
+        "sacraments": 3,
+        "salvation": 7,
+        "sanctification": 7,
+        "scripture": 25,
+        "sin": 21,
+        "worship": 3
+      },
+      "traditions": [
+        "Pentecostal"
+      ],
+      "fragments": [
+        "f-pentecostal"
       ]
     },
     "tradition-adventist": {
