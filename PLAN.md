@@ -4310,3 +4310,113 @@ editorial note one level deep, so the note survived.
 Fixed by finding the closing tag through depth counting instead. It is the sort
 of defect that only shows up on the one work whose header happens to carry a
 `notes` field, which is why it survived three ingests through the same code.
+
+## Pentecostal, the family this project told readers was impossible (2026-08-30)
+
+The second-largest Christian movement in the world, and until the copyright
+audit `README.md` said its documents were all in copyright and "no better
+archive fixes it". The audit established that was wrong. Working the family
+established something more precise: **the rights were never the problem, and the
+transcription always was.**
+
+### What is not there, checked rather than assumed
+
+Every document the audit named as the obvious target is absent from archive.org
+entirely: the **Assemblies of God Statement of Fundamental Truths** (1916), the
+**Foursquare Declaration of Faith** (1923), the **Azusa Street *Apostolic
+Faith*** periodical, **Parham**, **Seymour**. Searching for the AG Statement
+returns commentaries on it from 1948 and 1971, both lending-only. So the
+canonical list of Pentecostal founding documents is public domain and, for the
+most part, not digitised.
+
+**An item on archive.org is not necessarily readable**, and that had to be
+built into the tool. Much of the twentieth century there is lending-only: the
+scan exists, the catalogue entry is public, and the text cannot be downloaded.
+It is flagged as `access-restricted-item`, and the ingester checks it rather
+than inferring availability from a search hit.
+
+### Aimee Semple McPherson, measured and refused
+
+Three independent scans of *This Is That* (1923) are open — different scanning
+stations, different years, different sponsors. That is the ideal two-witness
+setup, so it was measured properly: aligning two independent OCR passes of the
+same edition word by word gives **373 disagreements per 10,000 words of body
+prose**, and 326 for her *Divine Healing Sermons*. Not punctuation — "soul"
+read as "seul", "sanctified" as "sanetified", "she" as "sihe", "was" as "wa".
+
+That is the same order as the raw OCR `ingest_gutenberg.py` already refuses
+(~580 per 10,000) and eighty times worse than the Wikisource material ingested
+earlier the same day (4.3). **Refused**, and the number is recorded so nobody
+re-litigates it from the fact that the book is public domain and available.
+
+An 840-page book scans badly. That turned out to be the whole story.
+
+### What worked: a 38-page pamphlet and a 158-page manual
+
+Duke University digitised 33 pre-1931 items from Pentecostal bodies for its
+*Religion in North Carolina* project, and short documents in clear type scan
+well. Two went in:
+
+* **The Discipline of the Pentecostal Holiness Church (1917).** Section I is the
+  Basis of Union — justification by faith, entire sanctification as an
+  instantaneous second work of grace, the Pentecostal baptism of the Holy Ghost
+  with speaking in tongues as its initial evidence, divine healing in the
+  atonement, the premillennial second coming. **Zero countable scanner artefacts
+  in 6,554 words.**
+* **The Book of Doctrines (Church of God, Cleveland, 1922)** — a full doctrinal
+  manual: the Bible, sin, repentance, justification, sanctification, Spirit
+  baptism, water baptism, the Lord's Supper, feet washing, tithing, healing,
+  and the church practices. 3.9 artefacts per 10,000 words.
+
+### Two witnesses, scoped to what the two witnesses share
+
+The Pentecostal Holiness Church printed its Basis of Union twice — in the
+*Constitution and General Rules* of 1913 and again in the *Discipline* of 1917 —
+and the two were scanned separately. That is scan-against-scan corroboration,
+which is `ingest_owen.py`'s standard applied where neither witness is a clean
+transcription.
+
+**The first attempt compared the volumes whole and scored 52%, and the gate
+correctly refused the work.** The refusal was right and the comparison was
+wrong: the two are different documents that happen to share one section, so
+comparing them entire measures how much the *governance* differs, not whether
+the *doctrine* is transcribed correctly. Scoped to the passage both actually
+print, they agree on **94% of words — and every disagreement is the 1913 scan
+being wrong**: "there generation" for "the regeneration", "tlie" for "the",
+"ivord" for "Lord", "chr st" for "Christ", "sm" for "sin".
+
+So the 1917 scan is what ships, the 1913 is the witness that proves it, and the
+1913 is refused *as a source* by the same artefact gate — 47.4 per 10,000
+against the 1917's zero. The corroboration note on the source says which passage
+was checked and which was not.
+
+### Three defects that only scans have
+
+* **A contents page is not a chapter.** "The Bible Is Truth" appears twice — in
+  the table of contents with its page number, and as the chapter heading. Taking
+  the first match opened the book on its own contents page, which is precisely
+  what `audit_completeness.py` exists to catch. Matched on the whole paragraph
+  instead: the contents entry carries a page number and the heading does not.
+* **The running head is re-OCR'd on every page.** "THE BOOK OF DOCTRINES 7"
+  appears once per leaf — short, capitalised, punctuation-free, exactly what a
+  heading detector wants — and became the title of most of the book's units. An
+  exact filter removed two thirds of them, because the head comes back as "THE
+  BOOK OF DOCTEINES" and "THE BOOK OP DOCTRINES" as often as correctly. Matched
+  by similarity, with the threshold pinned by this book's own chapter "THE BOOK
+  OF GENESIS" at 0.65 against the misreadings at 0.94.
+* **A book's own contents is the only statement of its structure.**
+  `ingest_reformation.is_headingish` was tuned on CCEL, where headings read
+  "CHAPTER I", and returns False for "Sanctification", "Repentance" and "Feet
+  Washing" alike. Without the chapter list the volume was cut arbitrarily and
+  units were titled "THE BOOK OP GENESIS (5 of 8)" over text that is not about
+  Genesis. The chapters are now taken from the printed contents and matched
+  fuzzily, so a unit is titled as the book titles it rather than as the scanner
+  read it.
+
+### What the family still lacks, stated plainly
+
+The two largest Pentecostal bodies — the Assemblies of God and the Foursquare
+Church — are still unrepresented, and not because their founding documents are
+closed. They are public domain and nobody has digitised them. That is a
+different sentence from the one this project used to print, and it points at a
+different remedy.

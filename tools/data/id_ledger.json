@@ -1,6 +1,6 @@
 {
  "format": 2,
- "maxUnitId": 183140,
+ "maxUnitId": 183200,
  "sources": {
   "553": {
    "url": "https://www.newadvent.org/fathers/0622.htm",
@@ -5721,6 +5721,22 @@
    "max": 183140,
    "count": 22,
    "hash": "86c36636fee713c8"
+  },
+  "1595": {
+   "url": "https://archive.org/details/disciplineofpent00nort",
+   "title": "The Discipline of the Pentecostal Holiness Church",
+   "min": 183141,
+   "max": 183152,
+   "count": 12,
+   "hash": "e7424df658d25c6f"
+  },
+  "1596": {
+   "url": "https://archive.org/details/bookofdoctrinesi00chur",
+   "title": "The Book of Doctrines",
+   "min": 183153,
+   "max": 183200,
+   "count": 48,
+   "hash": "47939b1c288bce71"
   }
  },
  "idSpace": 1
