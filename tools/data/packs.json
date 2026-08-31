@@ -288,6 +288,24 @@
       ]
     },
     {
+      "id": "f-restorationist",
+      "traditions": [
+        "restorationist"
+      ]
+    },
+    {
+      "id": "f-moravian",
+      "traditions": [
+        "moravian-waldensian-hussite"
+      ]
+    },
+    {
+      "id": "f-old-catholic",
+      "traditions": [
+        "old-catholic"
+      ]
+    },
+    {
       "id": "f-orthodox",
       "traditions": [
         "eastern-orthodox"
@@ -654,6 +672,33 @@
       "fragments": [
         "f-methodist",
         "f-whitefield"
+      ]
+    },
+    {
+      "id": "tradition-restorationist",
+      "kind": "tradition",
+      "name": "Restorationist",
+      "description": "The Stone-Campbell movement in its two founding documents: Thomas Campbell's Declaration and Address of 1809, which argues that the Church of Christ on earth is essentially, intentionally and constitutionally one, and the Last Will and Testament of the Springfield Presbytery of 1804, in which a presbytery dissolves itself so its congregations might sink into union with the body of Christ at large. Alexander Campbell's The Christian System is not here: no public-domain transcription of it has been found.",
+      "fragments": [
+        "f-restorationist"
+      ]
+    },
+    {
+      "id": "tradition-moravian",
+      "kind": "tradition",
+      "name": "Moravian & Hussite",
+      "description": "Jan Hus's De Ecclesia, the treatise he was burned for in 1415, in David S. Schaff's translation \u2014 a century before Luther \u2014 and Comenius's Labyrinth of the World and the Paradise of the Heart, by the last bishop of the Unity of the Brethren, which is the Moravian Church's own predecessor. The Waldensians are the gap: their confession exists in English in Morland's history of 1658, which survives only as scans.",
+      "fragments": [
+        "f-moravian"
+      ]
+    },
+    {
+      "id": "tradition-old-catholic",
+      "kind": "tradition",
+      "name": "Old Catholic",
+      "description": "The Declaration of Utrecht of 1889 \u2014 the eight articles agreed by the Old Catholic bishops, and still the doctrinal basis of the Union of Utrecht. Short, and complete. It rejects the Vatican decrees of 1870, which this library also holds in full.",
+      "fragments": [
+        "f-old-catholic"
       ]
     },
     {

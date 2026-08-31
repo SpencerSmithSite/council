@@ -599,20 +599,31 @@ same day.
   keeping: Gutenberg has two of her books, CCEL has five, and the entry here
   pointed at the smaller archive because it was the one that had been searched.
   `tools/ingest_adventist_holiness.py`.
-- **Alexander Campbell**, *The Christian System* — not on Gutenberg or
-  Wikisource (2026-08-30), and **not on CCEL either**: the `campbell` author
-  page there is J. M. Campbell, a Scot, and there is no `acampbell` or `stone`
-  page at all. Three archives, none of them holding the Restoration movement's
-  systematic statement.
+- **Alexander Campbell**, *The Christian System* — not on Gutenberg or CCEL
+  (the `campbell` author page there is J. M. Campbell, a Scot), and **not on
+  Wikisource either, despite a page with exactly that title**.
+
+  That page is an essay by **Arthur Schopenhauer**, translated by Thomas Bailey
+  Saunders, from *Studies in Pessimism*. It was very nearly ingested as Campbell
+  on 2026-08-30: it fetched cleanly, declared a valid public-domain licence,
+  cleared both size floors and the transcription-quality gate, and parsed into
+  three tidy units of nineteenth-century prose about religion and reason. It was
+  caught by a human reading one sentence of it.
+
+  **A title match is not identification.** `ingest_wikisource.py` now reads the
+  author out of Wikisource's own header template and refuses any work the
+  archive does not corroborate. Three archives, none of them holding the
+  Restoration movement's systematic statement — this entry was right the first
+  time, and the attempt to overturn it on the strength of a title was not.
 - **Thomas Campbell**, *Declaration and Address of the Christian Association of
-  Washington* (1809) — on English Wikisource at 160,942 characters, fetched and
-  measured 2026-08-30. Two caveats that decide whether it can be ingested as it
-  stands: Wikisource tags it **not backed by a scanned copy**, meaning no one
-  has proofread it against a page image, and the rendered page has **no
-  headings** — the Declaration, the Address, the thirteen Propositions and the
-  Appendix arrive as one undivided run of text. Unit boundaries would have to
-  be inferred from the prose, which is a different and riskier job than reading
-  a document's own structure.
+  Washington* (1809) — **ingested 2026-08-30**, 22 units, 160,942 characters,
+  with both caveats recorded on the source rather than resolved: Wikisource tags
+  the transcription **not backed by a scanned copy**, so nobody has proofread it
+  against a page image, and the page carries **no headings at all** — the
+  Declaration, the Address, the thirteen Propositions and the Appendix run
+  together, so its unit boundaries are inferred from the prose rather than read
+  off the document. Ingested with the *Last Will and Testament of the
+  Springfield Presbytery* (1804), which opens the Restorationist family.
 
 ### 8. Pentecostal and Holiness — one of them answered
 
