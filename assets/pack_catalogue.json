@@ -2094,8 +2094,8 @@
       "tags": {
         "angels": 27,
         "baptism": 11,
-        "church": 61,
-        "creation": 16,
+        "church": 60,
+        "creation": 15,
         "eschatology": 21,
         "eucharist": 3,
         "faith": 43,
@@ -2107,14 +2107,91 @@
         "prayer": 34,
         "sacraments": 19,
         "salvation": 31,
-        "sanctification": 7,
+        "sanctification": 6,
         "scripture": 25,
         "sin": 44,
-        "trinity": 16,
+        "trinity": 15,
         "worship": 30
       },
       "traditions": [
         "Assyrian"
+      ]
+    },
+    "f-restorationist": {
+      "authors": [
+        "Barton W. Stone",
+        "Thomas Campbell"
+      ],
+      "titles": [
+        "Declaration and Address of the Christian Association of Washington",
+        "The Last Will and Testament of the Springfield Presbytery"
+      ],
+      "tags": {
+        "angels": 1,
+        "church": 21,
+        "faith": 15,
+        "grace": 4,
+        "holy-spirit": 2,
+        "last-judgment": 10,
+        "prayer": 6,
+        "salvation": 5,
+        "scripture": 16,
+        "sin": 3,
+        "worship": 5
+      },
+      "traditions": [
+        "Restorationist"
+      ]
+    },
+    "f-moravian": {
+      "authors": [
+        "Jan Hus",
+        "John Amos Comenius"
+      ],
+      "titles": [
+        "De Ecclesia \u2014 The Church",
+        "The Labyrinth of the World and the Paradise of the Heart"
+      ],
+      "tags": {
+        "angels": 24,
+        "baptism": 7,
+        "church": 85,
+        "creation": 1,
+        "eschatology": 2,
+        "eucharist": 4,
+        "faith": 40,
+        "grace": 32,
+        "holy-spirit": 13,
+        "incarnation": 2,
+        "last-judgment": 49,
+        "prayer": 18,
+        "sacraments": 15,
+        "salvation": 17,
+        "scripture": 28,
+        "sin": 56,
+        "trinity": 2,
+        "worship": 10
+      },
+      "traditions": [
+        "Moravian"
+      ]
+    },
+    "f-old-catholic": {
+      "authors": [],
+      "titles": [
+        "The Declaration of Utrecht"
+      ],
+      "tags": {
+        "church": 1,
+        "eucharist": 1,
+        "faith": 1,
+        "sacraments": 1,
+        "salvation": 1,
+        "scripture": 1,
+        "worship": 1
+      },
+      "traditions": [
+        "Old Catholic"
       ]
     },
     "f-orthodox": {
@@ -2195,12 +2272,12 @@
       ],
       "tags": {
         "angels": 37,
-        "baptism": 184,
-        "church": 345,
+        "baptism": 183,
+        "church": 344,
         "creation": 2,
         "eschatology": 12,
         "eucharist": 1,
-        "faith": 492,
+        "faith": 490,
         "grace": 204,
         "holy-spirit": 51,
         "incarnation": 3,
@@ -2208,7 +2285,7 @@
         "last-judgment": 78,
         "prayer": 53,
         "sacraments": 123,
-        "salvation": 108,
+        "salvation": 107,
         "sanctification": 4,
         "scripture": 177,
         "sin": 156,
@@ -4742,8 +4819,8 @@
       "tags": {
         "angels": 27,
         "baptism": 11,
-        "church": 61,
-        "creation": 16,
+        "church": 60,
+        "creation": 15,
         "eschatology": 21,
         "eucharist": 3,
         "faith": 43,
@@ -4755,10 +4832,10 @@
         "prayer": 34,
         "sacraments": 19,
         "salvation": 31,
-        "sanctification": 7,
+        "sanctification": 6,
         "scripture": 25,
         "sin": 44,
-        "trinity": 16,
+        "trinity": 15,
         "worship": 30
       },
       "traditions": [
@@ -4932,12 +5009,12 @@
       ],
       "tags": {
         "angels": 37,
-        "baptism": 184,
-        "church": 345,
+        "baptism": 183,
+        "church": 344,
         "creation": 2,
         "eschatology": 12,
         "eucharist": 1,
-        "faith": 492,
+        "faith": 490,
         "grace": 204,
         "holy-spirit": 51,
         "incarnation": 3,
@@ -4945,7 +5022,7 @@
         "last-judgment": 78,
         "prayer": 53,
         "sacraments": 123,
-        "salvation": 108,
+        "salvation": 107,
         "sanctification": 4,
         "scripture": 177,
         "sin": 156,
@@ -5040,6 +5117,95 @@
       "fragments": [
         "f-methodist",
         "f-whitefield"
+      ]
+    },
+    "tradition-restorationist": {
+      "name": "Restorationist",
+      "authors": [
+        "Barton W. Stone",
+        "Thomas Campbell"
+      ],
+      "titles": [
+        "Declaration and Address of the Christian Association of Washington",
+        "The Last Will and Testament of the Springfield Presbytery"
+      ],
+      "tags": {
+        "angels": 1,
+        "church": 21,
+        "faith": 15,
+        "grace": 4,
+        "holy-spirit": 2,
+        "last-judgment": 10,
+        "prayer": 6,
+        "salvation": 5,
+        "scripture": 16,
+        "sin": 3,
+        "worship": 5
+      },
+      "traditions": [
+        "Restorationist"
+      ],
+      "fragments": [
+        "f-restorationist"
+      ]
+    },
+    "tradition-moravian": {
+      "name": "Moravian & Hussite",
+      "authors": [
+        "Jan Hus",
+        "John Amos Comenius"
+      ],
+      "titles": [
+        "De Ecclesia \u2014 The Church",
+        "The Labyrinth of the World and the Paradise of the Heart"
+      ],
+      "tags": {
+        "angels": 24,
+        "baptism": 7,
+        "church": 85,
+        "creation": 1,
+        "eschatology": 2,
+        "eucharist": 4,
+        "faith": 40,
+        "grace": 32,
+        "holy-spirit": 13,
+        "incarnation": 2,
+        "last-judgment": 49,
+        "prayer": 18,
+        "sacraments": 15,
+        "salvation": 17,
+        "scripture": 28,
+        "sin": 56,
+        "trinity": 2,
+        "worship": 10
+      },
+      "traditions": [
+        "Moravian"
+      ],
+      "fragments": [
+        "f-moravian"
+      ]
+    },
+    "tradition-old-catholic": {
+      "name": "Old Catholic",
+      "authors": [],
+      "titles": [
+        "The Declaration of Utrecht"
+      ],
+      "tags": {
+        "church": 1,
+        "eucharist": 1,
+        "faith": 1,
+        "sacraments": 1,
+        "salvation": 1,
+        "scripture": 1,
+        "worship": 1
+      },
+      "traditions": [
+        "Old Catholic"
+      ],
+      "fragments": [
+        "f-old-catholic"
       ]
     },
     "tradition-holiness": {

@@ -1,6 +1,6 @@
 {
  "format": 2,
- "maxUnitId": 182313,
+ "maxUnitId": 183140,
  "sources": {
   "553": {
    "url": "https://www.newadvent.org/fathers/0622.htm",
@@ -5354,333 +5354,373 @@
    "count": 45,
    "hash": "c68399ec5b85740e"
   },
-  "1508": {
+  "1549": {
    "url": "https://en.wikisource.org/wiki/Dordrecht_Confession_of_Faith",
    "title": "The Dordrecht Confession of Faith",
-   "min": 181679,
-   "max": 181697,
-   "count": 19,
-   "hash": "01e20990373aaecf"
+   "min": 182314,
+   "max": 182331,
+   "count": 18,
+   "hash": "fd60b88dff80f2b9"
   },
-  "1509": {
+  "1550": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/A_Brief_Complaint_or_Apology_of_the_Despised_Christians_and_Exiled_Strangers",
    "title": "A Brief Complaint or Apology of the Despised Christians and Exiled Strangers",
-   "min": 181698,
-   "max": 181704,
+   "min": 182332,
+   "max": 182338,
    "count": 7,
    "hash": "1a2b7f779e4ae1be"
   },
-  "1510": {
+  "1551": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/A_Pleasing_Instruction_and_Doctrine",
    "title": "A Pleasing Instruction and Doctrine",
-   "min": 181705,
-   "max": 181716,
+   "min": 182339,
+   "max": 182350,
    "count": 12,
    "hash": "64b14047c707d8cf"
   },
-  "1511": {
+  "1552": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/A_Reply_to_a_Publication_of_Gellius_Faber",
    "title": "A Reply to a Publication of Gellius Faber",
-   "min": 181717,
-   "max": 181798,
+   "min": 182351,
+   "max": 182432,
    "count": 82,
    "hash": "d7df05ba82d3ed9a"
   },
-  "1512": {
+  "1553": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/A_Very_Humble_Supplication_of_the_Poor%2C_Despised_Christians",
    "title": "A Very Humble Supplication of the Poor, Despised Christians",
-   "min": 181799,
-   "max": 181804,
+   "min": 182433,
+   "max": 182438,
    "count": 6,
    "hash": "e3ef3908a3d8c7fb"
   },
-  "1513": {
+  "1554": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/A_Very_Sincere_Epistle_to_Martin_Micron",
    "title": "A Very Sincere Epistle to Martin Micron",
-   "min": 181805,
-   "max": 181816,
-   "count": 12,
-   "hash": "cf5a31444020e4a4"
+   "min": 182439,
+   "max": 182449,
+   "count": 11,
+   "hash": "b922132fd5d956ca"
   },
-  "1514": {
+  "1555": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/The_Conversion_of_Menno_Simons",
    "title": "The Conversion of Menno Simons",
-   "min": 181817,
-   "max": 181823,
+   "min": 182450,
+   "max": 182456,
    "count": 7,
    "hash": "25b2d2dc97057c3a"
   },
-  "1515": {
+  "1556": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/The_Reason_Why_Menno_Simons_Does_Not_Cease_Teaching_and_Writing",
    "title": "The Reason Why Menno Simons Does Not Cease Teaching and Writing",
-   "min": 181824,
-   "max": 181839,
+   "min": 182457,
+   "max": 182472,
    "count": 16,
-   "hash": "0bb400111379c91d"
+   "hash": "ba212e488fc6bda9"
   },
-  "1516": {
+  "1557": {
    "url": "https://en.wikisource.org/wiki/The_Complete_Works_of_Menno_Simons/The_True_Christian_Faith",
    "title": "The True Christian Faith",
-   "min": 181840,
-   "max": 181867,
+   "min": 182473,
+   "max": 182500,
    "count": 28,
    "hash": "3436277e5dc58ee6"
   },
-  "1517": {
+  "1558": {
    "url": "https://en.wikisource.org/wiki/The_Nestorians_and_their_Rituals/Volume_2/Chapter_1",
    "title": "The Nestorians and their Rituals, Volume II",
-   "min": 181868,
-   "max": 181977,
+   "min": 182501,
+   "max": 182610,
    "count": 110,
-   "hash": "fad82e4d7f061dc5"
+   "hash": "a967b7f48527c034"
   },
-  "1518": {
+  "1559": {
    "url": "https://en.wikisource.org/wiki/The_Decrees_of_the_Vatican_Council/Part_1/Prologue",
    "title": "The Decrees of the Vatican Council",
-   "min": 181978,
-   "max": 181988,
+   "min": 182611,
+   "max": 182621,
    "count": 11,
-   "hash": "59c27c4143fb7d23"
+   "hash": "8ee8bbdf65f87527"
   },
-  "1519": {
+  "1560": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/On_the_Consecration_of_Mankind_to_the_Sacred_Heart_of_Jesus",
    "title": "Annum Sacrum (On the Consecration of Mankind to the Sacred Heart of Jesus)",
-   "min": 181989,
-   "max": 181991,
+   "min": 182622,
+   "max": 182624,
    "count": 3,
    "hash": "f99853376292746f"
   },
-  "1520": {
+  "1561": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Anglican_Orders",
    "title": "Apostolic\u00e6 Cur\u00e6 (Anglican Orders)",
-   "min": 181992,
-   "max": 182004,
+   "min": 182625,
+   "max": 182637,
    "count": 13,
    "hash": "22856c63c87bc5fc"
   },
-  "1521": {
+  "1562": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Christian_Marriage",
    "title": "Arcanum Divin\u00e6 (Christian Marriage)",
-   "min": 182005,
-   "max": 182012,
+   "min": 182638,
+   "max": 182645,
    "count": 8,
    "hash": "71a8335f4343f248"
   },
-  "1522": {
+  "1563": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Allegiance_to_the_Republic",
    "title": "Au Milieu des Sollicitudes (Allegiance to the Republic)",
-   "min": 182013,
-   "max": 182017,
+   "min": 182646,
+   "max": 182650,
    "count": 5,
    "hash": "db1f0d73369822e8"
   },
-  "1523": {
+  "1564": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Christian_Democracy",
    "title": "Christian Democracy",
-   "min": 182018,
-   "max": 182032,
+   "min": 182651,
+   "max": 182665,
    "count": 15,
    "hash": "fac159fc3e839ccd"
   },
-  "1524": {
+  "1565": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Congratulations_to_the_American_Hierarchy",
    "title": "Congratulations to the American Hierarchy",
-   "min": 182033,
-   "max": 182033,
+   "min": 182666,
+   "max": 182666,
    "count": 1,
    "hash": "fb96c6b53c7e9b76"
   },
-  "1525": {
+  "1566": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Holy_Spirit",
    "title": "Divinum Illud (The Holy Spirit)",
-   "min": 182034,
-   "max": 182053,
+   "min": 182667,
+   "max": 182686,
    "count": 20,
    "hash": "4bc603ad5be26da0"
   },
-  "1526": {
+  "1567": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Right_Ordering_of_Christian_Life",
    "title": "Exeunte Jam Anno (The Right Ordering of Christian Life)",
-   "min": 182054,
-   "max": 182058,
+   "min": 182687,
+   "max": 182691,
    "count": 5,
    "hash": "93c3576c62363d2a"
   },
-  "1527": {
+  "1568": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Freemasonry",
    "title": "Humanum Genus (Freemasonry)",
-   "min": 182059,
-   "max": 182066,
+   "min": 182692,
+   "max": 182699,
    "count": 8,
    "hash": "23332062ffec07d7"
   },
-  "1528": {
+  "1569": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Christian_Constitution_of_States",
    "title": "Immortale Dei (The Christian Constitution of States)",
-   "min": 182067,
-   "max": 182075,
+   "min": 182700,
+   "max": 182708,
    "count": 9,
-   "hash": "be8df9765d9cc13c"
+   "hash": "65e68a87fccd6fd3"
   },
-  "1529": {
+  "1570": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/On_the_Evils_Affecting_Modern_Society",
    "title": "Inscrutabili (On the Evils Affecting Modern Society)",
-   "min": 182076,
-   "max": 182079,
+   "min": 182709,
+   "max": 182712,
    "count": 4,
-   "hash": "928b543a8c1f01ed"
+   "hash": "d6a840c289114a87"
   },
-  "1530": {
+  "1571": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Human_Liberty",
    "title": "Libertas Pr\u00e6stantissimum (Human Liberty)",
-   "min": 182080,
-   "max": 182089,
+   "min": 182713,
+   "max": 182722,
    "count": 10,
    "hash": "886d26d19579a942"
   },
-  "1531": {
+  "1572": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Catholicity_in_the_United_States",
    "title": "Longinque Oceani (Catholicity in the United States)",
-   "min": 182090,
-   "max": 182103,
+   "min": 182723,
+   "max": 182736,
    "count": 14,
    "hash": "785f70fc30e771c3"
   },
-  "1532": {
+  "1573": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Most_Holy_Eucharist",
    "title": "Mir\u00e6 Caritatis (The Most Holy Eucharist)",
-   "min": 182104,
-   "max": 182119,
+   "min": 182737,
+   "max": 182752,
    "count": 16,
    "hash": "03ee631a120b8a17"
   },
-  "1533": {
+  "1574": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Prohibition_and_Censorship_of_Books",
    "title": "Officiorum ac Munerum (The Prohibition and Censorship of Books)",
-   "min": 182120,
-   "max": 182134,
+   "min": 182753,
+   "max": 182767,
    "count": 15,
    "hash": "60e76f33d5ee585e"
   },
-  "1534": {
+  "1575": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Study_of_Holy_Scripture",
    "title": "Providentissimus Deus (The Study of Holy Scripture)",
-   "min": 182135,
-   "max": 182155,
+   "min": 182768,
+   "max": 182788,
    "count": 21,
    "hash": "360845f12cd16fa7"
   },
-  "1535": {
+  "1576": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Reunion_of_Christendom",
    "title": "Pr\u00e6clara Gratulationis Public\u00e6 (The Reunion of Christendom)",
-   "min": 182156,
-   "max": 182161,
+   "min": 182789,
+   "max": 182794,
    "count": 6,
    "hash": "6e8240cd9a30de8e"
   },
-  "1536": {
+  "1577": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Socialism%2C_Communism%2C_Nihilism",
    "title": "Quod Apostolici Muneris (Socialism, Communism, Nihilism)",
-   "min": 182162,
-   "max": 182165,
+   "min": 182795,
+   "max": 182798,
    "count": 4,
    "hash": "3bbbcb09782a9c54"
   },
-  "1537": {
+  "1578": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Condition_of_the_Working_Classes",
    "title": "Rerum Novarum (The Condition of the Working Classes)",
-   "min": 182166,
-   "max": 182179,
+   "min": 182799,
+   "max": 182812,
    "count": 14,
    "hash": "3790a365a6b43ab2"
   },
-  "1538": {
+  "1579": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Review_of_His_Pontificate",
    "title": "Review of His Pontificate",
-   "min": 182180,
-   "max": 182206,
+   "min": 182813,
+   "max": 182839,
    "count": 27,
    "hash": "0c2bc59e10695075"
   },
-  "1539": {
+  "1580": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/On_the_Chief_Duties_of_Christians_as_Citizens",
    "title": "Sapienti\u00e6 Christian\u00e6 (On the Chief Duties of Christians as Citizens)",
-   "min": 182207,
-   "max": 182215,
+   "min": 182840,
+   "max": 182848,
    "count": 9,
    "hash": "6fda656c2a709050"
   },
-  "1540": {
+  "1581": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Unity_of_the_Church",
    "title": "Satis Cognitum (The Unity of the Church)",
-   "min": 182216,
-   "max": 182249,
+   "min": 182849,
+   "max": 182882,
    "count": 34,
    "hash": "23bca11e154659fe"
   },
-  "1541": {
+  "1582": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/Christ_Our_Redeemer",
    "title": "Tametsi (Christ Our Redeemer)",
-   "min": 182250,
-   "max": 182265,
+   "min": 182883,
+   "max": 182898,
    "count": 16,
    "hash": "346d01d2c81c1ca6"
   },
-  "1542": {
+  "1583": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Church_in_the_Philippines",
    "title": "The Church in the Philippines",
-   "min": 182266,
-   "max": 182269,
+   "min": 182899,
+   "max": 182902,
    "count": 4,
    "hash": "9eb809b8706df222"
   },
-  "1543": {
+  "1584": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Holy_Scriptures%3B_The_Biblical_Commission",
    "title": "The Holy Scriptures; The Biblical Commission",
-   "min": 182270,
-   "max": 182276,
+   "min": 182903,
+   "max": 182909,
    "count": 7,
    "hash": "6b1483733ff54b5b"
   },
-  "1544": {
+  "1585": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Pope_and_the_Columbus_Tercentenary",
    "title": "The Pope and the Columbus Tercentenary",
-   "min": 182277,
-   "max": 182279,
+   "min": 182910,
+   "max": 182912,
    "count": 3,
    "hash": "f780e9f9e39e515c"
   },
-  "1545": {
+  "1586": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Religious_Congregations_in_France",
    "title": "The Religious Congregations in France",
-   "min": 182280,
-   "max": 182295,
+   "min": 182913,
+   "max": 182928,
    "count": 16,
    "hash": "35d77d887b6e72a4"
   },
-  "1546": {
+  "1587": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/To_the_English_People",
    "title": "To the English People",
-   "min": 182296,
-   "max": 182300,
+   "min": 182929,
+   "max": 182933,
    "count": 5,
    "hash": "0821cacddc6bcf1d"
   },
-  "1547": {
+  "1588": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/True_and_False_Americanism_in_Religion",
    "title": "True and False Americanism in Religion",
-   "min": 182301,
-   "max": 182305,
+   "min": 182934,
+   "max": 182938,
    "count": 5,
    "hash": "ebe7b0891227a554"
   },
-  "1548": {
+  "1589": {
    "url": "https://en.wikisource.org/wiki/The_Great_Encyclical_Letters_of_Pope_Leo_XIII/The_Study_of_Scholastic_Philosophy",
    "title": "\u00c6terni Patris (The Study of Scholastic Philosophy)",
-   "min": 182306,
-   "max": 182313,
+   "min": 182939,
+   "max": 182946,
    "count": 8,
    "hash": "01843ab7ba5e020b"
+  },
+  "1590": {
+   "url": "https://en.wikisource.org/wiki/De_Ecclesia._The_Church/Chapter_1",
+   "title": "De Ecclesia \u2014 The Church",
+   "min": 182947,
+   "max": 183038,
+   "count": 92,
+   "hash": "d345b0a1f5e4f648"
+  },
+  "1591": {
+   "url": "https://en.wikisource.org/wiki/The_Labyrinth_of_the_World_and_the_Paradise_of_the_Heart_%281901%29/Chapter_1",
+   "title": "The Labyrinth of the World and the Paradise of the Heart",
+   "min": 183039,
+   "max": 183114,
+   "count": 76,
+   "hash": "104403fc7dc5b3f8"
+  },
+  "1592": {
+   "url": "https://en.wikisource.org/wiki/Declaration_of_Utrecht",
+   "title": "The Declaration of Utrecht",
+   "min": 183115,
+   "max": 183115,
+   "count": 1,
+   "hash": "100061751be1c25b"
+  },
+  "1593": {
+   "url": "https://en.wikisource.org/wiki/Last_Will_and_Testament_of_The_Springfield_Presbytery",
+   "title": "The Last Will and Testament of the Springfield Presbytery",
+   "min": 183116,
+   "max": 183118,
+   "count": 3,
+   "hash": "a9f9be5055939e7e"
+  },
+  "1594": {
+   "url": "https://en.wikisource.org/wiki/Declaration_and_Address_of_the_Christian_Association_of_Washington",
+   "title": "Declaration and Address of the Christian Association of Washington",
+   "min": 183119,
+   "max": 183140,
+   "count": 22,
+   "hash": "86c36636fee713c8"
   }
  },
  "idSpace": 1

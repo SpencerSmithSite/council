@@ -241,6 +241,136 @@ WORKS = [
             "The Religious Congregations in France",
         ]
     ],
+    # --- Restorationist: the Stone-Campbell movement -------------------------
+    #
+    # Two founding documents. The third — Alexander Campbell's *The Christian
+    # System* (1839), the movement's systematic statement — is **not here, and
+    # not on Wikisource**, and the way that was nearly got wrong is the reason
+    # for the author gate below.
+    #
+    # Wikisource has a page titled exactly `The Christian System`. It is an
+    # essay by **Arthur Schopenhauer**, translated by Thomas Bailey Saunders,
+    # from *Studies in Pessimism*. It fetched cleanly, carried a valid
+    # public-domain licence, passed every size and quality gate, and parsed into
+    # three tidy units of nineteenth-century prose about religion — and it would
+    # have shipped as Alexander Campbell had nobody read it.
+    #
+    # `SOURCES.md` and `TODO.md` had recorded this work as searched-for and not
+    # found. **That record was right**, and the attempt to overturn it on the
+    # strength of a matching page title was wrong. A title match is not
+    # identification.
+    {
+        "id": "campbell-declaration",
+        "title": ("Declaration and Address of the Christian Association of "
+                  "Washington"),
+        "author": "Thomas Campbell",
+        "date": "1809",
+        "tradition": "Restorationist",
+        "kind": "Confession",
+        "root": "Declaration and Address of the Christian Association of Washington",
+        "pages": ["Declaration and Address of the Christian Association of Washington"],
+        "collection": "Declaration and Address (Washington, Pennsylvania, 1809)",
+        "notes": ("The movement's founding document, and the source of its "
+                  "governing sentence — that the Church of Christ on earth is "
+                  "essentially, intentionally and constitutionally one. "
+                  "English Wikisource tags this transcription as not backed by "
+                  "a scanned copy, meaning nobody has proofread it against a "
+                  "page image, and the page carries no headings at all: the "
+                  "Declaration, the Address, the thirteen Propositions and the "
+                  "Appendix run together, so the unit boundaries here are "
+                  "inferred from the prose rather than read off the document."),
+    },
+    {
+        "id": "springfield",
+        "title": "The Last Will and Testament of the Springfield Presbytery",
+        # Wikisource attributes this to the Springfield Presbytery itself,
+        # which is accurate — it is the presbytery's own act of dissolution —
+        # and the gate below is told so explicitly rather than being bypassed.
+        "author": "Barton W. Stone",
+        "author_override": ("Wikisource attributes the document to the "
+                            "Springfield Presbytery as a body; it is cited by "
+                            "Stone's name, and he is its first signatory"),
+        "date": "1804",
+        "tradition": "Restorationist",
+        "kind": "Confession",
+        "root": "Last Will and Testament of The Springfield Presbytery",
+        "pages": ["Last Will and Testament of The Springfield Presbytery"],
+        "collection": "Last Will and Testament of the Springfield Presbytery (1804)",
+        "notes": ("The other founding document, and the older of the two: the "
+                  "Springfield Presbytery dissolving itself so that its "
+                  "congregations might 'sink into union with the Body of "
+                  "Christ at large'. Signed by Barton W. Stone and five "
+                  "others."),
+    },
+
+    # --- Moravian, Waldensian and Hussite ------------------------------------
+    #
+    # Two of the three. Hus for the Hussites and Comenius — the last bishop of
+    # the Unity of the Brethren, which is the Moravian Church's own
+    # predecessor — for the Moravians.
+    #
+    # The Waldensians are still absent, and the route is known rather than
+    # available: Samuel Morland's *History of the Evangelical Churches of the
+    # Valleys of Piemont* (1658) carries their confession in English and is on
+    # archive.org as scans. `ingest_schaff.py` refused the Piedmont confession
+    # for being French; this is the same document in a usable language, and it
+    # needs the two-witness route.
+    #
+    # *The letters of John Hus* is also on Wikisource, at 126 subpages, and is
+    # not taken: Workman and Pope's 1904 edition interleaves the letters with
+    # the editors' own connecting narrative, and separating the two is a
+    # different job from reading a document's structure.
+    {
+        "id": "hus-de-ecclesia",
+        "title": "De Ecclesia — The Church",
+        "author": "Jan Hus",
+        "date": "1413",
+        "tradition": "Moravian",
+        "kind": "Treatise",
+        "root": "De Ecclesia. The Church",
+        "pages": [f"De Ecclesia. The Church/Chapter {n}" for n in range(1, 24)],
+        "collection": ("De Ecclesia: The Church, trans. David S. Schaff "
+                       "(Scribner, 1915)"),
+        "notes": ("The treatise Hus was burned for, translated by the same "
+                  "David S. Schaff whose father's Creeds of Christendom this "
+                  "corpus already holds. Written 1413, a century before "
+                  "Luther."),
+    },
+    {
+        "id": "comenius-labyrinth",
+        "title": "The Labyrinth of the World and the Paradise of the Heart",
+        "author": "John Amos Comenius",
+        "date": "1631",
+        "tradition": "Moravian",
+        "kind": "Treatise",
+        "root": "The Labyrinth of the World and the Paradise of the Heart (1901)",
+        "pages": [f"The Labyrinth of the World and the Paradise of the Heart "
+                  f"(1901)/Chapter {n}" for n in range(1, 55)],
+        "collection": ("The Labyrinth of the World and the Paradise of the "
+                       "Heart, trans. Count Lützow (Sonnenschein, 1901)"),
+        "notes": ("By the last bishop of the Unity of the Brethren, the "
+                  "Moravian Church's own predecessor — an allegory of the "
+                  "world's vanity answered by the heart's rest in Christ, and "
+                  "the classic of Czech literature."),
+    },
+
+    # --- Old Catholic --------------------------------------------------------
+    {
+        "id": "utrecht",
+        "title": "The Declaration of Utrecht",
+        "author": None,
+        "date": "1889",
+        "tradition": "Old Catholic",
+        "kind": "Confession",
+        "root": "Declaration of Utrecht",
+        "pages": ["Declaration of Utrecht"],
+        "collection": "The Declaration of Utrecht (1889)",
+        "notes": ("Short, and the whole of it: the eight articles agreed by "
+                  "the Old Catholic bishops at Utrecht in 1889, which remain "
+                  "the doctrinal basis of the Union of Utrecht. It rejects the "
+                  "Vatican decrees of 1870 — which this corpus also holds, in "
+                  "full, from the same archive."),
+    },
     # --- Church of the East: a branch with no sources at all -----------------
     #
     # The taxonomy defines seven branches and this one has been empty since it
@@ -344,6 +474,64 @@ WORKS = [
 ]
 
 
+# --- who the archive says wrote it -------------------------------------------
+#
+# Added after a near miss. Wikisource has a page titled exactly `The Christian
+# System`; it is Schopenhauer, not Alexander Campbell, and it passed the licence
+# check, both size floors and the transcription-quality gate before a human
+# happened to read a sentence of it. Every automatic check this module had was
+# about whether the text was *good*, and none was about whether it was the
+# *right text*.
+#
+# Wikisource states the author in its header template, in the wikitext, as a
+# field. So the claim in WORKS is checked against it, and a work whose author
+# the archive does not corroborate is refused by name rather than ingested.
+AUTHOR_FIELD = re.compile(
+    r"^\s*\|\s*(?:override_)?author\s*=\s*(.*?)\s*$", re.M)
+
+
+def declared_author(wikitext):
+    """What Wikisource's header says, flattened out of its link syntax."""
+    for raw in AUTHOR_FIELD.findall(wikitext[:1500]):
+        # A blank field, or one whose value is the next parameter, says nothing.
+        if not raw or raw.startswith("|"):
+            continue
+        # "[[w:Springfield Presbytery|Springfield Presbytery]]" -> the label.
+        value = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", raw)
+        value = re.sub(r"[{}]", "", value).strip()
+        if value:
+            return value
+    return None
+
+
+def author_agrees(claimed, declared):
+    """Whether the archive corroborates the author this file claims.
+
+    Compares the **last** name-word of the claim, after honorifics are removed,
+    against everything the archive states. Last rather than longest: "Pope Leo
+    XIII" has no long word in it, and a longest-word rule picked "Pope" and
+    refused all thirty encyclicals. Last rather than any: "Thomas Campbell" and
+    "Thomas Aquinas" share a word, and a match on a shared forename is not
+    identification.
+
+    Loose on form, strict on identity. It accepts "Jan Hus" against "Jan Hus",
+    "John Amos Comenius" against the archive's "Johan Amos Comenius", and "Pope
+    Leo XIII" against "Leo XIII". It refuses "Alexander Campbell" against
+    "Arthur Schopenhauer", which is the case it was written for.
+    """
+    if not claimed or not declared:
+        return True          # nothing claimed, or nothing stated: not a conflict
+    words = [w for w in re.findall(r"[A-Za-zÀ-ÿ]{2,}", claimed)
+             if w.lower() not in HONORIFICS]
+    if not words:
+        return True
+    return words[-1].lower() in declared.lower()
+
+
+HONORIFICS = {"pope", "saint", "st", "mr", "mrs", "rev", "reverend", "bishop",
+              "archbishop", "cardinal", "blessed", "sir", "dr", "the"}
+
+
 # --- the archive -------------------------------------------------------------
 
 def api(params):
@@ -362,6 +550,14 @@ def api(params):
             # pages this module's docstring is about.
             time.sleep(8 * (attempt + 1))
     return None
+
+
+def root_wikitext(title):
+    """The work's header source, where Wikisource states its author."""
+    data = api({"action": "parse", "page": title, "prop": "wikitext"})
+    if not data or "parse" not in data:
+        return ""
+    return data["parse"]["wikitext"]["*"]
 
 
 def licence_of(title):
@@ -395,9 +591,15 @@ def page_html(title):
 
 DROP_ELEMENTS = re.compile(
     r"<(style|script|sup|table)\b[^>]*>.*?</\1>", re.S | re.I)
-DROP_BLOCKS = re.compile(
+
+# Containers whose whole subtree is furniture rather than text: Wikisource's
+# header template and its editorial notes, the licence box, the reference list.
+DROP_CONTAINERS = re.compile(
     r'<div[^>]*class="[^"]*(?:ws-noexport|licenseContainer|reflist|'
-    r'wst-smallrefs|catlinks|printfooter)[^"]*"[^>]*>.*?</div>', re.S | re.I)
+    r'wst-smallrefs|catlinks|printfooter|headertemplate|wst-header)[^"]*"[^>]*>',
+    re.I)
+DIV_EDGE = re.compile(r"<(/?)div\b[^>]*>", re.I)
+
 BLOCK = re.compile(r"<(h[2-4]|p)\b[^>]*>(.*?)</\1>", re.S | re.I)
 TAG = re.compile(r"<[^>]+>")
 
@@ -407,6 +609,34 @@ TAG = re.compile(r"<[^>]+>")
 APPARATUS = re.compile(
     r"^(Notes?|References?|Footnotes?|External links?|Bibliography|"
     r"See also|Source)\s*$", re.I)
+
+
+def drop_containers(html):
+    """Remove each furniture `<div>` together with everything nested inside it.
+
+    Regex cannot do this with `.*?</div>`, and the earlier version tried:
+    a non-greedy match stops at the *first* closing tag, which for a nested
+    container removes the opening and leaves the contents behind. Wikisource's
+    header wraps its editorial note in a div inside a div, so what survived was
+    the note — and Hus's *De Ecclesia* opened with "1915 translation of the 1413
+    treatise ... played an important role in his trial at Constance", which is
+    Wikisource describing the work, not Hus writing it.
+
+    So the closing tag is found by counting depth instead.
+    """
+    while True:
+        opening = DROP_CONTAINERS.search(html)
+        if not opening:
+            return html
+        depth, cut = 1, opening.end()
+        for edge in DIV_EDGE.finditer(html, opening.end()):
+            depth += -1 if edge.group(1) else 1
+            if depth == 0:
+                cut = edge.end()
+                break
+        else:
+            cut = len(html)
+        html = html[:opening.start()] + " " + html[cut:]
 
 
 def blocks(html):
@@ -423,11 +653,8 @@ def blocks(html):
     these pages carry their reference styling inline, and the naive strip ends
     every document with `.wst-smallrefs{font-size:83%...}`.
     """
-    # Repeated because the blocks nest: a licence container inside a noexport
-    # div leaves its inner half behind on a single pass.
-    for _ in range(4):
-        html = DROP_ELEMENTS.sub(" ", html)
-        html = DROP_BLOCKS.sub(" ", html)
+    html = DROP_ELEMENTS.sub(" ", html)
+    html = drop_containers(html)
 
     out = []
     for tag, raw in BLOCK.findall(html):
@@ -588,7 +815,7 @@ def fetch():
     pending = [p for p in wanted if not path_for(p).exists()]
     print(f"{len(wanted)} pages, {len(pending)} to fetch "
           f"({len(wanted) - len(pending)} cached)\n")
-    licences = {}
+    licences, headers = {}, {}
 
     for i, title in enumerate(pending, 1):
         html = page_html(title)
@@ -607,11 +834,13 @@ def fetch():
             continue
 
         root = root_of(title)
-        licence = licences.get(root)
         if root not in licences:
-            licence = licences[root] = licence_of(root)
+            licences[root] = licence_of(root)
+            headers[root] = root_wikitext(root)
+        licence = licences[root]
         path_for(title).write_text(json.dumps(
-            {"title": title, "licence": licence, "html": html}, indent=1),
+            {"title": title, "licence": licence, "html": html,
+             "declared_author": declared_author(headers.get(root) or "")}, indent=1),
             encoding="utf-8")
         print(f"  [{i}/{len(pending)}] ok  {len(text):>8} chars  "
               f"{licence or 'NO PD CATEGORY':<22} {title}", flush=True)
@@ -656,6 +885,15 @@ def parse():
         if None in licences:
             skipped.append((work["pages"][0],
                             "page states no public-domain category"))
+            continue
+
+        declared = next((c.get("declared_author") for c in cached
+                         if c.get("declared_author")), None)
+        if not work.get("author_override") and not author_agrees(
+                work.get("author"), declared):
+            skipped.append((work["pages"][0],
+                            f"claims {work['author']!r} but the archive states "
+                            f"{declared!r}"))
             continue
 
         parts = []

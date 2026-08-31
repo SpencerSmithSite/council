@@ -4235,3 +4235,78 @@ The distinction is the thing worth keeping. **A history keeps its numbers; a
 ledger has to be re-checked against the database.** `TODO.md` and the priority
 plan in `SOURCES.md` are ledgers and were audited against `theology.db`;
 `PLAN.md` is a history and was not touched.
+
+## Three more families, and the near miss that changed the ingester (2026-08-30)
+
+Restorationist, Moravian & Hussite, and Old Catholic. **All seven branches now
+hold text**, and 19 of the 31 families do.
+
+### What went in
+
+* **Restorationist** — Thomas Campbell's *Declaration and Address* (1809) and
+  the *Last Will and Testament of the Springfield Presbytery* (1804). The
+  Stone-Campbell movement's two founding documents, for a family that had
+  nothing.
+* **Moravian & Hussite** — Hus's *De Ecclesia*, the treatise he was burned for,
+  in David S. Schaff's 1915 translation; and Comenius's *Labyrinth of the World
+  and the Paradise of the Heart*, by the last bishop of the Unity of the
+  Brethren, which is the Moravian Church's own predecessor. 23 and 54 chapters,
+  both confirmed complete against Wikisource's index rather than assumed.
+* **Old Catholic** — the *Declaration of Utrecht* (1889), short and entire. It
+  rejects the Vatican decrees of 1870, which this corpus now also holds in full
+  from the same archive.
+
+### The near miss
+
+Wikisource has a page titled exactly **`The Christian System`**. Alexander
+Campbell's book of that name is the Restoration movement's systematic
+statement, and `SOURCES.md` and `TODO.md` both recorded it as searched-for and
+not found. Finding a page with the exact title looked like the record being
+wrong.
+
+The page is an essay by **Arthur Schopenhauer**, translated by Thomas Bailey
+Saunders, from *Studies in Pessimism*.
+
+It fetched cleanly. It carried a valid public-domain licence category. It passed
+the page-size floor, the work-size floor and the transcription-quality gate, and
+it parsed into three tidy units of nineteenth-century prose about religion and
+reason. **Every automatic check this module had was about whether the text was
+good, and not one was about whether it was the right text.** It was caught by
+reading a sentence of it.
+
+The generalisable error is the one worth naming: **a title match is not
+identification**, and a search that fails is evidence about the query, not about
+the archive. The old record was right and the attempt to overturn it was wrong.
+
+### The gate that now makes it hard to repeat
+
+Wikisource states the author in its header template, as a field in the wikitext.
+So the ingester fetches each work's root wikitext, reads the declared author,
+and refuses any work whose claimed author the archive does not corroborate.
+
+Getting the comparison right took two attempts, and the first failure is
+instructive. Matching on the *longest* word of the claimed name refused all
+thirty Leonine encyclicals — "Pope Leo XIII" has no long word in it, so the rule
+picked "Pope". The rule now compares the **last** name-word after honorifics are
+stripped: last rather than longest because of regnal names, and last rather than
+*any* because "Thomas Campbell" and "Thomas Aquinas" share a forename and a
+match on a shared forename is not identification either. Ten cases are asserted
+in the module, including the one it was written for.
+
+A work may still be filed under a name the archive does not use — the
+Springfield Presbytery document is cited by Barton Stone's name and attributed
+by Wikisource to the presbytery as a body — but only through an explicit
+`author_override` carrying the reason.
+
+### A regex that could not do what it was asked
+
+Hus's *De Ecclesia* opened with "1915 translation of the 1413 treatise ... played
+an important role in his trial at Constance" — Wikisource describing the work,
+not Hus writing it. The furniture-removal regex used `.*?</div>`, and a
+non-greedy match stops at the **first** closing tag: for a container with nested
+divs it removes the opening tag and leaves the contents. The header wraps its
+editorial note one level deep, so the note survived.
+
+Fixed by finding the closing tag through depth counting instead. It is the sort
+of defect that only shows up on the one work whose header happens to carry a
+`notes` field, which is why it survived three ingests through the same code.

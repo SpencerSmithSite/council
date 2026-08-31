@@ -12,10 +12,9 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-30 · 710 sources, 106,312 units, 485.0 M characters ·
-458,717 chunks and 458,717 vectors · 7 branches and 31 traditions, 16 of them
-holding text; **six of the seven branches now hold text**, and the seventh is
-Other and Independent, whose families are all twentieth-century · 49 fragments ·
+*Last verified: 2026-08-30 · 715 sources, 106,504 units, 486.0 M characters ·
+459,679 chunks and 459,679 vectors · 7 branches and 31 traditions, **19 of them
+holding text, across all seven branches** · 52 fragments, 302.9 MB published ·
 all three audits clean except the three noted at the bottom.*
 
 *Two version numbers, and they are not the same one. `CORPUS_VERSION` is
@@ -303,7 +302,7 @@ is also the defect that got eight works deleted in *Shouldn't have* above.
 | wanted | why it matters | searched | date |
 |---|---|---|---|
 | **Schleitheim Confession** (1527) | The founding Anabaptist confession — believers' baptism, the ban, non-resistance, the sword | Gutenberg: 0 results. Wikisource: 0, under *Schleitheim*, *Brotherly Union* and *seven articles* alike — the only hits are two chapters of a Hübmaier biography | 2026-08-30 |
-| **Alexander Campbell**, *The Christian System* | The systematic statement of the Restoration Movement. Its founding *address* is now reachable (below); its theology is not | Gutenberg: 0 results. Wikisource: 0 — every hit is a biographical dictionary entry for a different Campbell | 2026-08-30 |
+| **Alexander Campbell**, *The Christian System* | The systematic statement of the Restoration Movement. Both its founding documents are now ingested; its theology is still absent | Gutenberg: 0. CCEL: 0 — `campbell` there is J. M. Campbell, the Scot. Wikisource: **there is a page titled exactly `The Christian System`, and it is an essay by Arthur Schopenhauer.** It passed every automatic gate and was caught by reading it. Re-checked 2026-08-30; this row was right the first time | 2026-08-30 |
 | **Richard Hooker**, *Of the Laws of Ecclesiastical Polity* | Anglicanism's systematics. The tradition currently holds devotional and expository writing and no ecclesiology | CCEL: `/ccel/hooker/polity` 404s and there is no `hooker` author index. Wikisource: 0 — biographical entries only | 2026-08-30 |
 | **Ignatius of Loyola**, *Spiritual Exercises* (Mullan, 1909) | Removed from the corpus as a précis and not replaced | Gutenberg: one hit, and it is the wrong text — a retreat adaptation "for the use of Jesuits only", not Mullan. Wikisource: 0 | 2026-08-30 |
 
@@ -519,8 +518,13 @@ Ordered by how badly the absence distorts an answer.
 - [x] **Adventist** — done 2026-08-30, and from CCEL rather than the Gutenberg
       route recorded here: CCEL carries five Ellen G. White works where
       Gutenberg has two. See *Have*.
-- [ ] **Restorationist** — still the emptiest family with a real founding
-      document. Surveyed properly on 2026-08-30 rather than searched by title:
+- [x] **Restorationist** — opened 2026-08-30 with both founding documents:
+      Thomas Campbell's *Declaration and Address* (1809) and the *Last Will and
+      Testament of the Springfield Presbytery* (1804), from Wikisource. The
+      systematic statement, *The Christian System*, is still missing — see the
+      table above for the Schopenhauer page that nearly went in as it.
+
+      The original survey note, kept because its conclusion held up:
       **CCEL has no Alexander or Thomas Campbell at all** — its `campbell`
       author page is J. M. Campbell, the Scot who wrote *The Nature of the
       Atonement*, and `acampbell` and `stone` have no author page. Wikisource
