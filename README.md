@@ -4,7 +4,7 @@ An offline-first Flutter app for Christian theology research. Browse a curated l
 
 ## What it does
 
-Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **717 works and 486 million characters**.
+Council ships with the King James Version — 1,189 chapters — and everything else is downloaded on request, starting with the creeds, councils, catechisms and confessions. That keeps the install small while the full library runs to **734 works and 495 million characters**.
 
 Bundled: the King James Version, complete.
 
@@ -25,6 +25,7 @@ content:
 |---|---|---|
 | Old Catholic | 1 | 0.02 MB |
 | Pentecostal | 2 | 0.2 MB |
+| Brethren | 17 | 5.6 MB |
 | Restorationist | 2 | 0.1 MB |
 | Moravian & Hussite | 2 | 0.6 MB |
 | Church of the East | 1 | 0.3 MB |
@@ -44,8 +45,8 @@ content:
 | Charles Spurgeon | 74 | 93.1 MB |
 | Reformed & Presbyterian | 147 | 108.2 MB |
 
-Forty-two collections over fifty-three shared fragments, 303 MB published in
-all. The same collections as standalone files would be 588 MB — no work is
+Forty-three collections over fifty-four shared fragments, 309 MB published in
+all. The same collections as standalone files would be 594 MB — no work is
 downloaded twice, however many collections it belongs to, which is why the
 big authors have a fragment each rather than sitting inside their tradition's.
 
@@ -81,6 +82,8 @@ The full library spans:
 - Old Catholic (the Declaration of Utrecht)
 - Pentecostal (the Pentecostal Holiness Church's Basis of Union of 1917, the
   Church of God's *Book of Doctrines* of 1922)
+- Brethren (Mackintosh's *Notes on the Pentateuch*, Müller's *Narrative*,
+  Groves's *Christian Devotedness*)
 - Ecumenical creeds and councils (Nicene, Chalcedon, the Seven Councils)
 - Confessions and catechisms (Westminster, Heidelberg, Augsburg, Dort, and more)
 
@@ -92,7 +95,7 @@ the Restorationists and the Adventists decline to recite creeds and teach what
 the creeds state, so they are in. Groups that fail it on the doctrine itself
 are not. The rule, the groups it excludes and the reason for each are in
 [`tools/data/traditions.json`](tools/data/traditions.json); the library is
-organised branch → tradition, at 7 branches and 31 traditions. Twenty of
+organised branch → tradition, at 7 branches and 31 traditions. Twenty-one of
 those traditions hold text today, and **every one of the seven branches does**.
 The twelve still empty are mostly bodies whose defining documents are
 twentieth-century and in copyright. The rest are defined and empty, and the shelf shows

@@ -312,6 +312,12 @@
       ]
     },
     {
+      "id": "f-brethren",
+      "traditions": [
+        "brethren"
+      ]
+    },
+    {
       "id": "f-orthodox",
       "traditions": [
         "eastern-orthodox"
@@ -621,6 +627,15 @@
         "f-gill"
       ],
       "description": "Both London Baptist Confessions \u2014 the First of 1644 and the Second of 1689, the central Baptist confessional document \u2014 with Spurgeon's complete sermons and The Treasury of David, Bunyan's Pilgrim's Progress and Holy War, and Gill's Body of Divinity."
+    },
+    {
+      "id": "tradition-brethren",
+      "kind": "tradition",
+      "name": "Brethren",
+      "description": "The Plymouth Brethren: C. H. Mackintosh's Notes on the Pentateuch complete in six volumes and six volumes of his Miscellaneous Writings, George M\u00fcller's Narrative in all four parts, and Anthony Norris Groves's Christian Devotedness of 1825 \u2014 the tract on holding no reserve of wealth that is as close as the movement has to a founding document. J. N. Darby, its central figure, is not here: none of his work is transcribed and the scans of his Collected Writings are lending-only. Nor is the Church of the Brethren, the Dunkers, a separate body that shares the name.",
+      "fragments": [
+        "f-brethren"
+      ]
     },
     {
       "id": "tradition-church-of-the-east",

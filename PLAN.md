@@ -4420,3 +4420,77 @@ Church — are still unrepresented, and not because their founding documents are
 closed. They are public domain and nobody has digitised them. That is a
 different sentence from the one this project used to print, and it points at a
 different remedy.
+
+## Brethren, which was never a rights problem or a transcription problem (2026-08-30)
+
+The last family with genuinely public-domain founding documents and nothing in
+the corpus. Pentecostal turned out to be a digitisation problem. This one was
+only ever a **search** problem: Project Gutenberg has seventeen Brethren works
+as proofread transcriptions, and three earlier surveys missed them.
+
+**Why they were missed is worth keeping.** The surveys asked CCEL (which has a
+`darby` author page whose one work has no text export) and archive.org (whose
+Darby is lending-only), and when they did ask Gutenberg they asked for *Darby* —
+the movement's central figure, and the one Brethren author Gutenberg does not
+have. Searching for the most important name in a movement is a reasonable first
+move and a bad only move.
+
+What Gutenberg has instead is **C. H. Mackintosh's complete *Notes on the
+Pentateuch*** — six volumes, and the work his name is shorthand for — with six
+volumes of his *Miscellaneous Writings*, **George Müller's *Narrative*** in all
+four parts, and **Anthony Norris Groves's *Christian Devotedness*** of 1825, the
+tract on holding no reserve of wealth that is as close as the movement has to a
+founding document. 17 works, 2,059 units, 8.95 M characters — the largest single
+ingest since the Reformation expansion.
+
+### A separate units file, and the reason is the id space
+
+`gutenberg_units.json` holds the Book of Concord, ingested long ago at unit ids
+far below the last published high-water mark. `load_ccel.py` replaces by title,
+so regenerating that file and re-loading it would delete and reinsert the
+Augsburg Confession at fresh ids — **a settled source moving, which is exactly
+the fault `check_id_space` exists to catch.** It would bump the id space and
+force every reader to update the app for nothing.
+
+So the Brethren works are written to their own file and touch nobody else's
+rows. The general rule this session has now hit twice: *reusing an ingester's
+code is free; reusing its units file is an id-space event.*
+
+### Refusing to hand-type a date
+
+Every work here was going to carry a publication year I had typed from memory —
+1880 for the *Notes*, 1898 for the *Miscellaneous Writings*, 1837 for Müller's
+first part. Checking the sources showed **Gutenberg's header states only the
+ebook's release date**, and Müller's *Narrative* is a journal whose opening
+pages are thick with years that are diary entries rather than imprints.
+
+So the dates were removed. These works now carry the author's life dates —
+"1820-1896" for Mackintosh — which is how the corpus already files its CCEL
+works, and which is verifiable. The single exception is *Christian Devotedness*,
+whose own closing note reads "The first edition ... was published by Hatchard
+1825", and 1825 is therefore sourced rather than remembered.
+
+A guess on a citation is indistinguishable from a fact on a citation. That is
+the whole reason this corpus records provenance per source.
+
+### Two small archive habits
+
+Gutenberg's **older files sign off in prose** — "End of Project Gutenberg's
+Notes on the Book of Leviticus, by C. H. Mackintosh" — *before* the `***` marker
+that `ingest_gutenberg.body_of` cuts at, so the sign-off survived into the final
+unit of two works. And they **open with the volunteer's credit**, which put
+"Produced by David Haslam" at the head of Groves's tract. Both are stripped.
+
+### What the family still lacks, and it is two different absences
+
+**J. N. Darby is not here**, and he is the movement's central figure — the man
+dispensationalism is named after. Gutenberg has none of him and archive.org's
+*Collected Writings* are lending-only. That is a digitisation gap of the
+Pentecostal kind, not a rights one.
+
+**The Church of the Brethren is not here either**, and this is a different
+problem: the taxonomy files two unrelated bodies under one name. The Dunkers are
+Anabaptist-Pietist German immigrants with no connection to Plymouth beyond the
+word "Brethren", and Alexander Mack's *Rights and Ordinances* is not digitised
+anywhere found. The pack description says which of the two it holds, because a
+reader who installs "Brethren" expecting Mack would otherwise find Mackintosh.

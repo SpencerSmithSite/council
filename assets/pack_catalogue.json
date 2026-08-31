@@ -2223,6 +2223,57 @@
         "Pentecostal"
       ]
     },
+    "f-brethren": {
+      "authors": [
+        "Anthony Norris Groves",
+        "Charles Henry Mackintosh",
+        "George M\u00fcller"
+      ],
+      "titles": [
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 1",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 2",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 3",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 4",
+        "Christian Devotedness",
+        "Elijah the Tishbite",
+        "Life and Times of David",
+        "Notes on the Book of Deuteronomy, Volume I",
+        "Notes on the Book of Deuteronomy, Volume II",
+        "Notes on the Book of Exodus",
+        "Notes on the Book of Genesis",
+        "Notes on the Book of Leviticus",
+        "Notes on the Book of Numbers",
+        "The All-Sufficiency of Christ",
+        "The Assembly of God",
+        "The Great Commission",
+        "The Lord's Coming"
+      ],
+      "tags": {
+        "angels": 83,
+        "baptism": 34,
+        "church": 548,
+        "creation": 107,
+        "eschatology": 104,
+        "eucharist": 2,
+        "faith": 634,
+        "grace": 767,
+        "holy-spirit": 78,
+        "incarnation": 14,
+        "justification": 36,
+        "last-judgment": 442,
+        "prayer": 583,
+        "sacraments": 7,
+        "salvation": 245,
+        "sanctification": 9,
+        "scripture": 581,
+        "sin": 563,
+        "trinity": 10,
+        "worship": 152
+      },
+      "traditions": [
+        "Brethren"
+      ]
+    },
     "f-orthodox": {
       "authors": [
         "Orthodox Eastern Church",
@@ -4835,6 +4886,61 @@
         "f-spurgeon",
         "f-bunyan",
         "f-gill"
+      ]
+    },
+    "tradition-brethren": {
+      "name": "Brethren",
+      "authors": [
+        "Anthony Norris Groves",
+        "Charles Henry Mackintosh",
+        "George M\u00fcller"
+      ],
+      "titles": [
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 1",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 2",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 3",
+        "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 4",
+        "Christian Devotedness",
+        "Elijah the Tishbite",
+        "Life and Times of David",
+        "Notes on the Book of Deuteronomy, Volume I",
+        "Notes on the Book of Deuteronomy, Volume II",
+        "Notes on the Book of Exodus",
+        "Notes on the Book of Genesis",
+        "Notes on the Book of Leviticus",
+        "Notes on the Book of Numbers",
+        "The All-Sufficiency of Christ",
+        "The Assembly of God",
+        "The Great Commission",
+        "The Lord's Coming"
+      ],
+      "tags": {
+        "angels": 83,
+        "baptism": 34,
+        "church": 548,
+        "creation": 107,
+        "eschatology": 104,
+        "eucharist": 2,
+        "faith": 634,
+        "grace": 767,
+        "holy-spirit": 78,
+        "incarnation": 14,
+        "justification": 36,
+        "last-judgment": 442,
+        "prayer": 583,
+        "sacraments": 7,
+        "salvation": 245,
+        "sanctification": 9,
+        "scripture": 581,
+        "sin": 563,
+        "trinity": 10,
+        "worship": 152
+      },
+      "traditions": [
+        "Brethren"
+      ],
+      "fragments": [
+        "f-brethren"
       ]
     },
     "tradition-church-of-the-east": {
