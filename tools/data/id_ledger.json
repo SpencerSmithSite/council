@@ -1,6 +1,6 @@
 {
  "format": 2,
- "maxUnitId": 183200,
+ "maxUnitId": 185259,
  "sources": {
   "553": {
    "url": "https://www.newadvent.org/fathers/0622.htm",
@@ -5737,6 +5737,142 @@
    "max": 183200,
    "count": 48,
    "hash": "47939b1c288bce71"
+  },
+  "1597": {
+   "url": "https://www.gutenberg.org/ebooks/24293",
+   "title": "Christian Devotedness",
+   "min": 183201,
+   "max": 183229,
+   "count": 29,
+   "hash": "1a291510b07f64e4"
+  },
+  "1598": {
+   "url": "https://www.gutenberg.org/ebooks/40515",
+   "title": "Elijah the Tishbite",
+   "min": 183230,
+   "max": 183452,
+   "count": 223,
+   "hash": "0722807ab9c80c4b"
+  },
+  "1599": {
+   "url": "https://www.gutenberg.org/ebooks/42343",
+   "title": "Life and Times of David",
+   "min": 183453,
+   "max": 183532,
+   "count": 80,
+   "hash": "869cbef13e2c2efa"
+  },
+  "1600": {
+   "url": "https://www.gutenberg.org/ebooks/41571",
+   "title": "Notes on the Book of Deuteronomy, Volume I",
+   "min": 183533,
+   "max": 183643,
+   "count": 111,
+   "hash": "2277944cc627fc0e"
+  },
+  "1601": {
+   "url": "https://www.gutenberg.org/ebooks/41584",
+   "title": "Notes on the Book of Deuteronomy, Volume II",
+   "min": 183644,
+   "max": 183775,
+   "count": 132,
+   "hash": "2f19e9190068a1a1"
+  },
+  "1602": {
+   "url": "https://www.gutenberg.org/ebooks/40596",
+   "title": "Notes on the Book of Exodus",
+   "min": 183776,
+   "max": 183877,
+   "count": 102,
+   "hash": "ce5ddcfa9cf1a0fd"
+  },
+  "1603": {
+   "url": "https://www.gutenberg.org/ebooks/37915",
+   "title": "Notes on the Book of Genesis",
+   "min": 183878,
+   "max": 183969,
+   "count": 92,
+   "hash": "ca17b946b264d719"
+  },
+  "1604": {
+   "url": "https://www.gutenberg.org/ebooks/40610",
+   "title": "Notes on the Book of Leviticus",
+   "min": 183970,
+   "max": 184069,
+   "count": 100,
+   "hash": "ab43eb8bd3dd6fce"
+  },
+  "1605": {
+   "url": "https://www.gutenberg.org/ebooks/76552",
+   "title": "Notes on the Book of Numbers",
+   "min": 184070,
+   "max": 184175,
+   "count": 106,
+   "hash": "d11aaa325f441f09"
+  },
+  "1606": {
+   "url": "https://www.gutenberg.org/ebooks/41502",
+   "title": "The All-Sufficiency of Christ",
+   "min": 184176,
+   "max": 184238,
+   "count": 63,
+   "hash": "c2f0168558c2b870"
+  },
+  "1607": {
+   "url": "https://www.gutenberg.org/ebooks/37274",
+   "title": "The Assembly of God",
+   "min": 184239,
+   "max": 184358,
+   "count": 120,
+   "hash": "b48253e37fa9385c"
+  },
+  "1608": {
+   "url": "https://www.gutenberg.org/ebooks/40575",
+   "title": "The Great Commission",
+   "min": 184359,
+   "max": 184476,
+   "count": 118,
+   "hash": "f756e08092968fe9"
+  },
+  "1609": {
+   "url": "https://www.gutenberg.org/ebooks/40556",
+   "title": "The Lord's Coming",
+   "min": 184477,
+   "max": 184533,
+   "count": 57,
+   "hash": "a03ca3760df62324"
+  },
+  "1610": {
+   "url": "https://www.gutenberg.org/ebooks/20379",
+   "title": "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 1",
+   "min": 184534,
+   "max": 184685,
+   "count": 152,
+   "hash": "3e2f23aa35622eef"
+  },
+  "1611": {
+   "url": "https://www.gutenberg.org/ebooks/22034",
+   "title": "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 2",
+   "min": 184686,
+   "max": 184829,
+   "count": 144,
+   "hash": "ef0993c8ebf9671c"
+  },
+  "1612": {
+   "url": "https://www.gutenberg.org/ebooks/22148",
+   "title": "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 3",
+   "min": 184830,
+   "max": 184967,
+   "count": 138,
+   "hash": "a3077a38084d7971"
+  },
+  "1613": {
+   "url": "https://www.gutenberg.org/ebooks/20245",
+   "title": "A Narrative of Some of the Lord's Dealings with George M\u00fcller, Part 4",
+   "min": 184968,
+   "max": 185259,
+   "count": 292,
+   "hash": "ef92fdb26c4e3232"
   }
  },
  "idSpace": 1

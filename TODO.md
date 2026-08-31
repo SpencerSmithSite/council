@@ -12,9 +12,9 @@ python3 tools/audit_completeness.py    # contents pages filed as the work
 python3 tools/prune_unprovenanced.py   # sources with no recorded origin
 ```
 
-*Last verified: 2026-08-30 · 717 sources, 106,564 units, 486.3 M characters ·
-459,930 chunks and 459,930 vectors · 7 branches and 31 traditions, **20 of them
-holding text, across all seven branches** · 53 fragments, 303.1 MB published ·
+*Last verified: 2026-08-30 · 734 sources, 108,623 units, 495.2 M characters ·
+468,229 chunks and 468,229 vectors · 7 branches and 31 traditions, **21 of them
+holding text, across all seven branches** · 54 fragments, 308.7 MB published ·
 all three audits clean except the three noted at the bottom.*
 
 *Two version numbers, and they are not the same one. `CORPUS_VERSION` is
@@ -719,9 +719,28 @@ which still needs a proofread transcription or corroboration against a printing.
       `kebranagast`).
 - [ ] **Catholic before 1931, entirely absent.** The Baltimore Catechism (1885)
       and the encyclicals through *Casti Connubii* (1930).
-- [ ] **Brethren.** Darby's *Collected Writings* and Mackintosh's *Notes on the
-      Pentateuch* — both authors long dead, both widely mirrored, neither yet
-      located with recorded provenance.
+- [x] **Brethren — opened 2026-08-30**, `tools/ingest_brethren.py`, and it was
+      a search problem rather than a rights or transcription one. **Project
+      Gutenberg has seventeen Brethren works as proofread transcriptions** and
+      three earlier surveys missed them: they asked CCEL and archive.org, and
+      when they asked Gutenberg they asked for *Darby* — the one Brethren
+      author Gutenberg does not have. Searching for the most important name in
+      a movement is a reasonable first move and a bad only move.
+
+      In: Mackintosh's complete *Notes on the Pentateuch* (6 vols) and six
+      volumes of his *Miscellaneous Writings*, Müller's *Narrative* in all four
+      parts, Groves's *Christian Devotedness* (1825). 2,059 units, 8.95 M
+      characters.
+
+      Two absences remain, and they are different in kind:
+      - **J. N. Darby**, the movement's central figure — Gutenberg has none of
+        him and archive.org's *Collected Writings* are **lending-only**. A
+        digitisation gap, not a rights one.
+      - **The Church of the Brethren** (the Dunkers) — a wholly separate
+        Anabaptist-Pietist body that shares the name and is filed in the same
+        family by the taxonomy. Alexander Mack's *Rights and Ordinances* is not
+        digitised anywhere found. The pack description says which of the two
+        bodies it holds.
 
 **The 1662 Prayer Book moves queues rather than closing.** It is recorded above
 and in `README.md` as lacking a public-domain transcription. Its rights are

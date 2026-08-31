@@ -787,10 +787,20 @@ transcription, and none should be listed as available until it has.
 - **Charles Parham**, *A Voice Crying in the Wilderness* (1902).
 - **Church of the Nazarene**, *Manual* (1908 and after) — archive.org's
   `Church of the Nazarene` creator search is swamped by sermon audio.
-- **C. H. Mackintosh**, *Notes on the Pentateuch*, and **J. N. Darby**,
-  *Collected Writings* — the Brethren family. Both authors died in the 1880s
-  and both are widely mirrored on denominational sites; neither was located in a
-  form with recorded provenance.
+- ~~**C. H. Mackintosh**, *Notes on the Pentateuch*~~ — **ingested 2026-08-30**,
+  all six volumes, with six volumes of his *Miscellaneous Writings*, Müller's
+  *Narrative* in four parts and Groves's *Christian Devotedness*. All from
+  **Project Gutenberg**, as proofread transcriptions. Three earlier surveys
+  missed them because they queried CCEL and archive.org, and asked Gutenberg for
+  *Darby* — the one Brethren author it does not have. `ingest_brethren.py`.
+- **J. N. Darby**, *Collected Writings* — still absent, and the movement's
+  central figure. Gutenberg has none of him; archive.org's copies are
+  **lending-only**, so the scan exists and the text cannot be downloaded. A
+  digitisation gap rather than a rights one.
+- **The Church of the Brethren** (the Dunkers) — a separate Anabaptist-Pietist
+  body that the taxonomy files under the same family name. Alexander Mack's
+  *Rights and Ordinances* is not digitised anywhere found, so "Brethren" in this
+  library means Plymouth, and the pack description says so.
 - **Papal encyclicals through 1930** — *Rerum Novarum* (1891), *Aeterni Patris*
   (1879), *Pascendi* (1907), *Quas Primas* (1925), *Casti Connubii* (1930) —
   and the **Baltimore Catechism** (1885).
