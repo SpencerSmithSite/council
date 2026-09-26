@@ -77,6 +77,16 @@ const int _paragraphSplitThreshold = 700;
 /// A numbered line: `12. And the LORD said…`, at the start of a line.
 final RegExp _versePattern = RegExp(r'^[ \t]*(\d{1,3})\.[ \t]+', multiLine: true);
 
+/// The longest a numbered run can be and still read as a verse or an article.
+///
+/// Measured against the shipped corpus rather than guessed. For the source types
+/// that genuinely are numbered — Scripture, Confession, Council, Catechism,
+/// Encyclical, Liturgy — the median numbered run is 130 to 344 characters, and
+/// the 99th percentile of those medians is 213. For the prose types, Commentary,
+/// Father, Sermon and Treatise, the 25th percentile is 651 and the median 1,319.
+/// 400 sits in the gap, and the gap is wide.
+const int _maxNumberedRunLength = 400;
+
 /// A sentence end: terminal punctuation, whitespace, then something that can
 /// begin a sentence.
 ///
@@ -109,6 +119,28 @@ SegmentedPassage segmentPassage(String content) {
 List<PassageSegment>? _segmentVerses(String content) {
   final matches = _versePattern.allMatches(content).toList();
   if (matches.length < 2) return null;
+
+  // Two markers are not enough on their own, and this is where that showed. A
+  // sermon that enumerates two points, or a commentary listing three objections,
+  // matches the pattern as readily as a psalm does — and 23,143 of the corpus's
+  // 99,651 non-scripture units came through here as "verses". Everything
+  // downstream then believed it: referenceFor put a fabricated verse number into
+  // every citation taken from them ("Holiness XV:1, 2" for a prose sermon), the
+  // toolbar counted "3 verses", and because the verse path returns before
+  // _segmentProse the paragraph-splitting threshold never ran — so the prose
+  // above the first number stayed one untappable block, 2,567 characters in the
+  // case that turned this up.
+  //
+  // What separates the two is how much text a number governs. A verse or a
+  // confessional article is short; a numbered point in an argument carries
+  // paragraphs. See [_maxNumberedRunLength] for the measurement.
+  final runs = <int>[];
+  for (var i = 0; i < matches.length; i++) {
+    final end = i + 1 < matches.length ? matches[i + 1].start : content.length;
+    runs.add(end - matches[i].end);
+  }
+  runs.sort();
+  if (runs[runs.length ~/ 2] > _maxNumberedRunLength) return null;
 
   // Numbered text that does not *begin* numbered — a chapter heading above
   // verse 1, say — would put everything before the first marker into no
@@ -218,13 +250,25 @@ List<(int, int)> _spansSplitBy(String content, RegExp separator) {
 /// numbers listed back at them.
 String referenceFor(String? unitTitle, Iterable<PassageSegment> selected) {
   final title = (unitTitle ?? '').trim();
-  final numbers = selected
+  final chosen = selected.toList();
+  final numbers = chosen
       .map((s) => s.number)
       .whereType<int>()
       .toSet()
       .toList()
     ..sort();
   if (numbers.isEmpty) return title;
+
+  // A selection that also takes in an unnumbered segment cannot be cited by
+  // verse number, because the quote would then contain text the reference does
+  // not cover. The common case is a chapter heading sitting above verse 1:
+  // selecting both produced the quote "THE FIRST BOOK OF MOSES In the
+  // beginning." under the reference "Genesis 1:1", and that pair is what goes to
+  // the clipboard, the share sheet, a saved note, and the model as a pinned
+  // passage. The title alone is less precise and it is true, which is the right
+  // way round for a citation — the same reasoning as the ellipsis in [quoteFor],
+  // which refuses to run verses 4 and 9 together as though they were adjacent.
+  if (chosen.any((s) => s.number == null)) return title;
 
   final parts = <String>[];
   var runStart = numbers.first;
