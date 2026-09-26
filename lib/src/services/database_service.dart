@@ -162,7 +162,17 @@ class DatabaseService {
 
   static String ftsMatchQuery(String query) {
     final words = query
-        .replaceAll(RegExp(r'[^\w\s]'), ' ')
+        // Letters and digits in any script survive; everything else separates.
+        // `\w` cannot do this job — Dart's is ASCII-only, so it deleted the
+        // letters of exactly the words this corpus is most particular about.
+        // "Küng" came out as "K ng" and then vanished under the length filter
+        // below, leaving an empty match and a full-corpus LIKE scan behind it;
+        // "Grégoire" came out as "goire", which matches nothing and scanned
+        // anyway; "Νίκαια" and "ὁμοούσιος" disappeared entirely. FTS5 itself was
+        // never the problem: its unicode61 tokenizer indexes Greek happily and
+        // folds diacritics, so "gregoire" finds Grégoire once the letters
+        // actually reach it.
+        .replaceAll(RegExp(r'[^\p{L}\p{N}_\s]', unicode: true), ' ')
         .split(RegExp(r'\s+'))
         .where((t) => t.length > 2)
         .toList();
@@ -173,8 +183,22 @@ class DatabaseService {
     // otherwise match nothing at all, which is worse than matching too much.
     if (terms.isEmpty) terms = words;
 
-    return terms.map((t) => '$t*').join(' OR ');
+    return terms.map(_prefixTerm).join(' OR ');
   }
+
+  /// One FTS5 prefix term, quoted.
+  ///
+  /// The quoting is not decoration. A bareword that happens to spell an FTS5
+  /// operator is parsed as one, and the fallback directly above hands back the
+  /// reader's words *as typed* — so "WHY NOT", two stopwords in either case,
+  /// became `WHY* OR NOT*`, which is a syntax error rather than a search. The
+  /// exception surfaced from `rawQuery`, and in the Read tab, whose search has no
+  /// catch at all, it left the spinner turning for good.
+  ///
+  /// Inside a quoted string FTS5 reads those words as text. A literal quote is
+  /// written by doubling it.
+  static String _prefixTerm(String word) =>
+      '"${word.replaceAll('"', '""')}"*';
 
   /// Search content with FTS5 full-text search
   Future<List<Map<String, dynamic>>> search(String query, {int limit = 20}) async {
@@ -201,21 +225,44 @@ class DatabaseService {
     return results;
   }
   
-  /// Fallback LIKE search
-  Future<List<Map<String, dynamic>>> _searchLike(String query, {int limit = 20}) async {
+  /// Fallback LIKE search, for a query FTS5 found nothing for.
+  ///
+  /// Unindexed by nature, so it reads the corpus, and that is the reason the two
+  /// guards below matter more than they look: this is the most expensive query in
+  /// the app and sqflite runs it on the one queue everything else waits behind.
+  Future<List<Map<String, dynamic>>> _searchLike(String query,
+      {int limit = 20}) async {
+    final needle = query.trim();
+    // An empty query is not a search for everything. Without this it becomes
+    // LIKE '%%', which matches every unit in the corpus and hands back the first
+    // `limit` of them as though they had been found.
+    if (needle.isEmpty) return const [];
+
     final results = await database.rawQuery('''
       SELECT $_contentUnitColumns
       FROM content_units cu
       JOIN sources s ON cu.source_id = s.id
       LEFT JOIN traditions t ON s.tradition_id = t.id
       LEFT JOIN source_types st ON s.source_type_id = st.id
-      WHERE cu.content LIKE ?
+      WHERE cu.content LIKE ? ESCAPE '\\'
       ORDER BY cu.sequence
       LIMIT ?
-    ''', ['%$query%', limit]);
-    
+    ''', ['%${escapeLike(needle)}%', limit]);
+
     return results;
   }
+
+  /// Escape the two characters LIKE reads as wildcards.
+  ///
+  /// Searching for "100%" otherwise asks for the whole library: `%100%%` matches
+  /// every unit there is, and forty arbitrary passages come back looking like
+  /// results. `_` is the single-character wildcard and does the same in
+  /// miniature — a reader searching `__init__` or a bare `_` got the same thing.
+  @visibleForTesting
+  static String escapeLike(String value) => value
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
   
   /// Search by tags for better RAG retrieval
   Future<List<Map<String, dynamic>>> searchByTags(List<String> tags, {int limit = 20}) async {
