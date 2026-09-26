@@ -18,10 +18,32 @@ class DatabaseService {
 
   /// Lazily built on first scoped search — it reads every source row, which is
   /// wasted work for a session that never asks a scoped question.
-  EntityRecogniser? _recogniser;
+  ///
+  /// The *future* is cached, not the value. `_recogniser ??= await load()`
+  /// assigns only after the await, so two scoped questions asked close together
+  /// both read the whole sources table; holding the future means the second one
+  /// waits on the first.
+  Future<EntityRecogniser>? _recogniserLoad;
 
-  Future<EntityRecogniser> get recogniser async =>
-      _recogniser ??= await EntityRecogniser.load(database);
+  Future<EntityRecogniser> get recogniser {
+    return _recogniserLoad ??= EntityRecogniser.load(database)
+        // A failed load must not be cached, or one transient error leaves every
+        // later scoped question answering from the same failure.
+        .onError<Object>((error, stack) {
+      _recogniserLoad = null;
+      Error.throwWithStackTrace(error, stack);
+    });
+  }
+
+  /// Forget the recogniser, so the next scoped question is answered against the
+  /// content that is actually installed.
+  ///
+  /// It holds a snapshot of the sources and traditions table, taken once and
+  /// never refreshed. A reader who installed "Augustine of Hippo" mid-session and
+  /// then asked "what did Augustine say about grace?" got an empty scope and an
+  /// unscoped search — the very bug the scoping code exists to fix — until the
+  /// app was restarted.
+  void invalidateRecogniser() => _recogniserLoad = null;
 
   /// Bumped when the bundled corpus changes, so an installed copy of an older
   /// database is replaced rather than kept forever.
@@ -441,11 +463,13 @@ class DatabaseService {
       byId[row['id'] as int] = row;
     }
 
+    // Three rankings, not two lists with one of them appended to the other. Tag
+    // matching is its own engine and is handed over as one, so a unit the tags
+    // and FTS both found is promoted for being agreed on rather than for
+    // appearing twice in the same list.
     final fused = HybridRanker.fuse(
-      lexical: [
-        for (final row in ftsResults) row['id'] as int,
-        for (final row in tagResults) row['id'] as int,
-      ],
+      lexical: [for (final row in ftsResults) row['id'] as int],
+      tags: [for (final row in tagResults) row['id'] as int],
       semantic: semanticUnits,
       limit: limit * 4,
     );
