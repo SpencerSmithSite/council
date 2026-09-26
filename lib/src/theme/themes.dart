@@ -57,10 +57,17 @@ AppPalette _palette({
       error ?? (dark ? const Color(0xFFFF6B6B) : const Color(0xFFD11A2A));
   final accentPair = containerPair(accent, surface, text);
   final errPair = containerPair(err, surface, text);
+  // The identifying colours above are transcribed from editor themes, where a
+  // separator guides indentation and a subtext colour recedes behind code. Here
+  // they divide list rows and carry a row's trailing value, and a few of them
+  // are illegible at that job — so they are held to a floor the same way the
+  // container roles are derived rather than taken as given.
+  final rule = legibleSeparator(separator, surface, bg, text);
+  final secondary = legibleSecondaryLabel(subtext, surface, bg, text);
   return AppPalette(
     groupedBackground: bg,
-    separator: separator,
-    secondaryLabel: subtext,
+    separator: rule,
+    secondaryLabel: secondary,
     scheme: ColorScheme(
       brightness: brightness,
       primary: accent,
@@ -79,7 +86,7 @@ AppPalette _palette({
       onErrorContainer: errPair.on,
       surface: surface,
       onSurface: text,
-      onSurfaceVariant: subtext,
+      onSurfaceVariant: secondary,
       // Lowest is the page itself (behind the cells); the higher levels step up
       // toward controls and chips.
       surfaceContainerLowest: bg,
@@ -87,8 +94,8 @@ AppPalette _palette({
       surfaceContainer: surface,
       surfaceContainerHigh: surface2,
       surfaceContainerHighest: surface2,
-      outline: separator,
-      outlineVariant: separator,
+      outline: rule,
+      outlineVariant: rule,
     ),
   );
 }
