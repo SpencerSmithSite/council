@@ -1,15 +1,26 @@
 import 'dart:convert';
 import 'dart:io' show SocketException;
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:http/http.dart' as http;
+
+import '../util/stream_lines.dart';
 
 class OllamaService {
   final String baseUrl;
   final String defaultModel;
 
+  /// How a request gets its HTTP client.
+  ///
+  /// A seam, so the streaming parse can be driven from a test against a
+  /// hand-split response. The chunk boundaries are the whole point of that
+  /// parse, and a test that cannot choose where they fall cannot check it.
+  final http.Client Function() _clientFactory;
+
   OllamaService({
     this.baseUrl = 'http://localhost:11434',
     this.defaultModel = 'llama3.2',
-  });
+    @visibleForTesting http.Client Function()? clientFactory,
+  }) : _clientFactory = clientFactory ?? http.Client.new;
 
   /// Load the model into memory ahead of the first question.
   ///
@@ -69,8 +80,13 @@ class OllamaService {
   /// Get list of available models
   Future<List<String>> getModels() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/tags'));
-      
+      // The same five seconds isAvailable() uses. Without it a host that
+      // accepts the connection and then stalls leaves the Test button in
+      // Settings spinning with no ceiling.
+      final response = await http
+          .get(Uri.parse('$baseUrl/api/tags'))
+          .timeout(const Duration(seconds: 5));
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final models = data['models'] as List;
@@ -139,7 +155,7 @@ class OllamaService {
     // the next attempt streams immediately.
     const maxAttempts = 3;
     for (var attempt = 1;; attempt++) {
-      final client = http.Client();
+      final client = _clientFactory();
       var streamedAnything = false;
       try {
         final request = http.Request('POST', Uri.parse('$baseUrl/api/generate'))
@@ -150,20 +166,24 @@ class OllamaService {
           throw OllamaException('Failed to generate: ${response.statusCode}');
         }
 
-        await for (final chunk in response.stream.transform(utf8.decoder)) {
-          for (final line in chunk.split('\n')) {
-            if (line.trim().isEmpty) continue;
-            try {
-              final data = jsonDecode(line);
-              final piece = data['response'];
-              if (piece is String && piece.isNotEmpty) {
-                streamedAnything = true;
-                yield piece;
-              }
-              if (data['done'] == true) return;
-            } catch (_) {
-              // Skip malformed JSON lines.
+        // Whole lines, not whole chunks. A chunk boundary lands wherever the
+        // socket put it; splitting each chunk on its own leaves two fragments
+        // of one NDJSON object, both of which fail to parse and are skipped
+        // below — silently dropping a word out of the middle of the answer.
+        final lines = wholeLines(response.stream.transform(utf8.decoder));
+        await for (final line in lines) {
+          if (line.trim().isEmpty) continue;
+          try {
+            final data = jsonDecode(line);
+            final piece = data['response'];
+            if (piece is String && piece.isNotEmpty) {
+              streamedAnything = true;
+              yield piece;
             }
+            if (data['done'] == true) return;
+          } catch (_) {
+            // A line that is genuinely not JSON. Now that lines arrive whole,
+            // this no longer swallows half of a good one.
           }
         }
         return; // Stream ended without an explicit done flag.

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../util/stream_lines.dart';
 import 'inference_backend.dart';
 
 /// A cloud provider the user holds their own API key for.
@@ -229,27 +230,21 @@ class CloudBackend implements InferenceBackend {
       }
 
       // All four providers stream Server-Sent Events; chunk boundaries do not
-      // respect line boundaries, so buffer until a newline is actually seen.
-      var buffer = '';
-      await for (final chunk
-          in response.stream.transform(utf8.decoder)) {
-        buffer += chunk;
-        while (true) {
-          final newline = buffer.indexOf('\n');
-          if (newline < 0) break;
-          final line = buffer.substring(0, newline).trim();
-          buffer = buffer.substring(newline + 1);
+      // respect line boundaries, so lines are reassembled before parsing. The
+      // buffering this file used to do inline now lives in [wholeLines], which
+      // the Ollama path needs too — and was missing.
+      await for (final raw
+          in wholeLines(response.stream.transform(utf8.decoder))) {
+        final line = raw.trim();
+        if (!line.startsWith('data:')) continue;
+        final payload = line.substring(5).trim();
+        if (payload.isEmpty || payload == '[DONE]') continue;
 
-          if (!line.startsWith('data:')) continue;
-          final payload = line.substring(5).trim();
-          if (payload.isEmpty || payload == '[DONE]') continue;
-
-          try {
-            final text = _extractDelta(jsonDecode(payload));
-            if (text != null && text.isNotEmpty) yield text;
-          } on FormatException {
-            // Keep-alives and comments are not JSON; ignore them.
-          }
+        try {
+          final text = _extractDelta(jsonDecode(payload));
+          if (text != null && text.isNotEmpty) yield text;
+        } on FormatException {
+          // Keep-alives and comments are not JSON; ignore them.
         }
       }
     } finally {
