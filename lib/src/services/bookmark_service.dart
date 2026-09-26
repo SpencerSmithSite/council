@@ -12,14 +12,29 @@ class BookmarkService {
     final json = prefs.getString(_bookmarksKey);
     if (json == null) return [];
     
+    // Entry by entry, and deliberately so. This used to decode the whole list
+    // inside one try and return an empty list if anything in it threw — so a
+    // single unreadable entry cost the reader every bookmark they had, and the
+    // next tap on a bookmark icon wrote that empty list back over the key, which
+    // made the loss permanent. One bad entry should cost one bookmark. The same
+    // rule the chat history already follows for a malformed citation blob, which
+    // costs the citations and not the message.
+    final List<dynamic> decoded;
     try {
-      final List<dynamic> decoded = jsonDecode(json);
-      final bookmarks = decoded.map((b) => Bookmark.fromJson(b)).toList();
-      bookmarks.sort((a, b) => b.addedAt.compareTo(a.addedAt));
-      return bookmarks;
+      final parsed = jsonDecode(json);
+      if (parsed is! List) return const [];
+      decoded = parsed;
     } catch (_) {
-      return [];
+      return const [];
     }
+
+    final bookmarks = <Bookmark>[];
+    for (final entry in decoded) {
+      final bookmark = Bookmark.tryFromJson(entry);
+      if (bookmark != null) bookmarks.add(bookmark);
+    }
+    bookmarks.sort((a, b) => b.addedAt.compareTo(a.addedAt));
+    return bookmarks;
   }
   
   /// Add a bookmark
@@ -119,6 +134,22 @@ class Bookmark {
       preview: json['preview'] as String?,
       addedAt: DateTime.parse(json['addedAt'] as String),
     );
+  }
+
+  /// One stored entry, or null if it cannot be read.
+  ///
+  /// Every field above is an unguarded cast, which is fine for a list this app
+  /// wrote itself and not fine as the only line of defence: a contentId stored
+  /// as a double by some earlier version, or a missing addedAt, throws. What
+  /// matters is where the throw is caught — around one entry, not around the
+  /// whole list.
+  static Bookmark? tryFromJson(Object? entry) {
+    if (entry is! Map<String, dynamic>) return null;
+    try {
+      return Bookmark.fromJson(entry);
+    } catch (_) {
+      return null;
+    }
   }
   
   Map<String, dynamic> toJson() {

@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:council/src/services/updates/app_version.dart';
 import 'package:council/src/services/updates/release_manifest.dart';
 
 /// The manifest describes files the app downloads and then hands to the
 /// operating system to execute. Everything strict in here is strict for that
 /// reason.
 void main() {
+  _fileNameTests();
   const sha =
       '03e2015837e4fd29de353dc3db079af3bbdc1bccaf0c76a23b5c6697bbb5d485';
 
@@ -152,5 +154,67 @@ void main() {
       'sha256': sha.toUpperCase(),
     }));
     expect(m.platforms['android']!.sha256, sha);
+  });
+}
+
+/// The download filename is the one field of a manifest entry that names a place
+/// on disk, and it was the one field taken on trust.
+void _fileNameTests() {
+  PlatformRelease releaseFor(String url) => PlatformRelease(
+        platform: 'macos',
+        delivery: ReleaseDelivery.download,
+        url: Uri.parse(url),
+        version: const AppVersion([2026, 8, 2], build: 7),
+      );
+
+  group('fileName is a single harmless path component', () {
+    test('an ordinary installer name is left alone', () {
+      expect(releaseFor('https://h/d/Council-2026.8.2.dmg').fileName,
+          'Council-2026.8.2.dmg');
+    });
+
+    test('the extension survives, which is the point of the field', () {
+      // The OS decides what to do with a download by its extension; an installer
+      // with none opens nothing.
+      for (final ext in const ['dmg', 'exe', 'apk', 'AppImage']) {
+        expect(releaseFor('https://h/d/Council.$ext').fileName,
+            endsWith('.$ext'));
+      }
+    });
+
+    test('a percent-encoded traversal cannot escape the staging directory', () {
+      // Uri.pathSegments percent-decodes, so this arrives as
+      // ../../Library/LaunchAgents/x.plist, and p.join keeps it verbatim — the
+      // download landed outside staging, over whatever was there, before the
+      // checksum that would have rejected it ever ran.
+      final name = releaseFor(
+        'https://h/council/%2e%2e%2f%2e%2e%2fLibrary%2fLaunchAgents%2fx.plist',
+      ).fileName;
+
+      expect(name, isNot(contains('/')));
+      expect(name, isNot(contains('..')));
+      expect(name, 'x.plist');
+    });
+
+    test('a backslash separator is no better a way in', () {
+      final name =
+          releaseFor('https://h/d/%2e%2e%5c%2e%2e%5cstartup%5cx.exe').fileName;
+      expect(name, isNot(contains(r'\')));
+      expect(name, isNot(contains('..')));
+    });
+
+    test('a name that is nothing but dots does not become a directory', () {
+      expect(releaseFor('https://h/d/%2e%2e').fileName, 'Council-update');
+      expect(releaseFor('https://h/d/%2e').fileName, 'Council-update');
+    });
+
+    test('a leading dot is dropped rather than hiding the file', () {
+      expect(releaseFor('https://h/d/.hidden.dmg').fileName, 'hidden.dmg');
+    });
+
+    test('an empty path still yields something writable', () {
+      expect(releaseFor('https://h').fileName, 'Council-update');
+      expect(releaseFor('https://h/d/').fileName, 'Council-update');
+    });
   });
 }

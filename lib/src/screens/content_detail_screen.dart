@@ -295,6 +295,11 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
       case 'canon':
         return 'Canon';
       default:
+        // Guarded, because this indexes character zero. The caller admits a unit
+        // with an empty unit_type as long as it has a unit_number, and while the
+        // bundled corpus has no such row out of 108,623, a downloadable pack is
+        // free to. A RangeError here blanks the passage screen.
+        if (type.isEmpty) return '';
         return type[0].toUpperCase() + type.substring(1);
     }
   }

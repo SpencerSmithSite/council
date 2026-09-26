@@ -55,7 +55,33 @@ class PlatformRelease {
   String get fileName {
     final segments = url.pathSegments;
     final last = segments.isEmpty ? '' : segments.last;
-    return last.isEmpty ? 'Council-update' : last;
+    return _safeFileName(last);
+  }
+
+  /// A single path component, safe to join onto the staging directory.
+  ///
+  /// [Uri.pathSegments] percent-decodes, so a URL ending
+  /// `%2e%2e%2f%2e%2e%2fLibrary%2fLaunchAgents%2fx.plist` hands back
+  /// `../../Library/LaunchAgents/x.plist` — and `p.join` keeps that verbatim, so
+  /// the download was written outside the staging directory and over whatever
+  /// was already there, *before* the checksum that would have rejected it ever
+  /// ran. clearStaging and _discard would then not find it to clean up.
+  ///
+  /// Reaching this needs control of the published manifest or of its URL, so it
+  /// is a validation gap rather than an open door. It is worth closing anyway:
+  /// every other field in an entry is checked — the scheme, the host, the byte
+  /// count, the shape of the hash — and this one was taken on trust while being
+  /// the only one that names a place on disk.
+  static String _safeFileName(String candidate) {
+    // Only ever the last component, whichever separator was used.
+    final base = candidate.split(RegExp(r'[/\\]')).last;
+    // A conservative charset. An installer's name needs letters, digits, a dot
+    // for the extension, and the odd dash or underscore; nothing else earns the
+    // benefit of the doubt here.
+    final cleaned = base.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    // '.' and '..' name directories, and a leading dot hides the file.
+    final trimmed = cleaned.replaceAll(RegExp(r'^\.+'), '');
+    return trimmed.isEmpty ? 'Council-update' : trimmed;
   }
 }
 
