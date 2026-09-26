@@ -70,9 +70,25 @@ class InferenceProvider extends ChangeNotifier {
   /// 8B they choose themselves. Hiding the option meant they could not.
   bool get offersLocalModel => LocalModelChoice.runsHere;
 
+  /// A backend to hand out instead of the configured one. Tests only.
+  InferenceBackend? _overrideBackend;
+
+  /// Answer every question with [backend] rather than whatever is configured.
+  ///
+  /// The streaming path is the hardest part of this app to get right — what
+  /// happens when a stream errors before its first token, or goes quiet, or is
+  /// stopped, or is abandoned because the reader started a new thread — and none
+  /// of it was reachable from a test without a backend a test can drive.
+  @visibleForTesting
+  void useBackendForTesting(InferenceBackend backend) {
+    _overrideBackend = backend;
+  }
+
   /// The backend the user selected, constructed fresh so configuration edits
   /// always take effect.
   InferenceBackend get backend {
+    final override = _overrideBackend;
+    if (override != null) return override;
     switch (_backendId) {
       case PlatformLlmBackend.backendId:
         return const PlatformLlmBackend();

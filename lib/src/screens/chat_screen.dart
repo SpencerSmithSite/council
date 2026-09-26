@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +46,40 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => ChatScreenState();
 }
 
+/// An answer being streamed, and the two handles needed to end one early.
+///
+/// Stop used to set a flag the streaming loop checked between chunks, which
+/// works only while chunks are still arriving — and the case that most needs
+/// stopping is the one where none are. A backend that accepts the request and
+/// then goes quiet left the flag set and the loop parked on a token that was
+/// never coming, which locked the screen: Stop greys itself out the instant it
+/// is pressed, the loading flag is cleared only once this stream ends, and the
+/// composer stays disabled behind it. There was no way out but to kill the app.
+///
+/// So both handles are kept. The subscription cancels the request itself, and
+/// the completer releases whoever is waiting on the answer rather than leaving
+/// them waiting on a stream that has been abandoned.
+class _Generation {
+  _Generation(this.subscription, this.finished);
+
+  final StreamSubscription<String> subscription;
+  final Completer<void> finished;
+
+  void complete() {
+    if (!finished.isCompleted) finished.complete();
+  }
+
+  void fail(Object error, StackTrace stack) {
+    if (!finished.isCompleted) finished.completeError(error, stack);
+  }
+
+  /// Cancel the request, and release whoever is waiting on it.
+  Future<void> stop() async {
+    complete();
+    await subscription.cancel();
+  }
+}
+
 class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -71,8 +107,29 @@ class ChatScreenState extends State<ChatScreen> {
   String? _gapQuestion;
   bool _isLoading = false;
 
-  /// Set by the stop button; the streaming loop checks it between chunks.
+  /// Set by the stop button, for the label and the "(stopped)" suffix. The
+  /// stopping itself goes through [_generation]: a flag alone cannot stop a
+  /// stream that has gone silent.
   bool _cancelled = false;
+
+  /// The answer in flight, if there is one.
+  _Generation? _generation;
+
+  /// Bumped whenever the transcript is replaced wholesale — a new thread
+  /// started, or an older one reopened from the history.
+  ///
+  /// An answer in flight writes to a position in [_messages], and both of those
+  /// actions can happen while one is still streaming; neither is blocked while
+  /// it is. Without a way to notice, the write lands on an index that no longer
+  /// exists. The compose button on the main screen has no loading guard at all,
+  /// so tapping it mid-answer threw a RangeError, which the catch below then
+  /// dutifully formatted and *persisted* into the brand-new thread as the
+  /// assistant's opening words.
+  int _epoch = 0;
+
+  /// Built once. The prompt is a constant string, and this used to construct a
+  /// whole OllamaService per question to read it.
+  late final String _systemPrompt = OllamaService().buildSystemPrompt();
 
   late final DatabaseService _databaseService;
 
@@ -92,9 +149,49 @@ class ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    // Otherwise a generation outlives the screen that asked for it: the old
+    // loop noticed an unmounted screen only when the next token arrived, so
+    // leaving mid-answer left a cloud request streaming into nothing.
+    final generation = _generation;
+    _generation = null;
+    if (generation != null) unawaited(generation.stop());
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  /// Drive [stream] into [onChunk], with the subscription held somewhere the
+  /// stop button can reach it. See [_Generation].
+  Future<void> _stream(
+    Stream<String> stream,
+    void Function(String chunk) onChunk,
+  ) {
+    final finished = Completer<void>();
+    // Every completion is guarded, because stop() may already have completed
+    // this future by the time a late error or done event arrives.
+    final subscription = stream.listen(
+      onChunk,
+      onError: (Object error, StackTrace stack) {
+        if (!finished.isCompleted) finished.completeError(error, stack);
+      },
+      onDone: () {
+        if (!finished.isCompleted) finished.complete();
+      },
+      cancelOnError: true,
+    );
+    final generation = _Generation(subscription, finished);
+    _generation = generation;
+    return finished.future.whenComplete(() {
+      if (_generation == generation) _generation = null;
+      subscription.cancel();
+    });
+  }
+
+  /// Stop the answer in flight — now, rather than whenever the next token
+  /// happens to arrive.
+  Future<void> _stopGenerating() async {
+    if (mounted) setState(() => _cancelled = true);
+    await _generation?.stop();
   }
 
   /// Put back the thread this screen was asked to show, if any.
@@ -134,8 +231,14 @@ class ChatScreenState extends State<ChatScreen> {
   ///
   /// Public because the main screen's compose button drives it.
   Future<void> startNewConversation() async {
+    // Whatever is streaming belongs to the thread being left. Stopping it here
+    // rather than letting it write on is what keeps its next token from landing
+    // in the new thread — or, before the epoch existed, throwing on an index the
+    // cleared transcript no longer has.
+    await _stopGenerating();
     final previous = _conversation;
     setState(() {
+      _epoch++;
       _messages.clear();
       _conversation = null;
       _passage = widget.passage;
@@ -151,9 +254,11 @@ class ChatScreenState extends State<ChatScreen> {
   Future<void> openConversation(int id) async {
     final conversation = await _history.conversation(id);
     if (conversation == null) return;
+    await _stopGenerating();
     final stored = await _history.messages(id);
     if (!mounted) return;
     setState(() {
+      _epoch++;
       _conversation = conversation;
       _passage = conversation.passage;
       _messages
@@ -276,7 +381,7 @@ class ChatScreenState extends State<ChatScreen> {
         return;
       }
 
-      await _streamAnswer(backend, text, passages, sources);
+      await _streamAnswer(backend, conversation, text, passages, sources);
     } catch (e) {
       if (mounted) _addAssistantMessage(_friendlyError(e));
     } finally {
@@ -325,6 +430,7 @@ class ChatScreenState extends State<ChatScreen> {
   /// Build the RAG prompt and stream the answer into a placeholder message.
   Future<void> _streamAnswer(
     InferenceBackend backend,
+    Conversation thread,
     String question,
     List<Map<String, dynamic>> passages,
     List<Citation> sources,
@@ -358,53 +464,82 @@ class ChatScreenState extends State<ChatScreen> {
     final prompt = '$context\n${anchor}User question: $question\n\n'
         'Answer using the provided sources. Cite them as [1], [2] and so on.';
 
+    // The transcript this answer belongs to, and where in it the answer goes.
+    // Both are only meaningful while the epoch holds; see [_epoch].
+    final epoch = _epoch;
     final index = _messages.length;
+    final started = DateTime.now();
     setState(() {
       _messages.add(ChatMessage(
         text: '',
         isUser: false,
-        timestamp: DateTime.now(),
+        timestamp: started,
         citations: sources,
         generated: true,
       ));
     });
 
-    final buffer = StringBuffer();
-    await for (final chunk in backend.generate(
-      prompt: prompt,
-      system: OllamaService().buildSystemPrompt(),
-    )) {
-      if (_cancelled || !mounted) break;
-      buffer.write(chunk);
-      setState(() {
-        _messages[index] = ChatMessage(
-          text: buffer.toString(),
+    /// Whether the bubble this answer is being written into is still there.
+    bool stillOurs() => mounted && _epoch == epoch && index < _messages.length;
+
+    ChatMessage bubble(String text) => ChatMessage(
+          text: text,
           isUser: false,
-          timestamp: _messages[index].timestamp,
+          timestamp: started,
           citations: sources,
           generated: true,
         );
-      });
-      _scrollToBottom(animate: false);
+
+    final buffer = StringBuffer();
+    try {
+      await _stream(
+        backend.generate(prompt: prompt, system: _systemPrompt),
+        (chunk) {
+          buffer.write(chunk);
+          if (!stillOurs()) return;
+          setState(() => _messages[index] = bubble(buffer.toString()));
+          _scrollToBottom(animate: false);
+        },
+      );
+    } catch (_) {
+      // The placeholder goes in before the first token arrives, so an answer
+      // that fails before saying anything left an empty bubble — carrying the
+      // citation tiles, since those are known up front — sitting above the error
+      // the caller appends next. And because _persist skips empty text, the
+      // thread reopened from history showed something different from the screen.
+      if (buffer.isEmpty && stillOurs()) {
+        setState(() => _messages.removeAt(index));
+      }
+      rethrow;
     }
 
-    if (_cancelled && mounted && buffer.isNotEmpty) {
-      setState(() {
-        _messages[index] = ChatMessage(
-          text: '${buffer.toString()}\n\n_(stopped)_',
-          isUser: false,
-          timestamp: _messages[index].timestamp,
-          citations: sources,
-          generated: true,
-        );
-      });
+    if (buffer.isEmpty && _cancelled) {
+      // Stopped before a single token arrived. Nothing to keep, and nothing to
+      // tell the reader that they do not already know.
+      if (stillOurs()) setState(() => _messages.removeAt(index));
+      return;
     }
+
+    final answer = bubble(buffer.isEmpty
+        // An empty bubble reads as an answer still on its way. A stream can end
+        // without a token — a provider that returns nothing, a model that emits
+        // only reasoning the filter then strips — and the reader is owed a
+        // sentence about it either way.
+        ? 'The model returned an empty answer. Ask again, or choose a '
+            'different backend in Settings.'
+        : _cancelled
+            ? '${buffer.toString()}\n\n_(stopped)_'
+            : buffer.toString());
+    if (stillOurs()) setState(() => _messages[index] = answer);
 
     // Written once, at the end, rather than on every chunk: a token-by-token
-    // update would put thousands of writes behind a single answer. A stopped
-    // answer is stored too — the reader stopped it because they had read
-    // enough, not because they wanted it thrown away.
-    await _persist(index);
+    // update would put thousands of writes behind a single answer. Stored
+    // against the thread it was asked in rather than whatever is on screen by
+    // now, so an answer abandoned by starting a new conversation is still in the
+    // old one when the reader goes back to it. A stopped answer is stored too —
+    // the reader stopped it because they had read enough, not because they
+    // wanted it thrown away.
+    await _persistMessage(thread, answer);
   }
 
   void _addAssistantMessage(String text, {List<Citation>? citations}) {
@@ -433,11 +568,17 @@ class ChatScreenState extends State<ChatScreen> {
   Future<void> _persist(int index) async {
     final conversation = _conversation;
     if (conversation == null || index >= _messages.length) return;
-    final message = _messages[index];
-    if (message.text.isEmpty) return;
+    await _persistMessage(conversation, _messages[index]);
+  }
 
+  /// Store [message] against [thread], named explicitly rather than read from
+  /// state — an answer that was streaming when the reader started a new
+  /// conversation belongs to the thread they asked it in, not to the one that
+  /// happens to be on screen by the time the last token lands.
+  Future<void> _persistMessage(Conversation thread, ChatMessage message) async {
+    if (message.text.isEmpty) return;
     await _history.addMessage(
-      conversationId: conversation.id,
+      conversationId: thread.id,
       isUser: message.isUser,
       text: message.text,
       generated: message.generated,
@@ -559,9 +700,7 @@ class ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: _cancelled
-                        ? null
-                        : () => setState(() => _cancelled = true),
+                    onPressed: _cancelled ? null : _stopGenerating,
                     child: const Text('Stop'),
                   ),
                 ],
