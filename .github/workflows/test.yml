@@ -36,6 +36,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The ingesters' own self-tests, first because they need nothing — no
+      # Flutter, no corpus, no network, stdlib and an in-memory database — so a
+      # failure here is worth knowing about before spending four minutes on a
+      # toolchain.
+      #
+      # They cover the small functions that make judgements rather than crash:
+      # whether a work is public domain, whether a block of text is a title
+      # page, who a work's author is. That last one is why this step exists. A
+      # wrong author is not a crash and not a diff anyone reads — it is a name
+      # in the citation tile and in the model's prompt — and five of them
+      # shipped, including *Table Talk* by "Martin WILLIAM HAZLITT, Esq.
+      # Luther". The tests that would have caught it existed; nothing ran them.
+      - name: Ingester self-tests
+        run: python3 tools/test_ingesters.py
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
