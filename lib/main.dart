@@ -93,7 +93,13 @@ class _CouncilBootstrapState extends State<_CouncilBootstrap> {
     final packs = PackProvider(
       PackService(
         dbService.database,
-        onContentChanged: () async => dbService.semantic?.reload(),
+        onContentChanged: () async {
+          // Both caches, not just the vectors. The recogniser holds a snapshot
+          // of the sources table, and a scoped question asked after an install
+          // was answered against the library as it was before it.
+          dbService.invalidateRecogniser();
+          await dbService.semantic?.reload();
+        },
       ),
       await PackCatalogue.load(),
     );

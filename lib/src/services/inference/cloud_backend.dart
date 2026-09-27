@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../util/stream_lines.dart';
 import 'inference_backend.dart';
 
 /// A cloud provider the user holds their own API key for.
@@ -213,6 +214,24 @@ class CloudBackend implements InferenceBackend {
     }
   }
 
+  /// How long to wait for the provider to start answering, and then for each
+  /// further piece of the answer.
+  ///
+  /// Neither had a bound, and the shape of the failure is worse than a slow
+  /// request: a network that completes the TCP handshake and then swallows the
+  /// request — a captive portal, a proxy that has decided to hold the
+  /// connection — left the await waiting forever. Nothing downstream could
+  /// recover, because the code that clears the loading flag only runs when this
+  /// stream ends, so the spinner spun and the composer stayed disabled until the
+  /// app was killed.
+  ///
+  /// The second bound is on inactivity, not on total length: an answer is
+  /// allowed to take as long as it likes so long as it is still arriving. All
+  /// four providers send keep-alive events during a pause, so a minute of
+  /// complete silence is a stalled connection rather than a model thinking.
+  static const _firstByteTimeout = Duration(seconds: 60);
+  static const _idleTimeout = Duration(seconds: 60);
+
   @override
   Stream<String> generate({required String prompt, String? system}) async* {
     final request = http.Request('POST', _uri())
@@ -221,35 +240,41 @@ class CloudBackend implements InferenceBackend {
 
     final client = http.Client();
     try {
-      final response = await client.send(request);
+      final response = await client.send(request).timeout(
+            _firstByteTimeout,
+            onTimeout: () => throw InferenceException(
+                '${provider.label} did not respond within a minute. Check your '
+                'connection and try again.'),
+          );
 
       if (response.statusCode != 200) {
-        final body = await response.stream.bytesToString();
+        final body = await response.stream
+            .bytesToString()
+            .timeout(_firstByteTimeout, onTimeout: () => '');
         throw InferenceException(_describeError(response.statusCode, body));
       }
 
       // All four providers stream Server-Sent Events; chunk boundaries do not
-      // respect line boundaries, so buffer until a newline is actually seen.
-      var buffer = '';
-      await for (final chunk
-          in response.stream.transform(utf8.decoder)) {
-        buffer += chunk;
-        while (true) {
-          final newline = buffer.indexOf('\n');
-          if (newline < 0) break;
-          final line = buffer.substring(0, newline).trim();
-          buffer = buffer.substring(newline + 1);
+      // respect line boundaries, so lines are reassembled before parsing. The
+      // buffering this file used to do inline now lives in [wholeLines], which
+      // the Ollama path needs too — and was missing.
+      final bytes = response.stream.timeout(
+        _idleTimeout,
+        onTimeout: (sink) => sink.addError(InferenceException(
+            'The answer from ${provider.label} stopped arriving partway '
+            'through. Check your connection and ask again.')),
+      );
+      await for (final raw in wholeLines(bytes.transform(utf8.decoder))) {
+        final line = raw.trim();
+        if (!line.startsWith('data:')) continue;
+        final payload = line.substring(5).trim();
+        if (payload.isEmpty || payload == '[DONE]') continue;
 
-          if (!line.startsWith('data:')) continue;
-          final payload = line.substring(5).trim();
-          if (payload.isEmpty || payload == '[DONE]') continue;
-
-          try {
-            final text = _extractDelta(jsonDecode(payload));
-            if (text != null && text.isNotEmpty) yield text;
-          } on FormatException {
-            // Keep-alives and comments are not JSON; ignore them.
-          }
+        try {
+          final text = _extractDelta(jsonDecode(payload));
+          if (text != null && text.isNotEmpty) yield text;
+        } on FormatException {
+          // Keep-alives and comments are not JSON; ignore them.
         }
       }
     } finally {

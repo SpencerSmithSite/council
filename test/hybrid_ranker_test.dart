@@ -11,6 +11,7 @@ ChunkMatch _match(int chunkId, int unitId, double score) => ChunkMatch(
     );
 
 void main() {
+  _threeEngineTests();
   group('fuse', () {
     test('promotes results both engines agree on', () {
       // 7 is second in both lists; 1 and 9 each top one list but are absent
@@ -211,6 +212,86 @@ void _diversityTests() {
 
     test('handles an empty input', () {
       expect(diversify(const []), isEmpty);
+    });
+  });
+}
+
+/// RRF scores an item once per ranking it appears in, and summing those is what
+/// makes agreement between engines the thing that promotes a result.
+///
+/// searchForRAG used to concatenate the tag results onto the FTS results and
+/// pass the pair as one "lexical" list, which broke that rule twice over.
+void _threeEngineTests() {
+  group('one rank per list', () {
+    test('a duplicate inside one ranking is not counted twice', () {
+      // 7 is listed twice by a single engine and found by no other; 3 is found
+      // by two engines that agree. Scored per appearance, 7 collects
+      // 1/61 + 1/62 = 0.03252 and 3 collects 1/63 + 1/61 = 0.03226, so the
+      // duplicate wins — one engine repeating itself outranking two engines
+      // agreeing, which is the opposite of what RRF is for.
+      final fused = HybridRanker.fuse(
+        lexical: [7, 7, 3],
+        semantic: [3],
+      );
+
+      expect(fused.first, 3,
+          reason: 'a unit two engines found beats one listed twice by one');
+    });
+
+    test('a repeated id appears once in the output', () {
+      expect(HybridRanker.fuse(lexical: [4, 4, 4], semantic: []), [4]);
+    });
+  });
+
+  group('tags are a third engine', () {
+    test('a tag ranking on its own contributes results', () {
+      final fused = HybridRanker.fuse(
+        lexical: const [],
+        semantic: const [],
+        tags: [11, 12],
+      );
+      expect(fused, [11, 12]);
+    });
+
+    test('a unit found by tags and FTS outranks one found by FTS alone', () {
+      final fused = HybridRanker.fuse(
+        lexical: [1, 2],
+        semantic: const [],
+        tags: [2],
+      );
+
+      // 2 is second in the lexical list and first in the tag list. Two engines
+      // agreeing about it should beat one engine's top hit.
+      expect(fused.first, 2);
+    });
+
+    test("a tag result's own rank carries information", () {
+      // Concatenated, every tag result sat below every FTS result whatever its
+      // position, so the order within the tag list said nothing.
+      final first = HybridRanker.fuse(
+        lexical: const [],
+        semantic: const [],
+        tags: [20, 21],
+      );
+      final reversed = HybridRanker.fuse(
+        lexical: const [],
+        semantic: const [],
+        tags: [21, 20],
+      );
+
+      expect(first, [20, 21]);
+      expect(reversed, [21, 20]);
+    });
+
+    test('weights apply to the tag ranking too', () {
+      final favoured = HybridRanker.fuse(
+        lexical: [1],
+        semantic: const [],
+        tags: [2],
+        lexicalWeight: 0.1,
+        tagWeight: 1.0,
+      );
+      expect(favoured.first, 2);
     });
   });
 }

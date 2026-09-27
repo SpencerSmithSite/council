@@ -83,6 +83,79 @@ double contrastRatio(Color a, Color b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+/// The faintest a hairline may be against the surfaces it divides.
+///
+/// Windows draws its own card stroke at 1.19:1 and Apple its separator at
+/// 1.45:1, so this sits at the low end of what a platform considers a visible
+/// edge rather than at what a design system would prefer. A separator is meant
+/// to be the thinnest mark the screen can draw; the bar here only has to rule
+/// out the ones that are not drawn at all.
+const double kMinSeparatorContrast = 1.2;
+
+/// The faintest a secondary label may be, where the theme can afford it.
+///
+/// 3:1 is WCAG's floor for large text and for the parts of a control that
+/// carry meaning. Body text wants 4.5:1, and deliberately not that here: a
+/// subtitle held to the same bar as its own title stops reading as secondary,
+/// and the hierarchy is the point of having the colour at all.
+const double kMinSecondaryLabelContrast = 3.0;
+
+/// Moves [from] toward [toward] until it clears [target] against every colour
+/// in [against], or as far as it can go.
+///
+/// Blending toward the theme's own text colour, rather than toward black or
+/// white, is what keeps the result in the family: a lifted Cobalt2 separator is
+/// still a Cobalt2 blue, only one the eye can find.
+Color _lift(Color from, Color toward, double target, List<Color> against) {
+  bool clears(Color c) =>
+      against.every((bg) => contrastRatio(c, bg) >= target);
+  if (clears(from)) return from;
+  for (var step = 1; step <= 20; step++) {
+    final blended =
+        Color.alphaBlend(toward.withValues(alpha: step / 20), from);
+    if (clears(blended)) return blended;
+  }
+  return toward;
+}
+
+/// A hairline the eye can actually find, against both the cell it divides and
+/// the page that cell rests on.
+///
+/// The community palettes in `themes.dart` name a separator colour, but they
+/// are editor themes and the colour is doing a different job there — an indent
+/// guide against the editor's own background, not a rule between two list rows
+/// that sit a shade in front of it. Four of them landed within a hair of the
+/// cell colour once repurposed, Cobalt2 at 1.01:1, which is to say the grouped
+/// lists in Settings and Library had no visible row divisions at all.
+///
+/// Applied only to those palettes, not to the Apple/Fluent/Material ones: there
+/// the separator is a transcription of the platform's own value, and matching
+/// what Windows actually draws is the whole objective.
+Color legibleSeparator(Color separator, Color surface, Color bg, Color text) =>
+    _lift(separator, text, kMinSeparatorContrast, [surface, bg]);
+
+/// A secondary label that stays readable without collapsing into body text.
+///
+/// Same repurposing problem as [legibleSeparator]: a theme's "comment" colour
+/// is meant to recede behind code, and several sit near 2.2:1 once they are
+/// carrying a settings row's trailing value or a citation's source instead.
+///
+/// Where a theme's own body text is itself below the bar the target scales down
+/// with it, the rule [containerPair] already follows — a few of these palettes
+/// are low-contrast by design, and lifting a subtitle past the paragraph above
+/// it would be a worse reading experience, not a better one.
+Color legibleSecondaryLabel(
+    Color subtext, Color surface, Color bg, Color text) {
+  final body = [surface, bg]
+      .map((b) => contrastRatio(text, b))
+      .reduce((a, b) => a < b ? a : b);
+  final headroom = body * 0.8;
+  final target = headroom < kMinSecondaryLabelContrast
+      ? headroom
+      : kMinSecondaryLabelContrast;
+  return _lift(subtext, text, target, [surface, bg]);
+}
+
 /// A resolved set of surface colours for one theme.
 ///
 /// [ColorScheme] alone cannot express the platform looks this app wants,

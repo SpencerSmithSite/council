@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// numbered verse per line, confessional articles as a single dense paragraph,
 /// and both have to segment sensibly without the code knowing which is which.
 void main() {
+  _numberedProseTests();
+  _referenceCoversQuoteTests();
   group('verses', () {
     const genesis = '1. In the beginning God created the heaven and the earth.\n'
         '2. And the earth was without form, and void; and darkness was upon '
@@ -140,6 +142,141 @@ void main() {
     test('selection order does not matter', () {
       final passage = segmentPassage('1. First verse.\n2. Second verse.');
       expect(quoteFor(passage, [1, 0]), quoteFor(passage, [0, 1]));
+    });
+  });
+}
+
+/// Numbered prose is not numbered text.
+///
+/// _segmentVerses believed any two lines starting `1. ` / `2. `, and 23,143 of
+/// the corpus's 99,651 non-scripture units matched — a sermon enumerating two
+/// points, a commentary listing three objections. Everything downstream believed
+/// it too: the citation gained a verse number that does not exist, the toolbar
+/// counted verses, and because the verse path returns early the paragraph split
+/// never ran, so the prose above the first number stayed one untappable block.
+///
+/// What separates them is how much text a number governs. Measured on the
+/// shipped corpus: for the genuinely numbered types the median run is 130–344
+/// characters (99th percentile of those medians, 213); for the prose types the
+/// 25th percentile is 651 and the median 1,319.
+void _numberedProseTests() {
+  /// A sermon that makes two numbered points, of the length they actually run to.
+  String sermonWithTwoPoints() {
+    final preamble = List.filled(18, 'The question before us is a plain one, '
+        'and it will not be answered by evasion.').join(' ');
+    final first = List.filled(20, 'Consider first that holiness is not '
+        'optional for those who profess it.').join(' ');
+    final second = List.filled(16, 'Consider secondly the cost of neglecting '
+        'it, which is greater than men suppose.').join(' ');
+    return '$preamble\n\n1. $first\n\n2. $second\n';
+  }
+
+  group('a numbered list inside prose is not verses', () {
+    test('two long numbered points do not make a verse passage', () {
+      final passage = segmentPassage(sermonWithTwoPoints());
+      expect(passage.kind, isNot(SegmentKind.verse));
+    });
+
+    test('no fabricated verse number reaches the citation', () {
+      final passage = segmentPassage(sermonWithTwoPoints());
+      final reference = referenceFor('XV. Lovest Thou Me?', passage.segments);
+      // The old output was "XV. Lovest Thou Me?:1, 2" — a verse reference for a
+      // sermon that has no verses.
+      expect(reference, 'XV. Lovest Thou Me?');
+      expect(reference, isNot(contains(':')));
+    });
+
+    test('the prose above the first number becomes tappable', () {
+      // The verse path returns before _segmentProse, so the paragraph-splitting
+      // threshold never ran and a 2,567-character preamble was one tap target.
+      final passage = segmentPassage(sermonWithTwoPoints());
+      expect(passage.segments.length, greaterThan(3));
+      for (final segment in passage.segments) {
+        expect(segment.text.length, lessThan(1400),
+            reason: 'no segment should be a page of prose');
+      }
+    });
+  });
+
+  group('genuinely numbered text still segments as verses', () {
+    test('a short psalm of two verses', () {
+      // Psalm 117 is two verses long, so a minimum marker count would have been
+      // the wrong rule.
+      const psalm = '1. O praise the LORD, all ye nations: praise him, all ye '
+          'people.\n'
+          '2. For his merciful kindness is great toward us: and the truth of '
+          'the LORD endureth for ever. Praise ye the LORD.\n';
+      final passage = segmentPassage(psalm);
+      expect(passage.kind, SegmentKind.verse);
+      expect(passage.segments.map((s) => s.number), [1, 2]);
+    });
+
+    test('confessional articles, which run longer than verses', () {
+      // The median numbered run in the corpus's Confession units is 224
+      // characters; these are near that.
+      const article = 'God hath endued the will of man with that natural '
+          'liberty, that it is neither forced, nor by any absolute necessity '
+          'of nature determined to good or evil. Man, in his state of '
+          'innocency, had freedom and power to will and to do that which is '
+          'good and well-pleasing to God.';
+      const text = '1. $article\n2. $article\n3. $article\n';
+      final passage = segmentPassage(text);
+      expect(passage.kind, SegmentKind.verse);
+      expect(passage.segments.map((s) => s.number), [1, 2, 3]);
+    });
+
+    test('a chapter heading above verse 1 keeps its own segment', () {
+      const withHeading = 'THE FIRST BOOK OF MOSES\n'
+          '1. In the beginning God created the heaven and the earth.\n'
+          '2. And the earth was without form, and void.\n';
+      final passage = segmentPassage(withHeading);
+      expect(passage.kind, SegmentKind.verse);
+      expect(passage.segments.first.number, isNull);
+      expect(passage.segments.first.text, 'THE FIRST BOOK OF MOSES');
+    });
+  });
+}
+
+/// A reference must cover everything the quote beside it contains.
+void _referenceCoversQuoteTests() {
+  const withHeading = 'THE FIRST BOOK OF MOSES\n'
+      '1. In the beginning God created the heaven and the earth.\n'
+      '2. And the earth was without form, and void.\n';
+
+  group('a reference never claims less than the quote holds', () {
+    test('heading plus verse 1 is cited by title, not by verse', () {
+      final passage = segmentPassage(withHeading);
+      final selected = [passage.segments[0], passage.segments[1]];
+
+      final quote = quoteFor(passage, [0, 1]);
+      final reference = referenceFor('Genesis 1', selected);
+
+      // The pair that used to go to the clipboard, the share sheet, a saved note
+      // and the model was: "THE FIRST BOOK OF MOSES In the beginning…" under
+      // "Genesis 1:1" — a reference covering one verse of a quote that also
+      // contained the heading.
+      expect(quote, contains('THE FIRST BOOK OF MOSES'));
+      expect(reference, 'Genesis 1');
+      expect(reference, isNot(contains(':1')));
+    });
+
+    test('verses on their own are still cited precisely', () {
+      final passage = segmentPassage(withHeading);
+      expect(referenceFor('Genesis 1', [passage.segments[1]]), 'Genesis 1:1');
+      expect(
+          referenceFor('Genesis 1',
+              [passage.segments[1], passage.segments[2]]),
+          'Genesis 1:1, 2');
+    });
+
+    test('the heading on its own is cited by title', () {
+      final passage = segmentPassage(withHeading);
+      expect(referenceFor('Genesis 1', [passage.segments[0]]), 'Genesis 1');
+    });
+
+    test('with no title there is nothing honest to claim', () {
+      final passage = segmentPassage(withHeading);
+      expect(referenceFor(null, [passage.segments[0], passage.segments[1]]), '');
     });
   });
 }

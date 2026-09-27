@@ -30,6 +30,10 @@ class _ReadScreenState extends State<ReadScreen> {
   List<Map<String, dynamic>>? _results;
   bool _searching = false;
 
+  /// Set when a search threw rather than returned nothing. The two look the
+  /// same on screen otherwise, and they are not the same thing.
+  String? _searchError;
+
   // Persisted shelf arrangement: pinned and starred source ids, and the names
   // of tradition sections the reader has collapsed.
   Set<int> _pinned = {};
@@ -239,13 +243,30 @@ class _ReadScreenState extends State<ReadScreen> {
       setState(() => _results = null);
       return;
     }
-    setState(() => _searching = true);
-    final rows =
-        await context.read<DatabaseService>().search(text, limit: 40);
-    if (mounted) {
+    setState(() {
+      _searching = true;
+      _searchError = null;
+    });
+    // Guarded, because the alternative is a spinner that never stops. A throw
+    // out of search() — an FTS5 syntax error was one, before the query builder
+    // started quoting its terms — escaped as an unhandled async error and left
+    // _searching true with nothing on screen but the indicator, for the life of
+    // the app. A reader is owed a sentence and a usable tab.
+    final db = context.read<DatabaseService>();
+    try {
+      final rows = await db.search(text, limit: 40);
+      if (!mounted) return;
       setState(() {
         _results = rows;
         _searching = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _results = const [];
+        _searching = false;
+        _searchError = 'Something went wrong searching for that. '
+            'Try different wording.';
       });
     }
   }
@@ -273,7 +294,7 @@ class _ReadScreenState extends State<ReadScreen> {
       body: _searching
                 ? const Center(child: CircularProgressIndicator())
                 : _results != null
-                    ? _Results(rows: _results!)
+                    ? _Results(rows: _results!, problem: _searchError)
                     : _Shelf(
                         sources: _filtered,
                         onRefresh: _loadShelf,
@@ -905,11 +926,17 @@ class _SourceTile extends StatelessWidget {
 class _Results extends StatelessWidget {
   final List<Map<String, dynamic>> rows;
 
-  const _Results({required this.rows});
+  /// Why there are no rows, when the reason is that the search failed rather
+  /// than that the library holds nothing. Offering to browse collections is the
+  /// wrong thing to say about a query that never ran.
+  final String? problem;
+
+  const _Results({required this.rows, this.problem});
 
   @override
   Widget build(BuildContext context) {
     if (rows.isEmpty) {
+      final message = problem;
       return Center(
         child: Padding(
           // Centred in the space the search capsule leaves, not behind it.
@@ -917,15 +944,20 @@ class _Results extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Nothing found in what you have installed.'),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const BrowseScreen()),
-                ),
-                child: const Text('Browse collections'),
+              Text(
+                message ?? 'Nothing found in what you have installed.',
+                textAlign: TextAlign.center,
               ),
+              if (message == null) ...[
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BrowseScreen()),
+                  ),
+                  child: const Text('Browse collections'),
+                ),
+              ],
             ],
           ),
         ),

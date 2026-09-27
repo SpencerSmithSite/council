@@ -18,23 +18,40 @@ class HybridRanker {
   /// what most implementations use.
   static const double k = 60.0;
 
-  /// Fuse two ranked lists of unit ids into one.
+  /// Fuse the ranked lists of unit ids into one.
   ///
   /// Items are scored `1 / (k + rank)` in each list they appear in, summed,
-  /// then sorted. Appearing in both lists is what promotes a result — which is
-  /// the property we want, since agreement between a lexical and a semantic
-  /// engine is a strong signal.
+  /// then sorted. Appearing in more than one list is what promotes a result —
+  /// which is the property we want, since agreement between engines that work
+  /// differently is a strong signal.
+  ///
+  /// [tags] is the third engine: units carrying the topic tags extracted from
+  /// the query. It used to be concatenated onto [lexical] by the caller, which
+  /// broke the promotion rule in both directions. A unit found by both FTS and
+  /// tags appeared twice in one list and collected two contributions, scoring as
+  /// though a further engine had agreed about it when only one had; and every tag
+  /// result sat below every FTS result whatever its own rank, so its ranking
+  /// carried no information at all.
   static List<int> fuse({
     required List<int> lexical,
     required List<int> semantic,
+    List<int> tags = const [],
     double lexicalWeight = 1.0,
     double semanticWeight = 1.0,
+    double tagWeight = 1.0,
     int? limit,
   }) {
     final scores = <int, double>{};
 
     void accumulate(List<int> ranking, double weight) {
+      // One rank per list, which is what RRF is defined over. A repeated id
+      // inside a single ranking is not two engines agreeing, and scoring it
+      // twice invents agreement nobody reported. Positions are left as they
+      // fall, since a duplicate's rank in the list it came from is still its
+      // rank.
+      final counted = <int>{};
       for (var i = 0; i < ranking.length; i++) {
+        if (!counted.add(ranking[i])) continue;
         scores.update(
           ranking[i],
           (existing) => existing + weight / (k + i + 1),
@@ -45,6 +62,7 @@ class HybridRanker {
 
     accumulate(lexical, lexicalWeight);
     accumulate(semantic, semanticWeight);
+    accumulate(tags, tagWeight);
 
     final ordered = scores.keys.toList()
       ..sort((a, b) {

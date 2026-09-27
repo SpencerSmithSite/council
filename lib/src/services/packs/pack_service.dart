@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../database_service.dart';
 import 'pack_manifest.dart';
 
 /// Downloads content and merges it into the app's database.
@@ -177,6 +178,20 @@ class PackService {
       throw const PackException(
         'This content was built for a different version of the app. Update '
         'the app and try again.',
+      );
+    }
+
+    // The check PackManifest.embeddingsCompatibleWith was written for, which
+    // until now had no caller at all. Vectors built by one embedding model and
+    // compared against queries encoded by another are noise, and nothing
+    // downstream would notice: every checksum, count and row stays correct while
+    // semantic retrieval quietly stops working. That is the failure the doc
+    // comments on both DatabaseService.embeddingModel and this manifest field
+    // describe as the reason the field exists.
+    if (!manifest.embeddingsCompatibleWith(DatabaseService.embeddingModel)) {
+      throw const PackException(
+        'This content was built for a newer version of the app. Update the app '
+        'and try again.',
       );
     }
 

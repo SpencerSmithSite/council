@@ -1,5 +1,6 @@
 import '../ollama_service.dart';
 import 'inference_backend.dart';
+import 'reasoning_filter.dart';
 
 /// Ollama, either on this machine or reachable over the local network / VPN.
 ///
@@ -92,11 +93,21 @@ class OllamaBackend implements InferenceBackend {
 
   @override
   Stream<String> generate({required String prompt, String? system}) {
-    return _service.generateStream(
+    // Filtered here too, not only on the downloadable-model path. The reasoning
+    // models a reader is most likely to pull — `ollama pull qwen3`,
+    // `deepseek-r1` — emit their chain of thought in the same `<think>` markers,
+    // and MarkdownBody drops unknown HTML tags, so it arrived as several
+    // paragraphs of "First, looking at source [1]…" with nothing to say it was
+    // scratch work. It was then written into the chat history that way.
+    //
+    // A model that does not think out loud is unaffected: the filter only
+    // removes what sits between the markers, and passes everything through when
+    // there are none.
+    return ReasoningFilter.strip(_service.generateStream(
       prompt: prompt,
       system: system,
       model: model.isEmpty ? null : model,
-    );
+    ));
   }
 
   @override

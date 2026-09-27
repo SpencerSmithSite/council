@@ -91,26 +91,40 @@ void _ftsQueryTests() {
       );
 
       expect(query, contains(' OR '));
-      expect(query, isNot(contains('* Council')),
+      expect(query, isNot(contains('* "Council"')),
           reason: 'juxtaposition would mean AND');
-      expect(query, contains('Council*'));
-      expect(query, contains('Trent*'));
+      expect(query, contains('"Council"*'));
+      expect(query, contains('"Trent"*'));
     });
 
     test('drops words too short to rank on', () {
       final query = DatabaseService.ftsMatchQuery('Is the Son of God eternal?');
-      expect(query, isNot(contains('Is*')));
-      expect(query, isNot(contains('of*')));
-      expect(query, contains('Son*'));
-      expect(query, contains('eternal*'));
+      expect(query, isNot(contains('"Is"*')));
+      expect(query, isNot(contains('"of"*')));
+      expect(query, contains('"Son"*'));
+      expect(query, contains('"eternal"*'));
     });
 
     test('strips punctuation that would break the MATCH syntax', () {
       // An unescaped quote or paren is a syntax error in FTS5, not a no-op.
+      //
+      // Each term is now a quoted string, so the quotes in the built expression
+      // are the delimiters rather than the reader's. What must not survive is
+      // punctuation *from the query*: the reader's own quotes and parens are
+      // separators, and a term therefore holds letters, digits and nothing else.
       final query = DatabaseService.ftsMatchQuery('What of "faith alone" (sola)?');
-      expect(query, isNot(contains('"')));
       expect(query, isNot(contains('(')));
-      expect(query, contains('faith*'));
+      expect(query, contains('"faith"*'));
+      expect(query, contains('"sola"*'));
+
+      final terms = RegExp(r'"([^"]*)"')
+          .allMatches(query)
+          .map((m) => m.group(1)!)
+          .toList();
+      expect(terms, ['faith', 'alone', 'sola']);
+      for (final term in terms) {
+        expect(term, matches(RegExp(r'^[\p{L}\p{N}_]+$', unicode: true)));
+      }
     });
 
     test('returns empty for input with nothing to match on', () {
