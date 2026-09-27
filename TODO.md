@@ -760,6 +760,51 @@ done.**
 
 ## Known, small, deliberately not fixed yet
 
+- ~~**Seven author names carried CCEL's bookkeeping.**~~ Found and fixed
+  2026-09-27. `read_creators` built an author out of CCEL's `Creator(s)` field
+  and three faults in it stored names that are not anyone's: *Table Talk* by
+  "Martin WILLIAM HAZLITT, Esq. Luther", *A Body of Divinity* by "Thomas d. 1686
+  Watson", *The Imitation of Christ* by "à Kempis, 1380-1471 Thomas", Calvin on
+  prayer by "John Henry Beveridge Calvin", *God's Way of Peace* by "Horatius,
+  D.D. Bonar".
+
+  Worth remembering for where it landed rather than for the parsing. An author
+  is not display metadata here: `sources.author` goes into the citation tile
+  under every answer *and* into `Citation.promptLabel`, so the model was told in
+  its own prompt that Table Talk is by a man who does not exist, and could
+  repeat it in an answer. A corpus whose claim is that you can check it against
+  a named source has to get the name right.
+
+  Three faults, each with a test in `test_ingesters.py`: bare life dates were
+  not stripped, because only bracketed ones were; the surname-first swap kept
+  everything after the *first* comma as the forename; and the person-splitter
+  only starts a new person at "Surname,", so a translator written forename-first
+  was absorbed into the author. A name now ends at CCEL's first bookkeeping
+  bracket — not at the first `(`, because "Philaret (Drozdov) of Moscow" has one
+  of its own.
+
+  `tools/fix_author_names.py` repairs rows already written, and guesses nothing.
+  It works from evidence already in the database: CCEL work URLs carry an author
+  slug, so every source by one author is grouped, and five slugs held more than
+  one spelling with the odd one out beaten 3-to-1 or worse. That pass also
+  caught a typo no pattern would have — 67 sources say "Charles Haddon Spurgeon"
+  and one said "Hadden". For a lone source with no sibling to compare against,
+  the surname is taken from the slug and the rest is the forename; that is what
+  places Thomas à Kempis, whom CCEL writes forename-first.
+
+  Two things the dry run earned. `"G.".isupper()` is true, so an early draft
+  read a middle initial as a shouted translator credit and offered to rewrite
+  "Ellen G. White" and "Charles G. Finney" across fourteen sources; a shouted
+  run now needs two letters and no period. And `build_packs.py` rebuilt
+  `assets/theology.db.gz` byte-differently with identical logical content, which
+  would have forced a `corpusVersion` bump and a re-copy of the bundled database
+  for every reader, for nothing — reverted after diffing the dumps.
+
+  **Not yet republished.** The rebuild changed 9 of 54 fragments, so the packs in
+  `dist/packs` are correct and the ones on the release are not. Uploading those
+  9 costs readers only those 9.
+
+
 - ~~**The id ledger silently drops sources that share a `source_url`.**~~
   Found and fixed 2026-08-30. Kept here because the shape of the bug is worth
   remembering: `current_ledger` grouped correctly — `GROUP BY s.id`, one row per
