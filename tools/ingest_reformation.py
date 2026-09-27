@@ -651,6 +651,51 @@ CREATOR_DATES = re.compile(r"\((\d{3,4})\s*[-–]\s*(\d{3,4})\)")
 # and forty-five commentary volumes are filed with no author at all.
 CREATOR_SPLIT = re.compile(r"(?<=\))\s+(?=[A-Z][A-Za-z'-]+\s*,)")
 
+# Life dates and qualifications CCEL appends to a name *without* brackets. The
+# parenthesised forms are stripped already; these survived into the stored
+# author and shipped: "Thomas d. 1686 Watson", "Horatius, D.D. Bonar",
+# "à Kempis, 1380-1471 Thomas".
+NAME_NOISE = re.compile(
+    r"""(?x)
+      \b(?:b|d|fl|ca|c)\.\s*\d{3,4}(?:\s*[-\u2013]\s*\d{3,4})?   # d. 1686, ca. 1400
+    | \b\d{3,4}\s*[-\u2013]\s*\d{3,4}\b                          # 1380-1471
+    | \b(?:D\.D\.|LL\.D\.|Ph\.D\.|S\.T\.D\.|M\.A\.|B\.D\.
+        |Esq\.|S\.J\.|O\.P\.|O\.S\.B\.|C\.SS\.R\.)
+    """,
+    re.I,
+)
+
+
+# Where a person's *name* stops and CCEL's bookkeeping starts. Deliberately not
+# "the first bracket": "Philaret (Drozdov) of Moscow" carries a genuine
+# parenthesis in the middle of a real name, so only brackets that open with a
+# date or a role word end the name.
+AUTHOR_TAIL = re.compile(
+    r"\s*\((?:\d{3,4}|Translator|Editor|Compiler|Alternative|Author)\b", re.I)
+
+
+def clean_person_name(raw):
+    """One person's name, with CCEL's bookkeeping taken back off it.
+
+    Two faults this exists for, both of which reached readers. Bare life dates
+    are not in brackets, so the parenthesis strip above never saw them. And the
+    surname-first swap used to `partition` on the *first* comma and keep
+    everything after it as the forename — fine for "Watson, Thomas", wrong for
+    "Bonar, Horatius, D.D.", which became "Horatius, D.D. Bonar".
+
+    Only the first two comma-separated parts are a name. Anything after the
+    forename is a qualification, a date, or another person.
+    """
+    name = NAME_NOISE.sub(" ", raw)
+    name = re.sub(r"\s+", " ", name).strip().strip(",").strip()
+    if not name:
+        return ""
+    if "," in name:
+        surname, _, rest = name.partition(",")
+        forename = rest.split(",")[0]
+        name = f"{forename.strip()} {surname.strip()}".strip()
+    return re.sub(r"\s+", " ", name).strip(" ,.").strip()
+
 
 def read_creators(creators):
     """Pull author, translator and dates out of CCEL's Creator(s) field.
@@ -673,16 +718,18 @@ def read_creators(creators):
 
     for person in people:
         roles = {m.group(1).lower() for m in CREATOR_ROLE.finditer(person)}
-        name = re.sub(r"\s*\([^)]*\)", " ", person).strip().rstrip(",").strip()
+        # The name ends at CCEL's first bookkeeping bracket; everything past it
+        # is dates, a role marker, or another person entirely. Stripping the
+        # brackets and keeping the remainder — which is what this did — glued a
+        # translator written "Forename Surname" onto the author, because the
+        # person-splitter only recognises a new person as "Surname,". That is
+        # how Table Talk came to be by "Martin WILLIAM HAZLITT, Esq. Luther".
+        name = clean_person_name(AUTHOR_TAIL.split(person, maxsplit=1)[0])
         if not name:
             continue
-        # CCEL writes names surname-first.
-        if "," in name:
-            surname, _, rest = name.partition(",")
-            name = f"{rest.strip()} {surname.strip()}".strip()
         span = CREATOR_DATES.search(person)
         parsed.append({
-            "name": re.sub(r"\s+", " ", name),
+            "name": name,
             "roles": roles,
             "dates": f"{span.group(1)}-{span.group(2)}" if span else None,
         })

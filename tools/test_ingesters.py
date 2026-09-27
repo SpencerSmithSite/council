@@ -61,6 +61,43 @@ def test_creators():
     check("no creators at all", reformation.read_creators(""),
           (None, None, None))
 
+    # The five names that shipped wrong, each exactly as CCEL writes it. All of
+    # them reached the reader's citation tile and the model's prompt, so the
+    # answer could attribute Table Talk to a man who does not exist.
+
+    # Bare life dates are not in brackets, so the parenthesis strip never saw
+    # them. "A Body of Divinity" was by "Thomas d. 1686 Watson".
+    check("life dates written without brackets",
+          reformation.read_creators("Watson, Thomas d. 1686"),
+          ("Thomas Watson", None, None))
+
+    # The surname-first swap kept everything after the *first* comma as the
+    # forename. "God's Way of Peace" was by "Horatius, D.D. Bonar".
+    check("a qualification after the forename",
+          reformation.read_creators("Bonar, Horatius, D.D."),
+          ("Horatius Bonar", None, None))
+
+    # The person-splitter only starts a new person at "Surname,", so a
+    # translator written forename-first was absorbed into the author. Table Talk
+    # was by "Martin WILLIAM HAZLITT, Esq. Luther".
+    check("a translator whose name is not surname-first",
+          reformation.read_creators(
+              "Luther, Martin (1483-1546) WILLIAM HAZLITT, Esq. (Translator)"),
+          ("Martin Luther", None, "1483-1546"))
+
+    # The same fault without dates: Calvin on prayer was by "John Henry
+    # Beveridge Calvin".
+    check("an unsplit translator with no dates to separate them",
+          reformation.read_creators(
+              "Calvin, John (Alternative) Henry Beveridge (Translator)"),
+          ("John Calvin", None, None))
+
+    # A real name that carries a bracket of its own must survive: the name ends
+    # at CCEL's bookkeeping, not at the first "(".
+    check("a parenthesis that belongs to the name",
+          reformation.read_creators("Philaret (Drozdov) of Moscow"),
+          ("Philaret (Drozdov) of Moscow", None, None))
+
 
 # --- the rights decision -----------------------------------------------------
 

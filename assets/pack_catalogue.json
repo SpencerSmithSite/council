@@ -611,31 +611,32 @@
         "Harmony of the Law - Volume 2",
         "Harmony of the Law - Volume 3",
         "Harmony of the Law - Volume 4",
+        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "On the Christian Life",
         "The Institutes of the Christian Religion"
       ],
       "tags": {
-        "angels": 805,
+        "angels": 811,
         "baptism": 194,
         "christology": 2,
-        "church": 2567,
+        "church": 2586,
         "creation": 248,
         "eschatology": 352,
         "eucharist": 10,
-        "faith": 2499,
-        "grace": 1886,
-        "holy-spirit": 691,
+        "faith": 2554,
+        "grace": 1891,
+        "holy-spirit": 693,
         "incarnation": 5,
         "justification": 124,
-        "last-judgment": 2462,
-        "prayer": 1543,
+        "last-judgment": 2468,
+        "prayer": 1599,
         "sacraments": 192,
-        "salvation": 1750,
-        "sanctification": 104,
-        "scripture": 1472,
-        "sin": 2153,
+        "salvation": 1764,
+        "sanctification": 105,
+        "scripture": 1492,
+        "sin": 2172,
         "trinity": 18,
-        "worship": 1338
+        "worship": 1341
       },
       "traditions": [
         "Reformed"
@@ -681,7 +682,6 @@
     },
     "f-spurgeon": {
       "authors": [
-        "Charles Hadden Spurgeon",
         "Charles Haddon Spurgeon"
       ],
       "titles": [
@@ -833,29 +833,30 @@
         "Concerning Christian Liberty",
         "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
         "Preface to the Letter of St. Paul to the Romans",
+        "Table Talk",
         "The Large Catechism"
       ],
       "tags": {
-        "angels": 17,
-        "baptism": 39,
-        "church": 106,
-        "creation": 5,
-        "eschatology": 7,
+        "angels": 33,
+        "baptism": 55,
+        "church": 175,
+        "creation": 10,
+        "eschatology": 19,
         "eucharist": 3,
-        "faith": 144,
-        "grace": 54,
-        "holy-spirit": 8,
+        "faith": 217,
+        "grace": 95,
+        "holy-spirit": 14,
         "incarnation": 1,
-        "justification": 29,
-        "last-judgment": 34,
-        "prayer": 60,
-        "sacraments": 59,
-        "salvation": 61,
-        "sanctification": 4,
-        "scripture": 65,
-        "sin": 110,
-        "trinity": 1,
-        "worship": 17
+        "justification": 43,
+        "last-judgment": 59,
+        "prayer": 79,
+        "sacraments": 81,
+        "salvation": 87,
+        "sanctification": 6,
+        "scripture": 120,
+        "sin": 185,
+        "trinity": 5,
+        "worship": 31
       },
       "traditions": [
         "Lutheran"
@@ -1109,29 +1110,32 @@
         "Thomas Watson"
       ],
       "titles": [
+        "A Body of Divinity",
         "A Divine Cordial, or, The transcendent priviledge of those that love God and are savingly called ...",
         "The Beatitudes: An Exposition of Matthew 5:1-12",
         "The Ten Commandments"
       ],
       "tags": {
-        "angels": 75,
+        "angels": 138,
         "baptism": 12,
-        "church": 43,
-        "creation": 10,
-        "eschatology": 2,
-        "faith": 88,
-        "grace": 133,
-        "holy-spirit": 6,
-        "justification": 6,
+        "church": 65,
+        "creation": 25,
+        "eschatology": 11,
+        "eucharist": 1,
+        "faith": 146,
+        "grace": 207,
+        "holy-spirit": 12,
+        "incarnation": 6,
+        "justification": 17,
         "last-judgment": 6,
-        "prayer": 63,
-        "sacraments": 17,
-        "salvation": 46,
-        "sanctification": 9,
-        "scripture": 54,
-        "sin": 197,
-        "trinity": 6,
-        "worship": 27
+        "prayer": 91,
+        "sacraments": 21,
+        "salvation": 75,
+        "sanctification": 27,
+        "scripture": 80,
+        "sin": 292,
+        "trinity": 18,
+        "worship": 40
       },
       "traditions": [
         "Reformed"
@@ -1214,29 +1218,30 @@
         "John Charles Ryle"
       ],
       "titles": [
+        "Expository Thoughts on Matthew",
         "Holiness: Its Nature, Hindrances, Difficulties, and Roots",
         "The Upper Room: Being a Few Truths for the Times"
       ],
       "tags": {
-        "angels": 26,
-        "baptism": 11,
-        "church": 134,
-        "creation": 16,
-        "eschatology": 25,
-        "faith": 149,
-        "grace": 133,
-        "holy-spirit": 15,
-        "incarnation": 1,
-        "justification": 35,
-        "last-judgment": 55,
-        "prayer": 91,
-        "sacraments": 20,
-        "salvation": 76,
-        "sanctification": 40,
-        "scripture": 89,
-        "sin": 174,
-        "trinity": 6,
-        "worship": 32
+        "angels": 38,
+        "baptism": 16,
+        "church": 182,
+        "creation": 23,
+        "eschatology": 31,
+        "faith": 189,
+        "grace": 171,
+        "holy-spirit": 19,
+        "incarnation": 2,
+        "justification": 37,
+        "last-judgment": 75,
+        "prayer": 113,
+        "sacraments": 24,
+        "salvation": 98,
+        "sanctification": 42,
+        "scripture": 119,
+        "sin": 231,
+        "trinity": 10,
+        "worship": 43
       },
       "traditions": [
         "Anglican"
@@ -1712,36 +1717,32 @@
       ]
     },
     "f-lutheran": {
-      "authors": [
-        "Martin WILLIAM HAZLITT, Esq. Luther"
-      ],
+      "authors": [],
       "titles": [
         "Luther's Small Catechism",
-        "Table Talk",
         "The Apology of the Augsburg Confession",
         "The Augsburg Confession",
         "The Smalcald Articles"
       ],
       "tags": {
-        "angels": 22,
-        "baptism": 31,
-        "church": 158,
-        "creation": 10,
-        "eschatology": 16,
+        "angels": 6,
+        "baptism": 15,
+        "church": 89,
+        "creation": 5,
+        "eschatology": 4,
         "eucharist": 7,
-        "faith": 180,
-        "grace": 110,
-        "holy-spirit": 10,
-        "justification": 53,
-        "last-judgment": 65,
-        "prayer": 45,
-        "sacraments": 63,
-        "salvation": 47,
-        "sanctification": 5,
-        "scripture": 118,
-        "sin": 194,
-        "trinity": 4,
-        "worship": 49
+        "faith": 107,
+        "grace": 69,
+        "holy-spirit": 4,
+        "justification": 39,
+        "last-judgment": 40,
+        "prayer": 26,
+        "sacraments": 41,
+        "salvation": 21,
+        "sanctification": 3,
+        "scripture": 63,
+        "sin": 119,
+        "worship": 35
       },
       "traditions": [
         "Lutheran"
@@ -1751,14 +1752,11 @@
       "authors": [
         "E.W. Bullinger",
         "Heinrich Bullinger",
-        "Horatius, D.D. Bonar",
-        "John Henry Beveridge Calvin",
+        "Horatius Bonar",
         "Stephen Charnock",
-        "Thomas Boston",
-        "Thomas d. 1686 Watson"
+        "Thomas Boston"
       ],
       "titles": [
-        "A Body of Divinity",
         "A Discourse of God's being the Author of Reconciliation",
         "A Discourse of the Efficient of Regeneration",
         "A Discourse of the Nature of Regeneneration",
@@ -1766,7 +1764,6 @@
         "A Discourse on the Cleansing Virtue of Christ's Blood",
         "Commentary on Revelation",
         "God's Way of Peace",
-        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "The Belgic Confession",
         "The Canons of Dordt",
         "The Crook in the Lot",
@@ -1780,26 +1777,26 @@
         "The Westminster Shorter Catechism"
       ],
       "tags": {
-        "angels": 276,
+        "angels": 207,
         "baptism": 48,
-        "church": 333,
-        "creation": 158,
-        "eschatology": 101,
-        "eucharist": 2,
-        "faith": 404,
-        "grace": 513,
-        "holy-spirit": 106,
-        "incarnation": 23,
-        "justification": 73,
-        "last-judgment": 220,
-        "prayer": 195,
-        "sacraments": 78,
-        "salvation": 204,
-        "sanctification": 61,
-        "scripture": 246,
-        "sin": 613,
-        "trinity": 37,
-        "worship": 130
+        "church": 292,
+        "creation": 143,
+        "eschatology": 92,
+        "eucharist": 1,
+        "faith": 291,
+        "grace": 434,
+        "holy-spirit": 98,
+        "incarnation": 17,
+        "justification": 62,
+        "last-judgment": 214,
+        "prayer": 111,
+        "sacraments": 74,
+        "salvation": 161,
+        "sanctification": 42,
+        "scripture": 200,
+        "sin": 499,
+        "trinity": 25,
+        "worship": 114
       },
       "traditions": [
         "Reformed"
@@ -1869,7 +1866,7 @@
     },
     "f-catholic": {
       "authors": [
-        "\u00e0 Kempis, 1380-1471 Thomas"
+        "Thomas \u00e0 Kempis"
       ],
       "titles": [
         "The Canons and Decrees of the Council of Trent",
@@ -1904,36 +1901,34 @@
     },
     "f-anglican": {
       "authors": [
-        "John C. Ryle",
         "Joseph Barber Lightfoot"
       ],
       "titles": [
         "Articles of Religion of the Reformed Episcopal Church",
-        "Expository Thoughts on Matthew",
         "The Apostolic Fathers",
         "The Thirty-Nine Articles of Religion"
       ],
       "tags": {
-        "angels": 34,
-        "baptism": 15,
-        "church": 105,
-        "creation": 19,
-        "eschatology": 18,
+        "angels": 22,
+        "baptism": 10,
+        "church": 57,
+        "creation": 12,
+        "eschatology": 12,
         "eucharist": 1,
-        "faith": 114,
-        "grace": 74,
-        "holy-spirit": 20,
-        "incarnation": 2,
-        "justification": 11,
-        "last-judgment": 45,
-        "prayer": 49,
-        "sacraments": 16,
-        "salvation": 47,
-        "sanctification": 3,
-        "scripture": 67,
-        "sin": 115,
-        "trinity": 7,
-        "worship": 19
+        "faith": 74,
+        "grace": 36,
+        "holy-spirit": 16,
+        "incarnation": 1,
+        "justification": 9,
+        "last-judgment": 25,
+        "prayer": 27,
+        "sacraments": 12,
+        "salvation": 25,
+        "sanctification": 1,
+        "scripture": 37,
+        "sin": 58,
+        "trinity": 3,
+        "worship": 8
       },
       "traditions": [
         "Anglican"
@@ -2472,22 +2467,17 @@
         "Councils",
         "E.W. Bullinger",
         "Heinrich Bullinger",
-        "Horatius, D.D. Bonar",
-        "John C. Ryle",
-        "John Henry Beveridge Calvin",
+        "Horatius Bonar",
         "John Wesley",
         "Joseph Barber Lightfoot",
-        "Martin WILLIAM HAZLITT, Esq. Luther",
         "Orthodox Eastern Church",
         "Philaret (Drozdov) of Moscow",
         "Stephen Charnock",
         "Synod of Jerusalem",
         "Thomas Boston",
-        "Thomas d. 1686 Watson",
-        "\u00e0 Kempis, 1380-1471 Thomas"
+        "Thomas \u00e0 Kempis"
       ],
       "titles": [
-        "A Body of Divinity",
         "A Discourse of God's being the Author of Reconciliation",
         "A Discourse of the Efficient of Regeneration",
         "A Discourse of the Nature of Regeneneration",
@@ -2508,7 +2498,6 @@
         "Constantinople/\"Trullo\"/Quinisext (692)",
         "Entire Sanctification",
         "Ephesus (431)",
-        "Expository Thoughts on Matthew",
         "Gangra (343)",
         "God's Way of Peace",
         "Laodicea (390)",
@@ -2516,10 +2505,8 @@
         "Neocaesarea (315)",
         "Nicaea I (325)",
         "Nicaea II (787)",
-        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "Sardica (344)",
         "Sermons on Several Occasions",
-        "Table Talk",
         "The Apology of the Augsburg Confession",
         "The Apostolic Fathers",
         "The Augsburg Confession",
@@ -2546,26 +2533,26 @@
         "The Westminster Shorter Catechism"
       ],
       "tags": {
-        "angels": 439,
-        "baptism": 178,
-        "church": 997,
-        "creation": 241,
-        "eschatology": 198,
-        "eucharist": 28,
-        "faith": 1027,
-        "grace": 985,
-        "holy-spirit": 198,
-        "incarnation": 49,
-        "last-judgment": 441,
-        "prayer": 485,
-        "sacraments": 283,
-        "salvation": 478,
-        "sanctification": 115,
-        "scripture": 653,
-        "sin": 1244,
-        "trinity": 103,
-        "worship": 272,
-        "justification": 180
+        "angels": 342,
+        "baptism": 157,
+        "church": 839,
+        "creation": 214,
+        "eschatology": 171,
+        "eucharist": 27,
+        "faith": 801,
+        "grace": 827,
+        "holy-spirit": 180,
+        "incarnation": 42,
+        "last-judgment": 390,
+        "prayer": 360,
+        "sacraments": 253,
+        "salvation": 387,
+        "sanctification": 92,
+        "scripture": 522,
+        "sin": 998,
+        "trinity": 83,
+        "worship": 231,
+        "justification": 153
       },
       "traditions": [
         "Anglican",
@@ -3800,31 +3787,32 @@
         "Harmony of the Law - Volume 2",
         "Harmony of the Law - Volume 3",
         "Harmony of the Law - Volume 4",
+        "Of Prayer--A Perpetual Exercise of Faith. The Daily Benefits Derived from It.",
         "On the Christian Life",
         "The Institutes of the Christian Religion"
       ],
       "tags": {
-        "angels": 805,
+        "angels": 811,
         "baptism": 194,
         "christology": 2,
-        "church": 2567,
+        "church": 2586,
         "creation": 248,
         "eschatology": 352,
         "eucharist": 10,
-        "faith": 2499,
-        "grace": 1886,
-        "holy-spirit": 691,
+        "faith": 2554,
+        "grace": 1891,
+        "holy-spirit": 693,
         "incarnation": 5,
         "justification": 124,
-        "last-judgment": 2462,
-        "prayer": 1543,
+        "last-judgment": 2468,
+        "prayer": 1599,
         "sacraments": 192,
-        "salvation": 1750,
-        "sanctification": 104,
-        "scripture": 1472,
-        "sin": 2153,
+        "salvation": 1764,
+        "sanctification": 105,
+        "scripture": 1492,
+        "sin": 2172,
         "trinity": 18,
-        "worship": 1338
+        "worship": 1341
       },
       "traditions": [
         "Reformed"
@@ -3878,7 +3866,6 @@
     "author-spurgeon": {
       "name": "Charles Spurgeon",
       "authors": [
-        "Charles Hadden Spurgeon",
         "Charles Haddon Spurgeon"
       ],
       "titles": [
@@ -4038,29 +4025,30 @@
         "Concerning Christian Liberty",
         "First Principles of the Reformation or the Ninety-five Theses and the Three Primary Works",
         "Preface to the Letter of St. Paul to the Romans",
+        "Table Talk",
         "The Large Catechism"
       ],
       "tags": {
-        "angels": 17,
-        "baptism": 39,
-        "church": 106,
-        "creation": 5,
-        "eschatology": 7,
+        "angels": 33,
+        "baptism": 55,
+        "church": 175,
+        "creation": 10,
+        "eschatology": 19,
         "eucharist": 3,
-        "faith": 144,
-        "grace": 54,
-        "holy-spirit": 8,
+        "faith": 217,
+        "grace": 95,
+        "holy-spirit": 14,
         "incarnation": 1,
-        "justification": 29,
-        "last-judgment": 34,
-        "prayer": 60,
-        "sacraments": 59,
-        "salvation": 61,
-        "sanctification": 4,
-        "scripture": 65,
-        "sin": 110,
-        "trinity": 1,
-        "worship": 17
+        "justification": 43,
+        "last-judgment": 59,
+        "prayer": 79,
+        "sacraments": 81,
+        "salvation": 87,
+        "sanctification": 6,
+        "scripture": 120,
+        "sin": 185,
+        "trinity": 5,
+        "worship": 31
       },
       "traditions": [
         "Lutheran"
@@ -4279,7 +4267,7 @@
         "Pope Leo XIII",
         "Tertullian",
         "Thomas Aquinas",
-        "\u00e0 Kempis, 1380-1471 Thomas"
+        "Thomas \u00e0 Kempis"
       ],
       "titles": [
         "A Treatise on the Soul",
@@ -4449,8 +4437,7 @@
     "tradition-lutheran": {
       "name": "Lutheran",
       "authors": [
-        "Martin Luther",
-        "Martin WILLIAM HAZLITT, Esq. Luther"
+        "Martin Luther"
       ],
       "titles": [
         "A Treatise on Good Works",
@@ -4482,9 +4469,9 @@
         "sanctification": 9,
         "scripture": 183,
         "sin": 304,
-        "trinity": 5,
         "worship": 66,
-        "incarnation": 1
+        "incarnation": 1,
+        "trinity": 5
       },
       "traditions": [
         "Lutheran"
@@ -4502,10 +4489,9 @@
         "Charles Hodge",
         "E.W. Bullinger",
         "Heinrich Bullinger",
-        "Horatius, D.D. Bonar",
+        "Horatius Bonar",
         "John Calvin",
         "John Flavel",
-        "John Henry Beveridge Calvin",
         "John Knox",
         "John Owen",
         "Jonathan Edwards",
@@ -4514,8 +4500,7 @@
         "Stephen Charnock",
         "Thomas Boston",
         "Thomas Manton",
-        "Thomas Watson",
-        "Thomas d. 1686 Watson"
+        "Thomas Watson"
       ],
       "titles": [
         "A Body of Divinity",
@@ -4711,7 +4696,6 @@
     "tradition-anglican": {
       "name": "Anglican",
       "authors": [
-        "John C. Ryle",
         "John Charles Ryle",
         "John Newton",
         "Joseph Barber Lightfoot",
@@ -4767,7 +4751,6 @@
     "tradition-baptist": {
       "name": "Baptist",
       "authors": [
-        "Charles Hadden Spurgeon",
         "Charles Haddon Spurgeon",
         "John Bunyan",
         "John Gill"
