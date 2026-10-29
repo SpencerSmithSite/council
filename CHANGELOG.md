@@ -5,6 +5,64 @@ All notable changes to Council will be documented in this file.
 Versions are the release date (`YYYY.M.D`) plus a build counter. Entries below
 `30.0.0` predate that scheme and are left as they were written.
 
+## [2026.10.29+8] - 2026-10-29
+
+### Seven branches of the church, and a library that installs again
+
+**The library is 734 sources, grouped the way the church is.** Traditions are
+now a tree — branch, then family — and the Read shelf follows it in historical
+order rather than alphabetical, so the Reformation no longer sorts above
+Chalcedon. All seven branches hold text for the first time, with the Church of
+the East, Pentecostal, Brethren, Adventist and Holiness added, Vatican I and
+thirty encyclicals of Leo XIII, the Dordrecht Confession and the complete Menno
+Simons from Wikisource, and an English Second Helvetic Confession and the Savoy
+Platform from Schaff. Calvin, Owen, Spurgeon, Matthew Henry, Edwards and Gill
+were invisible to tag search until now; 57,578 units had never been tagged.
+
+**Updating clears downloaded collections once.** The bundled corpus changed
+shape, so the app replaces it on first launch and collections have to be
+downloaded again from Settings → Library. The previous build cannot install the
+new collections at all — it is told to update rather than failing half way.
+
+**Android: uninstall the 2026.8.2 pre-release before installing this one.** That
+build was signed with a debug key; this one carries the permanent release key,
+and Android will not install one over the other. This happens once.
+
+### Answers
+
+- **Stop stops,** including when the model has accepted the question and gone
+  silent. Cloud requests are now bounded: sixty seconds to begin, sixty of
+  silence mid-answer.
+- **Ollama answers no longer lose words** where a network chunk split a line.
+- **Reasoning models on Ollama** no longer put their scratch work in the
+  transcript, as the downloaded models already didn't.
+- An answer that fails before its first word says so instead of leaving an
+  empty bubble under a list of sources; starting a new thread mid-answer no
+  longer writes an error into it.
+- Retrieval counts each search engine once. Tag matches were being scored as
+  though they were a second vote from full-text search.
+- A collection installed mid-session is in scope for the next question, not the
+  next launch.
+
+### Search and citations
+
+- **Greek, Latin and accented names are searchable.** The search box deleted
+  every letter outside ASCII — "Νίκαια" and "ὁμοούσιος" became empty queries and
+  "Grégoire" became "goire" — and semantic search encoded accented Greek as an
+  unknown token.
+- **Prose is no longer cited by verse number.** 23,143 units — sermons with a
+  numbered point or two — were treated as numbered text and cited by verses that
+  do not exist. A selection that includes a heading is no longer cited as
+  though it began at verse 1.
+- **Seven author names are corrected**, among them *Table Talk*, which was
+  credited to "Martin WILLIAM HAZLITT, Esq. Luther".
+
+### Fixes
+
+- One unreadable bookmark no longer empties every bookmark.
+- A search that fails shows an error instead of spinning forever.
+- Separators are drawn in every theme.
+
 ## [2026.8.2+7] - 2026-08-02
 
 ### The app can answer on its own, and can tell you it is out of date

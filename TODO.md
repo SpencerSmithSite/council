@@ -22,22 +22,23 @@ all three audits clean except the three noted at the bottom.*
 own to decide whether to unpack a fresh copy; it moves only when the bundled
 file changes, which means only with a release. The corpus **build** numbers
 that appear in prose below (v15, v16, v17) count rebuilds of the content and
-have never been the same sequence. `idSpace` is **1** and unchanged, which is
-what actually decides whether published packs install into an app already in
-the field.*
+have never been the same sequence. `idSpace` is **2**, which is what actually
+decides whether published packs install into an app already in the field — see
+*Id space 2* below for why it moved when no id did.*
 
 ---
 
 ## Before the official release
 
-2026.8.2+7 is published as a **pre-release**. What stands between that and a
+2026.10.29+8 is published as a **pre-release**, as 2026.8.2+7 was before it. What stands between that and a
 release called official is distribution trust, not features — an installer the
 operating system does not warn about. The detail for each is further down; this
 is the index, so the gate is in one place.
 
 - [x] **Android signing** — done 2026-08-06. The only one of these that could
       not have been fixed afterwards. See *App work*.
-- [ ] **The next release must carry the new bundled corpus.** `CORPUS_VERSION`
+- [x] **The next release must carry the new bundled corpus** — done with
+      2026.10.29+8. `CORPUS_VERSION`
       moved to 16 on 2026-08-30 because the bundled database gained a
       `branches` table, and the Read shelf's query joins it. A build shipping
       the new Dart against the old `assets/theology.db.gz` does not degrade —
@@ -49,8 +50,8 @@ is the index, so the gate is in one place.
       Store Connect API key. See *Release signing*.
 - [ ] **Sign the Windows installer** — needs a code-signing certificate bought
       first, and OV vs EV is a decision, not a formality. See *Release signing*.
-- [ ] **Say on the download page that the Android pre-release cannot be updated
-      over.** Lands *with* the release cut, not before — the page must never
+- [x] **Say on the download page that the Android pre-release cannot be updated
+      over** — done with 2026.10.29+8. Lands *with* the release cut, not before — the page must never
       describe a build that is not published yet. See *App work*.
 
 **Verified by hand, 2026-08-06:** a physical Android phone, a Mac, an iPhone
@@ -60,6 +61,34 @@ accepted rather than closed, and are listed under *App work* so they stay
 visible rather than forgotten.
 
 ---
+
+## Id space 2 — 2026-10-29, and the check that missed it
+
+Found while cutting 2026.10.29. The 2026-08-30 rebuild gave `traditions` four
+columns for the branch taxonomy (`branch_id`, `parent_id`, `full_name`,
+`sort_order`) and moved no id, so `check_id_space` reported "unchanged —
+publish whenever you like". Publishing would have broken every pack install on
+2026.8.2: `PackService._merge` copies reference rows with
+`INSERT OR IGNORE INTO traditions SELECT * FROM pack.traditions`, which is
+positional, and SQLite refuses 9 values for a 5-column table. Confirmed by
+diffing a fragment downloaded from release `corpus-v17` against `dist/packs`.
+
+The id ledger now records the column list of every packed table, and a table
+both builds carry with different columns is a fourth fault, `reshaped`, beside
+`moved`, `rewritten` and `occupied`. A table *new* to the packs is not — an app
+that predates it never names it in its merge. The ledger was seeded from the
+published `corpus-v17` fragment rather than from the local database, so the
+first build to check it measured itself against what readers actually hold;
+it bumped the space to 2 unprompted, and `DatabaseService.idSpace` followed.
+
+The bump costs readers nothing extra. `corpusVersion` moved 15 → 16 in the same
+release, which already replaces the installed database and the packs merged
+into it. A 2026.8.2 app now sees space 2 and says to update, instead of failing
+partway into a merge.
+
+The end-of-build message was also wrong in the other direction: it re-read the
+ledger *after* writing it, so it compared the build with itself and always said
+"publish whenever you like". It now compares against the space read before.
 
 ## Removed because nothing read it — 2026-08-30
 
@@ -800,9 +829,8 @@ done.**
   would have forced a `corpusVersion` bump and a re-copy of the bundled database
   for every reader, for nothing — reverted after diffing the dumps.
 
-  **Not yet republished.** The rebuild changed 9 of 54 fragments, so the packs in
-  `dist/packs` are correct and the ones on the release are not. Uploading those
-  9 costs readers only those 9.
+  **Republished with 2026.10.29+8** as release `corpus-v18`, on id space 2 —
+  see *Id space 2* above for why that release needed the app to go out first.
 
 
 - ~~**The id ledger silently drops sources that share a `source_url`.**~~
@@ -1173,8 +1201,8 @@ will see; both notes come off once these are settled.
       That mitigates a compromised key, not a lost one — the backup is still the
       only thing standing between a lost keystore and stranding every install.)
 
-- [ ] **Say on the download page that this release cannot update over the
-      pre-release.** The published 2026.8.2 APK is debug-signed, so Android will
+- [x] **Say on the download page that this release cannot update over the
+      pre-release** — done with 2026.10.29+8. The published 2026.8.2 APK is debug-signed, so Android will
       refuse to install the properly-signed build over it — the reader sees a
       failed install, and through the in-app updater it looks like the update
       is broken rather than like a one-time key change. They have to uninstall

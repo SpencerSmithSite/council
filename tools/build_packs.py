@@ -474,7 +474,23 @@ def current_ledger(conn):
                  f"{expected} with units. Some are going unmonitored.")
 
     top = conn.execute("SELECT MAX(id) FROM content_units").fetchone()[0] or 0
-    return {"format": LEDGER_FORMAT, "maxUnitId": top, "sources": sources}
+    return {"format": LEDGER_FORMAT, "maxUnitId": top, "sources": sources,
+            "tables": packed_columns(conn)}
+
+
+def packed_columns(conn):
+    """The column list of every table a pack carries, in declaration order.
+
+    The app merges a pack with `INSERT INTO t SELECT * FROM pack.t`, which is
+    positional: a pack whose table has a column the reader's copy does not is
+    refused outright ("table traditions has 5 columns but 9 values were
+    supplied"). Ids can be untouched and the packs still uninstallable, so the
+    shape is recorded beside the ids and checked the same way.
+    """
+    return {
+        table: [row[1] for row in conn.execute(f"PRAGMA table_info({table})")]
+        for table in REFERENCE_TABLES + CONTENT_TABLES
+    }
 
 
 def read_ledger():
@@ -560,7 +576,23 @@ def check_id_space(conn):
         elif settled:
             occupied.append(label(key, entry))
 
-    faults = [("moved", moved), ("rewritten", rewritten), ("occupied", occupied)]
+    # A table the previous build did not carry is no fault: an app that predates
+    # it never names it in its merge, so it is not read. A table both builds
+    # carry with different columns is, because the merge is positional.
+    reshaped = []
+    if "tables" not in before:
+        print("  (the ledger records no table shapes yet, so column changes "
+              "cannot be checked on this build)")
+    for table, columns in now["tables"].items():
+        old_columns = before.get("tables", {}).get(table)
+        if old_columns and old_columns != columns:
+            added = [c for c in columns if c not in old_columns]
+            dropped = [c for c in old_columns if c not in columns]
+            change = ", ".join([f"+{c}" for c in added] + [f"-{c}" for c in dropped])
+            reshaped.append(f"{table}  ({change or 'reordered'})")
+
+    faults = [("moved", moved), ("rewritten", rewritten), ("occupied", occupied),
+              ("reshaped", reshaped)]
     if not any(items for _, items in faults):
         space = before.get("idSpace", ID_SPACE_START)
         print(f"id space: {space} (unchanged — this build only appends, so its "
@@ -568,7 +600,8 @@ def check_id_space(conn):
         return space, now
 
     space = before.get("idSpace", ID_SPACE_START) + 1
-    print(f"id space: {space} (BUMPED — ids in the field have been reassigned)")
+    print(f"id space: {space} (BUMPED — apps in the field could not merge "
+          f"these packs safely)")
     for kind, items in faults:
         for item in items[:6]:
             print(f"    {kind:10} {item}")
@@ -661,6 +694,7 @@ def main():
     # fragments a reader does not already have, so it is computed in the app
     # rather than fixed here — the same collection costs different amounts to
     # different people.
+    published_space = (read_ledger() or {}).get("idSpace", ID_SPACE_START)
     id_space, ledger = check_id_space(conn)
     manifest = {
         "corpusVersion": CORPUS_VERSION,
@@ -747,12 +781,14 @@ def main():
     print(f"\nWrote {DIST / 'manifest.json'}")
     print(f"\nDatabaseService.corpusVersion must be {CORPUS_VERSION} "
           f"and idSpace must be {id_space}.")
-    if id_space == (read_ledger() or {}).get("idSpace", ID_SPACE_START):
+    # Against the space read before the ledger was rewritten above: reading it
+    # here would compare this build with itself and always say "publish".
+    if id_space == published_space:
         print("These packs install into any app already on id space "
               f"{id_space} — publish them whenever you like.")
     else:
-        print("This build reassigned ids, so these packs need the app release "
-              "to go out first. Publish them together.")
+        print("This build bumped the id space, so these packs need the app "
+              "release to go out first. Publish them together.")
 
 
 if __name__ == "__main__":

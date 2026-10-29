@@ -16,7 +16,7 @@ publish_to: 'none'
 # does nothing — it sets MARKETING_VERSION and CURRENT_PROJECT_VERSION, which
 # nothing in this project references, so an archive built that way ships the
 # pubspec's numbers regardless of what the tab shows.
-version: 2026.8.2+7
+version: 2026.10.29+8
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

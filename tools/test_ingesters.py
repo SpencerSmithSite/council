@@ -341,11 +341,56 @@ def test_ledger_keys():
     conn.close()
 
 
+def test_ledger_shape():
+    """A pack whose table gained a column must bump the id space.
+
+    Space 1 ran from July to October 2026 while `traditions` gained four
+    columns for the branch taxonomy. Every id stayed where it was, so the ledger
+    said "unchanged — publish whenever you like", and publishing would have
+    broken pack installs for every reader on the previous app: its merge is
+    `INSERT INTO traditions SELECT * FROM pack.traditions`, which is positional
+    and refuses 9 values for 5 columns. The ids were never the whole question.
+    """
+    conn = sqlite3.connect(":memory:")
+    conn.executescript("""
+        CREATE TABLE sources (id INTEGER PRIMARY KEY, source_url TEXT, title TEXT);
+        CREATE TABLE content_units (id INTEGER PRIMARY KEY, source_id INTEGER,
+                                    content TEXT);
+        CREATE TABLE traditions (id INTEGER PRIMARY KEY, name TEXT, branch_id INT);
+        INSERT INTO sources VALUES (1, 'http://one/doc', 'Part I');
+        INSERT INTO content_units VALUES (1, 1, 'alpha');
+    """)
+    now = build_packs.current_ledger(conn)
+    real_read = build_packs.read_ledger
+    try:
+        before = dict(now, idSpace=1)
+        build_packs.read_ledger = lambda: before
+        check("an identical build keeps its id space",
+              build_packs.check_id_space(conn)[0], 1)
+
+        before = dict(now, idSpace=1,
+                      tables=dict(now["tables"], traditions=["id", "name"]))
+        build_packs.read_ledger = lambda: before
+        check("a column added to a packed table bumps the id space",
+              build_packs.check_id_space(conn)[0], 2)
+
+        # An app that predates a table never names it in its merge, so a table
+        # that is new to the packs reaches nobody who could misread it.
+        tables = {t: c for t, c in now["tables"].items() if t != "traditions"}
+        before = dict(now, idSpace=1, tables=tables)
+        build_packs.read_ledger = lambda: before
+        check("a table new to the packs does not bump it",
+              build_packs.check_id_space(conn)[0], 1)
+    finally:
+        build_packs.read_ledger = real_read
+    conn.close()
+
+
 def main():
     for test in (test_creators, test_public_domain, test_display_matter,
                  test_titles, test_containment, test_reference_apparatus,
                  test_front_matter, test_psalm_pages,
-                 test_ledger_keys):
+                 test_ledger_keys, test_ledger_shape):
         test()
 
     print()
