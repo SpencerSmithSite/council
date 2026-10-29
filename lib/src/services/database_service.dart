@@ -63,8 +63,11 @@ class DatabaseService {
   /// an id that already means something else here. A rebuild that only appends
   /// satisfies that against every app built since the last renumbering, and
   /// `tools/build_packs.py` proves it per build rather than trusting anyone to
-  /// remember. Only a rebuild that genuinely reassigns ids advances this.
-  static const int idSpace = 1;
+  /// remember. Only a rebuild that genuinely reassigns ids advances this — or
+  /// one that reshapes a table a pack carries, since the merge copies columns
+  /// by position. Space 2 was that: `traditions` gained four columns with the
+  /// branch taxonomy, and an app on space 1 would refuse every new fragment.
+  static const int idSpace = 2;
 
   /// The embedding model this build encodes queries with.
   ///

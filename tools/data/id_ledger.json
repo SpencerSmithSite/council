@@ -5875,5 +5875,105 @@
    "hash": "ef92fdb26c4e3232"
   }
  },
- "idSpace": 1
+ "tables": {
+  "branches": [
+   "id",
+   "slug",
+   "name",
+   "description",
+   "split_year",
+   "sort_order"
+  ],
+  "traditions": [
+   "id",
+   "name",
+   "slug",
+   "description",
+   "created_at",
+   "branch_id",
+   "parent_id",
+   "full_name",
+   "sort_order"
+  ],
+  "source_types": [
+   "id",
+   "name",
+   "slug",
+   "description"
+  ],
+  "tags": [
+   "id",
+   "name",
+   "slug",
+   "category",
+   "description"
+  ],
+  "authors": [
+   "id",
+   "name",
+   "slug",
+   "birth_year",
+   "death_year",
+   "tradition_id",
+   "biography",
+   "created_at"
+  ],
+  "works": [
+   "id",
+   "author_id",
+   "title",
+   "slug",
+   "date_composed",
+   "language_original",
+   "source_url",
+   "public_domain",
+   "notes",
+   "created_at"
+  ],
+  "sources": [
+   "id",
+   "source_type_id",
+   "tradition_id",
+   "title",
+   "slug",
+   "author",
+   "date_composed",
+   "date_composed_approx",
+   "language_original",
+   "language_source",
+   "source_url",
+   "license",
+   "public_domain",
+   "notes",
+   "created_at"
+  ],
+  "content_units": [
+   "id",
+   "source_id",
+   "unit_type",
+   "unit_number",
+   "title",
+   "content",
+   "parent_id",
+   "sequence",
+   "created_at",
+   "provenance"
+  ],
+  "content_tags": [
+   "content_unit_id",
+   "tag_id"
+  ],
+  "content_chunks": [
+   "id",
+   "content_unit_id",
+   "sequence",
+   "char_start",
+   "char_end"
+  ],
+  "chunk_embeddings": [
+   "chunk_id",
+   "vector"
+  ]
+ },
+ "idSpace": 2
 }
