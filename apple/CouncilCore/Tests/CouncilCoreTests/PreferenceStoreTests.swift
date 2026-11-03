@@ -257,4 +257,68 @@ private func good(_ id: Int, _ title: String, _ day: String) -> String {
         suite.defaults.set("big", forKey: "font_size")
         #expect(ReaderPreferences(defaults: suite.defaults).fontSize == 1.0)
     }
+
+    @Test func theReaderSettingsDefaultWhenNothingIsStored() {
+        let preferences = ReaderPreferences(defaults: suite.defaults)
+        #expect(preferences.font == .system)
+        #expect(preferences.lineSpacing == 1.3)
+        #expect(preferences.margins == .standard)
+        #expect(preferences.justified == false)
+    }
+
+    @Test func theReaderSettingsRoundTripUnderTheirKeys() {
+        let preferences = ReaderPreferences(defaults: suite.defaults)
+        preferences.font = .iowanOldStyle
+        preferences.lineSpacing = 1.6
+        preferences.margins = .wide
+        preferences.justified = true
+
+        let reread = ReaderPreferences(defaults: suite.defaults)
+        #expect(reread.font == .iowanOldStyle)
+        #expect(reread.lineSpacing == 1.6)
+        #expect(reread.margins == .wide)
+        #expect(reread.justified == true)
+
+        #expect(suite.defaults.object(forKey: "reader_font") as? String == "iowan_old_style")
+        #expect(suite.defaults.object(forKey: "reader_line_spacing") as? Double == 1.6)
+        #expect(suite.defaults.object(forKey: "reader_margins") as? String == "wide")
+        #expect(suite.defaults.object(forKey: "reader_justified") as? Bool == true)
+    }
+
+    /// The stored names are this app's own and must never change: a rename
+    /// would silently reset every reader's choice.
+    @Test func theStoredFontAndMarginNamesAreFixed() {
+        #expect(ReaderFont.allCases.map(\.rawValue)
+                == ["system", "new_york", "iowan_old_style", "palatino", "georgia", "charter"])
+        #expect(ReaderMargins.allCases.map(\.rawValue) == ["narrow", "standard", "wide"])
+    }
+
+    @Test func lineSpacingIsClampedOnWriteAndRead() {
+        let preferences = ReaderPreferences(defaults: suite.defaults)
+        preferences.lineSpacing = 3
+        #expect(suite.defaults.double(forKey: "reader_line_spacing") == 1.8)
+        preferences.lineSpacing = 0.2
+        #expect(preferences.lineSpacing == 1.0)
+        preferences.lineSpacing = .infinity
+        #expect(preferences.lineSpacing == 1.3)
+        suite.defaults.set(9.0, forKey: "reader_line_spacing")
+        #expect(preferences.lineSpacing == 1.8)
+    }
+
+    @Test func malformedReaderSettingsFallBackToTheDefaults() {
+        suite.defaults.set("comic_sans", forKey: "reader_font")
+        suite.defaults.set(12, forKey: "reader_margins")
+        suite.defaults.set("wide", forKey: "reader_line_spacing")
+        suite.defaults.set("yes", forKey: "reader_justified")
+        let preferences = ReaderPreferences(defaults: suite.defaults)
+        #expect(preferences.font == .system)
+        #expect(preferences.margins == .standard)
+        #expect(preferences.lineSpacing == 1.3)
+        #expect(preferences.justified == false)
+
+        suite.defaults.set(2, forKey: "reader_justified")
+        #expect(preferences.justified == false)
+        suite.defaults.set(1, forKey: "reader_justified")
+        #expect(preferences.justified == true)
+    }
 }

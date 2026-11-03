@@ -1,0 +1,212 @@
+import CouncilCore
+import SwiftUI
+#if os(iOS)
+import UIKit
+typealias PlatformColor = UIColor
+#else
+import AppKit
+typealias PlatformColor = NSColor
+#endif
+
+extension NSAttributedString.Key {
+    /// The index of the `PassageSegment` a run of passage text belongs to.
+    /// Carried on the verse number and the words, not on the separators, so a
+    /// tap between two verses selects neither.
+    static let councilSegment = NSAttributedString.Key("CouncilPassageSegment")
+}
+
+/// Everything that decides how a passage is drawn, as one value, so the text
+/// view can tell what changed since it last drew and redo only that: new text
+/// or type means a new attributed string and a new layout; a new selection or
+/// new highlights only repaint backgrounds.
+struct PassageRendering: Equatable {
+    var passage: SegmentedPassage
+    var highlights: [Highlight]
+    var selected: Set<Int>
+    var typography: ReaderTypography
+    var dynamicType: DynamicTypeSize
+    var dark: Bool
+    var textColor: PlatformColor
+    var accent: PlatformColor
+
+    /// The parts that change the text's layout. Selection and highlights are
+    /// left out: they are painted, never laid out.
+    struct Metrics: Equatable {
+        var passage: SegmentedPassage
+        var typography: ReaderTypography
+        var dynamicType: DynamicTypeSize
+        var textColor: PlatformColor
+        var accent: PlatformColor
+    }
+
+    var metrics: Metrics {
+        Metrics(passage: passage, typography: typography, dynamicType: dynamicType,
+                textColor: textColor, accent: accent)
+    }
+
+    /// The selection wash: the accent at 20% (32% in dark), as Flutter's
+    /// `selectionWash`. Distinct from every highlight colour, so a pick that
+    /// hasn't been committed can't be mistaken for a mark already made.
+    var wash: PlatformColor {
+        accent.withAlphaComponent(dark ? 0.32 : 0.20)
+    }
+
+    /// The background each segment should have: the wash when selected,
+    /// otherwise the highlight covering it, the last one winning so a mark
+    /// made later paints over an earlier one (Flutter's `_highlightOn`; the
+    /// store returns them by start, then oldest first).
+    func background(for segment: PassageSegment) -> PlatformColor? {
+        if selected.contains(segment.index) { return wash }
+        var found: Highlight?
+        for highlight in highlights where segment.overlaps(highlight.charStart, highlight.charEnd) {
+            found = highlight
+        }
+        guard let found else { return nil }
+        let rgba = HighlightColour.fromID(found.colour).resolve(dark: dark)
+        return PlatformColor(red: rgba.red, green: rgba.green, blue: rgba.blue, alpha: rgba.alpha)
+    }
+}
+
+/// A passage set as text: the attributed string and where each segment
+/// landed in it.
+///
+/// Built the way Flutter's `PassageReader.build` builds its spans: verses run
+/// together with a space and prose keeps a blank line between paragraphs;
+/// a verse's number goes in front of it, small, bold and in the accent colour,
+/// and belongs to the segment, so tapping the number picks the verse and a
+/// highlight colours it too.
+struct PassageLayout {
+    let string: NSAttributedString
+    /// Each segment's range in `string`, number included, in UTF-16 units
+    /// (the units `NSString` and TextKit count in).
+    let ranges: [NSRange]
+
+    init(_ metrics: PassageRendering.Metrics) {
+        let typography = metrics.typography
+        let body = typography.bodyFont(metrics.dynamicType)
+        let numberFont = ReaderTypography.platformFont(typography.font, size: body.pointSize * 0.72, bold: true)
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineHeightMultiple = typography.lineSpacing
+        paragraph.alignment = typography.justified ? .justified : .natural
+        // Justified text without hyphenation opens rivers in a narrow
+        // column; with it the spacing stays even, as in Books.
+        paragraph.usesDefaultHyphenation = typography.justified
+
+        let base: [NSAttributedString.Key: Any] = [
+            .font: body,
+            .foregroundColor: metrics.textColor,
+            .paragraphStyle: paragraph,
+        ]
+        let separator = metrics.passage.kind == .verse ? " " : "\n\n"
+
+        let out = NSMutableAttributedString()
+        var ranges: [NSRange] = []
+        for segment in metrics.passage.segments {
+            if segment.index > 0 {
+                out.append(NSAttributedString(string: separator, attributes: base))
+            }
+            let start = out.length
+            if let number = segment.number {
+                var attributes = base
+                attributes[.font] = numberFont
+                attributes[.foregroundColor] = metrics.accent
+                attributes[.councilSegment] = segment.index
+                out.append(NSAttributedString(string: "\(number) ", attributes: attributes))
+            }
+            var attributes = base
+            attributes[.councilSegment] = segment.index
+            out.append(NSAttributedString(string: segment.text, attributes: attributes))
+            ranges.append(NSRange(location: start, length: out.length - start))
+        }
+        string = out
+        self.ranges = ranges
+    }
+
+    /// What VoiceOver says for a segment: "verse 4. In the beginning…" for a
+    /// numbered one, as Flutter's `semanticsLabel`, and the words alone for
+    /// prose, where a segment has no name.
+    static func accessibilityLabel(_ segment: PassageSegment, in passage: SegmentedPassage) -> String {
+        guard let number = segment.number else { return segment.text }
+        return "\(passage.noun(1)) \(number). \(segment.text)"
+    }
+}
+
+// MARK: - TextKit 2 geometry
+
+/// Hit-testing and segment geometry on a TextKit 2 layout, shared by the
+/// UIKit and AppKit text views. Points are in the text container's
+/// coordinates.
+enum PassageGeometry {
+    /// The character under `point`, or nil when the point is between lines,
+    /// past the end of a line, or outside the text.
+    static func characterIndex(at point: CGPoint, in layoutManager: NSTextLayoutManager) -> Int? {
+        guard let fragment = layoutManager.textLayoutFragment(for: point) else { return nil }
+        let frame = fragment.layoutFragmentFrame
+        let local = CGPoint(x: point.x - frame.minX, y: point.y - frame.minY)
+        guard let line = fragment.textLineFragments.first(where: { $0.typographicBounds.contains(local) })
+        else { return nil }
+        let inLine = CGPoint(x: local.x - line.typographicBounds.minX, y: local.y - line.typographicBounds.minY)
+
+        // `characterIndex(for:)` answers with the nearest caret position, which
+        // past a glyph's midpoint is the *next* character; step back so the
+        // character actually under the point is the one picked.
+        var index = line.characterIndex(for: inLine)
+        let range = line.characterRange
+        if index > range.lowerBound, line.locationForCharacter(at: index).x > inLine.x {
+            index -= 1
+        }
+        index = min(max(index, range.lowerBound), max(range.lowerBound, range.upperBound - 1))
+
+        // The line's string is its paragraph's, so the index is relative to
+        // where the paragraph starts in the document.
+        let paragraphStart = layoutManager.offset(from: layoutManager.documentRange.location,
+                                                  to: fragment.rangeInElement.location)
+        return paragraphStart + index
+    }
+
+    /// The segment index carried at `index`, if any.
+    static func segment(at index: Int, in string: NSAttributedString) -> Int? {
+        guard index >= 0, index < string.length else { return nil }
+        return string.attribute(.councilSegment, at: index, effectiveRange: nil) as? Int
+    }
+
+    static func textRange(_ range: NSRange, in layoutManager: NSTextLayoutManager) -> NSTextRange? {
+        let document = layoutManager.documentRange.location
+        guard let start = layoutManager.location(document, offsetBy: range.location),
+              let end = layoutManager.location(start, offsetBy: range.length)
+        else { return nil }
+        return NSTextRange(location: start, end: end)
+    }
+
+    /// The rectangles `range` occupies, one per line it touches.
+    static func rects(for range: NSRange, in layoutManager: NSTextLayoutManager) -> [CGRect] {
+        guard let textRange = textRange(range, in: layoutManager) else { return [] }
+        var rects: [CGRect] = []
+        layoutManager.enumerateTextSegments(in: textRange, type: .standard, options: []) { _, rect, _, _ in
+            if !rect.isEmpty { rects.append(rect) }
+            return true
+        }
+        return rects
+    }
+
+    /// Paints `rendering`'s backgrounds (selection wash, highlights) into
+    /// `storage`, in place, replacing any painted before.
+    ///
+    /// Background attributes in the text storage rather than TextKit 2
+    /// rendering attributes: on iOS 26 a `UITextView` doesn't redraw for a
+    /// change of rendering attributes alone (tried: the wash never showed), and
+    /// an attribute-only edit relays out just the edited paragraphs.
+    static func paintBackgrounds(_ storage: NSMutableAttributedString, ranges: [NSRange],
+                                 rendering: PassageRendering) {
+        let whole = NSRange(location: 0, length: storage.length)
+        storage.beginEditing()
+        storage.removeAttribute(.backgroundColor, range: whole)
+        for segment in rendering.passage.segments where ranges.indices.contains(segment.index) {
+            let range = ranges[segment.index]
+            guard let colour = rendering.background(for: segment), NSMaxRange(range) <= storage.length else { continue }
+            storage.addAttribute(.backgroundColor, value: colour, range: range)
+        }
+        storage.endEditing()
+    }
+}

@@ -10,10 +10,15 @@ struct CouncilApp: App {
     /// Mac's Settings window change together.
     @State private var themeStore = ThemeStore()
 
+    /// The reader's typography (size, face, spacing, margins), one per
+    /// process for the same reason.
+    @State private var readerStyle = ReaderStyle()
+
     var body: some Scene {
         WindowGroup {
             RootView()
                 .councilTheme(themeStore)
+                .environment(readerStyle)
                 .environment(model)
                 .task { await model.start() }
         }
@@ -26,6 +31,7 @@ struct CouncilApp: App {
                 SettingsView()
             }
             .councilTheme(themeStore)
+            .environment(readerStyle)
             .environment(model)
         }
         #endif

@@ -54,8 +54,10 @@ struct SearchView: View {
                                        description: Text(errorMessage))
             } else if let results, !results.rows.isEmpty {
                 List(results.rows) { row in
-                    SearchResultRow(row: row)
-                        .councilListRow()
+                    NavigationLink(value: ReadingRoute.passage(id: row.id)) {
+                        SearchResultRow(row: row)
+                    }
+                    .councilListRow()
                 }
             } else if let results, results.query == trimmedQuery {
                 ContentUnavailableView.search(text: trimmedQuery)
