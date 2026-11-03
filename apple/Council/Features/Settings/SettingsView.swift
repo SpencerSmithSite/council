@@ -14,12 +14,12 @@ struct SettingsView: View {
         Form {
             Section("Appearance") {
                 NavigationLink {
-                    // TODO(integration): ThemePickerView()
-                    Text("Theme")
+                    ThemePickerView()
                 } label: {
                     Label("Theme", systemImage: "paintpalette")
                 }
             }
+            .councilListRow()
 
             Section("AI") {
                 NavigationLink {
@@ -29,6 +29,7 @@ struct SettingsView: View {
                     Label("AI Backend", systemImage: "sparkles")
                 }
             }
+            .councilListRow()
 
             Section {
                 NavigationLink {
@@ -45,13 +46,16 @@ struct SettingsView: View {
                     Text("Searching by meaning couldn't start on this device, so search matches words only.")
                 }
             }
+            .councilListRow()
 
             Section("About") {
                 LabeledContent("Version", value: Self.version)
             }
+            .councilListRow()
         }
         .formStyle(.grouped)
         .navigationTitle("Settings")
+        .councilScreenBackground(grouped: true)
         #if os(macOS)
         .frame(minWidth: 420, minHeight: 320)
         #endif

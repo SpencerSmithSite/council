@@ -22,6 +22,7 @@ struct SearchView: View {
     var body: some View {
         content
             .navigationTitle("Search")
+            .councilScreenBackground()
             .searchable(text: $query, prompt: "Search the library")
             // Restarts, cancelling the search in flight, whenever the query
             // changes or retrieval becomes available.
@@ -54,6 +55,7 @@ struct SearchView: View {
             } else if let results, !results.rows.isEmpty {
                 List(results.rows) { row in
                     SearchResultRow(row: row)
+                        .councilListRow()
                 }
             } else if let results, results.query == trimmedQuery {
                 ContentUnavailableView.search(text: trimmedQuery)
@@ -95,20 +97,25 @@ private struct SearchKey: Hashable {
 
 private struct SearchResultRow: View {
     let row: ContentUnitRow
+    @Environment(\.councilPalette) private var palette
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(row.title ?? row.sourceTitle ?? "Untitled")
                 .font(.headline)
+                .foregroundStyle(palette.text)
             if let source = sourceLine {
                 Text(source)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.secondaryLabel)
             }
             if let tradition = row.tradition, !tradition.isEmpty {
                 Text(tradition)
                     .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    // The palette's secondary colour, not `.tertiary`: the
+                    // system's tertiary label doesn't know the theme and falls
+                    // below legible contrast on darker palettes like Gruvbox.
+                    .foregroundStyle(palette.secondaryLabel)
             }
         }
     }

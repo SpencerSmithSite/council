@@ -6,9 +6,14 @@ struct CouncilApp: App {
     /// the corpus is installed and opened once.
     @State private var model = AppModel()
 
+    /// The reader's theme, likewise one per process so every window and the
+    /// Mac's Settings window change together.
+    @State private var themeStore = ThemeStore()
+
     var body: some Scene {
         WindowGroup {
             RootView()
+                .councilTheme(themeStore)
                 .environment(model)
                 .task { await model.start() }
         }
@@ -20,6 +25,7 @@ struct CouncilApp: App {
             NavigationStack {
                 SettingsView()
             }
+            .councilTheme(themeStore)
             .environment(model)
         }
         #endif

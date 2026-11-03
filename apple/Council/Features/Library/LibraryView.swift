@@ -49,8 +49,10 @@ struct LibraryView: View {
                 NavigationLink(value: destination) {
                     Label(destination.title, systemImage: destination.systemImage)
                 }
+                .councilListRow()
             }
             .navigationTitle("Library")
+            .councilScreenBackground(grouped: true)
             .navigationDestination(for: LibraryDestination.self) { $0.content }
             .settingsToolbar()
         }

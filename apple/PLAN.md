@@ -145,7 +145,7 @@ changing the Flutter side isn't wanted, generate a Swift file from
       it runs. Result: `swift test` passes 139 tests (2 known issues), and the
       app builds for iOS Simulator and macOS.
 
-### Phase 2 — App shell and design system
+### Phase 2 — App shell and design system (done 2026-11-03, one check open)
 - [x] Top-level navigation with the same sections as the Flutter app: a tab
       bar on iPhone that becomes a sidebar on iPad and Mac
       (`.sidebarAdaptable`), and the tab bar shrinking on scroll.
@@ -160,10 +160,28 @@ changing the Flutter side isn't wanted, generate a Swift file from
       Application Support (Flutter's directory on iOS), loads semantic search
       behind it, and owns `Retrieval` and `PackService`. The search tab shows
       real results. The build refuses to run without the embedding model.
-- [ ] Theme system from `shared/themes.json`, a theme picker with live
-      previews, and dark/light variants where a theme has them.
-- [ ] Check the system accessibility settings in every theme: Reduce
-      Transparency, Increase Contrast, Dynamic Type and Reduce Motion.
+- [x] Theme system. `shared/themes.json` is the one source for all 24 themes.
+      `tools/generate_themes.py` writes both `lib/src/theme/themes.g.dart` and
+      `CouncilCore/Themes/ThemeCatalogue.g.swift`, and CI runs `--check` on
+      both. Flutter's palette derivation is ported to Swift and matches
+      `shared/golden/themes/derived.json` exactly (48 theme variants plus
+      Apple light and dark). `ThemeStore` persists the Flutter keys
+      `theme_id` and `theme_mode`. `ThemePickerView` has live previews.
+      Default uses SwiftUI system colours; custom palettes tint the content
+      and the accent, and leave the bars as system glass.
+      **Rules for every later screen:** put `.councilScreenBackground()` on
+      each screen root inside a navigation stack (stacks paint over anything
+      set outside them), put `.councilListRow()` on list and form rows, and
+      take text colours from `@Environment(\.councilPalette)` (`text`,
+      `secondaryLabel`). Never use `.tertiary`, which ignores the theme and
+      is illegible on dark palettes.
+- [ ] Check the system accessibility settings in every theme. Done so far,
+      on the iPhone 17 simulator in Default and Gruvbox dark: Dynamic Type at
+      the largest accessibility size (rows wrap correctly) and Increase
+      Contrast (the glass gets more defined). Still to do: Reduce
+      Transparency and Reduce Motion (simctl can't set them; use Settings in
+      the simulator or a device), and a pass over the remaining themes once
+      the real screens exist (Phase 3+).
 
 ### Phase 3 — Reading
 - [ ] Passage reader: continuous scroll, segments, the passage action bar
