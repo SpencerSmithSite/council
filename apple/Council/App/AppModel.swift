@@ -38,6 +38,24 @@ final class AppModel {
     private(set) var retrieval: Retrieval?
     /// Nil until `state` is `.ready`. Phase 6's pack screen uses it.
     private(set) var packs: PackService?
+    /// Nil until `state` is `.ready`. The reading screens' corpus queries.
+    private(set) var library: Library?
+
+    /// Highlights and notes, in `council_user.db`. Nil until it has opened,
+    /// and nil for good if it can't: the corpus still reads without it, so a
+    /// broken user database costs marking up, not reading.
+    private(set) var annotations: AnnotationStore?
+    /// Bumped after every highlight or note write, wherever it came from, so
+    /// every screen showing one reloads with `.task(id:)` on it and two
+    /// screens on the same passage can't drift apart.
+    private(set) var annotationsRevision = 0
+
+    /// Passage bookmarks, in preferences as the Flutter app keeps them. Change
+    /// them through `toggleBookmark` so `bookmarksRevision` moves.
+    let bookmarks = BookmarkStore()
+    private(set) var bookmarksRevision = 0
+    let shelf = ShelfStore()
+    let readingPositions = ReadingPositionStore()
 
     private var started = false
 
@@ -52,15 +70,18 @@ final class AppModel {
         started = true
 
         let corpus: Corpus
+        let directory: URL
         do {
             let archive = try Self.bundledResource(CorpusConstants.bundledArchiveName)
-            let directory = try Self.supportDirectory()
+            directory = try Self.supportDirectory()
             corpus = try await Self.openCorpus(in: directory, archive: archive)
         } catch {
             Self.logger.error("Corpus unavailable: \(String(describing: error), privacy: .public)")
             state = .failed(error.localizedDescription)
             return
         }
+
+        openUserData(in: directory)
 
         let retrieval = Retrieval(database: corpus.database)
         self.retrieval = retrieval
@@ -69,6 +90,7 @@ final class AppModel {
         packs = PackService(corpus: corpus, onContentChanged: {
             await retrieval.contentDidChange()
         })
+        library = Library(database: corpus.database)
         state = .ready
 
         // Unstructured, so closing the window whose `.task` called `start`
@@ -90,6 +112,31 @@ final class AppModel {
             semantic = .available
         } else {
             semantic = .unavailable
+        }
+    }
+
+    /// Adds or removes the bookmark on a passage and tells the screens.
+    /// Returns whether it is now bookmarked.
+    @discardableResult
+    func toggleBookmark(contentID: Int, title: String, source: String, preview: String?) -> Bool {
+        let added = bookmarks.toggle(contentId: contentID, title: title, source: source, preview: preview)
+        bookmarksRevision += 1
+        return added
+    }
+
+    private func openUserData(in directory: URL) {
+        let store: AnnotationStore
+        do {
+            store = AnnotationStore(database: try UserDatabase.open(at: directory.appending(path: UserDatabase.fileName)))
+        } catch {
+            Self.logger.error("User database unavailable: \(String(describing: error), privacy: .public)")
+            return
+        }
+        annotations = store
+        Task { [weak self] in
+            for await _ in store.changes() {
+                self?.annotationsRevision += 1
+            }
         }
     }
 
@@ -124,7 +171,7 @@ final class AppModel {
         return url
     }
 
-    /// Where the corpus, `packs/` and (from Phase 3) `council_user.db` live.
+    /// Where the corpus, `packs/` and `council_user.db` live.
     ///
     /// The Flutter app put them in `getApplicationSupportDirectory()`, and the
     /// native app installs over it with the same bundle id (apple/PLAN.md,

@@ -54,6 +54,7 @@ struct LibraryView: View {
             .navigationTitle("Library")
             .councilScreenBackground(grouped: true)
             .navigationDestination(for: LibraryDestination.self) { $0.content }
+            .readingDestinations()
             .settingsToolbar()
         }
     }

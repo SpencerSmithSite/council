@@ -50,13 +50,13 @@ struct RootView: View {
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Ask", systemImage: "bubble.left.and.text.bubble.right", value: .ask) {
-                NavigationStack { ChatView().settingsToolbar() }
+                NavigationStack { ChatView().settingsToolbar().readingDestinations() }
             }
             Tab("Read", systemImage: "book", value: .read) {
-                NavigationStack { ReadView().settingsToolbar() }
+                NavigationStack { ReadView().settingsToolbar().readingDestinations() }
             }
             Tab("Browse", systemImage: "square.grid.2x2", value: .browse) {
-                NavigationStack { BrowseView().settingsToolbar() }
+                NavigationStack { BrowseView().settingsToolbar().readingDestinations() }
             }
 
             // Compact width only: the tab bar's stand-in for the section below.
@@ -71,14 +71,14 @@ struct RootView: View {
                 ForEach(LibraryDestination.allCases) { destination in
                     Tab(destination.title, systemImage: destination.systemImage,
                         value: Section.list(destination)) {
-                        NavigationStack { destination.content.settingsToolbar() }
+                        NavigationStack { destination.content.settingsToolbar().readingDestinations() }
                     }
                     .hidden(isCompact)
                 }
             }
 
             Tab(value: .search, role: .search) {
-                NavigationStack { SearchView().settingsToolbar() }
+                NavigationStack { SearchView().settingsToolbar().readingDestinations() }
             }
         }
         .tabViewStyle(.sidebarAdaptable)

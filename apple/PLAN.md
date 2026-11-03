@@ -184,11 +184,69 @@ changing the Flutter side isn't wanted, generate a Swift file from
       the real screens exist (Phase 3+).
 
 ### Phase 3 — Reading
-- [ ] Passage reader: continuous scroll, segments, the passage action bar
-      rebuilt as a glass toolbar and context menu.
-- [ ] Books-style reading sheet: font, size, line spacing, margins, theme.
-- [ ] Highlights, notes and note editor, bookmarks, read shelf, browse,
-      content detail, source reader.
+Started 2026-11-03. The reader is the one place the native app deliberately
+differs from Flutter's shape: Flutter pages a work one section at a time, the
+native reader scrolls through the whole work.
+
+**Design**
+- **One scroll per work.** A `ScrollView` over a `LazyVStack` of every
+  section of the source, each section's text fetched as it nears the screen
+  (`Library.contentUnits(ids:)`, a batch around what's visible) and its
+  highlights with it. The section at the top of the screen is the reading
+  position, saved as Flutter saves it (`reading_position_<sourceId>`, a
+  section index), so Phase 7 carries places across. Opening at a unit (a
+  citation, a bookmark, later a search hit) scrolls to that section's id.
+- **Passage text is a platform text view**, `UITextView` / `NSTextView`
+  (TextKit 2), not editable and with the system's own selection off, wrapped
+  for SwiftUI. Tapping picks the segment under the finger (a custom attribute
+  carries the segment index), as Flutter's reader does: a verse, a paragraph,
+  or a sentence of a long paragraph (`SegmentedPassage`). SwiftUI `Text`
+  can't do this: it has no hit-testing by character range, and making each
+  segment a link brings the link long-press preview and has VoiceOver
+  announce every verse as a link. Highlights are background colours from
+  `HighlightColour` (light and dark values); the selection wash is the tint
+  at 20% (32% in dark), as in Flutter. Segment offsets are UTF-16, which is
+  what `NSString` ranges use, so stored highlights from either app line up.
+- **The action bar is the system toolbar.** While segments are selected, a
+  bottom toolbar (iOS/iPadOS, system glass) or window toolbar items (Mac)
+  offer Copy, Share (`ShareLink`), Highlight (a `Menu` with a palette picker
+  of the five colours, plus Remove Highlight when the selection has one),
+  Note and Ask, with the count ("3 verses") as the title. The same actions
+  are the context menu on long-press or right-click, which selects the
+  segment under it first. Ask opens the Ask tab's placeholder until Phase 5
+  wires the pinned passage.
+- **Books-style reading controls** behind an "Aa" toolbar button: a sheet at
+  a medium detent on iPhone, a popover on iPad and Mac. Text size (− / +),
+  font (System, New York, Iowan Old Style, Palatino, Georgia, Charter), line
+  spacing, margins, justification, and the theme (the catalogue's themes as
+  swatches, plus Auto / Light / Dark). Keys: `font_size` (Flutter's, a
+  0.8–1.5 multiplier on the Dynamic Type body size, so the reader still
+  follows the system size) and new `reader_font`, `reader_line_spacing`,
+  `reader_margins`, `reader_justified`.
+- **Contents** behind a list button: a sheet with `.searchable` filtering. A
+  work with books ("Genesis 1", "Genesis 2", …, decided once from the whole
+  work by `ContentsIndex`) shows each book with a grid of chapter numbers,
+  as Books does; anything else is a plain list.
+- **Bookmark** toggle in the reader's toolbar for the section at the top,
+  the same passage-level bookmarks the content detail screen sets.
+- **Browse moves to Phase 6.** In the Flutter app Browse is the content-pack
+  library, so it is built with the rest of the pack UI.
+
+**Work**
+- [ ] CouncilCore `Reading/`: `SegmentedPassage` and `PassageCitation`
+      (reference and quote), `HighlightColour`, `ContentsIndex`, held to a
+      new fixture `shared/golden/segments/` generated from the Dart code.
+- [ ] CouncilCore `UserData/`: `council_user.db` (same schema and
+      `user_version` as sqflite, so either app opens the other's file),
+      `AnnotationStore` (highlights, notes), `BookmarkStore`, `ShelfStore`,
+      `ReadingPositionStore`, `ReaderPreferences`, on the Flutter key names
+      and value encodings. `Corpus/Library`: shelf, sections, content units,
+      tags, sources.
+- [ ] Source reader: continuous scroll, passage text view, selection,
+      toolbar and context menu actions, highlight palette, reading controls,
+      contents, bookmark.
+- [ ] Read shelf (branches and traditions, pin, star, collapse, filter),
+      content detail, notes and note editor, bookmarks.
 
 ### Phase 4 — Search
 - [ ] `.searchable` with a search-role tab, results grouped by source, and
@@ -205,6 +263,8 @@ changing the Flutter side isn't wanted, generate a Swift file from
       `PlatformLlmState`, including the "Apple Intelligence is off" hint.
 
 ### Phase 6 — Settings, onboarding, updates
+- [ ] Browse, the content-pack library (`browse_screen.dart`), on
+      `PackCatalogue` and `PackService`; Settings' Content Packs opens it too.
 - [ ] Settings, onboarding, update check against the existing `updates.json`.
 - [ ] Mac: port the `_macos` path of `update_installer.dart` (download DMG,
       verify, replace, relaunch).
