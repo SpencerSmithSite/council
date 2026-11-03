@@ -57,6 +57,12 @@ final class AppModel {
     let shelf = ShelfStore()
     let readingPositions = ReadingPositionStore()
 
+    /// Bumped after a pack install, removal or replacement changes what is in
+    /// the corpus, so screens listing corpus content (the Read tab's shelf)
+    /// reload with `.task(id:)` on it, as Flutter's Read tab reloads when
+    /// `PackProvider`'s installed set changes.
+    private(set) var contentRevision = 0
+
     private var started = false
 
     private static let logger = Logger(subsystem: "site.spencersmith.council", category: "App")
@@ -87,8 +93,9 @@ final class AppModel {
         self.retrieval = retrieval
         // Packs change what's installed; retrieval caches the sources table
         // and the vector index, so both must hear about it.
-        packs = PackService(corpus: corpus, onContentChanged: {
+        packs = PackService(corpus: corpus, onContentChanged: { [weak self] in
             await retrieval.contentDidChange()
+            await self?.contentDidChange()
         })
         library = Library(database: corpus.database)
         state = .ready
@@ -122,6 +129,16 @@ final class AppModel {
         let added = bookmarks.toggle(contentId: contentID, title: title, source: source, preview: preview)
         bookmarksRevision += 1
         return added
+    }
+
+    /// Removes a passage's bookmark and tells the screens.
+    func removeBookmark(contentID: Int) {
+        bookmarks.remove(contentID)
+        bookmarksRevision += 1
+    }
+
+    private func contentDidChange() {
+        contentRevision += 1
     }
 
     private func openUserData(in directory: URL) {
