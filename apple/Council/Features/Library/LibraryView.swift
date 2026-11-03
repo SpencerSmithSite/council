@@ -40,8 +40,13 @@ enum LibraryDestination: String, Hashable, CaseIterable, Identifiable {
 /// `path` belongs to `RootView` so that a size-class change can carry the
 /// reader across: Notes selected in the iPad sidebar becomes Library → Notes
 /// when the window narrows to a tab bar, and back again.
+///
+/// `list` reports which of the three is pushed, because a `NavigationPath`
+/// (needed so the lists can push `ReadingRoute`s into this stack) can't be
+/// read back.
 struct LibraryView: View {
-    @Binding var path: [LibraryDestination]
+    @Binding var path: NavigationPath
+    @Binding var list: LibraryDestination?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -53,7 +58,10 @@ struct LibraryView: View {
             }
             .navigationTitle("Library")
             .councilScreenBackground(grouped: true)
-            .navigationDestination(for: LibraryDestination.self) { $0.content }
+            .onAppear { list = nil }
+            .navigationDestination(for: LibraryDestination.self) { destination in
+                destination.content.onAppear { list = destination }
+            }
             .readingDestinations()
             .settingsToolbar()
         }
@@ -61,6 +69,7 @@ struct LibraryView: View {
 }
 
 #Preview {
-    @Previewable @State var path: [LibraryDestination] = []
-    LibraryView(path: $path)
+    @Previewable @State var path = NavigationPath()
+    @Previewable @State var list: LibraryDestination?
+    LibraryView(path: $path, list: $list)
 }

@@ -41,7 +41,12 @@ struct RootView: View {
     }
 
     @State private var selection: Section = .ask
-    @State private var libraryPath: [LibraryDestination] = []
+    /// The Library tab's stack. A `NavigationPath` rather than
+    /// `[LibraryDestination]`: a stack bound to a typed array can only push
+    /// that type, and the lists inside it push `ReadingRoute`s.
+    @State private var libraryPath = NavigationPath()
+    /// The list at the bottom of `libraryPath`, which the path can't be asked.
+    @State private var libraryList: LibraryDestination?
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -61,7 +66,7 @@ struct RootView: View {
 
             // Compact width only: the tab bar's stand-in for the section below.
             Tab("Library", systemImage: "books.vertical", value: .library) {
-                LibraryView(path: $libraryPath)
+                LibraryView(path: $libraryPath, list: $libraryList)
             }
             .hidden(!isCompact)
 
@@ -113,7 +118,7 @@ struct RootView: View {
     private var visibleSelection: Section {
         switch selection {
         case .list where isCompact: .library
-        case .library where !isCompact: .list(libraryPath.last ?? .notes)
+        case .library where !isCompact: .list(libraryList ?? .notes)
         default: selection
         }
     }
@@ -129,9 +134,11 @@ struct RootView: View {
         let visible = visibleSelection
         switch (selection, visible) {
         case (.list(let destination), .library):
-            libraryPath = [destination]
+            libraryPath = NavigationPath([destination])
+            libraryList = destination
         case (.library, .list):
-            libraryPath = []
+            libraryPath = NavigationPath()
+            libraryList = nil
         default:
             break
         }
