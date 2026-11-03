@@ -115,16 +115,16 @@ CREATE TABLE IF NOT EXISTS fragment_sources (
 );
 """
 
-# What PackService._merge copies, in its order. Note `branches` is absent even
-# though build_packs.REFERENCE_TABLES puts it in every pack: the app never reads
-# it. Checked against pack_service.dart in `check_merge_lists`.
-MERGE_REFERENCE = ["traditions", "source_types", "tags", "authors", "works"]
+# What PackService._merge copies, in its order: build_packs.REFERENCE_TABLES and
+# CONTENT_TABLES. Checked against pack_service.dart in `check_merge_lists`.
+MERGE_REFERENCE = ["branches", "traditions", "source_types", "tags", "authors",
+                   "works"]
 MERGE_CONTENT = ["sources", "content_units", "content_tags", "content_chunks",
                  "chunk_embeddings"]
 
 # Every table an expected state records, in this order. `installed_at` columns
 # are left out: they hold DateTime.now().
-DUMP_TABLES = ["branches"] + MERGE_REFERENCE + MERGE_CONTENT + [
+DUMP_TABLES = MERGE_REFERENCE + MERGE_CONTENT + [
     "installed_collections", "collection_fragments", "installed_fragments",
     "fragment_sources"]
 UNRECORDED_COLUMNS = {"installed_at"}
@@ -398,10 +398,7 @@ class Oracle:
         expanded = self.tmp / f"oracle-{fragment['id']}.db"
         expanded.write_bytes(gzip.decompress(data))
         try:
-            if replacing:
-                self._transaction(lambda: self._delete_fragment(fragment["id"]),
-                                  rebuild=True)
-            self._merge(fragment, expanded)
+            self._merge(fragment, expanded, replacing)
         finally:
             expanded.unlink()
 
@@ -417,8 +414,14 @@ class Oracle:
             self.db.execute("ROLLBACK")
             raise
 
-    def _merge(self, fragment, expanded):
+    def _merge(self, fragment, expanded, replacing):
         def body():
+            # The teardown shares the merge's transaction, so a merge that
+            # fails leaves the old copy in place.
+            if replacing:
+                self._delete_fragment(fragment["id"])
+                self.db.execute(
+                    "INSERT INTO content_fts(content_fts) VALUES('rebuild')")
             for table in MERGE_REFERENCE:
                 self.db.execute(
                     f"INSERT OR IGNORE INTO {table} SELECT * FROM pack.{table}")
@@ -611,6 +614,31 @@ def scenarios(app_space):
             ],
         },
         {
+            "name": "replace-fails",
+            "dir": ".",
+            "description": (
+                "A republished fragment that verifies and then fails to merge. "
+                "The teardown of the old copy shares the merge's transaction, "
+                "so the reader keeps the copy they had. The second step "
+                "installs from the reshaped release, whose f-alpha has a "
+                "different checksum and an extra column."),
+            "steps": [
+                {"op": "install", "collection": "golden-alpha",
+                 "downloads": ["f-alpha.db.gz"],
+                 "state": "expected/1-alpha.json"},
+                {"op": "install", "collection": "golden-alpha",
+                 "dir": "negative/reshaped",
+                 "note": "checksum differs, so f-alpha is replaced; the merge "
+                         "fails after the teardown and both roll back",
+                 "downloads": ["f-alpha.db.gz"],
+                 "throws": {"type": "DatabaseException",
+                            "messageContains": "table content_units has 10 "
+                                               "columns but 11 values were "
+                                               "supplied"},
+                 "state": "expected/1-alpha.json"},
+            ],
+        },
+        {
             "name": "wrong-idspace",
             "dir": "negative/wrong-idspace",
             "description": (
@@ -683,10 +711,11 @@ def scenarios(app_space):
 
 def run_scenario(scenario, base_sql, tmp, app_space, app_model, states):
     oracle = Oracle(base_sql, tmp, app_model)
-    serve_dir = GOLDEN / scenario["dir"]
-    manifest = json.loads((serve_dir / "manifest.json").read_text())
     for number, step in enumerate(scenario["steps"], 1):
         where = f"{scenario['name']} step {number}"
+        # A step may be served from a release other than its scenario's.
+        serve_dir = GOLDEN / step.get("dir", scenario["dir"])
+        manifest = json.loads((serve_dir / "manifest.json").read_text())
         oracle.downloads = []
         error = None
         try:

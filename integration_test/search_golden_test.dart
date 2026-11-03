@@ -105,7 +105,7 @@ final _queries = <_Query>[
   const _Query('ent-lutheran', 'What do Lutherans believe about baptism?',
       'adjectival tradition; scope admits no core units, so FTS falls back'),
   const _Query('ent-catholic', 'Catholic teaching on the Eucharist',
-      '"catholic" maps to whichever Catholic tradition row is read last'),
+      '"catholic" is in five tradition names; the shortest, Catholic, wins'),
   const _Query('ent-two-traditions', 'Catholics and Lutherans on justification',
       'two traditions, so _ensureNamedTraditions runs'),
   const _Query('ent-calvinist', 'Calvinist predestination',
@@ -119,7 +119,7 @@ final _queries = <_Query>[
   const _Query('ent-augustine', 'What did Augustine say about grace?',
       'a church father; no authors in the core, so nothing is recognised'),
   const _Query('ent-orthodox', 'Eastern Orthodox icons',
-      'two tradition tokens resolving to different rows'),
+      'a two-word tradition name matched whole, not word by word'),
 
   // Mixed.
   const _Query('mix-romans-holy-spirit', 'Romans 8 and the Holy Spirit',

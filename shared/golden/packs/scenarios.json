@@ -75,6 +75,47 @@
       }
     },
     {
+      "name": "replace-fails",
+      "dir": ".",
+      "description": "A republished fragment that verifies and then fails to merge. The teardown of the old copy shares the merge's transaction, so the reader keeps the copy they had. The second step installs from the reshaped release, whose f-alpha has a different checksum and an extra column.",
+      "steps": [
+        {
+          "op": "install",
+          "collection": "golden-alpha",
+          "downloads": [
+            "f-alpha.db.gz"
+          ],
+          "state": "expected/1-alpha.json"
+        },
+        {
+          "op": "install",
+          "collection": "golden-alpha",
+          "dir": "negative/reshaped",
+          "note": "checksum differs, so f-alpha is replaced; the merge fails after the teardown and both roll back",
+          "downloads": [
+            "f-alpha.db.gz"
+          ],
+          "throws": {
+            "type": "DatabaseException",
+            "messageContains": "table content_units has 10 columns but 11 values were supplied"
+          },
+          "state": "expected/1-alpha.json"
+        }
+      ],
+      "builder": {
+        "builtFrom": [
+          "schema.sql",
+          "build1.sql",
+          "build2.sql"
+        ],
+        "ledger": "build 1",
+        "idSpace": 2,
+        "report": [
+          "id space: 2 (unchanged — this build only appends, so its packs install into any app already on space 2)"
+        ]
+      }
+    },
+    {
       "name": "wrong-idspace",
       "dir": "negative/wrong-idspace",
       "description": "A build that reused ids the core holds, so build_packs bumped the id space. The app refuses it before downloading. The second step bypasses the gate (passes the manifest's own id space) to pin what it protects against: a primary-key collision that rolls the whole fragment back.",

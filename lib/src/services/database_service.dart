@@ -226,6 +226,12 @@ class DatabaseService {
       '"${word.replaceAll('"', '""')}"*';
 
   /// Search content with FTS5 full-text search
+  ///
+  /// Every retrieval query here ends its ORDER BY with `cu.id`. bm25 ties are
+  /// real (a Genesis or Psalm query has several), and without a tie-breaker the
+  /// order of tied rows is whatever the SQLite build's scan happens to produce,
+  /// which the native Apple app, on the system SQLite, is free to do
+  /// differently. `shared/golden/search` holds both apps to the same order.
   Future<List<Map<String, dynamic>>> search(String query, {int limit = 20}) async {
     final ftsTerms = ftsMatchQuery(query);
     if (ftsTerms.isEmpty) return _searchLike(query, limit: limit);
@@ -238,7 +244,7 @@ class DatabaseService {
       LEFT JOIN traditions t ON s.tradition_id = t.id
       LEFT JOIN source_types st ON s.source_type_id = st.id
       WHERE content_fts MATCH ?
-      ORDER BY fts.rank
+      ORDER BY fts.rank, cu.id
       LIMIT ?
     ''', [ftsTerms, limit]);
     
@@ -270,7 +276,7 @@ class DatabaseService {
       LEFT JOIN traditions t ON s.tradition_id = t.id
       LEFT JOIN source_types st ON s.source_type_id = st.id
       WHERE cu.content LIKE ? ESCAPE '\\'
-      ORDER BY cu.sequence
+      ORDER BY cu.sequence, cu.id
       LIMIT ?
     ''', ['%${escapeLike(needle)}%', limit]);
 
@@ -290,6 +296,9 @@ class DatabaseService {
       .replaceAll('_', r'\_');
   
   /// Search by tags for better RAG retrieval
+  ///
+  /// Nearly every tagged unit matches exactly one tag, so `tag_matches` alone
+  /// ties almost everything and `cu.id` decides which units survive the limit.
   Future<List<Map<String, dynamic>>> searchByTags(List<String> tags, {int limit = 20}) async {
     final placeholders = tags.map((_) => '?').join(',');
     final results = await database.rawQuery('''
@@ -302,7 +311,7 @@ class DatabaseService {
       LEFT JOIN source_types st ON s.source_type_id = st.id
       WHERE tg.slug IN ($placeholders)
       GROUP BY cu.id
-      ORDER BY tag_matches DESC
+      ORDER BY tag_matches DESC, cu.id
       LIMIT ?
     ''', [...tags.map((t) => t.toLowerCase().replaceAll(' ', '-')), limit]);
     
@@ -406,7 +415,7 @@ class DatabaseService {
       LEFT JOIN source_types st ON s.source_type_id = st.id
       WHERE content_fts MATCH ?
         AND ($scopeClause)
-      ORDER BY fts.rank
+      ORDER BY fts.rank, cu.id
       LIMIT ?
     ''', args);
   }

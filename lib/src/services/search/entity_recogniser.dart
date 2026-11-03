@@ -84,6 +84,11 @@ class EntityRecogniser {
   final Map<String, int> _traditionTokens;
   final Map<int, String> _traditionNames;
 
+  /// Traditions whose names tokenise to more than one word, by ascending id,
+  /// so a question that spells one out in full is matched to it rather than
+  /// word by word.
+  final Map<int, Set<String>> _traditionPhrases;
+
   /// Distinctive token -> author name. Authors are a separate axis from works
   /// because they scope differently: Augustine names 45 works, which is a
   /// meaningful constraint even though no single work is meant.
@@ -96,6 +101,7 @@ class EntityRecogniser {
     this._sourceTokenCounts,
     this._traditionTokens,
     this._traditionNames,
+    this._traditionPhrases,
     this._authorTokens,
     this._authorSources,
   );
@@ -108,8 +114,13 @@ class EntityRecogniser {
 
   static Future<EntityRecogniser> load(Database db) async {
     return build(
-      sources: await db.query('sources', columns: ['id', 'title', 'author']),
-      traditions: await db.query('traditions', columns: ['id', 'name']),
+      // Ordered, so nothing below depends on the query plan. Unordered, SQLite
+      // answers the traditions query from the UNIQUE index on `name`, and the
+      // order of work labels follows the order sources are read in.
+      sources: await db.query('sources',
+          columns: ['id', 'title', 'author'], orderBy: 'id'),
+      traditions:
+          await db.query('traditions', columns: ['id', 'name'], orderBy: 'id'),
     );
   }
 
@@ -165,18 +176,45 @@ class EntityRecogniser {
     final traditionTokens = <String, int>{};
     final traditionNames = <int, String>{};
 
+    // A word several traditions share goes to the one with the shortest name,
+    // then the lowest id. "Catholic" is in five names, and the reader who types
+    // it means Catholic, not Polish National Catholic. This used to be
+    // last-write-wins over the row order, which SQLite took from the name
+    // index, so "catholic" went to Polish National Catholic and "orthodox" to
+    // Oriental Orthodox.
+    bool beats(int id, int other) {
+      final a = traditionNames[id]!, b = traditionNames[other]!;
+      final words = a.split(' ').length.compareTo(b.split(' ').length);
+      if (words != 0) return words < 0;
+      if (a.length != b.length) return a.length < b.length;
+      return id < other;
+    }
+
+    void claim(String token, int id) {
+      final held = traditionTokens[token];
+      if (held == null || beats(id, held)) traditionTokens[token] = id;
+    }
+
+    for (final row in traditions) {
+      traditionNames[row['id'] as int] = row['name'] as String;
+    }
     for (final row in traditions) {
       final id = row['id'] as int;
       final name = row['name'] as String;
-      traditionNames[id] = name;
       for (final token in _tokenise(name)) {
-        traditionTokens[token] = id;
+        claim(token, id);
       }
       // Traditions are named in questions adjectivally far more often than by
       // their row name: "what do Lutherans believe", not "Lutheran tradition".
       for (final form in _adjectivalForms(name)) {
-        traditionTokens[form] = id;
+        claim(form, id);
       }
+    }
+
+    final traditionPhrases = <int, Set<String>>{};
+    for (final id in traditionNames.keys.toList()..sort()) {
+      final words = _tokenise(traditionNames[id]!).toSet();
+      if (words.length > 1) traditionPhrases[id] = words;
     }
 
     return EntityRecogniser._(
@@ -185,6 +223,7 @@ class EntityRecogniser {
       sourceTokenCounts,
       traditionTokens,
       traditionNames,
+      traditionPhrases,
       authorTokens,
       authorSources,
     );
@@ -209,7 +248,17 @@ class EntityRecogniser {
     final traditionIds = <int>{};
     final labels = <String>[];
 
-    for (final token in tokens) {
+    // A name given in full wins its words: "Eastern Catholic" is one
+    // tradition, not Eastern Orthodox plus Catholic.
+    final unclaimed = {...tokens};
+    for (final MapEntry(key: id, value: words) in _traditionPhrases.entries) {
+      if (tokens.containsAll(words)) {
+        unclaimed.removeAll(words);
+        if (traditionIds.add(id)) labels.add(_traditionNames[id]!);
+      }
+    }
+
+    for (final token in unclaimed) {
       final id = _traditionTokens[token];
       if (id != null && traditionIds.add(id)) {
         labels.add(_traditionNames[id]!);

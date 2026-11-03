@@ -272,9 +272,10 @@ class PackService {
       await _verify(fragment, archive);
       await _expand(archive, expanded);
       // Only once the replacement is downloaded, checksummed and unpacked. Any
-      // failure above this line leaves the reader with the copy they had.
-      if (replacing) await _retire(fragment.id);
-      await _merge(fragment, expanded);
+      // failure above this line leaves the reader with the copy they had, and
+      // the teardown commits only together with the merge, so a failure in it
+      // does too.
+      await _merge(fragment, expanded, replacing: replacing);
     } finally {
       // Whether or not it worked: a failed install that leaves 100 MB of
       // temporary files behind is its own bug.
@@ -345,15 +346,26 @@ class PackService {
     }
   }
 
-  Future<void> _merge(Fragment fragment, File expanded) async {
+  Future<void> _merge(
+    Fragment fragment,
+    File expanded, {
+    bool replacing = false,
+  }) async {
     // ATTACH cannot run inside a transaction, so it brackets one.
     await db.execute("ATTACH DATABASE ? AS pack", [expanded.path]);
     try {
       await db.transaction((txn) async {
+        // In the same transaction as the merge, not one of its own. It used to
+        // commit first, so a replacement that verified but then failed to
+        // merge left the reader holding neither copy.
+        if (replacing) await _retire(txn, fragment.id);
+
         // Reference rows legitimately overlap — every fragment carries the
         // full tradition and tag vocabulary, so no source can arrive pointing
-        // at a tradition the app has never seen.
+        // at a tradition the app has never seen. Branches come first because
+        // traditions point at them.
         for (final table in const [
+          'branches',
           'traditions',
           'source_types',
           'tags',
@@ -499,11 +511,12 @@ class PackService {
   /// — and the replacement's rows get their own ids, so the stale entries
   /// would not even be overwritten. Searches would return passages that cannot
   /// be opened.
-  Future<void> _retire(String fragmentId) async {
-    await db.transaction((txn) async {
-      await _deleteFragment(txn, fragmentId);
-      await txn.execute("INSERT INTO content_fts(content_fts) VALUES('rebuild')");
-    });
+  ///
+  /// It runs inside the merge's transaction, so the old copy is only gone once
+  /// the new one is in.
+  Future<void> _retire(Transaction txn, String fragmentId) async {
+    await _deleteFragment(txn, fragmentId);
+    await txn.execute("INSERT INTO content_fts(content_fts) VALUES('rebuild')");
   }
 
   void dispose() => _client.close();

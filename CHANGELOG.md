@@ -5,6 +5,27 @@ All notable changes to Council will be documented in this file.
 Versions are the release date (`YYYY.M.D`) plus a build counter. Entries below
 `30.0.0` predate that scheme and are left as they were written.
 
+## [Unreleased]
+
+### Fixes
+
+- **A question about Catholics is scoped to Catholic,** not Polish National
+  Catholic. A word several tradition names share now goes to the shortest
+  name, and a name given in full ("Eastern Catholic", "Oriental Orthodox") is
+  matched as one tradition rather than word by word. "Orthodox" alone means
+  Eastern Orthodox. Matching used to depend on the order SQLite returned the
+  rows in, which happened to be alphabetical.
+- **Search results that score the same come back in a fixed order.** Every
+  retrieval query now breaks ties by passage id, instead of relying on how the
+  bundled SQLite happens to scan, so the native Apple app can return the same
+  results on the system SQLite.
+- **Collections deliver new branches of the church** along with the traditions
+  on them. The merge copied every reference table in a pack but `branches`.
+- **Updating a collection can no longer lose it.** The old copy of a
+  republished fragment was removed in its own step before the new one was
+  merged, so a merge that failed left neither. The two now succeed or fail
+  together.
+
 ## [2026.10.29+8] - 2026-10-29
 
 ### Seven branches of the church, and a library that installs again

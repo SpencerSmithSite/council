@@ -4,7 +4,8 @@
       "columns": ["id", "slug", "name", "description", "split_year", "sort_order"],
       "rows": [
         [1, "shared", "The Undivided Church", "Fixture branch.", null, 1],
-        [2, "protestant", "Protestant", "Fixture branch.", 1517, 6]
+        [2, "protestant", "Protestant", "Fixture branch.", 1517, 6],
+        [3, "eastern", "Eastern", "Fixture branch added in build 2.", 1054, 3]
       ]
     },
     "traditions": {
@@ -12,7 +13,8 @@
       "rows": [
         [1, "Universal", "universal", "Fixture tradition held in common.", "2026-01-01 00:00:00", 1, null, null, 1],
         [2, "Reformed", "reformed", "Fixture description as first published.", "2026-01-01 00:00:00", 2, null, "Reformed and Presbyterian", 2],
-        [3, "Lutheran", "lutheran", "Fixture tradition added in build 2.", "2026-02-01 00:00:00", 2, null, null, 3]
+        [3, "Lutheran", "lutheran", "Fixture tradition added in build 2.", "2026-02-01 00:00:00", 2, null, null, 3],
+        [4, "Eastern Orthodox", "eastern-orthodox", "Fixture tradition on a branch added in build 2.", "2026-02-01 00:00:00", 3, null, null, 4]
       ]
     },
     "source_types": {
@@ -131,8 +133,8 @@
     "installed_fragments": {
       "columns": ["id", "bytes", "units", "sha256"],
       "rows": [
-        ["f-alpha", 4112, 2, "bf71a161d607664b94671f25ecbb052ac3041fb7b14c7f34d42cfa2e89b499d4"],
-        ["f-beta", 4306, 4, "bb0c8bbdc0e1f914f3207064ec837c76496aa646de2d41b4bbd0015b5a7f00c5"]
+        ["f-alpha", 4208, 2, "ae87531146e96377e47bb71667ae6d9a89fe3d411fc938775b5245ff24dd0099"],
+        ["f-beta", 4405, 4, "81a1f4f78278bbc3915386136113919159aac5b40ed520832f5ce64796d0a827"]
       ]
     },
     "fragment_sources": {

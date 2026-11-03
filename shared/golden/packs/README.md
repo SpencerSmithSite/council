@@ -16,7 +16,7 @@ the same behaviour. Everything is tiny and synthetic: 6 sources, 10 units and
 |---|---|
 | `corpus/schema.sql` | **Input.** The corpus DDL, copied verbatim from `sqlite_master` of `assets/theology.db`. The generator re-checks it column by column whenever that file is present. |
 | `corpus/build1.sql` | **Input.** Rows of upstream build 1, the corpus the bundled core was cut from. Sources 1–2 are core, source 3 goes to `f-alpha` and source 4 to `f-beta`. |
-| `corpus/build2.sql` | **Input.** An append-only rebuild on top of build 1. It adds source 5 (to `f-beta`) above build 1's high-water mark, a new tradition and a new tag, and *revises* tradition 2's description. The published packs are cut from this build. |
+| `corpus/build2.sql` | **Input.** An append-only rebuild on top of build 1. It adds source 5 (to `f-beta`) above build 1's high-water mark, a new tag, a new tradition, and a new branch with a second new tradition on it, and *revises* tradition 2's description. The published packs are cut from this build. |
 | `corpus/build3-occupied.sql` | **Input.** On top of build 2, deletes core source 2 and reuses its unit ids 201–202 for a new `f-beta` source. |
 | `corpus/build4-reshaped.sql` | **Input.** On top of build 2, adds the column `content_units.reviewed_by`. |
 | `corpus/base.sql` | **Generated.** The bundled core the app starts from. It is `build_packs.build_core` applied to build 1, dumped as SQL: the schema, then every row, then an FTS `rebuild`. Load it into an empty database (one `execute` handles all of it; statements end with `;` at the end of a line), then create the bookkeeping tables (`PackService.createTables`). |
@@ -51,7 +51,7 @@ Each vector is 384 bytes, the real model's width. It is the chunk id as 4 big-en
 
 ## Scenarios
 
-Each scenario starts from a fresh base. Serve the scenario's `dir` as the release, then run the steps in order. Each step is one of:
+Each scenario starts from a fresh base. Serve the scenario's `dir` as the release, then run the steps in order. A step with its own `dir` is served from that release instead, with its manifest fetched afresh: that is how a fragment gets republished between two installs. Each step is one of:
 
 - `install` of a collection, with `appIdSpace` defaulting to the top-level value
 - `uninstall` of a collection
@@ -68,6 +68,7 @@ The Flutter test also checks that no database named `pack` is still attached and
 | Scenario | Steps → state |
 |---|---|
 | `lifecycle` | Install `golden-alpha`: downloads `f-alpha` → `1-alpha`.<br>Install `golden-all`: downloads **only** `f-beta` → `2-all`.<br>Install `golden-all` again: no downloads → `2-all`.<br>Uninstall `golden-all`: `f-alpha` is still claimed, so it stays → `1-alpha`.<br>`markStale f-alpha`, then install `golden-alpha`: `f-alpha` is torn down and merged again → `1-alpha`.<br>Uninstall `golden-alpha` → `3-uninstalled`. |
+| `replace-fails` | Install `golden-alpha` → `1-alpha`.<br>Install `golden-alpha` again from `negative/reshaped`. Its `f-alpha` has a different checksum, so the installed one is replaced: downloads `f-alpha`, verifies it, tears the old copy down and fails the merge with the `reshaped` column-count error → `1-alpha`. The teardown rolled back with the merge, so the old copy is still there, still recorded under its old checksum. |
 | `wrong-idspace` | The manifest says id space 3, because `check_id_space` flagged source 6 as `occupied`. Installing with app id space 2 throws a `PackException` before any download → `0-base`.<br>Step 2 bypasses the gate by passing id space 3. It downloads `f-beta`, and the merge fails with `UNIQUE constraint failed: content_units.id` → `0-base`, fully rolled back. |
 | `wrong-embedding-model` | The manifest names `golden-other-model-768`. Install throws a `PackException` before any download → `0-base`. |
 | `checksum-mismatch` | `f-beta.db.gz` is truncated to half and the manifest is unchanged. Installing `golden-all` downloads `f-alpha` and merges it, then downloads `f-beta` and throws a `PackException` → `4-alpha-without-collection`. In that state `f-alpha` is installed but no collection is recorded. |
@@ -98,10 +99,10 @@ The app walks `collection.fragments` in order:
 1. **Download.** The URL is `manifestUrl.replaceFirst('manifest.json', file)`. A response other than 200 throws `PackException('Download failed (HTTP n).')`.
 2. **Verify.** SHA-256 is computed over the **compressed `.gz` bytes** and compared with `sha256`. A mismatch throws a `PackException`. The manifest's `bytes` field is **not** checked; it only drives progress and size display.
 3. **Expand.** The file is gunzipped to `<appSupport>/packs/<id>.db`.
-4. **Replace.** If the fragment is being replaced, it is torn down first in its **own** transaction: the delete described below, followed by an FTS `rebuild`.
-5. **Merge.** `ATTACH DATABASE ? AS pack` runs **outside** a transaction. Then, in **one** transaction:
-   - **Reference tables.** For `traditions`, `source_types`, `tags`, `authors` and `works`, in that order: `INSERT OR IGNORE INTO t SELECT * FROM pack.t`.
-     - **`branches` is not merged**, even though `build_packs.REFERENCE_TABLES` puts it in every pack. A pack that introduced a new branch would deliver traditions pointing at a branch the app never receives. This fixture never adds a branch, so the gap is recorded here and not pinned.
+4. **Merge.** `ATTACH DATABASE ? AS pack` runs **outside** a transaction. Then, in **one** transaction:
+   - **Replace.** If the fragment is being replaced, it is torn down first, inside this same transaction: the delete described under Uninstall, followed by an FTS `rebuild`.
+   - **Reference tables.** For `branches`, `traditions`, `source_types`, `tags`, `authors` and `works`, in that order (`build_packs.REFERENCE_TABLES`): `INSERT OR IGNORE INTO t SELECT * FROM pack.t`.
+     - Branch 3 and tradition 4, which sits on it, both arrive with `f-alpha` (see `1-alpha.json`). Every pack carries the full reference vocabulary, so whichever fragment comes first delivers them.
      - **OR IGNORE keeps the app's row.** Tradition 2's build-2 revision never arrives (see `2-all.json`). A new row whose `name` or `slug` collides with an existing row under a different id is also dropped silently.
    - **Content tables.** For `sources`, `content_units`, `content_tags`, `content_chunks` and `chunk_embeddings`, in that order: `INSERT INTO t SELECT * FROM pack.t`. These are plain inserts, so any id collision aborts the transaction.
    - **FTS.** `INSERT INTO content_fts(rowid, content, title) SELECT id, content, title FROM pack.content_units` appends to the index and does not rebuild it.
@@ -163,13 +164,13 @@ All of these steps run in one transaction:
 3. If anything was doomed, the FTS index is rebuilt.
 4. The collection's `collection_fragments` and `installed_collections` rows are deleted.
 
-**Reference rows are never removed.** `3-uninstalled.json` still has tradition 3 and tag 3, which the packs added.
+**Reference rows are never removed.** `3-uninstalled.json` still has branch 3, traditions 3 and 4, and tag 3, which the packs added.
 
 ### Transaction boundaries and failure atomicity
 
 - **Each fragment is its own transaction.** A collection whose second fragment fails keeps the first one merged and recorded in `installed_fragments` and `fragment_sources`. No collection row is written (`checksum-mismatch`). Installing the collection again later fetches only what is missing.
 - **A failed merge rolls back completely:** reference rows, content, FTS rows and bookkeeping (`reshaped`, and step 2 of `wrong-idspace`).
-- **Replacing a fragment is two transactions:** the teardown, then the merge. If the merge fails after the teardown has committed, the reader holds *neither* copy, although download, checksum and gunzip failures happen before the teardown. No fixture covers this window, because it needs a fragment that verifies and then fails to merge on replacement.
+- **Replacing a fragment is one transaction:** the teardown and the merge commit together. Download, checksum and gunzip failures happen before either. A merge that fails after the teardown rolls the teardown back too, so the reader keeps the copy they had (`replace-fails`). Before this was fixed the teardown committed on its own, and such a failure left the reader with neither copy.
 
 ## What the app does *not* check
 

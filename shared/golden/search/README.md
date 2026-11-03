@@ -132,33 +132,38 @@ Things in the Dart code that are easy to get subtly wrong:
    accumulates the norm in Double, and divides each float32 component by the
    Double norm, storing float32. Every token is pooled, `[CLS]` and `[SEP]`
    included, because the attention mask is all ones.
-4. **Tradition names are matched last-write-wins**, and the row order comes from
-   `SELECT id, name FROM traditions` with no `ORDER BY`. SQLite answers that
-   from the covering UNIQUE index on `name`, so rows arrive alphabetically. As a
-   result `catholic` resolves to *Polish National Catholic* (28) rather than
-   *Catholic* (2), `eastern` to *Eastern Orthodox* and `orthodox` to *Oriental
-   Orthodox* (see `ent-catholic`, `ent-two-traditions`, `ent-orthodox`). Read the
-   rows in name order to match.
-5. **Exact bm25 ties exist** (`ref-genesis-1-1`, `ref-psalm-23`). The SQL has no
-   tie-breaker, and SQLite returned tied rows in ascending rowid order. Use the
-   same SQL text. If GRDB's system SQLite orders them differently, that is an
-   engine difference, and you need to decide how to handle it on both sides.
-6. **The tag query** orders by `tag_matches DESC` with `LIMIT 6` and has no
-   tie-breaker either. Nearly every tagged unit has `tag_matches = 1`, so the 6
-   that survive are whatever the GROUP BY scan order put first, which was
-   ascending `cu.id`.
-7. **The Flutter app uses the SQLite bundled by `sqlite3_flutter_libs`** (via
+4. **Traditions are matched whole names first, then word by word.** A
+   tradition whose name has two or more words (after `_tokenise` drops
+   stopwords) matches when the question contains all of them, and those words
+   are then used up: `Eastern Orthodox icons` names tradition 3 alone, not 3
+   and 4. Names are tried in ascending id. Each remaining word, and each
+   adjectival form (`catholics`, `roman`, `orthodox`), goes to the tradition
+   with the fewest words in its name, then the fewest characters, then the
+   lowest id. So `catholic` is *Catholic* (2), not *Polish National Catholic*
+   (28), and a bare `orthodox` is *Eastern Orthodox* (3), not *Oriental
+   Orthodox* (4). See `ent-catholic`, `ent-two-traditions` and `ent-orthodox`.
+   The result does not depend on row order. Until this was fixed, matching was
+   last-write-wins over rows SQLite returned alphabetically from the UNIQUE
+   index on `name`.
+5. **Every retrieval query breaks ties by ascending unit id.** The FTS queries
+   order by `fts.rank, cu.id`, the LIKE fallback by `cu.sequence, cu.id` and
+   the tag query by `tag_matches DESC, cu.id`. Exact bm25 ties exist
+   (`ref-genesis-1-1`, `ref-psalm-23`), and nearly every tagged unit has
+   `tag_matches = 1`, so the tie-breaker decides which 6 tag rows survive the
+   limit. Use the same SQL text, `ORDER BY` included.
+6. **The Flutter app uses the SQLite bundled by `sqlite3_flutter_libs`** (via
    the FFI factory), not the system one, and this fixture was generated through
-   it.
-8. **Scripture references are not parsed.** `John 3:16` reaches FTS as
+   it. With the tie-breakers in note 5 the orderings should not depend on that.
+   bm25 values are still computed by SQLite, hence the tolerance above.
+7. **Scripture references are not parsed.** `John 3:16` reaches FTS as
    `"John"*`, because terms of 2 characters or fewer are dropped. The verse is
    found, if at all, by semantic search.
-9. **`ftsMatchQuery` keeps letters and digits from any script**, but a combining
+8. **`ftsMatchQuery` keeps letters and digits from any script**, but a combining
    mark (`\p{M}`) is a separator. Decomposed `Nicée` therefore becomes `"Nice"*`,
    while the tokenizer strips the mark and folds the word to `nicee`.
-10. **A scope that admits no units is not the same as no scope.**
-    `allowedUnitIds: []` makes semantic search return nothing. In the core
-    corpus that happens to every tradition except Scripture, which is why
-    `empty-result` and `ent-orthodox` come back empty.
-11. **Empty input** still runs semantic search on `[CLS] [SEP]` and returns
+9. **A scope that admits no units is not the same as no scope.**
+   `allowedUnitIds: []` makes semantic search return nothing. In the core
+   corpus that happens to every tradition except Scripture, which is why
+   `empty-result` and `ent-orthodox` come back empty.
+10. **Empty input** still runs semantic search on `[CLS] [SEP]` and returns
     results (`edge-empty`), while `search('')` returns nothing.

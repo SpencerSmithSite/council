@@ -208,19 +208,30 @@ void main() {
   for (final scenario in (plan['scenarios'] as List).cast<Map>()) {
     final name = scenario['name'] as String;
     test('scenario $name', () async {
-      final release = _Release(scenario['dir'] as String);
-      final service = PackService(
-        db,
-        client: release.client,
-        manifestUrl: release.manifestUrl,
-      );
-      final manifest = await service.fetchManifest();
+      // A step may be served from a release other than its scenario's: a
+      // fragment republished between two installs.
+      final services = <PackService>[];
+      Future<(_Release, PackService, PackManifest)> serve(String dir) async {
+        final release = _Release(dir);
+        final service = PackService(
+          db,
+          client: release.client,
+          manifestUrl: release.manifestUrl,
+        );
+        services.add(service);
+        return (release, service, await service.fetchManifest());
+      }
+
+      final scenarioRelease = await serve(scenario['dir'] as String);
 
       var number = 0;
       for (final step in (scenario['steps'] as List).cast<Map>()) {
         number++;
         final where = '$name step $number (${step['op']} '
             '${step['collection'] ?? step['fragment']})';
+        final (release, service, manifest) = step['dir'] == null
+            ? scenarioRelease
+            : await serve(step['dir'] as String);
         release.requests.clear();
 
         Object? error;
@@ -277,7 +288,9 @@ void main() {
               reason: '$where: temporary files left in the workspace');
         }
       }
-      service.dispose();
+      for (final service in services) {
+        service.dispose();
+      }
     });
   }
 }

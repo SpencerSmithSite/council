@@ -5,14 +5,18 @@
 -- build_packs.check_id_space leaves the id space where it was and these packs
 -- install into an app whose bundled core came from build 1.
 --
--- Two reference-table changes ride along, to pin how the app merges them:
+-- Reference-table changes ride along, to pin how the app merges them:
 --   * tradition 3 and tag 3 are new, so INSERT OR IGNORE adds them;
+--   * branch 3 is new, with tradition 4 on it, so a pack has to deliver the
+--     branch as well or the tradition points at nothing;
 --   * tradition 2's description is revised, and INSERT OR IGNORE keeps the
 --     app's existing row — the revision never reaches an installed app.
 
 UPDATE traditions SET description = 'Fixture description as REVISED in build 2.' WHERE id = 2;
 INSERT INTO traditions VALUES (3, 'Lutheran', 'lutheran', 'Fixture tradition added in build 2.', '2026-02-01 00:00:00', 2, NULL, NULL, 3);
 INSERT INTO tags VALUES (3, 'Sacraments', 'sacraments', 'doctrine', NULL);
+INSERT INTO branches VALUES (3, 'eastern', 'Eastern', 'Fixture branch added in build 2.', 1054, 3);
+INSERT INTO traditions VALUES (4, 'Eastern Orthodox', 'eastern-orthodox', 'Fixture tradition on a branch added in build 2.', '2026-02-01 00:00:00', 3, NULL, NULL, 4);
 
 -- Appended above build 1's high-water mark (unit 402), so it cannot collide.
 INSERT INTO sources VALUES (5, 2, 3, 'Golden Beta Catechism', 'golden-beta-catechism', 'Golden Author Beta', '1660', 0, 'de', 'en', NULL, 'public domain', 1, 'Fixture: fragment f-beta, appended in build 2.', '2026-02-01 00:00:00');

@@ -49,6 +49,29 @@ void main() {
       // the universal church.
       expect(recogniser.recognise('Catholic teaching').traditionIds, {1});
     });
+
+    test('a shared word goes to the shortest name, whatever the row order', () {
+      // SQLite once returned these alphabetically, and the last row to claim
+      // a word kept it: "catholic" meant Polish National Catholic.
+      const rows = [
+        {'id': 2, 'name': 'Catholic'},
+        {'id': 3, 'name': 'Eastern Orthodox'},
+        {'id': 4, 'name': 'Oriental Orthodox'},
+        {'id': 18, 'name': 'Eastern Catholic'},
+        {'id': 28, 'name': 'Polish National Catholic'},
+      ];
+      for (final traditions in [rows, rows.reversed.toList()]) {
+        final r = EntityRecogniser.build(sources: const [], traditions: traditions);
+        expect(r.recognise('Catholic teaching').traditionIds, {2});
+        expect(r.recognise('Roman Catholics').traditionIds, {2});
+        expect(r.recognise('Eastern icons').traditionIds, {3});
+        expect(r.recognise('Orthodox icons').traditionIds, {3});
+        // A name given in full is that tradition, not its words separately.
+        expect(r.recognise('Oriental Orthodox').traditionIds, {4});
+        expect(r.recognise('Eastern Catholic rites').traditionIds, {18});
+        expect(r.recognise('Polish National Catholic').traditionIds, {28});
+      }
+    });
   });
 
   group('authors', () {
