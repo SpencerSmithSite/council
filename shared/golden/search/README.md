@@ -97,9 +97,14 @@ recorded inputs. The unit test checks it the same way.
   `entities`, `ftsMatch`, `tags`, `path`/`kind`/`limit`, and `final`.
 - **`vector`: absolute tolerance `1e-5` per component.** The values are float32
   from ONNX Runtime with the quantised model, and the Flutter test uses this same
-  tolerance. If Swift runs the same `.onnx` on ONNX Runtime's CPU provider,
-  expect agreement near `1e-6`. A CoreML-converted model will not stay inside
-  `1e-5` and should not be used.
+  tolerance. Agreement depends on the ONNX Runtime *version*, not only the
+  model: the Flutter plugin bundles ORT 1.15.1, and the Swift app's ORT 1.24.2
+  differs by up to 0.03 unless `MatMulIntegerToFloatFusion` is disabled (see
+  `QueryEncoder.swift`). With it disabled, 35/37 queries agree within 1e-7;
+  `ent-catholic` (2.4e-5) and `edge-long` (1.2e-3) remain, with cosine
+  similarity ≥ 0.99997. So the Swift retrieval tests rank from the recorded
+  `vector`, not a re-encoded one, and stay exact. A CoreML-converted model
+  drifts further and should not be used.
 - **`vectorTop` scores: absolute `1e-5`, with the order exact.** Within the
   part of the list semantic search actually consumes (at most the first 34
   entries in this fixture), the smallest gap between neighbouring scores is
