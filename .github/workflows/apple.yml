@@ -1,0 +1,60 @@
+# Build and test the native Apple app in apple/ on every push and pull request
+# that touches it.
+#
+# Separate from test.yml because it needs a macOS runner, which costs several
+# times an ubuntu one and takes longer to start; the Flutter suite should not
+# wait on it, and a change that only touches Dart should not pay for it.
+#
+# shared/golden/ is in the path filter because it is the contract between the
+# two apps. A fixture change that the Swift side no longer matches has to fail
+# here, not be discovered the next time someone happens to touch apple/.
+
+name: Apple
+
+on:
+  push:
+    branches: [main]
+    paths: ["apple/**", "shared/**", ".github/workflows/apple.yml"]
+  pull_request:
+    paths: ["apple/**", "shared/**", ".github/workflows/apple.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test
+    # The app's deployment target is 26, which needs the Xcode 26 SDK or later.
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # project.yml is the source of truth and the .xcodeproj is generated
+      # from it, but both are committed. Regenerate and fail on any diff, so a
+      # hand edit in Xcode that project.yml doesn't know about can't land and
+      # then vanish at the next regeneration.
+      - name: Project matches project.yml
+        run: |
+          brew install xcodegen
+          cd apple && xcodegen generate --quiet
+          git diff --exit-code -- Council.xcodeproj Council/Info.plist
+
+      # The scheme includes CouncilCore's test target, so this runs the core's
+      # tests, including the golden fixtures, as well as building the app.
+      - name: Test on macOS
+        run: >
+          xcodebuild test
+          -project apple/Council.xcodeproj -scheme Council
+          -destination 'platform=macOS'
+          -derivedDataPath apple/.build/DerivedData
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: Build for iOS Simulator
+        run: >
+          xcodebuild build
+          -project apple/Council.xcodeproj -scheme Council
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath apple/.build/DerivedData
+          CODE_SIGNING_ALLOWED=NO

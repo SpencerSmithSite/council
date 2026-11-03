@@ -1,0 +1,55 @@
+{
+  "corpusVersion": 16,
+  "idSpace": 2,
+  "embeddingModel": "all-MiniLM-L6-v2-int8-384",
+  "fragments": [
+    {
+      "id": "f-alpha",
+      "file": "f-alpha.db.gz",
+      "bytes": 4137,
+      "sha256": "29be3c1ab00e6b0077c8d83e5eea8b5a941cb49e45d4082e3dfe89b24f88a9e0",
+      "sources": 1,
+      "units": 2,
+      "chunks": 3
+    },
+    {
+      "id": "f-beta",
+      "file": "f-beta.db.gz",
+      "bytes": 4329,
+      "sha256": "c700bc5adec181e6e7fc0a89363bc4788faa6b3374e5cb2cdfa9626da11ee401",
+      "sources": 2,
+      "units": 4,
+      "chunks": 4
+    }
+  ],
+  "collections": [
+    {
+      "id": "golden-alpha",
+      "kind": "author",
+      "name": "Golden Author Alpha",
+      "description": "Fixture collection holding one fragment.",
+      "fragments": [
+        "f-alpha"
+      ]
+    },
+    {
+      "id": "golden-beta",
+      "kind": "author",
+      "name": "Golden Author Beta",
+      "description": "Fixture collection holding the other fragment.",
+      "fragments": [
+        "f-beta"
+      ]
+    },
+    {
+      "id": "golden-all",
+      "kind": "era",
+      "name": "Golden Library",
+      "description": "Fixture collection overlapping golden-alpha.",
+      "fragments": [
+        "f-alpha",
+        "f-beta"
+      ]
+    }
+  ]
+}

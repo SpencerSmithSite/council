@@ -1,0 +1,97 @@
+# XcodeGen spec for the native Apple app. This file is the source of truth:
+# edit it, then run `xcodegen` from apple/. Council.xcodeproj is generated but
+# committed so the project opens in Xcode without installing anything.
+name: Council
+
+options:
+  bundleIdPrefix: site.spencersmith
+  deploymentTarget:
+    iOS: "26.0"
+    macOS: "26.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+packages:
+  CouncilCore:
+    path: CouncilCore
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: Y2Q5JVG8X5
+    SWIFT_VERSION: "6.0"
+    # CalVer, as in pubspec.yaml: the release date, then a build counter that
+    # only ever goes up and is never reset when the date changes. Keep these in
+    # step with pubspec.yaml while both apps ship.
+    MARKETING_VERSION: "2026.10.29"
+    CURRENT_PROJECT_VERSION: "8"
+
+targets:
+  Council:
+    type: application
+    # One multiplatform target, native on each platform. Not Mac Catalyst and
+    # not "Designed for iPad": the Mac app is a real AppKit-backed SwiftUI app.
+    supportedDestinations: [iOS, macOS]
+    sources:
+      - path: Council
+    dependencies:
+      - package: CouncilCore
+    info:
+      path: Council/Info.plist
+      properties:
+        CFBundleDisplayName: Council
+        # XcodeGen otherwise writes literal 1.0 / 1 here, and the build
+        # settings above would silently not reach the shipped bundle.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.reference
+        NSLocalNetworkUsageDescription: >-
+          Council needs local network access to reach Ollama running on another
+          computer on your network, so your questions are answered without
+          leaving your network. It is only used for the address you enter
+          yourself.
+        # Ollama serves plain HTTP. NSAllowsLocalNetworking permits cleartext to
+        # .local names and private ranges without NSAllowsArbitraryLoads.
+        # Tailscale's MagicDNS (.ts.net, 100.64/10) isn't "local" by that
+        # definition, so it gets a named exception — same as the Flutter app.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+          NSExceptionDomains:
+            ts.net:
+              NSExceptionAllowsInsecureHTTPLoads: true
+              NSIncludesSubdomains: true
+    settings:
+      base:
+        PRODUCT_NAME: Council
+        PRODUCT_BUNDLE_IDENTIFIER: site.spencersmith.council
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # Merge Xcode's generated keys (launch screen, scene manifest,
+        # orientations) with the explicit ones in Council/Info.plist above.
+        GENERATE_INFOPLIST_FILE: YES
+        # iOS-only keys, conditioned on the SDK so the Mac bundle doesn't carry them.
+        "INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphone*]": YES
+        "INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphone*]": YES
+        "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone[sdk=iphone*]": >-
+          UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft
+          UIInterfaceOrientationLandscapeRight
+        "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad[sdk=iphone*]": >-
+          UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
+          UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        # The Mac app ships as a notarised Developer ID DMG with its own
+        # updater (apple/PLAN.md), so no sandbox — and with no sandbox it needs
+        # no network-client entitlement. Notarisation requires hardened runtime.
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        # Xcode 26's template defaults: UI code is main-actor unless it says
+        # otherwise. CouncilCore keeps the package default (nonisolated).
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        ENABLE_PREVIEWS: YES
+    scheme:
+      testTargets:
+        - package: CouncilCore/CouncilCoreTests
