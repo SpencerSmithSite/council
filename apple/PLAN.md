@@ -183,7 +183,7 @@ changing the Flutter side isn't wanted, generate a Swift file from
       the simulator or a device), and a pass over the remaining themes once
       the real screens exist (Phase 3+).
 
-### Phase 3 — Reading
+### Phase 3 — Reading (done 2026-11-03, checks open)
 Started 2026-11-03. The reader is the one place the native app deliberately
 differs from Flutter's shape: Flutter pages a work one section at a time, the
 native reader scrolls through the whole work.
@@ -232,21 +232,48 @@ native reader scrolls through the whole work.
 - **Browse moves to Phase 6.** In the Flutter app Browse is the content-pack
   library, so it is built with the rest of the pack UI.
 
-**Work**
-- [ ] CouncilCore `Reading/`: `SegmentedPassage` and `PassageCitation`
-      (reference and quote), `HighlightColour`, `ContentsIndex`, held to a
-      new fixture `shared/golden/segments/` generated from the Dart code.
-- [ ] CouncilCore `UserData/`: `council_user.db` (same schema and
-      `user_version` as sqflite, so either app opens the other's file),
-      `AnnotationStore` (highlights, notes), `BookmarkStore`, `ShelfStore`,
-      `ReadingPositionStore`, `ReaderPreferences`, on the Flutter key names
-      and value encodings. `Corpus/Library`: shelf, sections, content units,
-      tags, sources.
-- [ ] Source reader: continuous scroll, passage text view, selection,
-      toolbar and context menu actions, highlight palette, reading controls,
-      contents, bookmark.
-- [ ] Read shelf (branches and traditions, pin, star, collapse, filter),
-      content detail, notes and note editor, bookmarks.
+**Work** (done 2026-11-03, checks open)
+- [x] CouncilCore `Reading/`: `SegmentedPassage` and `PassageCitation`
+      (reference and quote), `HighlightColour`, `ContentsIndex`,
+      `RelativeDate`. `shared/golden/segments/` (87 cases: 31 KJV chapters
+      and 56 hand-written edge cases, generated from the Dart code by
+      `tools/build_segment_goldens.py`, verified by
+      `test/segments_golden_test.dart`) matches exactly. Dart's `\d`, `\s`,
+      multiline `^` and `trim()` differ from ICU's, so the Swift side scans by
+      hand instead of using NSRegularExpression; see the fixture README.
+- [x] CouncilCore `UserData/`: `council_user.db` with sqflite's schema and
+      `user_version` (checked both ways against a file made by the Dart code),
+      a `DatabaseQueue` so the file stays out of WAL; `AnnotationStore` with a
+      change stream; `BookmarkStore`, `ShelfStore`, `ReadingPositionStore`,
+      `ReaderPreferences` on the Flutter keys and encodings, including Dart's
+      local ISO dates (`DartDateTime`). `Corpus/Library`.
+- [x] Source reader (`Features/Reader/`): continuous scroll, the TextKit 2
+      passage view with per-segment accessibility elements, selection
+      toolbar and context menu, highlight palette, note sheet, reading
+      controls (`ReaderStyle`), contents with chapter grids, bookmark. The
+      selection count is the navigation subtitle, as in Photos and Files,
+      because in the bottom bar it pushed three of the five actions into an
+      overflow menu. Ask is shown disabled until Phase 5. The passage
+      screen (`ContentDetailView`); search results now open it.
+- [x] Read shelf, Notes (notes and highlights), note editor (saves as you
+      type, abandons an untouched new note), Bookmarks.
+- [ ] Open items:
+      - VoiceOver run for real on a device; on the Mac the per-segment
+        accessibility frames are about 59pt off.
+      - Mac context menu: item icons and the palette swatches don't show.
+      - iOS palette picker draws a thin square outline round each colour.
+      - Scrolling upward through sections that load late can shift the page
+        (jumps are corrected, slow scrolling isn't).
+      - Prose and sentence segments not seen on screen (the seed corpus is
+        KJV only); check with packs installed.
+      - The reader doesn't reload on `contentRevision` (pack changes).
+      - iPad: the Aa popover and the shelf with interaction.
+- Found in the Dart segmenter while building the fixture, recorded as is so
+  both apps agree (fix both together, regenerating the fixture):
+  `St. Paul` and `Mr. Smith` split as sentences, contrary to the comment on
+  `_sentenceEnd`; a closing curly quote (`”`) never ends a sentence; CRLF
+  blank lines aren't paragraph breaks; text above verse 1 is never split
+  however long; `_labelFor` cuts the stem from the untrimmed title.
 
 ### Phase 4 — Search
 - [ ] `.searchable` with a search-role tab, results grouped by source, and
