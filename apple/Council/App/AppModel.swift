@@ -1,0 +1,151 @@
+import CouncilCore
+import Foundation
+import Observation
+import os
+
+/// Owns CouncilCore for the life of the app: the installed corpus, retrieval
+/// and the pack service. One per process, created by `CouncilApp` and handed
+/// to every scene through the environment.
+///
+/// Main-actor because the UI observes it; none of the work it starts runs
+/// there. The corpus install is a multi-megabyte gunzip on first launch, the
+/// model load is ~23 MB of ONNX, and searches go through `Retrieval`'s own
+/// reader connections.
+@Observable @MainActor
+final class AppModel {
+    enum State: Equatable {
+        /// Installing or opening the corpus. Only the first launch (or one
+        /// after a corpus version bump) takes long enough to notice.
+        case preparing
+        case ready
+        /// The corpus couldn't be installed or opened. Nothing works without
+        /// it, so the UI says why instead of showing empty lists.
+        case failed(String)
+    }
+
+    /// Semantic search loads after the corpus is ready and search works
+    /// lexically meanwhile; if it never loads, search stays lexical.
+    enum SemanticState: Equatable {
+        case loading
+        case available
+        case unavailable
+    }
+
+    private(set) var state: State = .preparing
+    private(set) var semantic: SemanticState = .loading
+
+    /// Nil until `state` is `.ready`.
+    private(set) var retrieval: Retrieval?
+    /// Nil until `state` is `.ready`. Phase 6's pack screen uses it.
+    private(set) var packs: PackService?
+
+    private var started = false
+
+    private static let logger = Logger(subsystem: "site.spencersmith.council", category: "App")
+
+    /// Install and open the corpus, then load semantic search behind it.
+    ///
+    /// Safe to call from every window's `.task`: only the first call does
+    /// anything, so a second Mac window doesn't install the corpus again.
+    func start() async {
+        guard !started else { return }
+        started = true
+
+        let corpus: Corpus
+        do {
+            let archive = try Self.bundledResource(CorpusConstants.bundledArchiveName)
+            let directory = try Self.supportDirectory()
+            corpus = try await Self.openCorpus(in: directory, archive: archive)
+        } catch {
+            Self.logger.error("Corpus unavailable: \(String(describing: error), privacy: .public)")
+            state = .failed(error.localizedDescription)
+            return
+        }
+
+        let retrieval = Retrieval(database: corpus.database)
+        self.retrieval = retrieval
+        // Packs change what's installed; retrieval caches the sources table
+        // and the vector index, so both must hear about it.
+        packs = PackService(corpus: corpus, onContentChanged: {
+            await retrieval.contentDidChange()
+        })
+        state = .ready
+
+        // Unstructured, so closing the window whose `.task` called `start`
+        // doesn't cancel a load the rest of the app is waiting on.
+        Task { await loadSemanticSearch(corpus: corpus, into: retrieval) }
+    }
+
+    private func loadSemanticSearch(corpus: Corpus, into retrieval: Retrieval) async {
+        guard let model = try? Self.bundledResource("model_quantized.onnx"),
+              let vocabulary = try? Self.bundledResource("vocab.txt") else {
+            // The build refuses to run without the model (project.yml's
+            // "Check embedding model" phase), so this is a broken bundle.
+            Self.logger.error("Embedding model or vocabulary missing from the bundle; search is lexical-only")
+            semantic = .unavailable
+            return
+        }
+        if let engine = await Self.loadSemantic(model: model, vocabulary: vocabulary, corpus: corpus) {
+            await retrieval.setSemantic(engine)
+            semantic = .available
+        } else {
+            semantic = .unavailable
+        }
+    }
+
+    // MARK: - Off the main actor
+
+    // `@concurrent` because the app target uses approachable concurrency, under
+    // which a plain nonisolated async function runs on its caller's actor:
+    // here, the main one, which would freeze the first launch's UI.
+
+    @concurrent
+    private nonisolated static func openCorpus(in directory: URL, archive: URL) async throws -> Corpus {
+        try Corpus.initialize(in: directory, bundledArchive: archive)
+    }
+
+    @concurrent
+    private nonisolated static func loadSemantic(model: URL, vocabulary: URL,
+                                                 corpus: Corpus) async -> SemanticSearch? {
+        await SemanticSearch.tryLoad(modelURL: model, vocabularyURL: vocabulary, database: corpus.database)
+    }
+
+    // MARK: - Locations
+
+    private struct MissingResource: LocalizedError {
+        let name: String
+        var errorDescription: String? { "The app is missing \(name). Reinstall Council." }
+    }
+
+    private static func bundledResource(_ name: String) throws -> URL {
+        guard let url = Bundle.main.url(forResource: name, withExtension: nil) else {
+            throw MissingResource(name: name)
+        }
+        return url
+    }
+
+    /// Where the corpus, `packs/` and (from Phase 3) `council_user.db` live.
+    ///
+    /// The Flutter app put them in `getApplicationSupportDirectory()`, and the
+    /// native app installs over it with the same bundle id (apple/PLAN.md,
+    /// Phase 7), so it must use the same directory to pick them up in place.
+    /// path_provider_foundation (2.6.0, lib/src/path_provider_foundation_real.dart)
+    /// returns `NSApplicationSupportDirectory` as is on iOS, which in the app
+    /// container is `Library/Application Support`, and appends the bundle id
+    /// on macOS.
+    static func supportDirectory() throws -> URL {
+        let base = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
+                                               appropriateFor: nil, create: true)
+        #if os(macOS)
+        // TODO(Phase 7): the Flutter Mac app was sandboxed, so its data is in
+        // ~/Library/Containers/site.spencersmith.council/Data/Library/Application Support/site.spencersmith.council.
+        // This unsandboxed app gets ~/Library/Application Support/site.spencersmith.council,
+        // the same layout outside the container; Phase 7 copies the user data
+        // across on first launch.
+        return base.appending(path: Bundle.main.bundleIdentifier ?? "site.spencersmith.council",
+                              directoryHint: .isDirectory)
+        #else
+        return base
+        #endif
+    }
+}

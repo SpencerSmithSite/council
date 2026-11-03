@@ -146,14 +146,20 @@ changing the Flutter side isn't wanted, generate a Swift file from
       app builds for iOS Simulator and macOS.
 
 ### Phase 2 — App shell and design system
-- [ ] Top-level navigation with the same sections as the Flutter app: a tab
+- [x] Top-level navigation with the same sections as the Flutter app: a tab
       bar on iPhone that becomes a sidebar on iPad and Mac
       (`.sidebarAdaptable`), and the tab bar shrinking on scroll.
       The Phase 0 shell follows `lib/main.dart`: Ask, Read and Browse as
       primary tabs, a Library section (Notes, Bookmarks, Chat History),
       a search-role tab, and Settings behind a gear (a `Settings` scene on
-      the Mac). Still to decide: where Bookmarks and Chat History live on
-      iPhone, since the five-item tab bar currently hides them there.
+      the Mac). Decided: in compact width a single Library tab lists Notes,
+      Bookmarks and Chat History (the compact tab bar otherwise flattens the
+      section and pushes them into a "More" tab); the sidebar and the
+      regular-width iPad tab bar show the section natively. See `RootView`.
+- [x] App shell wired to CouncilCore: `AppModel` installs the corpus in
+      Application Support (Flutter's directory on iOS), loads semantic search
+      behind it, and owns `Retrieval` and `PackService`. The search tab shows
+      real results. The build refuses to run without the embedding model.
 - [ ] Theme system from `shared/themes.json`, a theme picker with live
       previews, and dark/light variants where a theme has them.
 - [ ] Check the system accessibility settings in every theme: Reduce

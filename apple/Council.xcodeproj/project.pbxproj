@@ -18,19 +18,28 @@
 		77E5AAEEE45A42B1A4961C6F /* BrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB5E45A1991F3C7B1D85DF0 /* BrowseView.swift */; };
 		7B98C71C1D46B06404812C6B /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49113E0C3D7FB4401D5BC5E /* ThemeStore.swift */; };
 		84BEFDEA4419AD2AD224886C /* CouncilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */; };
+		91E5B5AC7406F53CCD282306 /* theology.db.gz in Resources */ = {isa = PBXBuildFile; fileRef = 36725FC7C2932C5653F330F7 /* theology.db.gz */; };
 		9D4C8D8A64999AF13305AF34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25B8D8CF1C70CCEBCFE6B676 /* Assets.xcassets */; };
+		9F0C06637780C111C70C90D1 /* vocab.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308BE16BED3349CB214A1ADA /* vocab.txt */; };
 		A4ADF00181F3AF633B4BFC4E /* CouncilCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69DBD37D03A4A083BA4C4FF7 /* CouncilCore */; };
 		AC7D160B6BC63D5DAAB548E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DB3B4E92E5B13410BCED51 /* SettingsView.swift */; };
 		BCF2434DB7ADCC35B2EA7E90 /* CouncilPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED29726AF5384DCFB30ECD89 /* CouncilPalette.swift */; };
 		C4A24B935AC3F583B52ED193 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066E5E76D74A2D95F1D1857C /* SearchView.swift */; };
+		CAE7E455C603B95DC5A42A2E /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED31F1E72458E2B157DC194 /* LibraryView.swift */; };
 		CBDE9B5CAF8D804CD327B528 /* ReadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82E202F5B39DBA13CB0D13E /* ReadView.swift */; };
+		D38E9786D5F38161FB02F1AE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F059DA03CBF802B595FC4B /* AppModel.swift */; };
 		D727447B861DF971FE154CD1 /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68F745F41BC84FEF8D3F37A /* ThemePickerView.swift */; };
+		F37C247657394E5FA75026BA /* model_quantized.onnx in Resources */ = {isa = PBXBuildFile; fileRef = 315F91315372F3F454CC503E /* model_quantized.onnx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01F059DA03CBF802B595FC4B /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		066E5E76D74A2D95F1D1857C /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		23ACF2673A1AD631FAB81F31 /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		25B8D8CF1C70CCEBCFE6B676 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		308BE16BED3349CB214A1ADA /* vocab.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = vocab.txt; path = ../../../assets/model/vocab.txt; sourceTree = "<group>"; };
+		315F91315372F3F454CC503E /* model_quantized.onnx */ = {isa = PBXFileReference; name = model_quantized.onnx; path = ../../../assets/model/model_quantized.onnx; sourceTree = "<group>"; };
+		36725FC7C2932C5653F330F7 /* theology.db.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; name = theology.db.gz; path = ../../../assets/theology.db.gz; sourceTree = "<group>"; };
 		3A345EA2B97E99B5D2F5E7DA /* Color+RGBA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+RGBA.swift"; sourceTree = "<group>"; };
 		3D3B619D7037D47BB9C94514 /* CouncilCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CouncilCore; path = CouncilCore; sourceTree = SOURCE_ROOT; };
 		489D02FE49F19CB1CACA905A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -39,6 +48,7 @@
 		8792E859BFD4F6042F579EFF /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		9AB5E45A1991F3C7B1D85DF0 /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseView.swift; sourceTree = "<group>"; };
 		BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsToolbar.swift; sourceTree = "<group>"; };
+		BED31F1E72458E2B157DC194 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		C2A7D06E2CEE0DC43EA4715D /* Council.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Council.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFC8985EF3CFD73DE0784BA1 /* CouncilTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouncilTheme.swift; sourceTree = "<group>"; };
 		D3DB3B4E92E5B13410BCED51 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -66,8 +76,17 @@
 			isa = PBXGroup;
 			children = (
 				25B8D8CF1C70CCEBCFE6B676 /* Assets.xcassets */,
+				54ECFF44B592ED4BDD0D15BB /* Shared */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		15692A7F7B22500142B2E87B /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				BED31F1E72458E2B157DC194 /* LibraryView.swift */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 		17B79CE335F06F81908A54D6 /* Features */ = {
@@ -76,6 +95,7 @@
 				4EDCA4BC15B634E2F369D227 /* Bookmarks */,
 				C91286CE7454048B72F7D9F6 /* Browse */,
 				2C928377055B7AA524768702 /* Chat */,
+				15692A7F7B22500142B2E87B /* Library */,
 				32F3EF8A2F39B82D8247C0EC /* Notes */,
 				92A046AD25E4710E518DE15F /* Read */,
 				8199325F57CC391D2CCFC501 /* Search */,
@@ -118,6 +138,16 @@
 				E103FFA10E1734EE439D339E /* BookmarksView.swift */,
 			);
 			path = Bookmarks;
+			sourceTree = "<group>";
+		};
+		54ECFF44B592ED4BDD0D15BB /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				315F91315372F3F454CC503E /* model_quantized.onnx */,
+				36725FC7C2932C5653F330F7 /* theology.db.gz */,
+				308BE16BED3349CB214A1ADA /* vocab.txt */,
+			);
+			name = Shared;
 			sourceTree = "<group>";
 		};
 		7B8C40B0C5F37EE2C3F925DA = {
@@ -193,6 +223,7 @@
 		F3B37E608187E06639FA7B4E /* App */ = {
 			isa = PBXGroup;
 			children = (
+				01F059DA03CBF802B595FC4B /* AppModel.swift */,
 				5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */,
 				489D02FE49F19CB1CACA905A /* RootView.swift */,
 				BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */,
@@ -207,6 +238,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = ABC21529D0912F5918FA947F /* Build configuration list for PBXNativeTarget "Council" */;
 			buildPhases = (
+				63B4E9AD390F10F74DAC3F56 /* Check embedding model */,
 				83DB6BE6A568136A7B50BE2D /* Sources */,
 				7720D06002693832BEDB62FA /* Resources */,
 				05F15D0EE0A74A033C047E3F /* Frameworks */,
@@ -266,16 +298,43 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D4C8D8A64999AF13305AF34 /* Assets.xcassets in Resources */,
+				F37C247657394E5FA75026BA /* model_quantized.onnx in Resources */,
+				91E5B5AC7406F53CCD282306 /* theology.db.gz in Resources */,
+				9F0C06637780C111C70C90D1 /* vocab.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		63B4E9AD390F10F74DAC3F56 /* Check embedding model */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../assets/model/model_quantized.onnx",
+			);
+			name = "Check embedding model";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "model=\"${SRCROOT}/../assets/model/model_quantized.onnx\"\nif [ ! -s \"$model\" ]; then\n  echo \"error: Embedding model missing: assets/model/model_quantized.onnx. Run tools/fetch_model.sh from the repo root, then build again. Without it the app would ship with lexical-only search.\"\n  exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		83DB6BE6A568136A7B50BE2D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D38E9786D5F38161FB02F1AE /* AppModel.swift in Sources */,
 				5CDCAFB4EF2925E23A5889CD /* BookmarksView.swift in Sources */,
 				77E5AAEEE45A42B1A4961C6F /* BrowseView.swift in Sources */,
 				1A18BCF1EEAF58ECF83C0574 /* ChatHistoryView.swift in Sources */,
@@ -284,6 +343,7 @@
 				84BEFDEA4419AD2AD224886C /* CouncilApp.swift in Sources */,
 				BCF2434DB7ADCC35B2EA7E90 /* CouncilPalette.swift in Sources */,
 				5D6F0BCC721B24DC35EA49F9 /* CouncilTheme.swift in Sources */,
+				CAE7E455C603B95DC5A42A2E /* LibraryView.swift in Sources */,
 				0F9080A1B0E85F6AD80F0869 /* NotesView.swift in Sources */,
 				CBDE9B5CAF8D804CD327B528 /* ReadView.swift in Sources */,
 				3BFF2612DA46D462692FB679 /* RootView.swift in Sources */,

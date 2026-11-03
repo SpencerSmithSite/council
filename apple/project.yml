@@ -33,6 +33,40 @@ targets:
     supportedDestinations: [iOS, macOS]
     sources:
       - path: Council
+      # CouncilCore's runtime inputs, read straight from the Flutter app's
+      # assets/ so both apps ship the very same files: the seed corpus that
+      # `Corpus.initialize` installs, and the vocabulary and model that
+      # `SemanticSearch` loads. Grouped under Resources/Shared in Xcode.
+      - path: ../assets/theology.db.gz
+        group: Council/Resources/Shared
+        buildPhase: resources
+      - path: ../assets/model/vocab.txt
+        group: Council/Resources/Shared
+        buildPhase: resources
+      # Gitignored (~23 MB) and fetched by tools/fetch_model.sh, so `optional`
+      # lets xcodegen run before the fetch, as CI does; the generated project is
+      # the same either way. The build itself refuses to go without it: see the
+      # "Check embedding model" script below.
+      - path: ../assets/model/model_quantized.onnx
+        group: Council/Resources/Shared
+        buildPhase: resources
+        optional: true
+    preBuildScripts:
+      # Without the model the app still builds and runs, but SemanticSearch
+      # fails to load and search quietly drops to lexical-only: an app that
+      # looks fine and answers worse. Fail the build instead, with the fix in
+      # the message. Xcode's own "file not found" from the copy phase would
+      # come later and not say where the file comes from.
+      - name: Check embedding model
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - $(SRCROOT)/../assets/model/model_quantized.onnx
+        script: |
+          model="${SRCROOT}/../assets/model/model_quantized.onnx"
+          if [ ! -s "$model" ]; then
+            echo "error: Embedding model missing: assets/model/model_quantized.onnx. Run tools/fetch_model.sh from the repo root, then build again. Without it the app would ship with lexical-only search."
+            exit 1
+          fi
     dependencies:
       - package: CouncilCore
     info:

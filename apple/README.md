@@ -30,6 +30,19 @@ up. Both are in `project.yml`.
 
 ## Build and test
 
+The app bundles three files from the Flutter app's `assets/`: the seed
+corpus `theology.db.gz`, and the embedding model's `model/vocab.txt` and
+`model/model_quantized.onnx`. The model is gitignored for its size, so fetch
+it once before building:
+
+```sh
+bash tools/fetch_model.sh
+```
+
+Without it the build stops at the "Check embedding model" phase with a
+message saying so. That's deliberate: the app would otherwise build, run and
+silently search by keywords only.
+
 From the repo root:
 
 ```sh
