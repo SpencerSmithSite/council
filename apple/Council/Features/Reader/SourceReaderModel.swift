@@ -119,7 +119,7 @@ final class SourceReaderModel {
 
     /// Set by the first touch after a jump, so `settle` never pulls the page
     /// out from under a reader who has started scrolling.
-    @ObservationIgnored private var scrolledSinceJump = false
+    @ObservationIgnored private(set) var scrolledSinceJump = false
 
     func userScrolled() { scrolledSinceJump = true }
 

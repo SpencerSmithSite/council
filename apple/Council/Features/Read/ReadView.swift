@@ -21,8 +21,8 @@ import SwiftUI
 /// Typing in the search field filters the shelf by title, author and
 /// tradition (Flutter's `_filtered`). In Flutter, submitting the same field
 /// ran a full-text search inside the passages; here that is the Search tab's
-/// job, so it isn't repeated. TODO(Phase 4): perhaps offer "Search passages
-/// for …" here, handing the query to the Search tab.
+/// job, so this offers "Search Passages for …" instead, which hands the
+/// query to the Search tab (`AppModel.requestSearch`).
 struct ReadView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.councilPalette) private var palette
@@ -108,6 +108,11 @@ struct ReadView: View {
     private func shelfList(_ visible: [ShelfSource]) -> some View {
         let layout = ShelfLayout(visible, pinned: pinned)
         return List {
+            if !trimmedQuery.isEmpty {
+                Section { searchPassagesButton }
+                    .councilListRow()
+            }
+
             // Always shown when unfiltered, even empty: pinning is the shelf's
             // main arrangement gesture and it is invisible, so without a
             // labelled place for pinned works to land nothing on screen
@@ -221,11 +226,22 @@ struct ReadView: View {
             ContentUnavailableView {
                 Label("No Matches", systemImage: "magnifyingglass")
             } description: {
-                Text("Nothing on your shelf matches “\(trimmedQuery)”. Use Search to look inside the texts.")
+                Text("Nothing on your shelf matches “\(trimmedQuery)”.")
+            } actions: {
+                searchPassagesButton
             }
         } else if !installed {
             ContentUnavailableView("Nothing Installed Yet", systemImage: "books.vertical",
                                    description: Text("Works you add to your library will appear here."))
+        }
+    }
+
+    /// The words typed here, searched for inside the texts rather than
+    /// among the titles: what submitting this field did in Flutter's Read
+    /// tab, now the Search tab's job.
+    private var searchPassagesButton: some View {
+        Button("Search Passages for “\(trimmedQuery)”", systemImage: "text.magnifyingglass") {
+            model.requestSearch(trimmedQuery)
         }
     }
 

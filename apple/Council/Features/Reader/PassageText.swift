@@ -31,6 +31,11 @@ struct PassageText: View {
     /// A long-press or right-click landed on segment `index`: select it (if
     /// it isn't already) and return the actions, or nil for no menu.
     var menu: ((Int) -> PassageMenu?)?
+    /// Words a search matched, as offsets into the unit's content, marked.
+    var found: [Range<Int>] = []
+    /// Where the first of `found` landed, in this view's coordinates, once
+    /// the text is laid out at its width: the reader scrolls it into view.
+    var onFoundLayout: ((CGRect) -> Void)?
 
     @Environment(ReaderStyle.self) private var style
     @Environment(\.councilPalette) private var palette
@@ -38,13 +43,14 @@ struct PassageText: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        PassageTextView(rendering: rendering, onTap: onTap, menu: menu)
+        PassageTextView(rendering: rendering, onTap: onTap, menu: menu, onFound: onFoundLayout)
     }
 
     private var rendering: PassageRendering {
         PassageRendering(passage: passage, highlights: highlights, selected: selected,
                          typography: style.typography, dynamicType: dynamicTypeSize,
-                         dark: colorScheme == .dark, textColor: textColor, accent: accent)
+                         dark: colorScheme == .dark, textColor: textColor, accent: accent,
+                         found: found)
     }
 
     /// Default draws with the system's own label colour, which follows
@@ -71,6 +77,7 @@ private struct PassageTextView: UIViewRepresentable {
     let rendering: PassageRendering
     let onTap: (Int) -> Void
     let menu: ((Int) -> PassageMenu?)?
+    let onFound: ((CGRect) -> Void)?
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -98,6 +105,7 @@ private struct PassageTextView: UIViewRepresentable {
         let coordinator = context.coordinator
         coordinator.onTap = onTap
         coordinator.menu = menu
+        coordinator.onFound = onFound
         coordinator.apply(rendering)
     }
 
@@ -111,8 +119,10 @@ private struct PassageTextView: UIViewRepresentable {
         weak var view: PassageUITextView?
         var onTap: (Int) -> Void = { _ in }
         var menu: ((Int) -> PassageMenu?)?
+        var onFound: ((CGRect) -> Void)?
         private(set) var rendering: PassageRendering?
         private(set) var layout: PassageLayout?
+        private var reported: FoundReport?
         /// Measured heights for the current text, by width: SwiftUI asks
         /// several times per layout pass, and measuring lays the text out.
         private var heights: [CGFloat: CGFloat] = [:]
@@ -155,6 +165,23 @@ private struct PassageTextView: UIViewRepresentable {
         }
 
         /// A segment's line rectangles in the view's coordinates.
+        /// Tells the screen where the first search mark landed, once per
+        /// set of marks and width (the view lays out again for every scroll
+        /// past, and the screen only needs to know once).
+        func reportFound() {
+            guard let onFound, let view, let rendering, let first = rendering.found.first, let layout,
+                  let layoutManager = view.textLayoutManager, view.bounds.width > 0 else { return }
+            let key = FoundReport(found: rendering.found, width: view.bounds.width)
+            guard key != reported,
+                  let range = PassageLayout.displayRange(ofContent: first, passage: rendering.passage,
+                                                         ranges: layout.ranges),
+                  let rect = PassageGeometry.rects(for: range, in: layoutManager).first else { return }
+            reported = key
+            let inView = rect.offsetBy(dx: view.textContainerInset.left, dy: view.textContainerInset.top)
+            // After this layout pass: the callback sets the screen's state.
+            Task { @MainActor in onFound(inView) }
+        }
+
         func rects(forSegment index: Int) -> [CGRect] {
             guard let view, let layoutManager = view.textLayoutManager, let layout,
                   layout.ranges.indices.contains(index) else { return [] }
@@ -287,6 +314,7 @@ final class PassageUITextView: UITextView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        coordinator?.reportFound()
         // Frames depend on the width; recompute them, keeping the objects.
         if let segmentElements, let coordinator {
             for element in segmentElements {
@@ -341,6 +369,7 @@ private struct PassageTextView: NSViewRepresentable {
     let rendering: PassageRendering
     let onTap: (Int) -> Void
     let menu: ((Int) -> PassageMenu?)?
+    let onFound: ((CGRect) -> Void)?
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -367,6 +396,7 @@ private struct PassageTextView: NSViewRepresentable {
         let coordinator = context.coordinator
         coordinator.onTap = onTap
         coordinator.menu = menu
+        coordinator.onFound = onFound
         coordinator.apply(rendering)
     }
 
@@ -380,8 +410,10 @@ private struct PassageTextView: NSViewRepresentable {
         weak var view: PassageNSTextView?
         var onTap: (Int) -> Void = { _ in }
         var menu: ((Int) -> PassageMenu?)?
+        var onFound: ((CGRect) -> Void)?
         private(set) var rendering: PassageRendering?
         private(set) var layout: PassageLayout?
+        private var reported: FoundReport?
         private var heights: [CGFloat: CGFloat] = [:]
 
         func apply(_ new: PassageRendering) {
@@ -422,6 +454,23 @@ private struct PassageTextView: NSViewRepresentable {
             let inContainer = CGPoint(x: point.x - origin.x, y: point.y - origin.y)
             guard let index = PassageGeometry.characterIndex(at: inContainer, in: layoutManager) else { return nil }
             return PassageGeometry.segment(at: index, in: layout.string)
+        }
+
+        /// Tells the screen where the first search mark landed, once per
+        /// set of marks and width (the view lays out again for every scroll
+        /// past, and the screen only needs to know once).
+        func reportFound() {
+            guard let onFound, let view, let rendering, let first = rendering.found.first, let layout,
+                  let layoutManager = view.textLayoutManager, view.bounds.width > 0 else { return }
+            let key = FoundReport(found: rendering.found, width: view.bounds.width)
+            guard key != reported,
+                  let range = PassageLayout.displayRange(ofContent: first, passage: rendering.passage,
+                                                         ranges: layout.ranges),
+                  let rect = PassageGeometry.rects(for: range, in: layoutManager).first else { return }
+            reported = key
+            let inView = rect.offsetBy(dx: view.textContainerOrigin.x, dy: view.textContainerOrigin.y)
+            // After this layout pass: the callback sets the screen's state.
+            Task { @MainActor in onFound(inView) }
         }
 
         func rects(forSegment index: Int) -> [CGRect] {
@@ -547,6 +596,7 @@ final class PassageNSTextView: NSTextView {
 
     override func layout() {
         super.layout()
+        coordinator?.reportFound()
         if let segmentElements, let coordinator {
             for element in segmentElements {
                 element.setAccessibilityFrameInParentSpace(coordinator.rects(forSegment: element.index)
@@ -611,3 +661,10 @@ private nonisolated final class ClosureMenuItem: NSMenuItem {
 }
 
 #endif
+
+/// What a found-mark report was made for: the same marks at the same width
+/// need no second report.
+private struct FoundReport: Equatable {
+    let found: [Range<Int>]
+    let width: CGFloat
+}

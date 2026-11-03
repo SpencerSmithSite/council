@@ -40,7 +40,12 @@ struct RootView: View {
         case list(LibraryDestination)
     }
 
+    @Environment(AppModel.self) private var model
     @State private var selection: Section = .ask
+    /// The Search tab's query. Here rather than in `SearchView` so another
+    /// screen's request (`AppModel.pendingSearch`) can set it and switch tabs
+    /// in one place, whether or not the Search tab has been opened yet.
+    @State private var searchQuery = ""
     /// The Library tab's stack. A `NavigationPath` rather than
     /// `[LibraryDestination]`: a stack bound to a typed array can only push
     /// that type, and the lists inside it push `ReadingRoute`s.
@@ -83,10 +88,19 @@ struct RootView: View {
             }
 
             Tab(value: .search, role: .search) {
-                NavigationStack { SearchView().settingsToolbar().readingDestinations() }
+                NavigationStack { SearchView(query: $searchQuery).settingsToolbar().readingDestinations() }
             }
         }
         .tabViewStyle(.sidebarAdaptable)
+        // Another screen asked for a search (the shelf's "Search Passages
+        // for …"): run it in the Search tab.
+        .onChange(of: model.pendingSearch) { _, query in
+            guard let query else { return }
+            searchQuery = query
+            model.recentSearches.record(query)
+            model.pendingSearch = nil
+            selection = .search
+        }
         #if os(iOS)
         // The iPhone tab bar shrinks while reading down a list, as in Music
         // and News, and comes back on scrolling up.

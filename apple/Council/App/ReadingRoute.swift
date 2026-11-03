@@ -1,3 +1,4 @@
+import CouncilCore
 import SwiftUI
 
 /// Everywhere a screen can push into the reading screens: a work in the
@@ -10,8 +11,10 @@ import SwiftUI
 /// `.readingDestinations()`; a stack without it ignores the link.
 enum ReadingRoute: Hashable {
     /// A work, in the continuous-scroll reader. Opens at the section holding
-    /// `unitID` when given, otherwise where the reader last stopped.
-    case source(id: Int, title: String, unitID: Int? = nil)
+    /// `unitID` when given, otherwise where the reader last stopped. With
+    /// `find` (a search result), the search's words are marked in that
+    /// section and the first is scrolled into view.
+    case source(id: Int, title: String, unitID: Int? = nil, find: SearchHits? = nil)
     /// One passage on its own, with its provenance, tags and bookmark.
     case passage(id: Int)
     case note(id: Int)
@@ -23,8 +26,8 @@ extension View {
     func readingDestinations() -> some View {
         navigationDestination(for: ReadingRoute.self) { route in
             switch route {
-            case .source(let id, let title, let unitID):
-                SourceReaderView(sourceID: id, title: title, initialUnitID: unitID)
+            case .source(let id, let title, let unitID, let find):
+                SourceReaderView(sourceID: id, title: title, initialUnitID: unitID, find: find)
             case .passage(let id):
                 ContentDetailView(contentID: id)
             case .note(let id):

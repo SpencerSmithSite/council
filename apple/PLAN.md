@@ -275,9 +275,28 @@ native reader scrolls through the whole work.
   blank lines aren't paragraph breaks; text above verse 1 is never split
   however long; `_labelFor` cuts the stem from the untrimmed title.
 
-### Phase 4 — Search
-- [ ] `.searchable` with a search-role tab, results grouped by source, and
-      jumping to the hit inside the reader.
+### Phase 4 — Search (done 2026-11-03)
+- [x] The Search tab: the Read tab's query (`lexicalSearch`, limit 40,
+      FTS5 then LIKE), results grouped by work in order of each work's best
+      match, each row the verse or paragraph that matched with the matched
+      words in bold (`SearchHits`, `SearchSnippet` in CouncilCore). The
+      matched words are re-found in Swift, folded as FTS5's `unicode61`
+      folds them, rather than with FTS5's `highlight()`, so the shared,
+      golden-tested query is untouched. Recent searches (`recent_searches`,
+      native-only) when the field is empty.
+- [x] A result opens the whole work in the reader at that section, with the
+      matched words marked in the system yellow and the first scrolled to a
+      quarter of the way down (`ReadingRoute.source(find:)`). The marks clear
+      when the reader starts selecting.
+- [x] The shelf's filter offers "Search Passages for …", which hands the
+      query to the Search tab (Flutter's submit-to-search on the Read tab).
+- [ ] Open: the iOS 26 search tab that becomes a field in the tab bar. With
+      `.searchable` on the TabView the search tab stays an ordinary tab in
+      this tab bar (seen in Phase 2 too) and no field appears, so the field
+      is pinned under the title instead (`.navigationBarDrawer(.always)`).
+      Worth another look once the tab set is final.
+- [ ] Open: a unit FTS matched only on its title shows its opening and marks
+      nothing.
 
 ### Phase 5 — AI
 - [ ] Backends: Foundation Models, MLX local model (download, progress,

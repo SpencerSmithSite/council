@@ -56,6 +56,16 @@ final class AppModel {
     private(set) var bookmarksRevision = 0
     let shelf = ShelfStore()
     let readingPositions = ReadingPositionStore()
+    let recentSearches = RecentSearches()
+
+    /// A search another screen asked for (the shelf's "Search Passages
+    /// for …"). `RootView` switches to the Search tab when it's set, and
+    /// `SearchView` takes it as its query and clears it.
+    var pendingSearch: String?
+
+    func requestSearch(_ query: String) {
+        pendingSearch = query
+    }
 
     /// Bumped after a pack install, removal or replacement changes what is in
     /// the corpus, so screens listing corpus content (the Read tab's shelf)

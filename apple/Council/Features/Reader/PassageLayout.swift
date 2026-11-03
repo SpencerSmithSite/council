@@ -28,6 +28,9 @@ struct PassageRendering: Equatable {
     var dark: Bool
     var textColor: PlatformColor
     var accent: PlatformColor
+    /// Words a search matched (`SearchHits`), as offsets into the unit's
+    /// content, marked so the reader lands on what they searched for.
+    var found: [Range<Int>] = []
 
     /// The parts that change the text's layout. Selection and highlights are
     /// left out: they are painted, never laid out.
@@ -49,6 +52,13 @@ struct PassageRendering: Equatable {
     /// hasn't been committed can't be mistaken for a mark already made.
     var wash: PlatformColor {
         accent.withAlphaComponent(dark ? 0.32 : 0.20)
+    }
+
+    /// The mark on a search's words: the system yellow, as Safari's and
+    /// Books' find marks are, stronger than the yellow highlight so the two
+    /// can't be confused, and dimmer in dark so light text stays readable.
+    var findColour: PlatformColor {
+        PlatformColor.systemYellow.withAlphaComponent(dark ? 0.5 : 0.75)
     }
 
     /// The background each segment should have: the wash when selected,
@@ -121,6 +131,29 @@ struct PassageLayout {
         }
         string = out
         self.ranges = ranges
+    }
+
+    /// Where `range` of the unit's content shows in the laid-out string,
+    /// clipped to the segment text it falls in; nil when it falls in none
+    /// (between segments, or in a verse's number marker, which is drawn
+    /// rather than copied).
+    ///
+    /// A segment's text is its content run trimmed, ending at `end`, and the
+    /// laid-out string carries that text unchanged at the end of the
+    /// segment's range (after the drawn number), so the two line up from
+    /// there.
+    static func displayRange(ofContent range: Range<Int>, passage: SegmentedPassage,
+                             ranges: [NSRange]) -> NSRange? {
+        for segment in passage.segments where ranges.indices.contains(segment.index) {
+            let length = segment.text.utf16.count
+            let contentStart = segment.end - length
+            let start = max(range.lowerBound, contentStart)
+            let end = min(range.upperBound, segment.end)
+            guard start < end else { continue }
+            let displayStart = NSMaxRange(ranges[segment.index]) - length
+            return NSRange(location: displayStart + start - contentStart, length: end - start)
+        }
+        return nil
     }
 
     /// What VoiceOver says for a segment: "verse 4. In the beginning…" for a
@@ -222,7 +255,8 @@ enum PassageGeometry {
         return rects
     }
 
-    /// Paints `rendering`'s backgrounds (selection wash, highlights) into
+    /// Paints `rendering`'s backgrounds (selection wash, highlights, then
+    /// search marks over them) into
     /// `storage`, in place, replacing any painted before.
     ///
     /// Background attributes in the text storage rather than TextKit 2
@@ -238,6 +272,11 @@ enum PassageGeometry {
             let range = ranges[segment.index]
             guard let colour = rendering.background(for: segment), NSMaxRange(range) <= storage.length else { continue }
             storage.addAttribute(.backgroundColor, value: colour, range: range)
+        }
+        for hit in rendering.found {
+            guard let range = PassageLayout.displayRange(ofContent: hit, passage: rendering.passage, ranges: ranges),
+                  NSMaxRange(range) <= storage.length else { continue }
+            storage.addAttribute(.backgroundColor, value: rendering.findColour, range: range)
         }
         storage.endEditing()
     }

@@ -55,6 +55,13 @@ public enum QueryShaping {
     /// "Nicée" becomes `"Nice"*` — while the tokenizer strips the mark and
     /// folds the word to `nicee`. Lengths are UTF-16 code units, as Dart's are.
     public static func ftsMatchQuery(_ query: String) -> String {
+        ftsTerms(query).map(prefixTerm).joined(separator: " OR ")
+    }
+
+    /// The words `ftsMatchQuery` searches for, unquoted: what the reader's
+    /// query reaches FTS5 as, each matched as a prefix. The search screen
+    /// marks them in the passages it found (`SearchHits`).
+    public static func ftsTerms(_ query: String) -> [String] {
         // `replaceAll(RegExp(r'[^\p{L}\p{N}_\s]', unicode: true), ' ')`
         var cleaned = String.UnicodeScalarView()
         for scalar in query.unicodeScalars {
@@ -80,8 +87,7 @@ public enum QueryShaping {
         // otherwise match nothing at all, which is worse than matching too
         // much.
         if terms.isEmpty { terms = words }
-
-        return terms.map(prefixTerm).joined(separator: " OR ")
+        return terms
     }
 
     private static func keepsInFTS(_ scalar: Unicode.Scalar) -> Bool {

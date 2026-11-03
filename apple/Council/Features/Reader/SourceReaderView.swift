@@ -18,6 +18,9 @@ struct SourceReaderView: View {
     /// Open at the section holding this unit. Takes precedence over the saved
     /// reading position.
     var initialUnitID: Int?
+    /// The search this was opened from: its words are marked in the opening
+    /// section, and the first is scrolled into view.
+    var find: SearchHits?
 
     @Environment(AppModel.self) private var model
     @Environment(ReaderStyle.self) private var style
@@ -28,11 +31,17 @@ struct SourceReaderView: View {
     @State private var showingContents = false
     @State private var showingControls = false
     @State private var bookmarked: Set<Int> = []
+    /// The search's marks in the opening section, cleared when the reader
+    /// starts selecting: by then they've done their job, and a mark over a
+    /// verse being highlighted would hide the colour chosen.
+    @State private var found: [Range<Int>] = []
+    @State private var reveal = FindReveal()
 
-    init(sourceID: Int, title: String, initialUnitID: Int? = nil) {
+    init(sourceID: Int, title: String, initialUnitID: Int? = nil, find: SearchHits? = nil) {
         self.sourceID = sourceID
         self.title = title
         self.initialUnitID = initialUnitID
+        self.find = find
         _reader = State(initialValue: SourceReaderModel(sourceID: sourceID, title: title, initialUnitID: initialUnitID))
     }
 
@@ -61,7 +70,14 @@ struct SourceReaderView: View {
                 guard let library = model.library else { return }
                 await reader.load(library: library, annotations: model.annotations, positions: model.readingPositions)
                 contentsIndex = ContentsIndex(titles: reader.sections.map(\.title))
+                if let find, let unitID = initialUnitID, let content = reader.loaded[unitID]?.unit.content {
+                    found = find.ranges(in: content)
+                }
                 await reader.settle()
+                await revealFound()
+            }
+            .onChange(of: selection.isEmpty) { _, empty in
+                if !empty { found = [] }
             }
             .task(id: model.annotationsRevision) {
                 await reader.reloadHighlights()
@@ -105,7 +121,9 @@ struct SourceReaderView: View {
                 ForEach(reader.sections) { section in
                     ReaderSection(header: section, loaded: reader.loaded[section.id],
                                   sourceTitle: title, selection: selection,
-                                  store: model.annotations)
+                                  store: model.annotations,
+                                  found: section.id == initialUnitID ? found : [],
+                                  reveal: reveal)
                         .padding(.horizontal, style.horizontalMargin)
                         .frame(maxWidth: 720)
                         .frame(maxWidth: .infinity)
@@ -116,8 +134,42 @@ struct SourceReaderView: View {
             .padding(.bottom, 24)
         }
         .scrollPosition($reader.scrollPosition, anchor: .top)
+        .onScrollGeometryChange(for: ScrollGeometry.self, of: { $0 }) { _, geometry in
+            reveal.geometry = geometry
+        }
         .onScrollPhaseChange { _, phase in
             if phase == .interacting { reader.userScrolled() }
+        }
+    }
+
+    /// Scrolls the first search mark to a quarter of the way down the
+    /// screen, unless it's already comfortably in view (a hit in verse 1) or
+    /// the reader has started scrolling.
+    ///
+    /// By offset, from where the mark was laid out: the scroll position can
+    /// only name sections, and a hit in Psalm 119 is two thousand points
+    /// below the section's top. Waits up to a second for the section's text
+    /// to lay out and report.
+    private func revealFound() async {
+        guard !found.isEmpty else { return }
+        for _ in 0..<20 {
+            guard !reader.scrolledSinceJump else { return }
+            if let mark = reveal.mark, let top = reveal.textTop, let geometry = reveal.geometry {
+                // `containerSize` is the visible area, the bars already left
+                // out, and the `.scrollView` space starts at its top, so the
+                // mark's on-screen position is the text's top plus the mark.
+                let visible = geometry.containerSize.height
+                let markY = top + mark.minY
+                if markY >= 0, markY + mark.height <= visible * 0.7 { return }
+                // `scrollTo(y:)` measures from the top of the visible area,
+                // where `contentOffset` measures from under the bar (it is
+                // minus the top inset at rest): add the inset back, or it
+                // lands that much short (checked: 116 points on an iPhone 17).
+                let shift = markY - visible * 0.25
+                reader.scrollPosition.scrollTo(y: geometry.contentOffset.y + geometry.contentInsets.top + shift)
+                return
+            }
+            do { try await Task.sleep(for: .milliseconds(50)) } catch { return }
         }
     }
 
@@ -183,6 +235,8 @@ private struct ReaderSection: View {
     let sourceTitle: String
     let selection: PassageSelection
     let store: AnnotationStore?
+    let found: [Range<Int>]
+    let reveal: FindReveal
 
     @Environment(ReaderStyle.self) private var style
     @Environment(\.councilPalette) private var palette
@@ -225,9 +279,28 @@ private struct ReaderSection: View {
             menu: { index in
                 selection.include(index, in: source, highlights: loaded.highlights)
                 return selection.menu(store: store)
-            }
+            },
+            found: found,
+            onFoundLayout: found.isEmpty ? nil : { reveal.mark = $0 }
         )
+        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .scrollView).minY } action: { top in
+            if !found.isEmpty { reveal.textTop = top }
+        }
     }
+}
+
+/// Where the opening section's first search mark is, for `revealFound`.
+///
+/// A plain class, not observed, on purpose: the scroll geometry and the
+/// text's position change on every frame of a scroll, and nothing should
+/// re-render for them. They're read once, when the reader opens.
+@MainActor
+final class FindReveal {
+    /// The first mark, in the passage text's coordinates.
+    var mark: CGRect?
+    /// The passage text's top, in the scroll view's coordinates.
+    var textTop: CGFloat?
+    var geometry: ScrollGeometry?
 }
 
 /// The preview a bookmark carries: Flutter's `_getPreview`, whitespace
