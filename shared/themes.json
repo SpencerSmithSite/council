@@ -1,0 +1,605 @@
+{
+  "comment": "The theme catalogue, shared by the Flutter app and the native Apple app. Each theme names the identifying colours of its light and dark variant; the rest of the palette (container tints, legible separator and secondary label) is derived in code and pinned by shared/golden/themes/derived.json. After editing, run `python3 tools/generate_themes.py` to regenerate lib/src/theme/themes.g.dart and apple/CouncilCore/Sources/CouncilCore/Themes/ThemeCatalogue.g.swift, then `flutter test test/theme_golden_test.dart --dart-define=UPDATE_GOLDENS=true`. Order is the picker's order; \"default\" is reserved for the platform look and is not listed. Colours are #RRGGBB, or #AARRGGBB with alpha. Fields: bg = page behind grouped content; surface = a cell on the page; surface2 = a control on a cell; text; subtext = secondary text; separator; accent; onAccent = text on the accent; error (optional, else the derivation's default).",
+  "themes": [
+    {
+      "id": "tokyonight",
+      "label": "Tokyo Night",
+      "note": "Tokyo Night — Night (dark) + Day (light).",
+      "light": {
+        "bg": "#E1E2E7",
+        "surface": "#FFFFFF",
+        "surface2": "#D5D6DB",
+        "text": "#343B58",
+        "subtext": "#6172B0",
+        "separator": "#CBCED9",
+        "accent": "#2E7DE9",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#1A1B26",
+        "surface": "#24283B",
+        "surface2": "#414868",
+        "text": "#C0CAF5",
+        "subtext": "#787C99",
+        "separator": "#292E42",
+        "accent": "#7AA2F7",
+        "onAccent": "#1A1B26"
+      }
+    },
+    {
+      "id": "everforest",
+      "label": "Everforest",
+      "note": "Everforest — medium dark + medium light.",
+      "light": {
+        "bg": "#FDF6E3",
+        "surface": "#F4F0D9",
+        "surface2": "#EDEADA",
+        "text": "#5C6A72",
+        "subtext": "#829181",
+        "separator": "#E0DCC7",
+        "accent": "#8DA101",
+        "onAccent": "#FDF6E3"
+      },
+      "dark": {
+        "bg": "#2D353B",
+        "surface": "#343F44",
+        "surface2": "#3D484D",
+        "text": "#D3C6AA",
+        "subtext": "#859289",
+        "separator": "#4A555B",
+        "accent": "#A7C080",
+        "onAccent": "#2D353B"
+      }
+    },
+    {
+      "id": "ayu",
+      "label": "Ayu",
+      "note": "Ayu — dark + light.",
+      "light": {
+        "bg": "#FCFCFC",
+        "surface": "#FFFFFF",
+        "surface2": "#F0F0F0",
+        "text": "#5C6166",
+        "subtext": "#8A9199",
+        "separator": "#E7E8E9",
+        "accent": "#FF9940",
+        "onAccent": "#5C6166"
+      },
+      "dark": {
+        "bg": "#0B0E14",
+        "surface": "#0F131A",
+        "surface2": "#1C212B",
+        "text": "#BFBDB6",
+        "subtext": "#565B66",
+        "separator": "#1C212B",
+        "accent": "#FFB454",
+        "onAccent": "#0B0E14"
+      }
+    },
+    {
+      "id": "catppuccin",
+      "label": "Catppuccin",
+      "note": "Catppuccin — Latte (light) + Mocha (dark).",
+      "light": {
+        "bg": "#EFF1F5",
+        "surface": "#FFFFFF",
+        "surface2": "#CCD0DA",
+        "text": "#4C4F69",
+        "subtext": "#6C6F85",
+        "separator": "#BCC0CC",
+        "accent": "#8839EF",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#1E1E2E",
+        "surface": "#313244",
+        "surface2": "#45475A",
+        "text": "#CDD6F4",
+        "subtext": "#A6ADC8",
+        "separator": "#45475A",
+        "accent": "#CBA6F7",
+        "onAccent": "#11111B"
+      }
+    },
+    {
+      "id": "catppuccin-macchiato",
+      "label": "Catppuccin Macchiato",
+      "note": "Catppuccin Macchiato — Latte (light) + Macchiato (dark).",
+      "light": {
+        "bg": "#EFF1F5",
+        "surface": "#FFFFFF",
+        "surface2": "#CCD0DA",
+        "text": "#4C4F69",
+        "subtext": "#6C6F85",
+        "separator": "#BCC0CC",
+        "accent": "#8839EF",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#24273A",
+        "surface": "#363A4F",
+        "surface2": "#494D64",
+        "text": "#CAD3F5",
+        "subtext": "#A5ADCB",
+        "separator": "#494D64",
+        "accent": "#C6A0F6",
+        "onAccent": "#181926"
+      }
+    },
+    {
+      "id": "gruvbox",
+      "label": "Gruvbox",
+      "note": "Gruvbox — medium dark + medium light.",
+      "light": {
+        "bg": "#FBF1C7",
+        "surface": "#F2E5BC",
+        "surface2": "#EBDBB2",
+        "text": "#3C3836",
+        "subtext": "#7C6F64",
+        "separator": "#D5C4A1",
+        "accent": "#D65D0E",
+        "onAccent": "#FBF1C7"
+      },
+      "dark": {
+        "bg": "#282828",
+        "surface": "#3C3836",
+        "surface2": "#504945",
+        "text": "#EBDBB2",
+        "subtext": "#A89984",
+        "separator": "#504945",
+        "accent": "#FE8019",
+        "onAccent": "#282828"
+      }
+    },
+    {
+      "id": "kanagawa",
+      "label": "Kanagawa",
+      "note": "Kanagawa — Wave (dark) + Lotus (light).",
+      "light": {
+        "bg": "#F2ECBC",
+        "surface": "#E7DBA0",
+        "surface2": "#E5DDB0",
+        "text": "#545464",
+        "subtext": "#8A8980",
+        "separator": "#DCD5AC",
+        "accent": "#4D699B",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#1F1F28",
+        "surface": "#2A2A37",
+        "surface2": "#363646",
+        "text": "#DCD7BA",
+        "subtext": "#727169",
+        "separator": "#363646",
+        "accent": "#7E9CD8",
+        "onAccent": "#1F1F28"
+      }
+    },
+    {
+      "id": "nord",
+      "label": "Nord",
+      "note": "Nord — Polar Night (dark) + Snow Storm (light).",
+      "light": {
+        "bg": "#ECEFF4",
+        "surface": "#FFFFFF",
+        "surface2": "#E5E9F0",
+        "text": "#2E3440",
+        "subtext": "#4C566A",
+        "separator": "#D8DEE9",
+        "accent": "#5E81AC",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#2E3440",
+        "surface": "#3B4252",
+        "surface2": "#434C5E",
+        "text": "#ECEFF4",
+        "subtext": "#8FBCBB",
+        "separator": "#434C5E",
+        "accent": "#88C0D0",
+        "onAccent": "#2E3440"
+      }
+    },
+    {
+      "id": "matrix",
+      "label": "Matrix",
+      "note": "Matrix — green-on-black, with a synthesised light \"terminal paper\".",
+      "light": {
+        "bg": "#E8F5E9",
+        "surface": "#FFFFFF",
+        "surface2": "#D3ECD5",
+        "text": "#0B3D0B",
+        "subtext": "#2E7D32",
+        "separator": "#C3E3C6",
+        "accent": "#1B5E20",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#000000",
+        "surface": "#0A0F0A",
+        "surface2": "#10210F",
+        "text": "#00FF41",
+        "subtext": "#00B32C",
+        "separator": "#014D01",
+        "accent": "#00FF41",
+        "onAccent": "#000000"
+      }
+    },
+    {
+      "id": "one-dark",
+      "label": "One Dark",
+      "note": "One Dark + One Light.",
+      "light": {
+        "bg": "#FAFAFA",
+        "surface": "#FFFFFF",
+        "surface2": "#EAEAEB",
+        "text": "#383A42",
+        "subtext": "#6A6B73",
+        "separator": "#DBDBDC",
+        "accent": "#4078F2",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#282C34",
+        "surface": "#2C313C",
+        "surface2": "#3B4048",
+        "text": "#ABB2BF",
+        "subtext": "#828997",
+        "separator": "#3B4048",
+        "accent": "#61AFEF",
+        "onAccent": "#282C34"
+      }
+    },
+    {
+      "id": "dracula",
+      "label": "Dracula",
+      "note": "Dracula — dark + Alucard (light).",
+      "light": {
+        "bg": "#FFFBEB",
+        "surface": "#FFFFFF",
+        "surface2": "#F0ECD7",
+        "text": "#1F1F1F",
+        "subtext": "#6C664B",
+        "separator": "#E5E0C8",
+        "accent": "#644AC9",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#282A36",
+        "surface": "#343746",
+        "surface2": "#44475A",
+        "text": "#F8F8F2",
+        "subtext": "#9AA4CC",
+        "separator": "#44475A",
+        "accent": "#BD93F9",
+        "onAccent": "#282A36"
+      }
+    },
+    {
+      "id": "solarized-dark",
+      "label": "Solarized Dark",
+      "note": "Solarized Dark. The light half of Solarized is Solarized Light — the same hues, flipped.",
+      "light": {
+        "bg": "#FDF6E3",
+        "surface": "#EEE8D5",
+        "surface2": "#E6DFC4",
+        "text": "#657B83",
+        "subtext": "#93A1A1",
+        "separator": "#DDD6C1",
+        "accent": "#268BD2",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#002B36",
+        "surface": "#073642",
+        "surface2": "#094552",
+        "text": "#93A1A1",
+        "subtext": "#839496",
+        "separator": "#094552",
+        "accent": "#268BD2",
+        "onAccent": "#002B36"
+      }
+    },
+    {
+      "id": "solarized-light",
+      "label": "Solarized Light",
+      "note": "Solarized Light — kept distinct because the user listed both; its dark half is Solarized Dark, so choosing it and flipping to dark lands where you'd expect.",
+      "light": {
+        "bg": "#FDF6E3",
+        "surface": "#EEE8D5",
+        "surface2": "#E6DFC4",
+        "text": "#657B83",
+        "subtext": "#93A1A1",
+        "separator": "#DDD6C1",
+        "accent": "#268BD2",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#002B36",
+        "surface": "#073642",
+        "surface2": "#094552",
+        "text": "#93A1A1",
+        "subtext": "#839496",
+        "separator": "#094552",
+        "accent": "#268BD2",
+        "onAccent": "#002B36"
+      }
+    },
+    {
+      "id": "monokai",
+      "label": "Monokai",
+      "note": "Monokai — classic dark + a synthesised light.",
+      "light": {
+        "bg": "#FAFAFA",
+        "surface": "#FFFFFF",
+        "surface2": "#F0F0F0",
+        "text": "#272822",
+        "subtext": "#75715E",
+        "separator": "#E0E0E0",
+        "accent": "#E5187A",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#272822",
+        "surface": "#2D2E28",
+        "surface2": "#3E3D32",
+        "text": "#F8F8F2",
+        "subtext": "#A59F85",
+        "separator": "#3E3D32",
+        "accent": "#F92672",
+        "onAccent": "#FFFFFF"
+      }
+    },
+    {
+      "id": "github-dark",
+      "label": "GitHub Dark",
+      "note": "GitHub Dark.",
+      "light": {
+        "bg": "#F6F8FA",
+        "surface": "#FFFFFF",
+        "surface2": "#EAEEF2",
+        "text": "#1F2328",
+        "subtext": "#656D76",
+        "separator": "#D0D7DE",
+        "accent": "#0969DA",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#0D1117",
+        "surface": "#161B22",
+        "surface2": "#21262D",
+        "text": "#E6EDF3",
+        "subtext": "#8B949E",
+        "separator": "#30363D",
+        "accent": "#58A6FF",
+        "onAccent": "#0D1117"
+      }
+    },
+    {
+      "id": "github-light",
+      "label": "GitHub Light",
+      "note": "GitHub Light — listed separately; its dark half is GitHub Dark.",
+      "light": {
+        "bg": "#F6F8FA",
+        "surface": "#FFFFFF",
+        "surface2": "#EAEEF2",
+        "text": "#1F2328",
+        "subtext": "#656D76",
+        "separator": "#D0D7DE",
+        "accent": "#0969DA",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#0D1117",
+        "surface": "#161B22",
+        "surface2": "#21262D",
+        "text": "#E6EDF3",
+        "subtext": "#8B949E",
+        "separator": "#30363D",
+        "accent": "#58A6FF",
+        "onAccent": "#0D1117"
+      }
+    },
+    {
+      "id": "material-palenight",
+      "label": "Material Palenight",
+      "note": "Material Theme — Palenight (dark) + Lighter (light).",
+      "light": {
+        "bg": "#FAFAFA",
+        "surface": "#FFFFFF",
+        "surface2": "#EEEEEE",
+        "text": "#546E7A",
+        "subtext": "#90A4AE",
+        "separator": "#E7EAEC",
+        "accent": "#6182B8",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#292D3E",
+        "surface": "#333747",
+        "surface2": "#444267",
+        "text": "#A6ACCD",
+        "subtext": "#676E95",
+        "separator": "#444267",
+        "accent": "#82AAFF",
+        "onAccent": "#292D3E"
+      }
+    },
+    {
+      "id": "night-owl",
+      "label": "Night Owl",
+      "note": "Night Owl (dark) + Light Owl (light).",
+      "light": {
+        "bg": "#F0F0F0",
+        "surface": "#FFFFFF",
+        "surface2": "#EAEAEA",
+        "text": "#403F53",
+        "subtext": "#7A8181",
+        "separator": "#D9D9D9",
+        "accent": "#288ED7",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#011627",
+        "surface": "#0B2942",
+        "surface2": "#1D3B53",
+        "text": "#D6DEEB",
+        "subtext": "#637777",
+        "separator": "#1D3B53",
+        "accent": "#82AAFF",
+        "onAccent": "#011627"
+      }
+    },
+    {
+      "id": "rose-pine",
+      "label": "Rosé Pine",
+      "note": "Rosé Pine — Main (dark) + Dawn (light).",
+      "light": {
+        "bg": "#FAF4ED",
+        "surface": "#FFFAF3",
+        "surface2": "#F2E9E1",
+        "text": "#575279",
+        "subtext": "#797593",
+        "separator": "#EBE0D6",
+        "accent": "#907AA9",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#191724",
+        "surface": "#1F1D2E",
+        "surface2": "#26233A",
+        "text": "#E0DEF4",
+        "subtext": "#908CAA",
+        "separator": "#26233A",
+        "accent": "#C4A7E7",
+        "onAccent": "#191724"
+      }
+    },
+    {
+      "id": "nightfox",
+      "label": "Nightfox",
+      "note": "Nightfox — Nightfox (dark) + Dayfox (light).",
+      "light": {
+        "bg": "#F6F2EE",
+        "surface": "#FFFFFF",
+        "surface2": "#E7DED4",
+        "text": "#352C24",
+        "subtext": "#534C45",
+        "separator": "#E4DCD4",
+        "accent": "#2848A9",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#192330",
+        "surface": "#212E3F",
+        "surface2": "#2B3B51",
+        "text": "#CDCECF",
+        "subtext": "#71839B",
+        "separator": "#29394F",
+        "accent": "#719CD6",
+        "onAccent": "#192330"
+      }
+    },
+    {
+      "id": "horizon",
+      "label": "Horizon",
+      "note": "Horizon — dark + light.",
+      "light": {
+        "bg": "#FDF0ED",
+        "surface": "#FFFFFF",
+        "surface2": "#FADAD1",
+        "text": "#1A1C23",
+        "subtext": "#94667E",
+        "separator": "#F9D5C9",
+        "accent": "#E95379",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#1C1E26",
+        "surface": "#232530",
+        "surface2": "#2E303E",
+        "text": "#D5D8DA",
+        "subtext": "#6C6F93",
+        "separator": "#2E303E",
+        "accent": "#E95678",
+        "onAccent": "#FFFFFF"
+      }
+    },
+    {
+      "id": "cobalt2",
+      "label": "Cobalt2",
+      "note": "Cobalt2 — dark; a light counterpart trades the yellow-on-blue (illegible on white) for a strong blue accent while keeping the deep-blue identity.",
+      "light": {
+        "bg": "#F0F4F8",
+        "surface": "#FFFFFF",
+        "surface2": "#DBE6EF",
+        "text": "#193549",
+        "subtext": "#4B6B82",
+        "separator": "#CDD9E3",
+        "accent": "#0B5CAD",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#193549",
+        "surface": "#1B3A4B",
+        "surface2": "#204D63",
+        "text": "#FFFFFF",
+        "subtext": "#9FB6C9",
+        "separator": "#0D3A58",
+        "accent": "#FFC600",
+        "onAccent": "#193549"
+      }
+    },
+    {
+      "id": "darcula",
+      "label": "Darcula",
+      "note": "JetBrains Darcula (dark) + IntelliJ Light.",
+      "light": {
+        "bg": "#F7F7F7",
+        "surface": "#FFFFFF",
+        "surface2": "#EDEDED",
+        "text": "#2B2B2B",
+        "subtext": "#808080",
+        "separator": "#EBEBEB",
+        "accent": "#3574F0",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#2B2B2B",
+        "surface": "#3C3F41",
+        "surface2": "#4E5254",
+        "text": "#A9B7C6",
+        "subtext": "#808080",
+        "separator": "#323232",
+        "accent": "#CC7832",
+        "onAccent": "#2B2B2B"
+      }
+    },
+    {
+      "id": "dark-high-contrast",
+      "label": "High Contrast",
+      "note": "VS Code High Contrast — Dark + Light. Bright borders are the point.",
+      "light": {
+        "bg": "#FFFFFF",
+        "surface": "#FFFFFF",
+        "surface2": "#F2F2F2",
+        "text": "#000000",
+        "subtext": "#292929",
+        "separator": "#005FB8",
+        "accent": "#0F4A85",
+        "onAccent": "#FFFFFF"
+      },
+      "dark": {
+        "bg": "#000000",
+        "surface": "#0C0C0C",
+        "surface2": "#1A1A1A",
+        "text": "#FFFFFF",
+        "subtext": "#D4D4D4",
+        "separator": "#6FC3DF",
+        "accent": "#3794FF",
+        "onAccent": "#000000"
+      }
+    }
+  ]
+}

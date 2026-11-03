@@ -51,6 +51,14 @@ jobs:
       - name: Ingester self-tests
         run: python3 tools/test_ingesters.py
 
+      # The theme catalogue lives in shared/themes.json and is generated into
+      # lib/src/theme/themes.g.dart and the Apple app's ThemeCatalogue.g.swift.
+      # A hand edit to either generated file, or a themes.json edit without
+      # regenerating, would leave the two apps offering different themes.
+      # Stdlib only, so it costs nothing to run before the toolchain.
+      - name: Generated theme catalogue is current
+        run: python3 tools/generate_themes.py --check
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
