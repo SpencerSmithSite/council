@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import CouncilCore
 
@@ -20,4 +21,9 @@ import Testing
 
 @Test func flutterPreferenceKeysArePrefixed() {
     #expect(FlutterPreferences.defaultsKey("theme") == "flutter.theme")
+}
+
+@Test func goldenFixturesAreReachable() {
+    #expect(FileManager.default.fileExists(atPath: Repo.golden("search/search.json").path))
+    #expect(FileManager.default.fileExists(atPath: Repo.golden("packs/scenarios.json").path))
 }

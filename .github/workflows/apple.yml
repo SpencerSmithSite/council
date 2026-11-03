@@ -41,6 +41,11 @@ jobs:
           cd apple && xcodegen generate --quiet
           git diff --exit-code -- Council.xcodeproj Council/Info.plist
 
+      # The query encoder's tests run the real model, which is gitignored for
+      # its size. Same fetch as test.yml.
+      - name: Fetch embedding model
+        run: bash tools/fetch_model.sh
+
       # The scheme includes CouncilCore's test target, so this runs the core's
       # tests, including the golden fixtures, as well as building the app.
       - name: Test on macOS
