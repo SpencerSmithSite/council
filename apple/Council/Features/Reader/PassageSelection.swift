@@ -102,6 +102,12 @@ final class PassageSelection {
         return "\(indices.count) \(passage.noun(indices.count))"
     }
 
+    /// What the navigation subtitle says while the selection lasts (see
+    /// `passageActions`), or `otherwise` when nothing is selected.
+    func subtitle(otherwise: String) -> String {
+        isEmpty ? otherwise : "\(countLabel) selected"
+    }
+
     /// The span the selection covers, first piece to last.
     ///
     /// A gap in the middle is swallowed deliberately, as in Flutter's
@@ -219,13 +225,13 @@ struct PassageMenu {
     /// notes are shown but disabled rather than failing silently.
     let canAnnotate: Bool
     let shareText: String
-    let copy: () -> Void
-    let highlight: (HighlightColour) -> Void
-    let removeHighlight: () -> Void
-    let note: () -> Void
+    let copy: @MainActor () -> Void
+    let highlight: @MainActor (HighlightColour) -> Void
+    let removeHighlight: @MainActor () -> Void
+    let note: @MainActor () -> Void
     /// Nil until Phase 5 wires Ask to a pinned passage; the item shows,
     /// disabled, so the menu's shape doesn't change when it arrives.
-    let ask: (() -> Void)?
+    let ask: (@MainActor () -> Void)?
 }
 
 extension HighlightColour {

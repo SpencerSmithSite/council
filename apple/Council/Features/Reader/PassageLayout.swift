@@ -179,12 +179,44 @@ enum PassageGeometry {
         return NSTextRange(location: start, end: end)
     }
 
-    /// The rectangles `range` occupies, one per line it touches.
+    /// The rectangles `range` occupies, one per line it touches, each the
+    /// height of its line.
+    ///
+    /// Built from the line fragments rather than `enumerateTextSegments`,
+    /// whose frames (either type) sit a part-line above the glyphs once the
+    /// paragraph has a line-height multiple: a context-menu preview cut from
+    /// them showed the bottom of the line above and clipped the last line.
     static func rects(for range: NSRange, in layoutManager: NSTextLayoutManager) -> [CGRect] {
         guard let textRange = textRange(range, in: layoutManager) else { return [] }
+        let document = layoutManager.documentRange.location
         var rects: [CGRect] = []
-        layoutManager.enumerateTextSegments(in: textRange, type: .standard, options: []) { _, rect, _, _ in
-            if !rect.isEmpty { rects.append(rect) }
+        layoutManager.enumerateTextLayoutFragments(from: textRange.location, options: [.ensuresLayout]) { fragment in
+            let paragraphStart = layoutManager.offset(from: document, to: fragment.rangeInElement.location)
+            guard paragraphStart < NSMaxRange(range) else { return false }
+            let origin = fragment.layoutFragmentFrame.origin
+            for line in fragment.textLineFragments {
+                let lineRange = NSRange(location: paragraphStart + line.characterRange.location,
+                                        length: line.characterRange.length)
+                let overlap = NSIntersectionRange(lineRange, range)
+                guard overlap.length > 0 else { continue }
+                let startX = line.locationForCharacter(at: overlap.location - paragraphStart).x
+                let endX = line.locationForCharacter(at: NSMaxRange(overlap) - paragraphStart).x
+                // From the baseline, by the face's ascender and descender:
+                // the glyphs' own band, without the line's extra leading.
+                let bounds = line.typographicBounds
+                let baseline = origin.y + bounds.minY + line.glyphOrigin.y
+                // The words' face, at the run's end: its start may be a verse
+                // number, set smaller.
+                let fontIndex = min(max(NSMaxRange(overlap) - 1 - paragraphStart, 0),
+                                    max(line.attributedString.length - 1, 0))
+                let font = line.attributedString.length > 0
+                    ? line.attributedString.attribute(.font, at: fontIndex, effectiveRange: nil) as? ReaderTypography.PlatformFont
+                    : nil
+                let ascent = font?.ascender ?? bounds.height * 0.8
+                let descent = abs(font?.descender ?? bounds.height * 0.2)
+                rects.append(CGRect(x: origin.x + bounds.minX + startX, y: baseline - ascent,
+                                    width: max(0, endX - startX), height: ascent + descent))
+            }
             return true
         }
         return rects

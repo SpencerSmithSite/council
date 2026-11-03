@@ -10,6 +10,23 @@ import SwiftUI
 /// once in every window and persists (`ReaderPreferences`, `theme_id` /
 /// `theme_mode`).
 struct ReadingControlsView: View {
+    @Environment(ThemeStore.self) private var themes
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// The palette resolved here from the store, not taken from the
+    /// environment: presented from a toolbar button, the sheet's inherited
+    /// `councilPalette` lagged a theme change made in it (switching to
+    /// Gruvbox and then to Dark left the rows on Gruvbox light's surface),
+    /// and this sheet is where themes change.
+    var body: some View {
+        let palette = themes.palette(for: themes.preferredColorScheme ?? colorScheme)
+        ReadingControlsForm()
+            .environment(\.councilPalette, palette)
+            .tint(palette.customTint)
+    }
+}
+
+private struct ReadingControlsForm: View {
     @Environment(ReaderStyle.self) private var style
     @Environment(ThemeStore.self) private var themes
     @Environment(\.councilPalette) private var palette

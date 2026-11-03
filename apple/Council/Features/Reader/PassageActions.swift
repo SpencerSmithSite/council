@@ -9,8 +9,13 @@ extension View {
     ///
     /// The toolbar is Flutter's `PassageActionBar` (lib/src/reader/
     /// passage_action_bar.dart) as system chrome: Flutter drew a floating pill
-    /// of its own; here the bar is the platform's Liquid Glass toolbar, with
-    /// the count as its status and the palette as a menu rather than a sheet.
+    /// of its own; here the bar is the platform's Liquid Glass toolbar and the
+    /// palette a menu rather than a sheet. The count ("3 verses selected") is
+    /// the screen's navigation subtitle while the selection lasts, as Photos
+    /// and Files show their count in the title in select mode: on an iPhone
+    /// the bottom bar has room for the clear button and the five actions, and
+    /// with the count as well it folds Highlight, Note and Ask into an
+    /// overflow menu. Screens read it from `PassageSelection.subtitle`.
     func passageActions(_ selection: PassageSelection) -> some View {
         modifier(PassageActionsModifier(selection: selection))
     }
@@ -27,27 +32,16 @@ private struct PassageActionsModifier: ViewModifier {
             .toolbar {
                 if !selection.isEmpty {
                     #if os(iOS)
-                    // The count and the way out in one control ("✕ 3 verses"),
-                    // so the five actions keep their room on a phone.
                     ToolbarItem(placement: .bottomBar) {
-                        Button {
+                        Button("Clear Selection", systemImage: "xmark") {
                             withAnimation { selection.clear() }
-                        } label: {
-                            Label(selection.countLabel, systemImage: "xmark")
-                                .labelStyle(.titleAndIcon)
-                                .monospacedDigit()
                         }
-                        .accessibilityLabel("Clear Selection")
-                        .accessibilityValue("\(selection.countLabel) selected")
                     }
                     ToolbarSpacer(.flexible, placement: .bottomBar)
                     ToolbarItemGroup(placement: .bottomBar) {
                         PassageActionButtons(selection: selection, store: model.annotations)
                     }
                     #else
-                    ToolbarItem(placement: .status) {
-                        SelectionCount(text: selection.countLabel)
-                    }
                     ToolbarItemGroup(placement: .primaryAction) {
                         PassageActionButtons(selection: selection, store: model.annotations)
                     }
@@ -61,22 +55,6 @@ private struct PassageActionsModifier: ViewModifier {
             .sheet(item: $selection.editingNote) { note in
                 NoteSheet(noteID: note.id)
             }
-    }
-}
-
-/// "3 verses": what is selected, said in words, because a bare "3" doesn't
-/// tell anyone what has been picked.
-private struct SelectionCount: View {
-    let text: String
-    @Environment(\.councilPalette) private var palette
-
-    var body: some View {
-        Text(text)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(palette.text)
-            .monospacedDigit()
-            .contentTransition(.numericText())
-            .accessibilityLabel("\(text) selected")
     }
 }
 
@@ -100,6 +78,7 @@ private struct PassageActionButtons: View {
         Menu {
             Picker("Highlight Colour", selection: colourChoice) {
                 ForEach(HighlightColour.allCases) { colour in
+                    // A palette picker colours each swatch with its tint.
                     Label(colour.label, systemImage: "circle.fill")
                         .tint(colour.color(dark: colorScheme == .dark))
                         .tag(Optional(colour))
@@ -147,6 +126,8 @@ private struct NoteSheet: View {
     var body: some View {
         NavigationStack {
             NoteEditorView(noteID: noteID, autofocus: true)
+                // The editor's "Open Passage" pushes inside this stack.
+                .readingDestinations()
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done", systemImage: "checkmark", role: .confirm) { dismiss() }

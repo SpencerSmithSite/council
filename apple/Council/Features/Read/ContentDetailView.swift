@@ -33,6 +33,7 @@ struct ContentDetailView: View {
     var body: some View {
         content
             .navigationTitle(navigationTitle)
+            .navigationSubtitle(selection.subtitle(otherwise: ""))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             // Pushed detail, and the selection toolbar wants the bottom edge.

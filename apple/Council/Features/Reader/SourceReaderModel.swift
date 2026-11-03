@@ -114,6 +114,32 @@ final class SourceReaderModel {
         await fetch(window(around: index))
         openingID = sections[index].id
         scrollPosition.scrollTo(id: sections[index].id, anchor: .top)
+        await settle()
+    }
+
+    /// Set by the first touch after a jump, so `settle` never pulls the page
+    /// out from under a reader who has started scrolling.
+    @ObservationIgnored private var scrolledSinceJump = false
+
+    func userScrolled() { scrolledSinceJump = true }
+
+    /// Scrolls to the section opened or jumped to again, a few times over the
+    /// next half second, until the reader touches the screen.
+    ///
+    /// A lazy stack positions a far-off section from *estimated* heights for
+    /// everything above it, and the sections around the landing place then
+    /// lay out (and fetch) at their real heights, which moves the target. In
+    /// the 1,189-chapter KJV a first jump to Psalm 119 came to rest at verse
+    /// 56; scrolling again once the neighbours have their true heights lands
+    /// on the heading. Revelation 22 and second visits were already exact.
+    func settle() async {
+        guard let target = openingID else { return }
+        scrolledSinceJump = false
+        for delay in [60, 180, 400] {
+            do { try await Task.sleep(for: .milliseconds(delay)) } catch { return }
+            guard !scrolledSinceJump, openingID == target else { return }
+            scrollPosition.scrollTo(id: target, anchor: .top)
+        }
     }
 
     /// A section came on screen: make sure it and its neighbours are fetched.

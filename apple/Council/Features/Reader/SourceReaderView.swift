@@ -21,8 +21,6 @@ struct SourceReaderView: View {
 
     @Environment(AppModel.self) private var model
     @Environment(ReaderStyle.self) private var style
-    @Environment(\.councilPalette) private var palette
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var reader: SourceReaderModel
     @State private var selection = PassageSelection()
@@ -41,7 +39,7 @@ struct SourceReaderView: View {
     var body: some View {
         content
             .navigationTitle(title)
-            .navigationSubtitle(currentTitle)
+            .navigationSubtitle(selection.subtitle(otherwise: currentTitle))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             // The reader is a place to read, not to switch tabs from; the
@@ -63,6 +61,7 @@ struct SourceReaderView: View {
                 guard let library = model.library else { return }
                 await reader.load(library: library, annotations: model.annotations, positions: model.readingPositions)
                 contentsIndex = ContentsIndex(titles: reader.sections.map(\.title))
+                await reader.settle()
             }
             .task(id: model.annotationsRevision) {
                 await reader.reloadHighlights()
@@ -117,6 +116,9 @@ struct SourceReaderView: View {
             .padding(.bottom, 24)
         }
         .scrollPosition($reader.scrollPosition, anchor: .top)
+        .onScrollPhaseChange { _, phase in
+            if phase == .interacting { reader.userScrolled() }
+        }
     }
 
     private var currentTitle: String {
@@ -138,6 +140,9 @@ struct SourceReaderView: View {
             .popover(isPresented: $showingControls) {
                 ReadingControlsView()
                     .presentationDetents([.medium])
+                    // No dimming and the page stays live behind the sheet,
+                    // so each change can be judged on the text, as in Books.
+                    .presentationBackgroundInteraction(.enabled(upThrough: .medium))
                     .presentationCompactAdaptation(.sheet)
             }
 

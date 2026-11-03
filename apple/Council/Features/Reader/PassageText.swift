@@ -194,7 +194,7 @@ private struct PassageTextView: UIViewRepresentable {
 
         private func preview(for configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
             guard let view, let index = (configuration.identifier as? NSNumber)?.intValue else { return nil }
-            let rects = rects(forSegment: index).map { $0.insetBy(dx: -4, dy: -2) }
+            let rects = rects(forSegment: index).map { $0.insetBy(dx: -4, dy: 0) }
             guard !rects.isEmpty else { return nil }
             let parameters = UIPreviewParameters(textLineRects: rects.map { NSValue(cgRect: $0) })
             return UITargetedPreview(view: view, parameters: parameters)
@@ -494,6 +494,15 @@ final class PassageNSTextView: NSTextView {
 
     override var isFlipped: Bool { true }
 
+    // A non-selectable NSTextView declines clicks; this one takes them,
+    // since a click is how a segment is picked.
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        let local = convert(point, from: superview)
+        return bounds.contains(local) ? self : nil
+    }
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
     override func mouseDown(with event: NSEvent) {
         if event.modifierFlags.contains(.control) {
             super.mouseDown(with: event)
@@ -520,15 +529,12 @@ final class PassageNSTextView: NSTextView {
 
     // MARK: Accessibility
 
-    override func accessibilityRole() -> NSAccessibility.Role? { .group }
-    override func accessibilityValue() -> Any? { nil }
-
-    override func accessibilityChildren() -> [Any]? {
-        elements()
-    }
-
+    /// The text changed: one element per segment replaces the text view's
+    /// own text-area element.
     func invalidateAccessibility() {
         segmentElements = nil
+        setAccessibilityRole(.group)
+        setAccessibilityChildren(elements())
         NSAccessibility.post(element: self, notification: .layoutChanged)
     }
 
@@ -570,22 +576,25 @@ final class PassageNSTextView: NSTextView {
     }
 }
 
-private final class SegmentAccessibilityElement: NSAccessibilityElement {
+// Nonisolated: AppKit declares these overrides nonisolated. They're only
+// ever called on the main thread, which `assumeIsolated` checks.
+private nonisolated final class SegmentAccessibilityElement: NSAccessibilityElement {
     var index = 0
-    var onPress: () -> Void = {}
+    var onPress: @MainActor () -> Void = {}
 
     override func accessibilityPerformPress() -> Bool {
-        onPress()
+        let press = onPress
+        MainActor.assumeIsolated { press() }
         return true
     }
 }
 
 /// A menu item that runs a closure, so the passage menu can be built from
 /// `PassageMenu` without a responder-chain selector per action.
-private final class ClosureMenuItem: NSMenuItem {
-    private let handler: () -> Void
+private nonisolated final class ClosureMenuItem: NSMenuItem {
+    private let handler: @MainActor () -> Void
 
-    init(_ title: String, symbol: String? = nil, action handler: @escaping () -> Void) {
+    init(_ title: String, symbol: String? = nil, action handler: @escaping @MainActor () -> Void) {
         self.handler = handler
         super.init(title: title, action: #selector(invoke), keyEquivalent: "")
         target = self
@@ -595,7 +604,10 @@ private final class ClosureMenuItem: NSMenuItem {
     @available(*, unavailable)
     required init(coder: NSCoder) { fatalError("not used") }
 
-    @objc private func invoke() { handler() }
+    @objc private func invoke() {
+        let handler = handler
+        MainActor.assumeIsolated { handler() }
+    }
 }
 
 #endif
