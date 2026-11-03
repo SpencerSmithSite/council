@@ -17,6 +17,7 @@ struct GoldenSearchFixture: Decodable, Sendable {
 
     struct Parameters: Decodable, Sendable {
         let ragLimit: Int
+        let readLimit: Int
         let fusionLimit: Int
         let semanticLimit: Int
         let vectorTopLimit: Int
@@ -37,6 +38,7 @@ struct GoldenQuery: Decodable, Sendable, CustomTestStringConvertible {
     let entities: Entities
     let ftsMatch: String
     let tags: [String]
+    let read: Read
     let rag: Rag
 
     var floatVector: [Float] { vector.map { Float($0) } }
@@ -62,14 +64,45 @@ struct GoldenQuery: Decodable, Sendable, CustomTestStringConvertible {
         let labels: [String]
     }
 
+    /// The Read tab's `search(query, limit: 40)`.
+    struct Read: Decodable, Sendable {
+        /// The queries that ran, in order: `fts`, `like`.
+        let path: [String]
+        let ids: [Int]
+        /// bm25 per row, `nil` for rows from the LIKE fallback.
+        let ranks: [Double?]
+    }
+
+    /// One lexical query `searchForRAG` ran. `kind` is absent from
+    /// `namedTraditionCalls`, which are all scoped FTS.
+    struct LexicalCall: Decodable, Sendable {
+        let kind: String?
+        let limit: Int
+        let ids: [Int]
+        let ranks: [Double?]
+    }
+
+    /// Per returned row, the chunk `_bestChunkText` chose, measured in UTF-16
+    /// code units.
+    struct FinalContent: Decodable, Sendable {
+        let id: Int
+        let length: Int
+        let head: String
+    }
+
     struct Rag: Decodable, Sendable {
+        let lexicalCalls: [LexicalCall]
         let lexical: [Int]
         let tagIds: [Int]
         let semanticLimit: Int
         /// Inclusive `[start, end]` runs; `nil` is no scope, `[]` admits nothing.
         let allowedUnitIds: [[Int]]?
+        let allowedUnitCount: Int?
         let semantic: [Int]
         let fused: [Int]
+        let namedTraditionCalls: [LexicalCall]
+        let final: [Int]
+        let finalContent: [FinalContent]
 
         var allowedUnitSet: Set<Int>? {
             allowedUnitIds.map { runs in
