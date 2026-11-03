@@ -65,6 +65,19 @@ enum DartText {
         return String(decoding: units[start..<end], as: UTF16.self)
     }
 
+    /// The part of `units[range]` that `String.trim()` keeps, as offsets into
+    /// `units`. Empty (and positioned at the range's end) when everything is
+    /// whitespace. `trimLeft`/`trimRight` use the same set, so the lower bound
+    /// is where `trimLeft` would start and the upper bound where `trimRight`
+    /// would end.
+    static func trimmedBounds(_ units: [UInt16], _ range: Range<Int>) -> Range<Int> {
+        var start = range.lowerBound
+        var end = range.upperBound
+        while start < end && isTrimWhitespace(units[start]) { start += 1 }
+        while end > start && isTrimWhitespace(units[end - 1]) { end -= 1 }
+        return start..<end
+    }
+
     /// `\s` in a Dart (ECMAScript) regular expression: WhiteSpace plus
     /// LineTerminator. Not the same set as `trim` — U+0085 is absent.
     static func isRegExpWhitespace(_ scalar: Unicode.Scalar) -> Bool {
@@ -75,6 +88,22 @@ enum DartText {
         default:
             return false
         }
+    }
+
+    /// `\s` tested against one UTF-16 code unit, which is how a Dart RegExp
+    /// without the `unicode` flag reads its input. Every member of the set is
+    /// in the BMP and none is a surrogate, so this agrees with the scalar
+    /// version on any well-formed string.
+    static func isRegExpWhitespace(_ unit: UInt16) -> Bool {
+        guard let scalar = Unicode.Scalar(unit) else { return false }
+        return isRegExpWhitespace(scalar)
+    }
+
+    /// `\d` in a Dart RegExp: ASCII `0-9` only, with or without the `unicode`
+    /// flag. ICU's `\d` (NSRegularExpression) is `\p{Nd}`, which also takes
+    /// Arabic-Indic, Devanagari, fullwidth and every other script's digits.
+    static func isRegExpDigit(_ unit: UInt16) -> Bool {
+        unit >= 0x30 && unit <= 0x39
     }
 
     /// Code-unit equality, which is what Dart's `==` on strings is.
