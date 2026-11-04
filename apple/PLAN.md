@@ -428,9 +428,38 @@ Started 2026-11-03.
       so it waits for Phase 6.
 
 ### Phase 6 — Settings, onboarding, updates
-- [ ] Browse, the content-pack library (`browse_screen.dart`), on
+- [x] Browse, the content-pack library (`browse_screen.dart`), on
       `PackCatalogue` and `PackService`; Settings' Content Packs opens it too.
-- [ ] Settings, onboarding, update check against the existing `updates.json`.
+      (2026-11-04) `BrowseView`, one view for the tab and every push: the
+      bundled-KJV notice, the manifest's collections grouped in Flutter's
+      order (`CollectionGroup.grouping`), cost to add now ("Already
+      downloaded" at zero, no button then), Download with progress, Remove
+      confirmed, Flutter's error wording, `.searchable` over name and
+      description (`PackCollection.matches`), refresh on appear and pull.
+      Offline it still lists installed collections from the local record
+      (`PackService.installedCollectionNames`) with Remove, which Flutter's
+      screen meant to but doesn't. `PackLibrary` gained `uninstall` (reloads
+      its installed sets itself: removing a collection whose fragments
+      another needs changes no content, so `contentRevision` doesn't move).
+      Pushed from Settings' Content Packs, the shelf's "Add More to Your
+      Library" footer, the empty shelf, and the coverage notice's "Browse
+      Library". Checked on the iPhone 17 Pro simulator against the live
+      manifest: Richard Baxter added (progress, then on the shelf and in
+      Search), removed again.
+- [x] Settings (2026-11-04): the grouped `Form` of `settings_screen.dart`:
+      Theme (with its name) and Font Size (`ReaderStyle.fontSize`, the Aa
+      sheet's setting), Content Packs and Semantic Search, AI Backend and
+      Show Citations (`show_citations`; off hides the sources under answers
+      in Ask, as Flutter does), `UpdateSettingsSection`, Version, Reset All
+      Settings (Flutter's dialog; clears `AppSettings.resetKeys`: Dart's
+      `clearAll` keys plus the four native `reader_` keys, never user data
+      or the AI configuration, which Dart leaves too). Mac window sized
+      520×560 minimum, 560×680 ideal. Open: "Show Onboarding" waits for the
+      onboarding screen; the Mac Settings window not yet looked at (built
+      and tested only); a sheet left open across a reset (or Theme → System
+      from Dark) keeps the dark scheme until reopened, a ThemeStore /
+      `preferredColorScheme(nil)` limitation that predates this.
+- [ ] Onboarding, update check against the existing `updates.json`.
 - [ ] Mac: port the `_macos` path of `update_installer.dart` (download DMG,
       verify, replace, relaunch).
 

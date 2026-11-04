@@ -322,3 +322,34 @@ private func good(_ id: Int, _ title: String, _ day: String) -> String {
         #expect(preferences.justified == true)
     }
 }
+
+/// Reset All Settings: Dart's `clearAll` keys plus the native reading keys,
+/// and nothing the reader made.
+@Suite struct AppSettingsTests {
+    let suite = TestDefaults()
+
+    @Test func resetClearsSettingsAndKeepsData() {
+        let defaults = suite.defaults
+        let cleared = ["dark_mode", "theme_choice", "theme_mode", "theme_id", "font_size",
+                       "show_citations", "auto_check_updates", "reader_font", "reader_line_spacing",
+                       "reader_margins", "reader_justified"]
+        for key in cleared {
+            defaults.set("x", forKey: key)
+        }
+        let kept = ["bookmarks", "reading_position_7", "shelf_pinned_sources", "recent_searches",
+                    "has_onboarded", "inference_backend", "ollama_host", "cloud_model"]
+        for key in kept {
+            defaults.set("kept", forKey: key)
+        }
+
+        AppSettings.clearAll(in: defaults)
+
+        #expect(Set(AppSettings.resetKeys) == Set(cleared))
+        for key in cleared {
+            #expect(defaults.object(forKey: key) == nil, "\(key)")
+        }
+        for key in kept {
+            #expect(defaults.string(forKey: key) == "kept", "\(key)")
+        }
+    }
+}

@@ -157,8 +157,20 @@ struct ReadView: View {
                     }
                 }
             }
-            // TODO(Phase 6): "Add more to your library", into the pack
-            // library (Flutter's footer button), once Browse exists.
+            // Flutter's footer button. With Scripture alone the shelf is one
+            // book, and the reason isn't obvious from an otherwise working
+            // screen; this says where the rest comes from.
+            if !narrowed {
+                Section {
+                    NavigationLink {
+                        BrowseView()
+                    } label: {
+                        Label("Add More to Your Library", systemImage: "plus")
+                            .foregroundStyle(palette.accent)
+                    }
+                }
+                .councilListRow()
+            }
         }
         .listStyle(.sidebar)
         .refreshable { await load() }
@@ -231,8 +243,15 @@ struct ReadView: View {
                 searchPassagesButton
             }
         } else if !installed {
-            ContentUnavailableView("Nothing Installed Yet", systemImage: "books.vertical",
-                                   description: Text("Works you add to your library will appear here."))
+            ContentUnavailableView {
+                Label("Nothing Installed Yet", systemImage: "books.vertical")
+            } description: {
+                Text("Works you add to your library will appear here.")
+            } actions: {
+                // The way to fill it, worded as Flutter's Read tab words the
+                // same button under "Nothing found in what you have installed."
+                NavigationLink("Browse Collections") { BrowseView() }
+            }
         }
     }
 

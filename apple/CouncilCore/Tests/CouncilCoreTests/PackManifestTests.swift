@@ -117,6 +117,35 @@ import Testing
         let other = PackManifest(corpusVersion: 1, idSpace: 2, embeddingModel: "other", fragments: [], collections: [])
         #expect(!other.embeddingsCompatible(with: CorpusConstants.embeddingModel))
     }
+
+    @Test func theLibraryGroupsByKindInFluttersOrder() {
+        // `_grouped` in browse_screen.dart: essentials, Scripture, periods,
+        // traditions, authors, the rest; manifest order within a group; no
+        // empty groups.
+        let collections = [
+            PackCollection(id: "a1", name: "Augustine", kind: .author, fragments: []),
+            PackCollection(id: "o1", name: "Odds", kind: .other, fragments: []),
+            PackCollection(id: "e1", name: "Creeds", kind: .essential, fragments: []),
+            PackCollection(id: "a2", name: "Aquinas", kind: .author, fragments: []),
+            PackCollection(id: "p1", name: "Nicene", kind: .era, fragments: []),
+        ]
+        let groups = CollectionGroup.grouping(collections)
+        #expect(groups.map(\.kind) == [.essential, .era, .author, .other])
+        #expect(groups.map(\.heading) == ["Start here", "By period", "By author", "More"])
+        #expect(groups[2].collections.map(\.id) == ["a1", "a2"])
+        #expect(CollectionGroup.grouping([]).isEmpty)
+    }
+
+    @Test func theLibrarySearchMatchesNameOrDescription() {
+        // `_matching`: trimmed, lowercased, a substring of either field.
+        let reformed = PackCollection(id: "r", name: "Reformed & Presbyterian",
+                                      description: "Includes the Westminster Confession.", fragments: [])
+        #expect(reformed.matches(""))
+        #expect(reformed.matches("   "))
+        #expect(reformed.matches("reformed"))
+        #expect(reformed.matches("  WESTMINSTER "))
+        #expect(!reformed.matches("Trent"))
+    }
 }
 
 /// PackService's gates and its HTTP failure paths, with a stub fetcher.
@@ -159,6 +188,19 @@ import Testing
     // from one model compared against queries from another are noise, and
     // every checksum, row count and fragment record stays correct while
     // semantic retrieval stops working.
+
+    @Test func installedCollectionNamesComeFromTheLocalRecord() async throws {
+        // What the library lists offline, with no manifest to name them.
+        let packs = service(StubFetcher(status: 200))
+        #expect(try await packs.installedCollectionNames().isEmpty)
+        try await database.write { db in
+            try db.execute(sql: """
+                INSERT INTO installed_collections (id, name, corpus_version, installed_at)
+                VALUES ('author-augustine', 'Augustine of Hippo', 1, '2026-11-04T00:00:00.000')
+                """)
+        }
+        #expect(try await packs.installedCollectionNames() == ["author-augustine": "Augustine of Hippo"])
+    }
 
     @Test func aPackBuiltByADifferentEmbeddingModelIsRefusedBeforeAnyDownload() async throws {
         let fetcher = StubFetcher(status: 200)

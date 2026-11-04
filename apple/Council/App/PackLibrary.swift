@@ -25,6 +25,10 @@ final class PackLibrary {
 
     private(set) var manifest: PackManifest?
     private(set) var installed: Set<String> = []
+    /// Installed collection id -> its name, from the local record. What Browse
+    /// lists when the manifest can't be fetched, so an offline reader can
+    /// still see and remove what they have.
+    private(set) var installedNames: [String: String] = [:]
     /// Fragments physically present, as opposed to collections the reader
     /// chose.
     private(set) var installedFragments: Set<String> = []
@@ -54,14 +58,20 @@ final class PackLibrary {
     /// installed. No network: the coverage notice has to work offline.
     func attach(_ service: PackService) async {
         self.service = service
+        attached = true
         await loadInstalled()
     }
+
+    /// Whether the service has been handed over, so screens can wait for it
+    /// (`.task(id:)`) rather than refreshing into nothing on a cold launch.
+    private(set) var attached = false
 
     func loadInstalled() async {
         guard let service else { return }
         do {
             installed = try await service.installedCollections()
             installedFragments = try await service.installedFragments()
+            installedNames = try await service.installedCollectionNames()
         } catch {
             Self.logger.error("Couldn't read installed packs: \(String(describing: error), privacy: .public)")
         }
@@ -95,10 +105,21 @@ final class PackLibrary {
         manifest?.bytesToInstall(collection, installedFragments: installedFragments) ?? 0
     }
 
+    func isInstalled(_ id: String) -> Bool {
+        installed.contains(id)
+    }
+
     /// Loads what is installed, then what is available. Installed packs come
-    /// from the local database and stand even when the fetch fails.
+    /// from the local database and stand even when the fetch fails, and so
+    /// does a manifest fetched earlier: as in Flutter, a failed refresh only
+    /// adds the error.
+    ///
+    /// Skipped while another refresh is in flight (Browse refreshes on
+    /// appear and on pull, and the two can overlap). A refresh whose task was
+    /// cancelled (the screen went away mid-fetch) reports nothing: the
+    /// reader didn't see it fail, they left.
     func refresh() async {
-        guard let service else { return }
+        guard let service, !loading else { return }
         loading = true
         error = nil
         defer { loading = false }
@@ -106,6 +127,7 @@ final class PackLibrary {
         do {
             manifest = try await service.fetchManifest()
         } catch {
+            if Task.isCancelled { return }
             self.error = "Could not load the list of available content. \(error.localizedDescription)"
         }
     }
@@ -135,5 +157,31 @@ final class PackLibrary {
         } catch {
             self.error = error.localizedDescription
         }
+    }
+
+    /// Removes the collection with this id, keeping any fragment another
+    /// installed collection still needs. Afterwards `error` says why if it
+    /// failed. `PackProvider.uninstall` in Dart.
+    ///
+    /// Takes an id rather than a `PackCollection` because removal reads only
+    /// the local record (`PackService.uninstall`), so it works offline, when
+    /// Browse has no manifest to take a collection from.
+    ///
+    /// The installed sets are reloaded here, not left to
+    /// `AppModel.contentRevision`: the service announces a change only when
+    /// text actually left the corpus, and removing a collection whose
+    /// fragments another one still needs removes none, yet it is no longer
+    /// installed.
+    func uninstall(_ id: String) async {
+        guard let service, busyID == nil else { return }
+        busyID = id
+        error = nil
+        defer { busyID = nil }
+        do {
+            try await service.uninstall(id)
+        } catch {
+            self.error = error.localizedDescription
+        }
+        await loadInstalled()
     }
 }

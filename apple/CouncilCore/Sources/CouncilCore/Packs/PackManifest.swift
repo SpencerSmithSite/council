@@ -51,6 +51,46 @@ public enum CollectionKind: String, Sendable, CaseIterable {
     public init(raw: String) {
         self = CollectionKind(rawValue: raw) ?? .other
     }
+
+    /// The order the library lists its groups in: the comparative baseline
+    /// first, then broad periods, then traditions, then individual authors.
+    /// Someone opening it for the first time should meet "Creeds &
+    /// Confessions" before a list of twenty patristic writers.
+    ///
+    /// `_grouped`'s `order` map in lib/src/screens/browse_screen.dart (Dart
+    /// map literals iterate in insertion order).
+    public static let libraryOrder: [CollectionKind] = [.essential, .scripture, .era, .tradition, .author, .other]
+
+    /// The heading the library gives this group, worded as Flutter words it.
+    public var libraryHeading: String {
+        switch self {
+        case .essential: "Start here"
+        case .scripture: "Scripture"
+        case .era: "By period"
+        case .tradition: "By tradition"
+        case .author: "By author"
+        case .other: "More"
+        }
+    }
+}
+
+/// One heading of the library and the collections under it.
+public struct CollectionGroup: Equatable, Sendable, Identifiable {
+    public let kind: CollectionKind
+    public let collections: [PackCollection]
+
+    public var id: CollectionKind { kind }
+    public var heading: String { kind.libraryHeading }
+
+    /// `collections` grouped by kind in `CollectionKind.libraryOrder`, keeping
+    /// the manifest's order within each group and leaving out empty groups.
+    /// `_grouped` in lib/src/screens/browse_screen.dart.
+    public static func grouping(_ collections: [PackCollection]) -> [CollectionGroup] {
+        CollectionKind.libraryOrder.compactMap { kind in
+            let members = collections.filter { $0.kind == kind }
+            return members.isEmpty ? nil : CollectionGroup(kind: kind, collections: members)
+        }
+    }
 }
 
 /// What the reader actually chooses.
@@ -87,6 +127,21 @@ public struct PackCollection: Equatable, Sendable, Decodable {
         description = try c.decodeIfPresent(String.self, forKey: .description) ?? ""
         kind = CollectionKind(raw: try c.decodeIfPresent(String.self, forKey: .kind) ?? "")
         fragments = try c.decode([String].self, forKey: .fragments)
+    }
+
+    /// Whether the library's search box finds this collection: `query`,
+    /// trimmed, appears in the name or the description, ignoring case. An
+    /// empty query matches everything.
+    ///
+    /// The description is searched as well as the name because a reader
+    /// looking for the Westminster standards should find the pack that holds
+    /// them without knowing it is called "Reformed & Presbyterian": the
+    /// description is where the individual works are named. `_matching` in
+    /// lib/src/screens/browse_screen.dart (`toLowerCase().contains`).
+    public func matches(_ query: String) -> Bool {
+        let needle = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if needle.isEmpty { return true }
+        return name.lowercased().contains(needle) || description.lowercased().contains(needle)
     }
 }
 

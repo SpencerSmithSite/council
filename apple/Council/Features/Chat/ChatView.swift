@@ -349,6 +349,12 @@ private struct MessageRow: View {
 
     @Environment(\.councilPalette) private var palette
 
+    /// Settings' Show Citations. Off hides the sources under every answer,
+    /// streaming or done, as Flutter's `_MessageBubble` drops its "Sources:"
+    /// block; the `[n]` markers stay in the text, as they do in Flutter, and
+    /// still open their passage.
+    @AppStorage(AppSettings.showCitationsKey) private var showCitations = AppSettings.defaultShowCitations
+
     var body: some View {
         if message.isUser {
             HStack {
@@ -383,7 +389,9 @@ private struct MessageRow: View {
                         return .handled
                     })
             }
-            if isStreaming, !message.citations.isEmpty {
+            if !showCitations {
+                // Nothing under the answer.
+            } else if isStreaming, !message.citations.isEmpty {
                 Divider().overlay(palette.separator)
                 Label(message.citations.count == 1 ? "Drawing on 1 source" : "Drawing on \(message.citations.count) sources",
                       systemImage: "books.vertical")

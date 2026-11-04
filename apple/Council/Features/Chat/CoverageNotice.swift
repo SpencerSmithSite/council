@@ -11,8 +11,8 @@ import SwiftUI
 ///
 /// The gap is described from the bundled catalogue, so it works offline; the
 /// manifest that says how to fetch the collection is a network call made only
-/// when Add is tapped. Flutter's second button, "Browse library", opens the
-/// pack library, which arrives with Phase 6's Browse.
+/// when Add is tapped. Flutter's second button, "Browse library", pushes the
+/// pack library (`BrowseView`).
 struct CoverageNotice: View {
     let gap: PackSuggestion
     /// Called once the collection is installed.
@@ -58,17 +58,47 @@ struct CoverageNotice: View {
                         .foregroundStyle(palette.secondaryLabel)
                 }
             } else {
-                Button(addLabel, systemImage: "plus.circle") {
-                    Task { await install() }
+                // Side by side where they fit, Browse Library first as in
+                // Flutter; stacked, trailing, where they don't (the size on the
+                // Add button can be long), so neither is truncated.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Spacer(minLength: 0)
+                        browseLink
+                        addButton
+                    }
+                    VStack(alignment: .trailing, spacing: 8) {
+                        addButton
+                        browseLink
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding(12)
         .background(palette.surface, in: .rect(cornerRadius: 14))
         .accessibilityElement(children: .contain)
+    }
+
+    private var addButton: some View {
+        Button(addLabel, systemImage: "plus.circle") {
+            Task { await install() }
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.small)
+    }
+
+    /// Flutter's "Browse library": the whole pack library, pushed onto the
+    /// Ask tab's stack, for a reader who wants something other than the one
+    /// collection suggested.
+    private var browseLink: some View {
+        NavigationLink {
+            BrowseView()
+        } label: {
+            Text("Browse Library")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
     }
 
     /// "Add Church Fathers · 120 MB": the size is on the button because this

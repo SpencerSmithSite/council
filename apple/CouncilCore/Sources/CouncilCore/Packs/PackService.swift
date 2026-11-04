@@ -154,6 +154,24 @@ public final class PackService: Sendable {
         }
     }
 
+    /// Installed collection id -> the name it was installed under.
+    ///
+    /// From the local record, so the library can still list, and offer to
+    /// remove, what is installed when the manifest can't be fetched.
+    /// Flutter's `PackProvider.refresh` means to allow that ("someone offline
+    /// should still see, and be able to remove, the content they already
+    /// have"), but its screen lists only manifest entries, so offline it shows
+    /// nothing; the native library lists these instead.
+    public func installedCollectionNames() async throws -> [String: String] {
+        try await database.read { db in
+            var names: [String: String] = [:]
+            for row in try Row.fetchAll(db, sql: "SELECT id, name FROM installed_collections") {
+                names[row["id"] as String] = row["name"] as String
+            }
+            return names
+        }
+    }
+
     public func installedFragments() async throws -> Set<String> {
         try await database.read { db in
             Set(try String.fetchAll(db, sql: "SELECT id FROM installed_fragments"))
