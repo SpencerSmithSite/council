@@ -90,6 +90,9 @@ public final class UserDatabase: Sendable {
     private let broadcaster: ChangeBroadcaster
     /// Keeps the commit observation behind `annotationChanges()` alive.
     private let observation: AnyDatabaseCancellable
+    private let conversationBroadcaster: ChangeBroadcaster
+    /// Keeps the commit observation behind `conversationChanges()` alive.
+    private let conversationObservation: AnyDatabaseCancellable
 
     private init(queue: DatabaseQueue) {
         self.queue = queue
@@ -102,6 +105,13 @@ public final class UserDatabase: Sendable {
         // start, and `migrate` has just made sure they exist.
         observation = DatabaseRegionObservation(tracking: Table("highlights"), Table("notes"))
             .start(in: queue, onError: { _ in }, onChange: { _ in broadcaster.broadcast() })
+        // Separate from the annotations' so that an answer being stored
+        // doesn't make every open reader re-read its highlights.
+        let conversationBroadcaster = ChangeBroadcaster()
+        self.conversationBroadcaster = conversationBroadcaster
+        conversationObservation = DatabaseRegionObservation(
+            tracking: Table("conversations"), Table("conversation_messages"))
+            .start(in: queue, onError: { _ in }, onChange: { _ in conversationBroadcaster.broadcast() })
     }
 
     /// Open the user database at `url`, creating or migrating it.
@@ -143,6 +153,11 @@ public final class UserDatabase: Sendable {
     /// should re-read, not count.
     func annotationChanges() -> AsyncStream<Void> {
         broadcaster.stream()
+    }
+
+    /// The same, for `conversations` and `conversation_messages`.
+    func conversationChanges() -> AsyncStream<Void> {
+        conversationBroadcaster.stream()
     }
 
     // MARK: - Schema
