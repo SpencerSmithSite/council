@@ -462,6 +462,14 @@ class ChatScreenState extends State<ChatScreen> {
       if (buffer.isEmpty && stillOurs()) {
         setState(() => _messages.removeAt(index));
       }
+      // An answer that fails partway keeps what it said on screen, so it is
+      // stored too, ahead of the error the caller stores next. It used not to
+      // be: the screen showed the partial answer and then the error, while the
+      // thread reopened from history showed only the error. Stored against
+      // the thread it was asked in, as a finished answer is.
+      if (buffer.isNotEmpty) {
+        await _persistMessage(thread, bubble(buffer.toString()));
+      }
       rethrow;
     }
 

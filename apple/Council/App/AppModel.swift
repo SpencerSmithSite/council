@@ -39,6 +39,9 @@ final class AppModel {
     private(set) var retrieval: Retrieval?
     /// Nil until `state` is `.ready`. Phase 6's pack screen uses it.
     private(set) var packs: PackService?
+    /// The content library's UI state (installed, available, the install in
+    /// flight), over `packs` once the corpus is open.
+    let packLibrary = PackLibrary()
     /// Nil until `state` is `.ready`. The reading screens' corpus queries.
     private(set) var library: Library?
 
@@ -134,10 +137,12 @@ final class AppModel {
         self.retrieval = retrieval
         // Packs change what's installed; retrieval caches the sources table
         // and the vector index, so both must hear about it.
-        packs = PackService(corpus: corpus, onContentChanged: { [weak self] in
+        let packs = PackService(corpus: corpus, onContentChanged: { [weak self] in
             await retrieval.contentDidChange()
             await self?.contentDidChange()
         })
+        self.packs = packs
+        Task { await packLibrary.attach(packs) }
         library = Library(database: corpus.database)
         state = .ready
 

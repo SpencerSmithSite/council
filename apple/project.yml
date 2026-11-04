@@ -43,6 +43,11 @@ targets:
       - path: ../assets/model/vocab.txt
         group: Council/Resources/Shared
         buildPhase: resources
+      # What every content pack holds, so chat can say which collection would
+      # have helped a question, offline (`PackLibrary`).
+      - path: ../assets/pack_catalogue.json
+        group: Council/Resources/Shared
+        buildPhase: resources
       # Gitignored (~23 MB) and fetched by tools/fetch_model.sh, so `optional`
       # lets xcodegen run before the fetch, as CI does; the generated project is
       # the same either way. The build itself refuses to go without it: see the

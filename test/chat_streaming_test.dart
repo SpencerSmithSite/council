@@ -248,6 +248,37 @@ void main() {
         contains('did not respond within a minute'));
   });
 
+  testWidgets('an answer that fails partway is stored as far as it got, '
+      'then the error', (tester) async {
+    await show(tester);
+    await ask(tester, 'What is baptism?');
+
+    tokens.add('Baptism is the sign');
+    await settle(tester);
+    tokens.addError(InferenceException('Ollama: out of memory'));
+    await settle(tester);
+
+    // On screen: what arrived, then the error.
+    expect(find.textContaining('Baptism is the sign'), findsOneWidget);
+    expect(find.textContaining('out of memory'), findsOneWidget);
+
+    // And in the history, in the same order, so reopening the thread shows
+    // what the screen showed. The partial answer used to be left out.
+    final assistantMessages = (await tester.runAsync(() async {
+      final history = ChatHistoryService();
+      final threads = await history.conversations();
+      final messages = await history.messages(threads.single.id);
+      return messages.where((m) => !m.isUser).toList();
+    }))!;
+    expect(assistantMessages.map((m) => m.text).toList(), [
+      contains('Baptism is the sign'),
+      contains('out of memory'),
+    ]);
+    expect(assistantMessages.first.generated, isTrue,
+        reason: 'the partial answer is still something a model wrote');
+    expect(assistantMessages.last.generated, isFalse);
+  });
+
   testWidgets('starting a new thread mid-answer does not write an error into '
       'it', (tester) async {
     await show(tester);

@@ -179,15 +179,17 @@ public extension Generation.Outcome {
     /// carrying the prompt's citations), once, now that it is final.
     ///
     /// A stopped answer is stored: the reader stopped it because they had
-    /// read enough, not because they wanted it thrown away. A failed one is
-    /// not, which is what the Flutter screen does, though it leaves the
-    /// partial text on screen, so reopening the thread shows less than the
-    /// screen did. Kept the same here for parity.
+    /// read enough, not because they wanted it thrown away. So is what a
+    /// failed one managed to say before it failed, with the error stored
+    /// after it as the notice: the partial text stays on screen, and a
+    /// reopened thread has to show what the screen showed. (The Flutter
+    /// screen once dropped it, so a reopened thread showed only the error;
+    /// both apps now keep it.)
     var persistsAnswer: Bool {
         switch self {
         case .completed: true
         case .stopped(let text): !text.isEmpty
-        case .failed: false
+        case .failed(_, let partial): !partial.isEmpty
         }
     }
 

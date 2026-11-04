@@ -150,9 +150,9 @@ struct ScriptedStream {
         #expect(outcome.notice == nil)
     }
 
-    /// The Flutter screen leaves the partial text on screen and stores only
-    /// the error; kept the same.
-    @Test func aFailurePartwayKeepsWhatArrivedOnScreenAndAddsTheError() async {
+    /// What arrived stays on screen and is stored, with the error after it,
+    /// so a reopened thread shows what the screen showed.
+    @Test func aFailurePartwayKeepsAndStoresWhatArrivedAndAddsTheError() async {
         let backend = ScriptedStream()
         let generation = Generation(backend.stream)
         backend.continuation.yield("Half an")
@@ -161,7 +161,7 @@ struct ScriptedStream {
         let outcome = await generation.outcome
         #expect(outcome == .failed(message: "Error: Ollama: out of memory", partial: "Half an"))
         #expect(outcome.answerText == "Half an")
-        #expect(!outcome.persistsAnswer)
+        #expect(outcome.persistsAnswer)
         #expect(outcome.notice == "Error: Ollama: out of memory")
     }
 

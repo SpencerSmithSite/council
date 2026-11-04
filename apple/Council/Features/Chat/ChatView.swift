@@ -214,6 +214,22 @@ struct ChatView: View {
                 .buttonStyle(.glass)
                 .transition(.opacity.combined(with: .scale(scale: 0.9)))
             }
+            if let gap = session.gaps.first, !session.isLoading {
+                // Scrolls inside a capped height: at the largest text size on
+                // the narrowest phone the notice is taller than the screen on
+                // its own, and the composer must never be pushed off it.
+                ScrollView {
+                    CoverageNotice(gap: gap) {
+                        Task { await session.answerAgainAfterInstall(app: model) }
+                    }
+                    .id(gap.packID)
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .frame(maxHeight: 260)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
+                .frame(maxWidth: 760)
+            }
             if model.inference.sendsDataOffDevice {
                 Label("Questions and the passages found for them are sent to \(model.inference.backend.displayName).",
                       systemImage: "icloud.and.arrow.up")

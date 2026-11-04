@@ -333,8 +333,15 @@ Started 2026-11-03.
   (with the "Apple Intelligence is off" hint and a link to Settings); MLX
   model choice, download progress, storage used, delete; Ollama host and
   model list; cloud provider, key (secure field, Keychain) and model.
-- The coverage notice ("a collection that would help isn't installed")
-  needs the pack library, so its install button arrives with Phase 6.
+- The coverage notice ("a collection that would help isn't installed"),
+  done 2026-11-04: `PackLibrary` (Flutter's `PackProvider`: the bundled
+  `pack_catalogue.json`, installed fragments, the manifest fetched on
+  demand, one install with progress) on `AppModel`; `CoverageNotice` above
+  the composer with "Add <collection> · <size>", which installs and asks
+  the question again. Checked in the iPhone simulator: an Orthodox question
+  on the bare library, Add Creeds & Confessions, progress, then a cited
+  answer from the Orthodox catechism. Flutter's second button, "Browse
+  library", waits for Phase 6's Browse.
 
 **Work**
 - [x] Core, in CouncilCore (2026-11-03): `ReasoningFilter`; `ChatPrompt` and
@@ -354,9 +361,10 @@ Started 2026-11-03.
       truncated answer as complete; a cloud error body whose `error` is a
       string is shown, where Dart throws a type error; Foundation Models'
       context-overflow and guardrail failures get sentences of their own.
-      Kept for parity, though worth fixing in both: a failed answer's partial
-      text stays on screen but isn't stored (`Generation.Outcome
-      .persistsAnswer`).
+      Fixed in both apps (2026-11-04): a failed answer's partial text, which
+      stays on screen, is now stored too, ahead of the error, so a reopened
+      thread shows what the screen showed (`Generation.Outcome
+      .persistsAnswer`; Flutter's `_streamAnswer`, with a widget test).
 - [x] Backends: Foundation Models, MLX local model (download, progress,
       storage, delete), Ollama on the local network
       (`NSLocalNetworkUsageDescription`), and cloud (Anthropic, OpenAI,

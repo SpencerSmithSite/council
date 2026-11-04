@@ -63,6 +63,16 @@ final class ChatSession {
     private(set) var passage: PinnedPassage?
     /// A question is being answered: Send is Stop, and another can't be sent.
     private(set) var isLoading = false
+
+    /// Collections that would have helped with the latest question and
+    /// aren't installed, best first. Shown above the composer rather than in
+    /// the answer, so it reads as a note about the library, not as something
+    /// the sources say.
+    private(set) var gaps: [PackSuggestion] = []
+    /// The question the gaps are about, so it can be answered again once the
+    /// missing collection arrives. Telling someone their answer was thin and
+    /// then making them retype the question is most of a feature.
+    private(set) var gapQuestion: String?
     /// Stop was pressed and the answer is winding down.
     private(set) var isStopping = false
 
@@ -115,10 +125,12 @@ final class ChatSession {
             }
         }
 
-        // TODO(Phase 6): the coverage notice. Flutter works out, from the
-        // question, which collections would have helped and aren't installed
-        // (`PackProvider.coverageGapsFor`), and offers to install one above
-        // the composer, re-asking once it lands. It needs the pack library.
+        // Worked out before retrieval runs, from the question rather than its
+        // results: the point is to describe sources that are *absent*, which
+        // by definition can't appear in what was retrieved (Flutter's
+        // `_sendMessage`).
+        gaps = app.packLibrary.coverageGaps(for: text, tags: QueryShaping.extractTags(text))
+        gapQuestion = gaps.isEmpty ? nil : text
 
         let thread = await ensureConversation(firstQuestion: text, pinned: pinned, history: history, epoch: epoch)
         await store(Message(text: text, isUser: true), in: thread, history: history)
@@ -285,6 +297,18 @@ final class ChatSession {
         messages = []
         isLoading = false
         isStopping = false
+        gaps = []
+        gapQuestion = nil
+    }
+
+    /// The missing collection has been installed: drop the notice and ask
+    /// the question that prompted it again, now that the library holds what
+    /// it lacked.
+    func answerAgainAfterInstall(app: AppModel) async {
+        let question = gapQuestion
+        gaps = []
+        gapQuestion = nil
+        if let question { await send(question, app: app) }
     }
 
     // MARK: - Storing
