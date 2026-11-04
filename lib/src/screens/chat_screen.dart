@@ -10,8 +10,8 @@ import '../services/packs/pack_provider.dart';
 import 'browse_screen.dart';
 import '../services/chat_history_service.dart';
 import '../services/database_service.dart';
-import '../services/ollama_service.dart';
 import '../services/settings_provider.dart';
+import '../services/inference/chat_prompt.dart';
 import '../services/inference/inference_backend.dart';
 import '../services/inference/inference_provider.dart';
 import 'content_detail_screen.dart';
@@ -19,7 +19,7 @@ import '../theme/glass.dart';
 import '../theme/glass_controls.dart';
 import '../widgets/tail_follower.dart';
 
-// ContextPassage is defined in ollama_service.dart
+export '../services/inference/chat_prompt.dart' show Citation;
 
 class ChatScreen extends StatefulWidget {
   /// Pushed as its own route — from a passage, or from the history list —
@@ -127,9 +127,8 @@ class ChatScreenState extends State<ChatScreen> {
   /// assistant's opening words.
   int _epoch = 0;
 
-  /// Built once. The prompt is a constant string, and this used to construct a
-  /// whole OllamaService per question to read it.
-  late final String _systemPrompt = OllamaService().buildSystemPrompt();
+  /// Built once; see ChatPrompt.systemPrompt.
+  late final String _systemPrompt = ChatPrompt.systemPrompt;
 
   late final DatabaseService _databaseService;
 
@@ -339,13 +338,9 @@ class ChatScreenState extends State<ChatScreen> {
     try {
       final retrieved = await _databaseService.searchForRAG(text, limit: 6);
 
-      // The selected passage leads, ahead of anything retrieval found. The
-      // reader is asking about *that* text, so it is the source the answer has
-      // to be about; the rest is context brought in to interpret it.
-      final passages = [
-        if (_passage != null) _pinnedAsPassage(_passage!),
-        ...retrieved,
-      ];
+      // The selected passage leads, ahead of anything retrieval found. See
+      // ChatPrompt.passagesFor.
+      final passages = ChatPrompt.passagesFor(retrieved, pinned: _passage);
 
       if (passages.isEmpty) {
         _addAssistantMessage(
@@ -355,15 +350,7 @@ class ChatScreenState extends State<ChatScreen> {
         return;
       }
 
-      final sources = passages
-          .map((p) => Citation(
-                contentId: p['id'] as int,
-                source: p['source_title'] as String? ?? 'Unknown source',
-                author: p['source_author'] as String?,
-                tradition: p['tradition'] as String?,
-                sourceUrl: p['source_url'] as String?,
-              ))
-          .toList();
+      final sources = ChatPrompt.citationsFor(passages);
 
       // Search-only mode: the retrieved passages *are* the answer.
       if (backend is RetrievalOnlyBackend) {
@@ -388,22 +375,6 @@ class ChatScreenState extends State<ChatScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
-  /// The selected passage shaped like a retrieved one, so it can travel
-  /// through the same prompt-building and citation code as everything else.
-  ///
-  /// It carries no `source_url`, which is not an oversight: the citation tile
-  /// reads a missing URL as "origin not recorded", and for a passage quoted out
-  /// of the reader's own screen that is exactly right — the traceable thing is
-  /// the unit it came from, which the citation links to.
-  Map<String, dynamic> _pinnedAsPassage(PinnedPassage passage) => {
-        'id': passage.contentUnitId,
-        'content': passage.quote,
-        'source_title': passage.sourceTitle ?? passage.reference,
-        'source_author': null,
-        'tradition': null,
-        'source_url': null,
-      };
 
   /// Turn a raw exception into something a reader can act on. A dropped
   /// connection almost always means the model was still loading when the
@@ -435,34 +406,15 @@ class ChatScreenState extends State<ChatScreen> {
     List<Map<String, dynamic>> passages,
     List<Citation> sources,
   ) async {
-    // Spend the backend's context budget across the retrieved passages rather
-    // than using one fixed size for every backend — an on-device model and a
-    // cloud model differ by an order of magnitude here.
-    final perPassage =
-        (backend.contextBudgetChars / passages.length).floor().clamp(400, 8000);
-
-    final context = StringBuffer()..writeln('Relevant sources:\n');
-    for (var i = 0; i < passages.length; i++) {
-      final content = passages[i]['content'] as String? ?? '';
-      context
-        ..writeln('[${i + 1}] ${sources[i].promptLabel}')
-        ..writeln(content.length > perPassage
-            ? '${content.substring(0, perPassage).trimRight()}… [truncated]'
-            : content)
-        ..writeln();
-    }
-
-    // When the reader selected a passage, say so plainly. Without it the model
-    // is handed several sources of equal standing and answers about the topic
-    // rather than about the text in front of the person asking.
-    final anchor = _passage == null
-        ? ''
-        : 'The reader is reading ${_passage!.promptLabel}, quoted as source '
-            '[1], and their question is about it. Answer about that passage '
-            'first, using the other sources to illuminate it.\n\n';
-
-    final prompt = '$context\n${anchor}User question: $question\n\n'
-        'Answer using the provided sources. Cite them as [1], [2] and so on.';
+    // The passages share the backend's context budget, and the passage the
+    // reader selected (if any) is named before the question. See ChatPrompt.
+    final prompt = ChatPrompt.promptFor(
+      question: question,
+      passages: passages,
+      citations: sources,
+      anchor: _passage,
+      contextBudgetChars: backend.contextBudgetChars,
+    );
 
     // The transcript this answer belongs to, and where in it the answer goes.
     // Both are only meaningful while the epoch holds; see [_epoch].
@@ -1348,70 +1300,6 @@ class _ModelCaveat extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-/// A cited passage. Carries the content unit id so the citation can be opened
-/// — a citation the reader cannot follow is not much of a citation.
-/// A passage the answer was built from, described well enough to check.
-///
-/// Tradition is carried because it is the point of the app: an answer about
-/// baptism drawn entirely from Reformed confessions is a different claim from
-/// one spanning four traditions, and until now the citations looked identical
-/// either way.
-///
-/// [sourceUrl] is carried for the same reason in the other direction. The
-/// corpus holds both editions traced to a published text and legacy entries
-/// with no recorded origin, and showing them the same way asserts a confidence
-/// the second kind has not earned.
-class Citation {
-  final int contentId;
-  final String source;
-  final String? author;
-  final String? tradition;
-  final String? sourceUrl;
-
-  const Citation({
-    required this.contentId,
-    required this.source,
-    this.author,
-    this.tradition,
-    this.sourceUrl,
-  });
-
-  bool get isTraceable => sourceUrl != null && sourceUrl!.isNotEmpty;
-
-  /// Stored alongside the message it belongs to, so a reopened conversation
-  /// still shows what its answers were built from. An answer that arrives
-  /// without its sources is the thing this app is trying not to be.
-  Map<String, dynamic> toJson() => {
-        'contentId': contentId,
-        'source': source,
-        'author': author,
-        'tradition': tradition,
-        'sourceUrl': sourceUrl,
-      };
-
-  static Citation fromJson(Map<String, dynamic> json) => Citation(
-        contentId: json['contentId'] as int? ?? 0,
-        source: json['source'] as String? ?? 'Unknown source',
-        author: json['author'] as String?,
-        tradition: json['tradition'] as String?,
-        sourceUrl: json['sourceUrl'] as String?,
-      );
-
-  /// How the passage is described to the model, as opposed to to the reader.
-  ///
-  /// The tradition is included deliberately: a comparative question is exactly
-  /// the case where the model needs to know which camp a passage speaks for,
-  /// and without it the answer attributes positions by guesswork.
-  String get promptLabel {
-    final parts = [
-      source,
-      if (author != null && author!.isNotEmpty) author!,
-      if (tradition != null && tradition!.isNotEmpty) '$tradition tradition',
-    ];
-    return parts.join(' — ');
   }
 }
 

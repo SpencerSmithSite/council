@@ -41,8 +41,11 @@ public protocol InferenceBackend: Sendable {
     func checkStatus() async -> BackendStatus
 
     /// Streams an answer, chunk by chunk, as the model produces it. Finishes
-    /// by throwing `InferenceError` on failure. Cancelling the consuming task
-    /// must stop generation (and close any connection) promptly.
+    /// by throwing on failure: an `InferenceError` already worded for the
+    /// reader, or a transport error (`URLError`) passed through so that
+    /// `ChatText.describe` can recognise a dropped connection, as the Dart
+    /// chat screen does. Cancelling the consuming task must stop generation
+    /// (and close any connection) promptly; `Generation` drives this.
     func generate(prompt: String, system: String?) -> AsyncThrowingStream<String, any Error>
 
     /// Models offered by this backend, if it offers a choice.

@@ -299,6 +299,26 @@ native reader scrolls through the whole work.
       nothing.
 
 ### Phase 5 — AI
+- [x] Core, in CouncilCore (2026-11-03): `ReasoningFilter`; `ChatPrompt` and
+      `Citation`, matching `shared/golden/prompts/prompts.json` (21 cases,
+      written by `test/chat_prompt_golden_test.dart` from the prompt building
+      now pulled out of the chat screen into `chat_prompt.dart`);
+      `ChatHistoryStore`; `InferenceSettings` on Flutter's keys with the
+      opening-backend rule; `SecretStore` (Keychain service
+      `site.spencersmith.council.cloud`, account = provider id; Flutter's
+      item names recorded on `KeychainSecretStore` for Phase 7);
+      `OllamaBackend`, `CloudBackend`, `FoundationModelsBackend` over an
+      injectable `HTTPTransport`; `Generation`, the stream driver the chat
+      screen consumes (Stop that always stops, a stall limit, outcomes worded
+      as Flutter's screen words them). Deliberate differences from Dart: an
+      error event inside a stream (Ollama `{"error"}`, a provider's SSE error)
+      ends the answer with that error, where Dart skips it and stores the
+      truncated answer as complete; a cloud error body whose `error` is a
+      string is shown, where Dart throws a type error; Foundation Models'
+      context-overflow and guardrail failures get sentences of their own.
+      Kept for parity, though worth fixing in both: a failed answer's partial
+      text stays on screen but isn't stored (`Generation.Outcome
+      .persistsAnswer`).
 - [ ] Backends: Foundation Models, MLX local model (download, progress,
       storage, delete), Ollama on the local network
       (`NSLocalNetworkUsageDescription`), and cloud (Anthropic, OpenAI,
