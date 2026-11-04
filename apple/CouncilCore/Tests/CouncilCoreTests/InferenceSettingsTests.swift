@@ -195,10 +195,11 @@ final class ScratchDefaults {
         #expect(KeychainSecretStore().service == "site.spencersmith.council.cloud")
     }
 
-    /// The real Keychain round trip, under a throwaway service. An unsigned
-    /// `swift test` binary has no application identifier, so the
-    /// data-protection keychain refuses it (errSecMissingEntitlement); that
-    /// skips this test rather than failing it. It runs in the signed app.
+    /// The real Keychain round trip, under a throwaway service. On the Mac
+    /// this is the login keychain and runs anywhere it is unlocked; on iOS
+    /// the data-protection keychain refuses an unsigned binary
+    /// (errSecMissingEntitlement), which skips this test rather than failing
+    /// it.
     @Test(.enabled(if: Self.keychainUsable, "needs a signed binary with a keychain entitlement"))
     func keychainRoundTrip() throws {
         let store = KeychainSecretStore(service: "site.spencersmith.council.tests.\(UUID().uuidString)")

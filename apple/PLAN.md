@@ -298,7 +298,7 @@ native reader scrolls through the whole work.
 - [ ] Open: a unit FTS matched only on its title shows its opening and marks
       nothing.
 
-### Phase 5 — AI
+### Phase 5 — AI (done 2026-11-04, checks open)
 Started 2026-11-03.
 
 **Design**
@@ -357,10 +357,21 @@ Started 2026-11-03.
       Kept for parity, though worth fixing in both: a failed answer's partial
       text stays on screen but isn't stored (`Generation.Outcome
       .persistsAnswer`).
-- [ ] Backends: Foundation Models, MLX local model (download, progress,
+- [x] Backends: Foundation Models, MLX local model (download, progress,
       storage, delete), Ollama on the local network
       (`NSLocalNetworkUsageDescription`), and cloud (Anthropic, OpenAI,
-      Gemini, xAI) with keys in Keychain.
+      Gemini, xAI) with keys in Keychain. The MLX backend
+      (`Inference/Local/`, mlx-swift-lm 3.32.3 + swift-transformers 1.3.5
+      Tokenizers): Qwen3 0.6B, 1.7B, 4B Instruct 2507 and 8B, 4-bit, pinned
+      revisions, hash-checked resumable downloads into Application Support
+      `MLXModels/`, thinking off through the chat template
+      (`enable_thinking: false`), greedy decoding. Smoke test on an M4 Mac:
+      0.6B at 153 tokens/s in Release, peak 701 MB. Unavailable in the
+      Simulator and on Intel Macs, by design. Open: MLX not yet run on an
+      iPhone or iPad; the 1.7B's phone memory floor (7,000 MB, admitting
+      8 GB iPhones) is untested on a real phone; release archives must be
+      arm64-only or MLX checked for x86_64; CI now needs Xcode 26.4+ (Swift
+      tools 6.3) and has not run on GitHub yet.
 - [x] Streaming, the reasoning filter, citations into the reader, chat
       history (2026-11-03). `InferenceModel` (on `AppModel`) owns the
       settings, Keychain, the shared `LocalModelStore`, Apple Intelligence's
@@ -399,13 +410,13 @@ Started 2026-11-03.
       Checked on the Mac (download, leave and return, cancel, delete the
       partial; Ollama reachable and unreachable) and the iPhone 17
       simulator (Default, Gruvbox dark, Solarized Light, accessibility
-      text sizes; cloud key saved and removed). Open: **on the Mac the
-      Keychain refuses every write** (`errSecMissingEntitlement`, -34018):
-      the data-protection keychain needs a `keychain-access-groups`
-      entitlement and so a provisioning profile (Developer ID profile for
-      release), or `KeychainSecretStore` must use the login keychain on
-      macOS. A decision for signing, not this screen; the screen shows
-      the error. Flutter's `show_citations` lives on its Settings screen,
+      text sizes; cloud key saved and removed). On the Mac the
+      data-protection keychain refused every write (`errSecMissingEntitlement`,
+      -34018: it needs a `keychain-access-groups` entitlement and so a
+      provisioning profile), so `KeychainSecretStore` uses the login keychain
+      on macOS, the usual home for an unsandboxed Developer ID app's
+      passwords; iOS keeps the data-protection keychain (round trip tested
+      on the Mac). Flutter's `show_citations` lives on its Settings screen,
       so it waits for Phase 6.
 
 ### Phase 6 — Settings, onboarding, updates

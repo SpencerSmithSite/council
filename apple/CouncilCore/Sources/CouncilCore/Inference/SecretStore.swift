@@ -51,9 +51,15 @@ public struct KeychainError: Error, Hashable, CustomStringConvertible {
 ///
 /// Readable only while the device is unlocked and never synced or migrated to
 /// another device (`WhenUnlockedThisDeviceOnly`): a key is the reader's to
-/// re-enter on a new device, not something to scatter. On the Mac it uses the
-/// data-protection keychain, as on iOS, which needs the app's signed
-/// application identifier; an unsigned test binary gets `errSecMissingEntitlement`.
+/// re-enter on a new device, not something to scatter.
+///
+/// On the Mac it uses the login keychain, not the data-protection keychain.
+/// The data-protection keychain needs a `keychain-access-groups` entitlement,
+/// which needs a provisioning profile, and the Mac app is an unsandboxed
+/// Developer ID build with none: saving a key failed with
+/// `errSecMissingEntitlement` (-34018). The login keychain is where an
+/// unsandboxed Mac app's passwords normally live, and items there are bound
+/// to the app's code signature, so another app gets a prompt, not the key.
 ///
 /// ## The Flutter app's items (for Phase 7, not migrated here)
 ///
@@ -67,7 +73,7 @@ public struct KeychainError: Error, Hashable, CustomStringConvertible {
 /// | `kSecValueData` | the key as UTF-8 | the same |
 /// | `kSecAttrAccessible` | `WhenUnlocked` | `WhenUnlockedThisDeviceOnly` |
 /// | `kSecAttrSynchronizable` | false | false |
-/// | `kSecUseDataProtectionKeychain` (macOS) | true | true |
+/// | `kSecUseDataProtectionKeychain` (macOS) | true | false (login keychain) |
 ///
 /// Only the key for the provider selected at the time was ever read, but every
 /// provider's key that was ever saved is there. Migration reads all four
@@ -127,13 +133,18 @@ public struct KeychainSecretStore: SecretStore {
     }
 
     private func baseQuery(_ account: String) -> [CFString: Any] {
-        [
+        var query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
             kSecAttrSynchronizable: false,
-            kSecUseDataProtectionKeychain: true,
         ]
+        #if os(iOS)
+        // iOS has only the data-protection keychain; saying so is harmless
+        // and keeps the query identical to what Flutter's plugin uses there.
+        query[kSecUseDataProtectionKeychain] = true
+        #endif
+        return query
     }
 }
 
