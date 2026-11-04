@@ -28,6 +28,7 @@
 		796355BD32F4FCDF63A3394C /* AIBackendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E01633BB06E9A03B260714 /* AIBackendView.swift */; };
 		7B98C71C1D46B06404812C6B /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49113E0C3D7FB4401D5BC5E /* ThemeStore.swift */; };
 		7BB318864D1C29F6B34F62D0 /* OllamaSettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465E317576E66049EBD7F47E /* OllamaSettingsSections.swift */; };
+		809C6008DEEC22D0A599C041 /* OnboardingPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F3C60FFD2BF3348923CFD3 /* OnboardingPresentation.swift */; };
 		84BEFDEA4419AD2AD224886C /* CouncilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */; };
 		8901E9A928B8613D69B0B970 /* UpdateSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCC846A437237744EAF486D /* UpdateSettingsSection.swift */; };
 		897798F21675783560A6203E /* ContentsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D168EDC2797F854488D5910 /* ContentsSheet.swift */; };
@@ -38,6 +39,7 @@
 		A4ADF00181F3AF633B4BFC4E /* CouncilCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69DBD37D03A4A083BA4C4FF7 /* CouncilCore */; };
 		AA40DC2EF7FB8C57D382981B /* PassageLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90B022A2F0AE1EFAD0AD3D91 /* PassageLayout.swift */; };
 		AC7D160B6BC63D5DAAB548E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DB3B4E92E5B13410BCED51 /* SettingsView.swift */; };
+		B42ED16A4F184FA2E30FEFC3 /* OnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4916E4DC07F7D97265EF866 /* OnboardingSteps.swift */; };
 		B7DFBEEBE0329CCEEA4E96B9 /* CoverageNotice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572CD9C8453B9925B2844B97 /* CoverageNotice.swift */; };
 		BCF2434DB7ADCC35B2EA7E90 /* CouncilPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED29726AF5384DCFB30ECD89 /* CouncilPalette.swift */; };
 		C4A24B935AC3F583B52ED193 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066E5E76D74A2D95F1D1857C /* SearchView.swift */; };
@@ -47,6 +49,7 @@
 		D38E9786D5F38161FB02F1AE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F059DA03CBF802B595FC4B /* AppModel.swift */; };
 		D3E46F5013F25738782E5F0F /* PackLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9C0C1629BC12DD249D1015 /* PackLibrary.swift */; };
 		D727447B861DF971FE154CD1 /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68F745F41BC84FEF8D3F37A /* ThemePickerView.swift */; };
+		DD399C872A6C0D8EBACAB15C /* OnboardingGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB26EB9BFD38831758A396E1 /* OnboardingGate.swift */; };
 		E950ECDA72B1BC85EE95EC09 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0AA26AB0F947273B761AA7 /* OnboardingView.swift */; };
 		F0A07EB72E5BDB3C60D291FD /* PassageSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36699191676CA54491A4D7A2 /* PassageSelection.swift */; };
 		F0E789E84CF7827BB46E78A2 /* PassageText.swift in Sources */ = {isa = PBXBuildFile; fileRef = E728E4010391D90887B3816C /* PassageText.swift */; };
@@ -101,11 +104,14 @@
 		D3DB3B4E92E5B13410BCED51 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D49113E0C3D7FB4401D5BC5E /* ThemeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeStore.swift; sourceTree = "<group>"; };
 		E103FFA10E1734EE439D339E /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
+		E4916E4DC07F7D97265EF866 /* OnboardingSteps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSteps.swift; sourceTree = "<group>"; };
 		E68F745F41BC84FEF8D3F37A /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
 		E728E4010391D90887B3816C /* PassageText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassageText.swift; sourceTree = "<group>"; };
 		E9F19CE28AD65C5CAAB081CA /* ReadingControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingControlsView.swift; sourceTree = "<group>"; };
+		EB26EB9BFD38831758A396E1 /* OnboardingGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGate.swift; sourceTree = "<group>"; };
 		ED29726AF5384DCFB30ECD89 /* CouncilPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouncilPalette.swift; sourceTree = "<group>"; };
 		ED9C0C1629BC12DD249D1015 /* PackLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackLibrary.swift; sourceTree = "<group>"; };
+		F2F3C60FFD2BF3348923CFD3 /* OnboardingPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPresentation.swift; sourceTree = "<group>"; };
 		F695390C7D8223A0F830F034 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F82E202F5B39DBA13CB0D13E /* ReadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,6 +140,9 @@
 		0BAD2EF270051CCB2D439737 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				EB26EB9BFD38831758A396E1 /* OnboardingGate.swift */,
+				F2F3C60FFD2BF3348923CFD3 /* OnboardingPresentation.swift */,
+				E4916E4DC07F7D97265EF866 /* OnboardingSteps.swift */,
 				1B0AA26AB0F947273B761AA7 /* OnboardingView.swift */,
 			);
 			path = Onboarding;
@@ -457,6 +466,9 @@
 				CCE3A14EA3EA2A3F69847A82 /* NoteEditorView.swift in Sources */,
 				0F9080A1B0E85F6AD80F0869 /* NotesView.swift in Sources */,
 				7BB318864D1C29F6B34F62D0 /* OllamaSettingsSections.swift in Sources */,
+				DD399C872A6C0D8EBACAB15C /* OnboardingGate.swift in Sources */,
+				809C6008DEEC22D0A599C041 /* OnboardingPresentation.swift in Sources */,
+				B42ED16A4F184FA2E30FEFC3 /* OnboardingSteps.swift in Sources */,
 				E950ECDA72B1BC85EE95EC09 /* OnboardingView.swift in Sources */,
 				D3E46F5013F25738782E5F0F /* PackLibrary.swift in Sources */,
 				508BF2FDE1AA7C379A85BB00 /* PassageActions.swift in Sources */,

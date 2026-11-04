@@ -101,6 +101,8 @@ struct RootView: View {
             }
         }
         .tabViewStyle(.sidebarAdaptable)
+        // First-run setup, over the app (OnboardingGate decides who sees it).
+        .onboardingPresentation()
         // Another screen asked for a search (the shelf's "Search Passages
         // for …"): run it in the Search tab.
         .onChange(of: model.pendingSearch) { _, query in
