@@ -431,6 +431,28 @@ Started 2026-11-03.
 - [ ] Browse, the content-pack library (`browse_screen.dart`), on
       `PackCatalogue` and `PackService`; Settings' Content Packs opens it too.
 - [ ] Settings, onboarding, update check against the existing `updates.json`.
+- [x] Onboarding (2026-11-04), `Features/Onboarding/`: Flutter's three steps
+      (Scripture, the library with Creeds & Confessions preselected, Answers)
+      as a `NavigationStack` of grouped forms under large SF Symbol headers,
+      `.glassProminent` Continue / Get Started, Skip on every step; a
+      full-screen cover on iPhone, a sheet on iPad and Mac (Back beside
+      Continue there). The AI step reuses the AI backend screen's rows and
+      sections (opening on the backend `resolveBackend` chose: Apple
+      Intelligence when ready, else the downloaded model with its size).
+      Get Started queues the collections in `OnboardingGate`, which outlives
+      the sheet; a downloads page follows them and Start Reading closes it
+      while they carry on. `has_onboarded` (no prefix) is written when the
+      reader commits. Not shown when `has_onboarded` or
+      `flutter.has_onboarded` is set, or when the library already holds a
+      highlight, note, conversation or installed collection
+      (`ExistingInstall`, read before the files are opened; the flag is then
+      written). Phase 7's Mac copy must run before `OnboardingGate.decide`.
+      Checked on the iPhone Air simulator (Default, Gruvbox dark/light, AX5
+      text; Get Started with 1 and 3 collections, Start Reading mid-download,
+      Skip; relaunch; existing user by installed pack and by the Flutter
+      flag) and on the Mac (sheet; existing user). Open: Settings' "Show
+      Onboarding" (call `model.onboarding.replay()`); Apple Intelligence off
+      or unsupported not seen (the simulator reports it ready); iPad not run.
 - [ ] Mac: port the `_macos` path of `update_installer.dart` (download DMG,
       verify, replace, relaunch).
 

@@ -76,6 +76,10 @@ final class AppModel {
     /// talking to while the library is still being prepared.
     let inference = InferenceModel()
 
+    /// Whether to show first-run setup, and the collections it set
+    /// installing: see `OnboardingGate`. `RootView` presents it.
+    let onboarding = OnboardingGate()
+
     /// Conversations with the model, in `council_user.db` beside the
     /// annotations. Nil until the user database has opened, and nil for good
     /// if it can't: questions are still answered, just not kept.
@@ -117,6 +121,10 @@ final class AppModel {
     func start() async {
         guard !started else { return }
         started = true
+        // First, while nothing has opened the user database or the corpus
+        // (its library check reads both), and before the opening AI backend
+        // is resolved, which reads the `has_onboarded` it may write.
+        await onboarding.decide(supportDirectory: try? Self.supportDirectory())
         inference.start()
 
         let corpus: Corpus

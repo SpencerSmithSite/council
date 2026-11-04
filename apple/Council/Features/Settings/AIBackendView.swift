@@ -173,12 +173,7 @@ struct AIBackendView: View {
     /// machine the question crosses the network to it, which is worth saying
     /// even though it is the reader's own server.
     private var ollamaPrivacy: BackendChoice.Privacy {
-        let host = (inference.backend as? OllamaBackend)?.host ?? inference.settings.ollamaHost
-        let name = URL(string: host)?.host() ?? host
-        if ["localhost", "127.0.0.1", "::1", "[::1]"].contains(name.lowercased()) {
-            return .onDevice
-        }
-        return .offDevice(to: "your Ollama server at \(name)")
+        .ollama(host: (inference.backend as? OllamaBackend)?.host ?? inference.settings.ollamaHost)
     }
 
     private var choiceSection: some View {
@@ -205,13 +200,25 @@ struct AIBackendView: View {
 
 // MARK: - Rows
 
-/// One backend in the picker.
-private struct BackendChoice: Identifiable {
+/// One backend in the picker. Internal so onboarding's AI step
+/// (`OnboardingAnswersStep`) offers the same rows.
+struct BackendChoice: Identifiable {
     enum Privacy {
         case onDevice
         /// Sent to someone else's computer, or across the network to the
         /// reader's own: named, so the line says where.
         case offDevice(to: String)
+
+        /// Ollama at `host`. On this machine everything stays on the device;
+        /// on another one the question crosses the network to it, which is
+        /// worth saying even though it is the reader's own server.
+        static func ollama(host: String) -> Privacy {
+            let name = URL(string: host)?.host() ?? host
+            if ["localhost", "127.0.0.1", "::1", "[::1]"].contains(name.lowercased()) {
+                return .onDevice
+            }
+            return .offDevice(to: "your Ollama server at \(name)")
+        }
     }
 
     let id: InferenceBackendID
@@ -225,7 +232,7 @@ private struct BackendChoice: Identifiable {
 /// at the accessibility text sizes a list `Label` flows its icon into the
 /// first line, which scrambles a title over several lines of detail. There
 /// the icon goes above the text instead.
-private struct BackendChoiceRow: View {
+struct BackendChoiceRow: View {
     @Environment(\.councilPalette) private var palette
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let choice: BackendChoice
@@ -295,7 +302,7 @@ struct InlineIconText: View {
 /// model still downloading (Flutter's `_PlatformLlmNotice`). Both are the
 /// reader's to fix, or wait out, so the row stays selectable and this says
 /// how, with Flutter's wording (`FoundationModelsBackend.systemAvailability`).
-private struct AppleIntelligenceSection: View {
+struct AppleIntelligenceSection: View {
     @Environment(AppModel.self) private var model
     @Environment(\.councilPalette) private var palette
     @Environment(\.openURL) private var openURL
