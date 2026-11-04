@@ -361,8 +361,25 @@ Started 2026-11-03.
       storage, delete), Ollama on the local network
       (`NSLocalNetworkUsageDescription`), and cloud (Anthropic, OpenAI,
       Gemini, xAI) with keys in Keychain.
-- [ ] Streaming, the reasoning filter, citations into the reader, chat
-      history.
+- [x] Streaming, the reasoning filter, citations into the reader, chat
+      history (2026-11-03). `InferenceModel` (on `AppModel`) owns the
+      settings, Keychain, the shared `LocalModelStore`, Apple Intelligence's
+      availability, the resolved backend and its status, rebuilding when an
+      inference key changes in `UserDefaults` (call `reload()` after a
+      Keychain change). The Ask tab (`ChatView` over `ChatSession`, Flutter's
+      send flow with an epoch guard on every reply), `MarkdownText` (block
+      renderer over `presentationIntent`, `[n]` markers as links), Ask about
+      a passage from the reader (`AppModel.ask(about:)`), Chat History
+      handing threads back to Ask. Checked with Foundation Models on the Mac
+      and the iPhone 17 simulator, and Qwen 3 0.6B on MLX on the Mac.
+      Differences from Flutter: while an answer streams its sources are one
+      line ("Drawing on 6 sources") so following keeps the newest words in
+      view; opening the thread already on screen from History doesn't stop
+      its answer; the history preview strips inline Markdown; citations are
+      always shown (Flutter's `show_citations` setting isn't ported yet).
+      Open: the coverage notice (`TODO(Phase 6)`); several Mac windows share
+      `pendingAsk` as they share `pendingSearch`, so an Ask request is taken
+      by whichever window's `RootView` sees it.
 - [ ] The AI backend screen: availability states matching
       `PlatformLlmState`, including the "Apple Intelligence is off" hint.
 

@@ -238,6 +238,7 @@ private struct ReaderSection: View {
     let found: [Range<Int>]
     let reveal: FindReveal
 
+    @Environment(AppModel.self) private var model
     @Environment(ReaderStyle.self) private var style
     @Environment(\.councilPalette) private var palette
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -278,7 +279,7 @@ private struct ReaderSection: View {
             },
             menu: { index in
                 selection.include(index, in: source, highlights: loaded.highlights)
-                return selection.menu(store: store)
+                return selection.menu(store: store, ask: { model.ask(about: $0) })
             },
             found: found,
             onFoundLayout: found.isEmpty ? nil : { reveal.mark = $0 }

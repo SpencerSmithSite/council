@@ -3,8 +3,9 @@ import Foundation
 import Observation
 import os
 
-/// Owns CouncilCore for the life of the app: the installed corpus, retrieval
-/// and the pack service. One per process, created by `CouncilApp` and handed
+/// Owns CouncilCore for the life of the app: the installed corpus, retrieval,
+/// the pack service, the user database's stores and the AI backend
+/// (`inference`). One per process, created by `CouncilApp` and handed
 /// to every scene through the environment.
 ///
 /// Main-actor because the UI observes it; none of the work it starts runs
@@ -67,6 +68,35 @@ final class AppModel {
         pendingSearch = query
     }
 
+    /// The AI backend and its status: see `InferenceModel`. Started with the
+    /// app, independently of the corpus, so the Ask tab knows what it is
+    /// talking to while the library is still being prepared.
+    let inference = InferenceModel()
+
+    /// Conversations with the model, in `council_user.db` beside the
+    /// annotations. Nil until the user database has opened, and nil for good
+    /// if it can't: questions are still answered, just not kept.
+    private(set) var chatHistory: ChatHistoryStore?
+
+    /// Something another screen asked the Ask tab to do: ask about a passage
+    /// (the reader's Ask action) or continue a conversation (Chat History).
+    /// `RootView` switches to the Ask tab when it's set and hands it on to
+    /// `ChatView`, as `pendingSearch` is handed to the Search tab.
+    var pendingAsk: AskRequest?
+
+    /// The reader's Ask: a new thread about `passage`, in the Ask tab.
+    func ask(about passage: PinnedPassage) {
+        pendingAsk = AskRequest(.passage(passage))
+    }
+
+    /// Chat History's row: that thread, continued in the Ask tab. The history
+    /// list never opens a second copy of a conversation itself, which is
+    /// Flutter's rule too: two live views appending to one thread lose
+    /// messages.
+    func continueConversation(_ id: Int) {
+        pendingAsk = AskRequest(.conversation(id))
+    }
+
     /// Bumped after a pack install, removal or replacement changes what is in
     /// the corpus, so screens listing corpus content (the Read tab's shelf)
     /// reload with `.task(id:)` on it, as Flutter's Read tab reloads when
@@ -84,6 +114,7 @@ final class AppModel {
     func start() async {
         guard !started else { return }
         started = true
+        inference.start()
 
         let corpus: Corpus
         let directory: URL
@@ -151,15 +182,20 @@ final class AppModel {
         contentRevision += 1
     }
 
+    /// Opens `council_user.db` once and hands the one `UserDatabase` to every
+    /// store on it, so their writes are serialised by the same queue and each
+    /// store's change stream hears the others.
     private func openUserData(in directory: URL) {
-        let store: AnnotationStore
+        let database: UserDatabase
         do {
-            store = AnnotationStore(database: try UserDatabase.open(at: directory.appending(path: UserDatabase.fileName)))
+            database = try UserDatabase.open(at: directory.appending(path: UserDatabase.fileName))
         } catch {
             Self.logger.error("User database unavailable: \(String(describing: error), privacy: .public)")
             return
         }
+        let store = AnnotationStore(database: database)
         annotations = store
+        chatHistory = ChatHistoryStore(database: database)
         Task { [weak self] in
             for await _ in store.changes() {
                 self?.annotationsRevision += 1
@@ -221,5 +257,25 @@ final class AppModel {
         #else
         return base
         #endif
+    }
+}
+
+/// A request for the Ask tab from another screen (`AppModel.pendingAsk`).
+///
+/// Each carries an id of its own, so asking about the same passage twice in a
+/// row is two requests rather than one the second time `onChange` can't see.
+struct AskRequest: Equatable, Identifiable {
+    enum Kind: Equatable {
+        /// Start a new thread with this passage pinned.
+        case passage(PinnedPassage)
+        /// Show this stored conversation and continue it.
+        case conversation(Int)
+    }
+
+    let id = UUID()
+    let kind: Kind
+
+    init(_ kind: Kind) {
+        self.kind = kind
     }
 }

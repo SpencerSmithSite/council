@@ -199,9 +199,28 @@ final class PassageSelection {
         }
     }
 
+    /// The selection as a passage to ask about: the same fields Flutter's
+    /// `_ask` pins (lib/src/reader/passage_reader.dart), the quote with its
+    /// gaps and the reference, so the Ask tab can show it, lead the prompt
+    /// with it and name the thread after it.
+    var pinned: PinnedPassage? {
+        guard let source, !indices.isEmpty else { return nil }
+        return PinnedPassage(contentUnitId: source.unitID, quote: quote, reference: reference,
+                             sourceTitle: source.sourceTitle)
+    }
+
+    /// Hands the selection to the Ask tab (`AppModel.ask(about:)`) and ends
+    /// it, as Flutter's `_ask` clears the selection before opening the chat.
+    func ask(_ ask: @MainActor (PinnedPassage) -> Void) {
+        guard let pinned else { return }
+        clear()
+        ask(pinned)
+    }
+
     /// The context menu's view of the selection as it is now, after the
-    /// pressed segment has joined it.
-    func menu(store: AnnotationStore?) -> PassageMenu {
+    /// pressed segment has joined it. `ask` receives the passage when Ask is
+    /// chosen (the screens pass `AppModel.ask(about:)`).
+    func menu(store: AnnotationStore?, ask: @escaping @MainActor (PinnedPassage) -> Void) -> PassageMenu {
         PassageMenu(
             title: reference.isEmpty ? countLabel : reference,
             hasHighlight: hasHighlight,
@@ -211,7 +230,7 @@ final class PassageSelection {
             highlight: { [weak self] colour in self?.highlight(colour, store: store) },
             removeHighlight: { [weak self] in self?.removeHighlight(store: store) },
             note: { [weak self] in self?.note(store: store) },
-            ask: nil
+            ask: { [weak self] in self?.ask(ask) }
         )
     }
 }
@@ -229,8 +248,8 @@ struct PassageMenu {
     let highlight: @MainActor (HighlightColour) -> Void
     let removeHighlight: @MainActor () -> Void
     let note: @MainActor () -> Void
-    /// Nil until Phase 5 wires Ask to a pinned passage; the item shows,
-    /// disabled, so the menu's shape doesn't change when it arrives.
+    /// Opens the Ask tab with the selection pinned. Optional so a screen
+    /// with nowhere to ask from can show the item disabled.
     let ask: (@MainActor () -> Void)?
 }
 

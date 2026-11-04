@@ -39,11 +39,13 @@ private struct PassageActionsModifier: ViewModifier {
                     }
                     ToolbarSpacer(.flexible, placement: .bottomBar)
                     ToolbarItemGroup(placement: .bottomBar) {
-                        PassageActionButtons(selection: selection, store: model.annotations)
+                        PassageActionButtons(selection: selection, store: model.annotations,
+                                             ask: { model.ask(about: $0) })
                     }
                     #else
                     ToolbarItemGroup(placement: .primaryAction) {
-                        PassageActionButtons(selection: selection, store: model.annotations)
+                        PassageActionButtons(selection: selection, store: model.annotations,
+                                             ask: { model.ask(about: $0) })
                     }
                     ToolbarItem(placement: .primaryAction) {
                         Button("Clear Selection", systemImage: "xmark") { selection.clear() }
@@ -63,6 +65,7 @@ private struct PassageActionsModifier: ViewModifier {
 private struct PassageActionButtons: View {
     let selection: PassageSelection
     let store: AnnotationStore?
+    let ask: @MainActor (PinnedPassage) -> Void
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -102,10 +105,10 @@ private struct PassageActionButtons: View {
         }
         .disabled(store == nil)
 
-        // TODO(Phase 5): pin the passage and open Ask with it. Shown now,
-        // disabled, so the bar has its final shape and nothing pretends to work.
-        Button("Ask", systemImage: "sparkles") {}
-            .disabled(true)
+        // Pins the passage in the Ask tab (Flutter's `_ask`).
+        Button("Ask", systemImage: "sparkles") {
+            selection.ask(ask)
+        }
     }
 
     /// The palette has no "current" colour (a selection can span several

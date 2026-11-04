@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		072229E6B5623084B7860ADF /* SourceReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127FDA63DFDA67F85E0434E7 /* SourceReaderView.swift */; };
 		0F9080A1B0E85F6AD80F0869 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23ACF2673A1AD631FAB81F31 /* NotesView.swift */; };
+		10F2DB8A4FABF12493D98896 /* InferenceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F3D5AEF7DB1719817B632C /* InferenceModel.swift */; };
 		1A18BCF1EEAF58ECF83C0574 /* ChatHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EEDA666261C95D7D7D4A8F /* ChatHistoryView.swift */; };
 		207D507DCDBB32962358320C /* SourceReaderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8B09909859307EA380FA13 /* SourceReaderModel.swift */; };
 		25B115F70AE9E1E5FE5C372A /* SettingsToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */; };
@@ -25,6 +26,7 @@
 		84BEFDEA4419AD2AD224886C /* CouncilApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */; };
 		897798F21675783560A6203E /* ContentsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D168EDC2797F854488D5910 /* ContentsSheet.swift */; };
 		91E5B5AC7406F53CCD282306 /* theology.db.gz in Resources */ = {isa = PBXBuildFile; fileRef = 36725FC7C2932C5653F330F7 /* theology.db.gz */; };
+		9B58B8F1F60D7F50DC289AF5 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F11027FEEABC42AC0222C6F /* MarkdownText.swift */; };
 		9D4C8D8A64999AF13305AF34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25B8D8CF1C70CCEBCFE6B676 /* Assets.xcassets */; };
 		9F0C06637780C111C70C90D1 /* vocab.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308BE16BED3349CB214A1ADA /* vocab.txt */; };
 		A4ADF00181F3AF633B4BFC4E /* CouncilCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69DBD37D03A4A083BA4C4FF7 /* CouncilCore */; };
@@ -42,6 +44,7 @@
 		F27A9BFA42A05905B54607B7 /* ReadingControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F19CE28AD65C5CAAB081CA /* ReadingControlsView.swift */; };
 		F37C247657394E5FA75026BA /* model_quantized.onnx in Resources */ = {isa = PBXBuildFile; fileRef = 315F91315372F3F454CC503E /* model_quantized.onnx */; };
 		F3C3117DE72DB9D7F8CFCE97 /* ContentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CF660234F894F9493DDC0A /* ContentDetailView.swift */; };
+		F45348F5A1942AA7885DFEAC /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7A65B0537C3AE4937EBE5C /* ChatSession.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +62,7 @@
 		3D3B619D7037D47BB9C94514 /* CouncilCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CouncilCore; path = CouncilCore; sourceTree = SOURCE_ROOT; };
 		489D02FE49F19CB1CACA905A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		49EEDA666261C95D7D7D4A8F /* ChatHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryView.swift; sourceTree = "<group>"; };
+		4F11027FEEABC42AC0222C6F /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
 		5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouncilApp.swift; sourceTree = "<group>"; };
 		680B15FE97F7A9626919F9B3 /* PassageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassageActions.swift; sourceTree = "<group>"; };
 		6D168EDC2797F854488D5910 /* ContentsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentsSheet.swift; sourceTree = "<group>"; };
@@ -68,10 +72,12 @@
 		90B022A2F0AE1EFAD0AD3D91 /* PassageLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassageLayout.swift; sourceTree = "<group>"; };
 		933001F915B20FCE941DD79A /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
 		9AB5E45A1991F3C7B1D85DF0 /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseView.swift; sourceTree = "<group>"; };
+		A2F3D5AEF7DB1719817B632C /* InferenceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceModel.swift; sourceTree = "<group>"; };
 		BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsToolbar.swift; sourceTree = "<group>"; };
 		BED31F1E72458E2B157DC194 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		C2A7D06E2CEE0DC43EA4715D /* Council.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Council.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB8B09909859307EA380FA13 /* SourceReaderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceReaderModel.swift; sourceTree = "<group>"; };
+		CC7A65B0537C3AE4937EBE5C /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
 		CFC8985EF3CFD73DE0784BA1 /* CouncilTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouncilTheme.swift; sourceTree = "<group>"; };
 		D3DB3B4E92E5B13410BCED51 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D49113E0C3D7FB4401D5BC5E /* ThemeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeStore.swift; sourceTree = "<group>"; };
@@ -133,7 +139,9 @@
 			isa = PBXGroup;
 			children = (
 				49EEDA666261C95D7D7D4A8F /* ChatHistoryView.swift */,
+				CC7A65B0537C3AE4937EBE5C /* ChatSession.swift */,
 				8792E859BFD4F6042F579EFF /* ChatView.swift */,
+				4F11027FEEABC42AC0222C6F /* MarkdownText.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -268,6 +276,7 @@
 			children = (
 				01F059DA03CBF802B595FC4B /* AppModel.swift */,
 				5FA2DD3E955170B4AD70AEA1 /* CouncilApp.swift */,
+				A2F3D5AEF7DB1719817B632C /* InferenceModel.swift */,
 				053419F6FB9EA917BC689247 /* ReadingRoute.swift */,
 				489D02FE49F19CB1CACA905A /* RootView.swift */,
 				BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */,
@@ -382,6 +391,7 @@
 				5CDCAFB4EF2925E23A5889CD /* BookmarksView.swift in Sources */,
 				77E5AAEEE45A42B1A4961C6F /* BrowseView.swift in Sources */,
 				1A18BCF1EEAF58ECF83C0574 /* ChatHistoryView.swift in Sources */,
+				F45348F5A1942AA7885DFEAC /* ChatSession.swift in Sources */,
 				77CD017A4D50FAE93C2A4F35 /* ChatView.swift in Sources */,
 				380F183BEE28E832F83FE0C4 /* Color+RGBA.swift in Sources */,
 				F3C3117DE72DB9D7F8CFCE97 /* ContentDetailView.swift in Sources */,
@@ -389,7 +399,9 @@
 				84BEFDEA4419AD2AD224886C /* CouncilApp.swift in Sources */,
 				BCF2434DB7ADCC35B2EA7E90 /* CouncilPalette.swift in Sources */,
 				5D6F0BCC721B24DC35EA49F9 /* CouncilTheme.swift in Sources */,
+				10F2DB8A4FABF12493D98896 /* InferenceModel.swift in Sources */,
 				CAE7E455C603B95DC5A42A2E /* LibraryView.swift in Sources */,
+				9B58B8F1F60D7F50DC289AF5 /* MarkdownText.swift in Sources */,
 				CCE3A14EA3EA2A3F69847A82 /* NoteEditorView.swift in Sources */,
 				0F9080A1B0E85F6AD80F0869 /* NotesView.swift in Sources */,
 				508BF2FDE1AA7C379A85BB00 /* PassageActions.swift in Sources */,

@@ -113,7 +113,7 @@ struct ContentDetailView: View {
                     },
                     menu: { index in
                         selection.include(index, in: source, highlights: section.highlights)
-                        return selection.menu(store: model.annotations)
+                        return selection.menu(store: model.annotations, ask: { model.ask(about: $0) })
                     }
                 )
                 .padding(.vertical, 6)

@@ -256,19 +256,22 @@ private struct HighlightRow: View {
 
 extension View {
     /// A Delete swipe action and context menu item that ask first, as
-    /// Flutter's `_confirmDelete` does ("This cannot be undone.").
+    /// Flutter's `_confirmDelete` does ("This cannot be undone."). `message`
+    /// is for screens whose Flutter dialog words it differently (Chat
+    /// History's "The whole thread will be removed.").
     ///
     /// The swipe button is tinted red rather than given the destructive role:
     /// a destructive swipe action slides the row away before the question is
     /// answered, and a Cancel would then have to bring it back.
-    func deleteWithConfirmation(title: LocalizedStringKey,
+    func deleteWithConfirmation(title: LocalizedStringKey, message: LocalizedStringKey = "This cannot be undone.",
                                 perform: @escaping @MainActor () async -> Void) -> some View {
-        modifier(DeleteWithConfirmation(title: title, perform: perform))
+        modifier(DeleteWithConfirmation(title: title, message: message, perform: perform))
     }
 }
 
 private struct DeleteWithConfirmation: ViewModifier {
     let title: LocalizedStringKey
+    let message: LocalizedStringKey
     let perform: @MainActor () async -> Void
     @State private var asking = false
 
@@ -295,7 +298,7 @@ private struct DeleteWithConfirmation: ViewModifier {
                     Task { await perform() }
                 }
             } message: {
-                Text("This cannot be undone.")
+                Text(message)
             }
     }
 }

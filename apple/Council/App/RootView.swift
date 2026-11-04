@@ -46,6 +46,13 @@ struct RootView: View {
     /// screen's request (`AppModel.pendingSearch`) can set it and switch tabs
     /// in one place, whether or not the Search tab has been opened yet.
     @State private var searchQuery = ""
+    /// What the Ask tab has been asked to do (`AppModel.pendingAsk`), held
+    /// here for the same reason as `searchQuery`: the request has to reach
+    /// `ChatView` whether or not it has appeared yet. `ChatView` clears it.
+    @State private var askRequest: AskRequest?
+    /// The Ask tab's stack: citations push passages onto it, and an Ask
+    /// request pops it back to the transcript.
+    @State private var askPath = NavigationPath()
     /// The Library tab's stack. A `NavigationPath` rather than
     /// `[LibraryDestination]`: a stack bound to a typed array can only push
     /// that type, and the lists inside it push `ReadingRoute`s.
@@ -60,7 +67,9 @@ struct RootView: View {
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Ask", systemImage: "bubble.left.and.text.bubble.right", value: .ask) {
-                NavigationStack { ChatView().settingsToolbar().readingDestinations() }
+                NavigationStack(path: $askPath) {
+                    ChatView(request: $askRequest, path: $askPath).settingsToolbar().readingDestinations()
+                }
             }
             Tab("Read", systemImage: "book", value: .read) {
                 NavigationStack { ReadView().settingsToolbar().readingDestinations() }
@@ -100,6 +109,15 @@ struct RootView: View {
             model.recentSearches.record(query)
             model.pendingSearch = nil
             selection = .search
+        }
+        // The reader's Ask, or a thread chosen in Chat History: show it in the
+        // Ask tab, back at its transcript if a citation had been opened there.
+        .onChange(of: model.pendingAsk) { _, request in
+            guard let request else { return }
+            askRequest = request
+            askPath = NavigationPath()
+            model.pendingAsk = nil
+            selection = .ask
         }
         #if os(iOS)
         // The iPhone tab bar shrinks while reading down a list, as in Music
