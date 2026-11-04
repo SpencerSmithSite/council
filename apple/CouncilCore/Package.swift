@@ -17,6 +17,18 @@ let package = Package(
         // from it. A Core ML conversion would drift by more than the golden
         // fixtures' tolerance (shared/golden/search/README.md).
         .package(url: "https://github.com/microsoft/onnxruntime-swift-package-manager", from: "1.24.2"),
+        // The downloaded on-device model (Inference/Local). MLXLLM holds the
+        // Qwen3 architecture, MLXLMCommon the loading and generation API. Exact
+        // pins, because 3.x changes its API between minor releases and the
+        // weights' chat template is exercised only by the opt-in smoke test.
+        // Its other products (VLM, FoundationModels bridge, guided generation,
+        // the Hugging Face macros) aren't linked, so they aren't built.
+        .package(url: "https://github.com/ml-explore/mlx-swift-lm", exact: "3.32.3"),
+        // The tokenizer for those weights. mlx-swift-lm 3 no longer bundles
+        // one; this is the implementation its docs integrate with. Only the
+        // `Tokenizers` product is used: the Hub downloader is replaced by
+        // LocalModelDownloader, which pins revisions and checks hashes.
+        .package(url: "https://github.com/huggingface/swift-transformers", exact: "1.3.5"),
     ],
     targets: [
         // One target with a folder per area rather than one module per folder:
@@ -28,9 +40,19 @@ let package = Package(
             dependencies: [
                 .product(name: "GRDB", package: "GRDB.swift"),
                 .product(name: "onnxruntime", package: "onnxruntime-swift-package-manager"),
+                .product(name: "MLXLLM", package: "mlx-swift-lm"),
+                .product(name: "MLXLMCommon", package: "mlx-swift-lm"),
+                .product(name: "Tokenizers", package: "swift-transformers"),
             ]
         ),
-        .testTarget(name: "CouncilCoreTests", dependencies: ["CouncilCore"]),
+        .testTarget(
+            name: "CouncilCoreTests",
+            dependencies: [
+                "CouncilCore",
+                // For the opt-in MLX smoke test's token count.
+                .product(name: "MLXLMCommon", package: "mlx-swift-lm"),
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

@@ -16,7 +16,7 @@ import Testing
 
 @Test func persistedBackendIDsAreStable() {
     #expect(InferenceBackendID.allCases.map(\.rawValue) ==
-        ["none", "platform", "local", "ollama", "anthropic", "openai", "gemini", "xai"])
+        ["none", "platform", "local", "ollama", "cloud"])
 }
 
 @Test func flutterPreferenceKeysArePrefixed() {
