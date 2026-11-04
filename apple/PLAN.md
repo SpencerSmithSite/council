@@ -454,8 +454,9 @@ Started 2026-11-03.
       Settings (Flutter's dialog; clears `AppSettings.resetKeys`: Dart's
       `clearAll` keys plus the four native `reader_` keys, never user data
       or the AI configuration, which Dart leaves too). Mac window sized
-      520×560 minimum, 560×680 ideal. Open: "Show Onboarding" waits for the
-      onboarding screen; the Mac Settings window not yet looked at (built
+      520×560 minimum, 560×680 ideal. Show Onboarding replays it
+      (`OnboardingGate.replay`, closing the iOS Settings sheet first). Open:
+      the Mac Settings window not yet looked at (built
       and tested only); a sheet left open across a reset (or Theme → System
       from Dark) keeps the dark scheme until reopened, a ThemeStore /
       `preferredColorScheme(nil)` limitation that predates this.
@@ -478,8 +479,7 @@ Started 2026-11-03.
       Checked on the iPhone Air simulator (Default, Gruvbox dark/light, AX5
       text; Get Started with 1 and 3 collections, Start Reading mid-download,
       Skip; relaunch; existing user by installed pack and by the Flutter
-      flag) and on the Mac (sheet; existing user). Open: Settings' "Show
-      Onboarding" (call `model.onboarding.replay()`); Apple Intelligence off
+      flag) and on the Mac (sheet; existing user). Open: Apple Intelligence off
       or unsupported not seen (the simulator reports it ready); iPad not run.
 - [ ] Update check against the existing `updates.json`.
 - [ ] Mac: port the `_macos` path of `update_installer.dart` (download DMG,

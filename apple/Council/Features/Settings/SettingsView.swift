@@ -20,10 +20,8 @@ import SwiftUI
 ///   each answer.
 /// - **Updates**: `UpdateSettingsSection`, owned by the updates feature.
 /// - **About**: the version.
-/// - **Reset All Settings**, confirmed as Flutter confirms it.
-///
-/// Flutter's "Show Onboarding" row belongs to the onboarding feature and
-/// isn't here yet.
+/// - **Show Onboarding** (`OnboardingGate.replay`) and **Reset All
+///   Settings**, confirmed as Flutter confirms it.
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(ThemeStore.self) private var themeStore
@@ -33,6 +31,7 @@ struct SettingsView: View {
     /// `getShowCitations` in Dart: true unless switched off.
     @AppStorage(AppSettings.showCitationsKey) private var showCitations = AppSettings.defaultShowCitations
 
+    @Environment(\.dismiss) private var dismiss
     @State private var confirmingReset = false
 
     var body: some View {
@@ -146,6 +145,18 @@ struct SettingsView: View {
 
     private var resetSection: some View {
         Section {
+            // Flutter's other whole-app action: the welcome walkthrough again.
+            // On iPhone and iPad Settings is itself a sheet, and a cover can't
+            // be presented over the app while it is up, so it closes first.
+            // On the Mac it is its own window and `dismiss` does nothing.
+            Button("Show Onboarding") {
+                dismiss()
+                Task {
+                    try? await Task.sleep(for: .milliseconds(350))
+                    model.onboarding.replay()
+                }
+            }
+            .frame(maxWidth: .infinity)
             Button("Reset All Settings", role: .destructive) {
                 confirmingReset = true
             }
