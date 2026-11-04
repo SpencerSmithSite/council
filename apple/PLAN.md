@@ -396,7 +396,7 @@ Started 2026-11-03.
       view; opening the thread already on screen from History doesn't stop
       its answer; the history preview strips inline Markdown; citations are
       always shown (Flutter's `show_citations` setting isn't ported yet).
-      Open: the coverage notice (`TODO(Phase 6)`); several Mac windows share
+      Open: several Mac windows share
       `pendingAsk` as they share `pendingSearch`, so an Ask request is taken
       by whichever window's `RootView` sees it.
 - [x] The AI backend screen: availability states matching
