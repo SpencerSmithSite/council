@@ -26,10 +26,36 @@ jobs:
     name: Build and test
     # The app's deployment target is 26, which needs the Xcode 26 SDK or later.
     runs-on: macos-26
-    timeout-minutes: 30
+    # MLX (the downloaded on-device model) is a large C++ and Metal build, done
+    # once per platform below; 30 minutes was sized before it.
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
+
+      # mlx-swift's manifest needs Swift tools 6.3 (Xcode 26.4 or later), and
+      # the image's default Xcode may be older than the newest it carries. Use
+      # the newest release Xcode installed, and say clearly if it's too old
+      # rather than failing in package resolution.
+      - name: Select Xcode
+        run: |
+          newest=$(ls -d /Applications/Xcode_*.app | grep -v -i -E 'beta|rc' | sort -V | tail -1)
+          sudo xcode-select -s "$newest"
+          xcodebuild -version
+          swift --version
+          swift_version=$(swift --version 2>&1 | sed -n 's/.*Swift version \([0-9]*\.[0-9]*\).*/\1/p')
+          if [ "$(printf '%s\n6.3\n' "$swift_version" | sort -V | head -1)" != "6.3" ]; then
+            echo "::error::MLX needs Swift 6.3 or later (Xcode 26.4+); the newest Xcode here has Swift $swift_version."
+            exit 1
+          fi
+
+      # Xcode 26 and later ship the Metal compiler as a separate download, and
+      # MLX compiles its kernels with it. Fetch it if the image lacks it.
+      - name: Metal toolchain
+        run: |
+          if ! xcodebuild -showComponent MetalToolchain 2>/dev/null | grep -q 'Status: installed'; then
+            xcodebuild -downloadComponent MetalToolchain
+          fi
 
       # project.yml is the source of truth and the .xcodeproj is generated
       # from it, but both are committed. Regenerate and fail on any diff, so a
@@ -61,5 +87,17 @@ jobs:
           xcodebuild build
           -project apple/Council.xcodeproj -scheme Council
           -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath apple/.build/DerivedData
+          CODE_SIGNING_ALLOWED=NO
+
+      # A device build as well, because MLX's Metal kernels are compiled per
+      # SDK and the Simulator build doesn't exercise the iOS device one (the
+      # Simulator can't run MLX at all; LocalModelBackend reports itself
+      # unavailable there).
+      - name: Build for iOS
+        run: >
+          xcodebuild build
+          -project apple/Council.xcodeproj -scheme Council
+          -destination 'generic/platform=iOS'
           -derivedDataPath apple/.build/DerivedData
           CODE_SIGNING_ALLOWED=NO
