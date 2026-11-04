@@ -101,6 +101,8 @@ struct RootView: View {
             }
         }
         .tabViewStyle(.sidebarAdaptable)
+        // The once-per-launch update check, and its sheet.
+        .updateLaunchOffer()
         // Another screen asked for a search (the shelf's "Search Passages
         // for …"): run it in the Search tab.
         .onChange(of: model.pendingSearch) { _, query in

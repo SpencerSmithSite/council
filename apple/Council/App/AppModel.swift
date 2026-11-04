@@ -76,6 +76,10 @@ final class AppModel {
     /// talking to while the library is still being prepared.
     let inference = InferenceModel()
 
+    /// Whether a newer Council is published, and getting it: see
+    /// `UpdateModel`. Independent of the corpus, like `inference`.
+    let updates = UpdateModel()
+
     /// Conversations with the model, in `council_user.db` beside the
     /// annotations. Nil until the user database has opened, and nil for good
     /// if it can't: questions are still answered, just not kept.
