@@ -84,12 +84,20 @@ private struct ScreenBackground: ViewModifier {
     func body(content: Content) -> some View {
         // A style either way rather than an `if`, so switching theme keeps
         // the screen's identity (and its scroll position).
+        // The scroll background is hidden here as well as at the scene root
+        // (`CouncilThemeModifier`): a sheet doesn't inherit it, so a `Form`
+        // in the iPhone Settings sheet otherwise painted the system grouped
+        // grey over the themed page.
         #if os(macOS)
         // No `.navigation` container placement on the Mac; the page goes
         // behind the content instead, under the toolbar's glass too.
-        content.background(style, ignoresSafeAreaEdges: .all)
+        content
+            .scrollContentBackground(palette.isSystem ? .automatic : .hidden)
+            .background(style, ignoresSafeAreaEdges: .all)
         #else
-        content.containerBackground(style, for: .navigation)
+        content
+            .scrollContentBackground(palette.isSystem ? .automatic : .hidden)
+            .containerBackground(style, for: .navigation)
         #endif
     }
 

@@ -123,7 +123,9 @@ public struct OllamaBackend: InferenceBackend {
     }
 
     /// Whether `/api/tags` answers 200 within five seconds (`isAvailable`).
-    func isReachable() async -> Bool {
+    /// Public for the AI backend screen, which, as Flutter's `_test` does, tells
+    /// "can't reach the host" apart from "reached it, but it has no models".
+    public func isReachable() async -> Bool {
         guard let url = URL(string: "\(host)/api/tags") else { return false }
         let status = try? await withTimeLimit(Self.probeTimeout) { [transport] in
             try await transport.send(Self.request(url, timeout: Self.probeTimeout)).statusCode

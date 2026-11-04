@@ -4,9 +4,9 @@ import SwiftUI
 /// the Mac. Both callers wrap it in a NavigationStack, so it carries none of
 /// its own and its rows can push.
 ///
-/// A shell for now: the sections are where later phases put their settings
-/// (themes in Phase 2, the AI backend in Phase 5, packs and updates in
-/// Phase 6), so the layout is settled before they arrive.
+/// The sections are where each phase puts its settings (themes in Phase 2,
+/// the AI backend in Phase 5, packs and updates in Phase 6), so the layout
+/// is settled before they arrive.
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
 
@@ -23,10 +23,15 @@ struct SettingsView: View {
 
             Section("AI") {
                 NavigationLink {
-                    // TODO(Phase 5): the AI backend screen.
-                    Text("AI Backend")
+                    AIBackendView()
                 } label: {
-                    Label("AI Backend", systemImage: "sparkles")
+                    // The value says what answers questions now, so the
+                    // reader needn't open the screen to find out.
+                    LabeledContent {
+                        Text(model.inference.backendName)
+                    } label: {
+                        Label("AI Backend", systemImage: "sparkles")
+                    }
                 }
             }
             .councilListRow()

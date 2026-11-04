@@ -380,8 +380,33 @@ Started 2026-11-03.
       Open: the coverage notice (`TODO(Phase 6)`); several Mac windows share
       `pendingAsk` as they share `pendingSearch`, so an Ask request is taken
       by whichever window's `RootView` sees it.
-- [ ] The AI backend screen: availability states matching
-      `PlatformLlmState`, including the "Apple Intelligence is off" hint.
+- [x] The AI backend screen: availability states matching
+      `PlatformLlmState`, including the "Apple Intelligence is off" hint
+      (2026-11-04). `AIBackendView`, a grouped `Form` pushed from Settings
+      (whose row shows the current backend): live status with a re-check;
+      the backends as an inline picker with Flutter's summaries and a
+      privacy line each; Apple Intelligence's off/downloading states with
+      Open Settings (iOS) / System Settings' Siri pane (Mac) and Check
+      Again; the downloaded model's tiers (recommended marked, memory
+      note), Download with the disk check, progress with bytes and Cancel,
+      Resume and Delete (confirmed), space used, other models on disk, and
+      the Simulator/Intel `unsupportedReason` instead; Ollama host
+      (validated, trimmed), connection test in Flutter's words, model
+      picker from the host; cloud provider and model pickers, key in a
+      `SecureField` to the Keychain, Get a Key link, Remove Key, the
+      off-device warning. Downloads live in `InferenceModel.downloads`
+      (`LocalModelDownloads`), so they survive leaving the screen.
+      Checked on the Mac (download, leave and return, cancel, delete the
+      partial; Ollama reachable and unreachable) and the iPhone 17
+      simulator (Default, Gruvbox dark, Solarized Light, accessibility
+      text sizes; cloud key saved and removed). Open: **on the Mac the
+      Keychain refuses every write** (`errSecMissingEntitlement`, -34018):
+      the data-protection keychain needs a `keychain-access-groups`
+      entitlement and so a provisioning profile (Developer ID profile for
+      release), or `KeychainSecretStore` must use the login keychain on
+      macOS. A decision for signing, not this screen; the screen shows
+      the error. Flutter's `show_citations` lives on its Settings screen,
+      so it waits for Phase 6.
 
 ### Phase 6 — Settings, onboarding, updates
 - [ ] Browse, the content-pack library (`browse_screen.dart`), on

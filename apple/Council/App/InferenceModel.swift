@@ -12,7 +12,7 @@ import os
 /// One per process, owned by `AppModel` (`model.inference`), because the
 /// backend choice is a property of the install, not of a window: two Mac
 /// windows asking questions use the same model, and the AI backend screen
-/// (Phase 5, built later) changes it for all of them at once.
+/// (`AIBackendView`) changes it for all of them at once.
 ///
 /// What it holds, and why each piece lives here:
 ///
@@ -24,6 +24,8 @@ import os
 ///   One store per root is the store's own rule (it refuses a second
 ///   download of a model by tracking them), so the backend built here and
 ///   the backend screen's download and delete buttons must share it.
+/// - `downloads`, the running MLX downloads (`LocalModelDownloads`), here so
+///   a download outlives the AI backend screen that started it.
 /// - `platformAvailability`, what Apple Intelligence reports. Asked again by
 ///   `refreshStatus`, since the reader can switch it on in Settings and come
 ///   back.
@@ -44,6 +46,9 @@ final class InferenceModel {
     let secrets: any SecretStore
     /// The downloaded models' store, shared with the AI backend screen.
     let localModels: LocalModelStore
+    /// The downloads of `localModels`' models, owned here so they keep going
+    /// when the reader leaves the AI backend screen.
+    let downloads: LocalModelDownloads
 
     /// What Apple Intelligence last reported.
     private(set) var platformAvailability: PlatformLlmAvailability
@@ -83,7 +88,14 @@ final class InferenceModel {
         let root = (try? LocalModelStore.defaultRoot())
             ?? FileManager.default.temporaryDirectory.appending(path: "MLXModels", directoryHint: .isDirectory)
         localModels = LocalModelStore(root: root)
+        downloads = LocalModelDownloads(store: localModels)
         platformAvailability = FoundationModelsBackend.systemAvailability()
+        // A finished download (or a delete) changes whether the chosen model
+        // is installed, which is what the downloaded-model backend's status
+        // reports; the Ask tab must hear it even with the screen gone.
+        downloads.onDiskChange = { [weak self] in
+            Task { await self?.refreshStatus() }
+        }
     }
 
     /// Resolves the opening backend and starts watching the settings.
@@ -148,6 +160,40 @@ final class InferenceModel {
             // asked for the status, and its result is deliberately ignored.
             Task.detached { await ollama.warmUp() }
         }
+    }
+
+    // MARK: - Cloud keys
+
+    // The Keychain half of Flutter's `setCloudKey`/`hasCloudKey`
+    // (inference_provider.dart). Here rather than in the screen because a key
+    // change must rebuild the backend, and the Keychain, unlike
+    // `UserDefaults`, sends no notice of it.
+
+    /// Whether a key is saved for `provider`.
+    func hasCloudKey(for provider: CloudProvider) async -> Bool {
+        await Self.readKey(provider, from: secrets).isEmpty == false
+    }
+
+    /// Saves `key` for `provider` (trimmed; empty removes the saved key) and
+    /// rebuilds the backend so the next question uses it.
+    func setCloudKey(_ key: String, for provider: CloudProvider) async throws {
+        try await Self.writeKey(key, provider, to: secrets)
+        reload()
+    }
+
+    // `@concurrent`: Keychain calls are synchronous and touch the security
+    // daemon, so they stay off the main actor, which approachable
+    // concurrency would otherwise run them on.
+
+    @concurrent
+    private nonisolated static func readKey(_ provider: CloudProvider, from secrets: any SecretStore) async -> String {
+        secrets.apiKey(for: provider)
+    }
+
+    @concurrent
+    private nonisolated static func writeKey(_ key: String, _ provider: CloudProvider,
+                                             to secrets: any SecretStore) async throws {
+        try secrets.setAPIKey(key, for: provider)
     }
 
     // MARK: - Watching the settings
