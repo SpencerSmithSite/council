@@ -481,9 +481,28 @@ Started 2026-11-03.
       Skip; relaunch; existing user by installed pack and by the Flutter
       flag) and on the Mac (sheet; existing user). Open: Apple Intelligence off
       or unsupported not seen (the simulator reports it ready); iPad not run.
-- [ ] Update check against the existing `updates.json`.
-- [ ] Mac: port the `_macos` path of `update_installer.dart` (download DMG,
-      verify, replace, relaunch).
+- [x] Update check against the existing `updates.json` (2026-11-04): `CouncilCore/Updates` ports
+      `app_version.dart`, `release_manifest.dart`, `update_service.dart` and
+      `update_provider.dart` (as `UpdateFlow`), held to them by
+      `shared/golden/updates/updates.json` (written by
+      `test/updates_golden_test.dart`) plus ports of the Dart tests.
+      `UpdateModel` on `AppModel` runs the once-per-launch check
+      (`auto_check_updates`, default on) from `RootView` and raises
+      `UpdateSheet`; `UpdateSettingsSection` has the toggle, version and Check
+      Now ("Council is up to date."). iOS/iPadOS mirror Flutter: no
+      self-update, the sheet opens TestFlight. Release notes are shown, which
+      Flutter parses but doesn't display.
+- [x] Mac: port the `_macos` path of `update_installer.dart` (download DMG,
+      verify, replace, relaunch). `MacUpdateInstaller`: after the SHA-256
+      check, mounts the image privately (`hdiutil -nobrowse -readonly`),
+      ditto-copies the one app with our bundle id beside the running one,
+      checks the copy (strict nested signature, `anchor apple generic` and
+      team Y2Q5JVG8X5, same identifier, newer version), swaps it in with
+      `RENAME_SWAP`, and a helper relaunches after this process exits. Only
+      where the folder is writable and the running copy is team-signed;
+      otherwise (and on any environmental failure) it falls back to Flutter's
+      behaviour of opening the verified image in the Finder. A failed
+      signature, another app or a non-newer version refuses outright.
 
 ### Phase 7 — Migration from the Flutter install
 The native app installs over the Flutter one with the same bundle ID, so the

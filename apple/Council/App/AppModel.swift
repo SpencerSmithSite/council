@@ -79,6 +79,9 @@ final class AppModel {
     /// Whether to show first-run setup, and the collections it set
     /// installing: see `OnboardingGate`. `RootView` presents it.
     let onboarding = OnboardingGate()
+    /// Whether a newer Council is published, and getting it: see
+    /// `UpdateModel`. Independent of the corpus, like `inference`.
+    let updates = UpdateModel()
 
     /// Conversations with the model, in `council_user.db` beside the
     /// annotations. Nil until the user database has opened, and nil for good
