@@ -299,6 +299,43 @@ native reader scrolls through the whole work.
       nothing.
 
 ### Phase 5 — AI
+Started 2026-11-03.
+
+**Design**
+- **Core first, in two parallel pieces.** CouncilCore `Inference/`: the
+  `InferenceBackend` contract (written first, so both pieces build on it),
+  `ReasoningFilter`, `ChatPrompt` held to a new `shared/golden/prompts/`
+  fixture generated from the Dart, `Citation` with Dart's JSON,
+  `ChatHistoryStore` on `council_user.db`, `InferenceSettings` on Flutter's
+  keys, cloud keys in the Keychain, and the Foundation Models, Ollama and
+  cloud backends. `Inference/Local/`: the MLX backend, model catalogue,
+  download and storage.
+- **The Ask tab is a transcript and a composer,** both standard: a scroll
+  view of messages, the composer a glass bar at the bottom (`TextField` with
+  axis vertical in a `.safeAreaBar`/bottom toolbar), Send turning into Stop
+  while an answer streams. The answer follows the stream until the reader
+  scrolls up, with a jump-to-latest button, as in Flutter.
+- **Markdown**: answers are rendered block by block from
+  `AttributedString(markdown:)` with full syntax, walking its
+  `presentationIntent` (paragraphs, lists, quotes, headings, code), so no
+  third-party renderer. Citation markers `[1]` become tappable.
+- **Citations** under each answer: the source, author and tradition, the
+  traceable/untraced badge, opening the passage
+  (`ReadingRoute.passage`). The reliability caveat on the first generated
+  answer in a thread, as Flutter.
+- **Ask about a passage**: the reader's Ask action switches to the Ask tab
+  with the passage pinned (a banner above the transcript); it leads the
+  prompt and names the thread.
+- **History**: Chat History lists threads (swipe to delete); opening one
+  continues it in the Ask tab.
+- **The AI backend screen** in Settings: the backends as a picker list with
+  their privacy line and live status; Foundation Models' availability states
+  (with the "Apple Intelligence is off" hint and a link to Settings); MLX
+  model choice, download progress, storage used, delete; Ollama host and
+  model list; cloud provider, key (secure field, Keychain) and model.
+- The coverage notice ("a collection that would help isn't installed")
+  needs the pack library, so its install button arrives with Phase 6.
+
 - [ ] Backends: Foundation Models, MLX local model (download, progress,
       storage, delete), Ollama on the local network
       (`NSLocalNetworkUsageDescription`), and cloud (Anthropic, OpenAI,
