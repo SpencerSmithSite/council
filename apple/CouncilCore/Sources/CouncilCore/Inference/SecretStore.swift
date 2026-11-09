@@ -61,7 +61,7 @@ public struct KeychainError: Error, Hashable, CustomStringConvertible {
 /// unsandboxed Mac app's passwords normally live, and items there are bound
 /// to the app's code signature, so another app gets a prompt, not the key.
 ///
-/// ## The Flutter app's items (for Phase 7, not migrated here)
+/// ## The Flutter app's items (carried across by `FlutterMigration`)
 ///
 /// `flutter_secure_storage` 9.2.4 with default Apple options stores each key
 /// as a generic password with:
@@ -84,17 +84,30 @@ public struct KeychainError: Error, Hashable, CustomStringConvertible {
 public struct KeychainSecretStore: SecretStore {
     public static let cloudService = "site.spencersmith.council.cloud"
 
-    /// `flutter_secure_storage`'s default service, for Phase 7.
+    /// `flutter_secure_storage`'s default service, for `FlutterMigration`.
     public static let flutterService = "flutter_secure_storage_service"
 
     /// `flutter_secure_storage`'s account name for a provider's key, for
-    /// Phase 7.
+    /// `FlutterMigration`.
     public static func flutterAccount(for provider: CloudProvider) -> String { "api_key_\(provider.id)" }
 
     public let service: String
+    /// Whether the items live in the data-protection keychain. Always on iOS,
+    /// which has no other; on the Mac only for reading the Flutter app's
+    /// items, which `flutter_secure_storage` put there (see above).
+    public let usesDataProtectionKeychain: Bool
 
     public init(service: String = KeychainSecretStore.cloudService) {
+        #if os(iOS)
+        self.init(service: service, usesDataProtectionKeychain: true)
+        #else
+        self.init(service: service, usesDataProtectionKeychain: false)
+        #endif
+    }
+
+    public init(service: String, usesDataProtectionKeychain: Bool) {
         self.service = service
+        self.usesDataProtectionKeychain = usesDataProtectionKeychain
     }
 
     public func secret(for account: String) throws -> String? {
@@ -139,11 +152,11 @@ public struct KeychainSecretStore: SecretStore {
             kSecAttrAccount: account,
             kSecAttrSynchronizable: false,
         ]
-        #if os(iOS)
         // iOS has only the data-protection keychain; saying so is harmless
         // and keeps the query identical to what Flutter's plugin uses there.
-        query[kSecUseDataProtectionKeychain] = true
-        #endif
+        if usesDataProtectionKeychain {
+            query[kSecUseDataProtectionKeychain] = true
+        }
         return query
     }
 }

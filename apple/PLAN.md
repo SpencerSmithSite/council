@@ -504,32 +504,72 @@ Started 2026-11-03.
       behaviour of opening the verified image in the Finder. A failed
       signature, another app or a non-newer version refuses outright.
 
-### Phase 7 — Migration from the Flutter install
+### Phase 7 — Migration from the Flutter install (built 2026-11-08, device checks open)
 The native app installs over the Flutter one with the same bundle ID, so the
 data is still on the device. The new app just has to read it.
-- [ ] `council_user.db`, the corpus and `packs/` in Application Support: open
-      them in place on iOS and iPadOS (same schema).
-- [ ] **Mac: the Flutter app was sandboxed, the native one is not.**
-      `macos/Runner/Release.entitlements` turns on `app-sandbox`, so the
-      Flutter Mac app's files, preferences and Keychain items live under
-      `~/Library/Containers/site.spencersmith.council/Data/`, while the
-      unsandboxed native app looks in `~/Library/Application Support/` and
-      `~/Library/Preferences/`. On first launch, copy the user database
-      (and packs, if present) out of the container, read the old preferences
-      plist from the container's `Library/Preferences/`, and check whether
-      the Keychain items are reachable from outside the sandbox. If they
-      aren't, ask the user to re-enter cloud keys and don't fail silently.
-- [ ] `shared_preferences`: on Apple platforms it stores keys in
-      `UserDefaults.standard` with a `flutter.` prefix. Map theme, font size,
-      citations, auto-update, bookmarks and shelf keys to the new settings,
-      then mark migration done.
-- [ ] Keychain: read cloud keys from `flutter_secure_storage`'s default
-      service and re-save them under the app's own service.
-- [ ] Downloaded `.litertlm` models: MLX can't use them. Delete them to free
-      the space and offer the MLX download.
+
+`CouncilCore/Migration/FlutterMigration.swift`, in two halves. The
+settings half, `migrateSettings`, runs synchronously in `CouncilApp.init`
+before `AppModel`, `ThemeStore` and `ReaderStyle` are made, because all
+three read `UserDefaults` as they start. The files half, `migrateFiles`,
+runs first thing in `AppModel.start`, off the main actor, before the
+onboarding gate's library check and before the corpus opens. Each step
+(`preferences`, `keychain`, `files`, `models`) is recorded in
+`flutter_migration_done` once finished and never runs again, so a setting
+reset later stays reset. A step that can't finish is retried at the next
+launch. Flutter's own copies (the `flutter.` keys, its Keychain items, the
+Mac container) are left in place. `MigrationNotice` (on `RootView`) tells
+the reader what didn't come across, one alert at a time. 22 tests in
+`FlutterMigrationTests`.
+- [x] `council_user.db`, the corpus and `packs/` in Application Support: on
+      iOS and iPadOS they're opened in place (same directory, same schema),
+      with nothing to copy.
+- [x] **Mac: the Flutter app was sandboxed, the native one is not.**
+      `FlutterInstall.current` points into
+      `~/Library/Containers/site.spencersmith.council/Data/`. The library
+      (both databases with their `-wal`/`-shm`/`-journal` sidecars, the
+      corpus stamp, `packs/`) is copied into
+      `~/Library/Application Support/site.spencersmith.council/` (APFS clones
+      the files), but only when the Flutter library holds the reader's own
+      data and this app's doesn't (`ExistingInstall`). A copy cut short is
+      redone (`flutter_migration_copying`). If the container can't be read,
+      onboarding isn't shown and the reader is told, with "Try Again Next
+      Time" or "Start Fresh" (`AppModel.startFresh`, which then runs
+      onboarding's check). The preferences come from the container's plist.
+      **Seen on this Mac:** the container refuses other processes ("Operation
+      not permitted" from a shell). Whether macOS lets the native app in as
+      the container's owner (same bundle id and team, but not sandboxed) is
+      the open question for the real Mac test.
+- [x] `shared_preferences`: the `flutter.` keys this app reads (theme,
+      `font_size`, `show_citations`, `auto_check_updates`, `has_onboarded`,
+      bookmarks, the four shelf keys, `reading_position_*`, the AI backend
+      and its configuration) are copied under the same name and encoding,
+      never over a key this app has already set. The legacy `theme_choice`
+      and `dark_mode` keys are converted as `SettingsService` reads them.
+- [x] Keychain: each provider's `api_key_<id>` under
+      `flutter_secure_storage_service` is saved again under
+      `site.spencersmith.council.cloud`. iOS reads it from the
+      data-protection keychain (retried if the phone is locked). On the Mac
+      the Flutter items are in the data-protection keychain, which an
+      unsandboxed app without `keychain-access-groups` can't open (as in
+      Phase 5), so the read is expected to fail there. If the key in use
+      can't be read, the reader is asked to enter it again ("Enter Key"
+      opens the AI backend screen).
+- [x] Downloaded models: every file the Flutter app ever offered (four
+      `.litertlm`, three older `.task`), listed by name, is deleted from
+      Documents (iOS) or the container's `flutter_gemma/` and `Documents/`
+      (Mac). When the downloaded model is still the backend, the device can
+      run MLX and nothing is downloaded yet, a notice offers the download.
+- [x] Checked in the iPhone 18 Pro simulator, with Flutter-style
+      `flutter.` preferences and a 1.2 GB `Qwen3_1.7B.litertlm` planted in
+      the container. The first launch came up in Gruvbox dark with no
+      onboarding. The model was deleted (an unrelated file stayed) and the
+      "Download the Model Again" notice showed 1.26 GB. Download opened AI
+      Backend. All four steps were recorded.
 - [ ] Test it for real: install the current Flutter build, create highlights,
       notes, chats, bookmarks, a theme choice and a cloud key, then install the
-      native build over it on iPhone, iPad and Mac.
+      native build over it on iPhone, iPad and Mac. On the Mac this settles
+      the container question above.
 
 ### Phase 8 — Mac specifics
 - [ ] Menu commands and keyboard shortcuts, a Settings scene, multiple windows

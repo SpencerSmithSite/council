@@ -35,6 +35,7 @@
 		897798F21675783560A6203E /* ContentsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D168EDC2797F854488D5910 /* ContentsSheet.swift */; };
 		91E5B5AC7406F53CCD282306 /* theology.db.gz in Resources */ = {isa = PBXBuildFile; fileRef = 36725FC7C2932C5653F330F7 /* theology.db.gz */; };
 		9B58B8F1F60D7F50DC289AF5 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F11027FEEABC42AC0222C6F /* MarkdownText.swift */; };
+		9CC4AE983C2EB6A93E859675 /* MigrationNotice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C074A6EDF36D5235B134917A /* MigrationNotice.swift */; };
 		9D4C8D8A64999AF13305AF34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25B8D8CF1C70CCEBCFE6B676 /* Assets.xcassets */; };
 		9F0C06637780C111C70C90D1 /* vocab.txt in Resources */ = {isa = PBXBuildFile; fileRef = 308BE16BED3349CB214A1ADA /* vocab.txt */; };
 		A4ADF00181F3AF633B4BFC4E /* CouncilCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69DBD37D03A4A083BA4C4FF7 /* CouncilCore */; };
@@ -101,6 +102,7 @@
 		BC1300D811F39FF916C04C3D /* SettingsToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsToolbar.swift; sourceTree = "<group>"; };
 		BD2896EBB7EB55423AF3D4EF /* LocalModelSettingsSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalModelSettingsSections.swift; sourceTree = "<group>"; };
 		BED31F1E72458E2B157DC194 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		C074A6EDF36D5235B134917A /* MigrationNotice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationNotice.swift; sourceTree = "<group>"; };
 		C2A7D06E2CEE0DC43EA4715D /* Council.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Council.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB8B09909859307EA380FA13 /* SourceReaderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceReaderModel.swift; sourceTree = "<group>"; };
 		CC7A65B0537C3AE4937EBE5C /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				C91286CE7454048B72F7D9F6 /* Browse */,
 				2C928377055B7AA524768702 /* Chat */,
 				15692A7F7B22500142B2E87B /* Library */,
+				E38356188558FD4D54E9ACA9 /* Migration */,
 				32F3EF8A2F39B82D8247C0EC /* Notes */,
 				0BAD2EF270051CCB2D439737 /* Onboarding */,
 				92A046AD25E4710E518DE15F /* Read */,
@@ -330,6 +333,14 @@
 			path = Reader;
 			sourceTree = "<group>";
 		};
+		E38356188558FD4D54E9ACA9 /* Migration */ = {
+			isa = PBXGroup;
+			children = (
+				C074A6EDF36D5235B134917A /* MigrationNotice.swift */,
+			);
+			path = Migration;
+			sourceTree = "<group>";
+		};
 		F3B37E608187E06639FA7B4E /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -469,6 +480,7 @@
 				1C9609C0F6E2B157FED99D83 /* LocalModelDownloads.swift in Sources */,
 				07E29850462560B64428E580 /* LocalModelSettingsSections.swift in Sources */,
 				9B58B8F1F60D7F50DC289AF5 /* MarkdownText.swift in Sources */,
+				9CC4AE983C2EB6A93E859675 /* MigrationNotice.swift in Sources */,
 				CCE3A14EA3EA2A3F69847A82 /* NoteEditorView.swift in Sources */,
 				0F9080A1B0E85F6AD80F0869 /* NotesView.swift in Sources */,
 				7BB318864D1C29F6B34F62D0 /* OllamaSettingsSections.swift in Sources */,

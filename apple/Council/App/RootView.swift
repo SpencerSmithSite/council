@@ -105,6 +105,8 @@ struct RootView: View {
         .onboardingPresentation()
         // The once-per-launch update check, and its sheet.
         .updateLaunchOffer()
+        // What couldn't come across from the Flutter app this one replaced.
+        .migrationNotice()
         // Another screen asked for a search (the shelf's "Search Passages
         // for …"): run it in the Search tab.
         .onChange(of: model.pendingSearch) { _, query in

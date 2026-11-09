@@ -113,6 +113,14 @@ final class AppModel {
     /// `PackProvider`'s installed set changes.
     private(set) var contentRevision = 0
 
+    /// What carrying a Flutter install across found to tell the reader
+    /// (`FlutterMigration`): the settings half from `CouncilApp`'s init, the
+    /// files half from `start`. `MigrationNotice` raises it.
+    var migration = FlutterMigration.Outcome()
+    /// The window whose `MigrationNotice` shows it, so a second Mac window
+    /// doesn't raise the same alert.
+    var migrationNoticeOwner: UUID?
+
     private var started = false
 
     private static let logger = Logger(subsystem: "site.spencersmith.council", category: "App")
@@ -124,10 +132,17 @@ final class AppModel {
     func start() async {
         guard !started else { return }
         started = true
-        // First, while nothing has opened the user database or the corpus
+        // The Mac's copy of a Flutter library out of its container, which
+        // must land before anything below reads or opens it.
+        migration.merge(await Self.migrateFlutterFiles())
+        // Then, while nothing has opened the user database or the corpus
         // (its library check reads both), and before the opening AI backend
-        // is resolved, which reads the `has_onboarded` it may write.
-        await onboarding.decide(supportDirectory: try? Self.supportDirectory())
+        // is resolved, which reads the `has_onboarded` it may write. Not for
+        // a reader whose earlier library couldn't be brought over: they have
+        // been through setup, and `startFresh` decides once they've chosen.
+        if migration.library == nil {
+            await onboarding.decide(supportDirectory: try? Self.supportDirectory())
+        }
         inference.start()
 
         let corpus: Corpus
@@ -194,6 +209,18 @@ final class AppModel {
         bookmarksRevision += 1
     }
 
+    /// The reader's answer to an earlier library that couldn't be brought
+    /// over: stop trying, and treat this as the first run it now is.
+    func startFresh() async {
+        if let migration = Self.flutterMigration() {
+            for step in [FlutterMigration.Step.preferences, .keychain, .files] { migration.skip(step) }
+        }
+        migration.library = nil
+        // Later than `decide` wants, but the files it reads have finished
+        // being installed by now, and it only reads them.
+        await onboarding.decide(supportDirectory: try? Self.supportDirectory())
+    }
+
     private func contentDidChange() {
         contentRevision += 1
     }
@@ -219,11 +246,31 @@ final class AppModel {
         }
     }
 
+    // MARK: - Migration
+
+    /// The Flutter install this one replaces, or nil when Application
+    /// Support can't be resolved (the corpus is failing then too).
+    nonisolated static func flutterMigration() -> FlutterMigration? {
+        guard let directory = try? supportDirectory() else { return nil }
+        return FlutterMigration(install: .current(supportDirectory: directory), supportDirectory: directory)
+    }
+
+    /// `FlutterMigration.migrateSettings`, for `CouncilApp` to run before it
+    /// creates anything that reads `UserDefaults`.
+    nonisolated static func migrateFlutterSettings() -> FlutterMigration.Outcome {
+        flutterMigration()?.migrateSettings() ?? FlutterMigration.Outcome()
+    }
+
     // MARK: - Off the main actor
 
     // `@concurrent` because the app target uses approachable concurrency, under
     // which a plain nonisolated async function runs on its caller's actor:
     // here, the main one, which would freeze the first launch's UI.
+
+    @concurrent
+    private nonisolated static func migrateFlutterFiles() async -> FlutterMigration.Outcome {
+        flutterMigration()?.migrateFiles() ?? FlutterMigration.Outcome()
+    }
 
     @concurrent
     private nonisolated static func openCorpus(in directory: URL, archive: URL) async throws -> Corpus {
@@ -259,15 +306,13 @@ final class AppModel {
     /// returns `NSApplicationSupportDirectory` as is on iOS, which in the app
     /// container is `Library/Application Support`, and appends the bundle id
     /// on macOS.
-    static func supportDirectory() throws -> URL {
+    nonisolated static func supportDirectory() throws -> URL {
         let base = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
                                                appropriateFor: nil, create: true)
         #if os(macOS)
-        // TODO(Phase 7): the Flutter Mac app was sandboxed, so its data is in
-        // ~/Library/Containers/site.spencersmith.council/Data/Library/Application Support/site.spencersmith.council.
-        // This unsandboxed app gets ~/Library/Application Support/site.spencersmith.council,
-        // the same layout outside the container; Phase 7 copies the user data
-        // across on first launch.
+        // The Flutter Mac app was sandboxed, so its data is the same layout
+        // inside ~/Library/Containers/site.spencersmith.council/Data, and
+        // `FlutterMigration` copies it here on first launch.
         return base.appending(path: Bundle.main.bundleIdentifier ?? "site.spencersmith.council",
                               directoryHint: .isDirectory)
         #else
